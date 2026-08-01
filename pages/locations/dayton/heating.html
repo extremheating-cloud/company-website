@@ -1,330 +1,745 @@
-<section class="xhac-heating" data-city="Dayton">
+<section class="xhac-svc xsp-loc-dayton-heating">
   <style>
-    .xhac-heating{
-      --purple:#542770; --green:#6bb85c; --ink:#0f172a; --muted:#475569; --rule:#e7e7ea;
-      --wrap:1200px; --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.06);
-      --section-gap: clamp(28px, 5vw, 48px);
-      font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-    }
-    .hx-wrap{max-width:var(--wrap); margin:0 auto; padding:26px 16px;}
-    .hx-spacer{width:100%; height:6px; margin:38px 0; background:linear-gradient(90deg,var(--purple),var(--green)); border-radius:999px;}
+.xhac-svc{--purple:#542770;--purple-light:#5E2C7E;--purple-dark:#3A1A4E;--green:#6BB85C;
+--green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
+--ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
+--stars:#F6A723;
+font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+color:var(--ink);width:100%;overflow-x:hidden;
+/* The embed is a bare <section>. Framer's page supplies the white behind it, but
+   standalone — a local preview, or anyone opening the file — whatever is behind
+   shows through, and on a dark-mode browser that is black under dark text.
+   Own the background so the embed renders correctly anywhere. color-scheme keeps
+   form controls light too, or the ZIP input renders dark-on-dark. */
+background:#fff;color-scheme:light}
+.xhac-svc *{box-sizing:border-box;margin:0}
+.xsp-wrap{max-width:1280px;margin:0 auto;padding:0 40px}
+.xsp-dt{}
+.xsp-mb{display:none !important}
 
-    /* Titles */
-    .hx-title{ text-align:center; margin:0 0 22px; }
-    .hx-title h2{
-      font-size: clamp(22px, 3.2vw, 32px);
-      font-weight:800; color:var(--purple); margin:0 0 10px; letter-spacing:.015em;
-      opacity:0; transform:translateY(10px); transition:opacity .5s, transform .5s;
-    }
-    .hx-title .bar{ width:120px; height:6px; margin:0 auto; border-radius:999px;
-      background:linear-gradient(90deg,var(--purple),var(--green)); opacity:0; transform:translateY(8px); transition:opacity .5s .06s, transform .5s .06s; }
-    .reveal-in .hx-title h2, .reveal-in .hx-title .bar{opacity:1; transform:translateY(0);}
+/* Where in-page anchor links land. The site header is position:sticky;top:0, so a
+   section scrolled flush to the viewport top slides underneath it. scroll-margin-top
+   is honoured by scrollIntoView — including across the embed iframe boundary — and
+   pushes the landing point down by this much. TUNE THIS ONE VALUE if the header
+   height changes: it should be header height + ~20px of breathing room. */
+.xhac-svc{--xsp-anchor-offset:112px}
+.xhac-svc [id]{scroll-margin-top:var(--xsp-anchor-offset)}
 
-    /* Hero row */
-    .hx-hero{ display:grid; grid-template-columns:1.05fr .95fr; gap:26px; align-items:start; }
-    @media (max-width:940px){ .hx-hero{ grid-template-columns:1fr; } }
-    .hx-img{
-      height:300px; border-radius:12px; overflow:hidden; border:1px solid var(--rule); box-shadow:var(--shadow);
-      opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
-    }
-    .hx-img.reveal-in{opacity:1; transform:translateY(0);}
-    .hx-img img{width:100%; height:100%; object-fit:cover; display:block;}
-    .hx-copy{
-      background:#fff; border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow);
-      padding:18px 18px 20px; opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
-      display:flex; flex-direction:column; gap:10px;
-    }
-    .hx-copy.reveal-in{opacity:1; transform:translateY(0);}
-    .hx-copy h3{ font-weight:900; font-size:13px; color:var(--green); text-transform:uppercase; letter-spacing:.04em; margin:0 0 6px; }
-    .hx-copy p{ color:var(--ink); font-size:15px; line-height:1.7; margin:6px 0; }
-    .hx-link{ color:var(--green); font-weight:800; text-decoration:none; border-bottom:1px solid transparent; }
-    .hx-link:hover{ border-bottom-color:var(--green); }
+/* buttons */
+.xsp-btn-green{display:flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;width:100%;
+box-shadow:0 6px 18px rgba(107,184,92,.35);transition:background .15s ease,color .15s ease}
+.xsp-btn-green:hover{background:var(--green-dark);color:#fff}
+.xsp-btn-purple{display:flex;align-items:center;justify-content:center;background:var(--purple);
+color:#fff;font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;width:100%;margin-top:10px;
+transition:background .15s ease}
+.xsp-btn-purple:hover{background:#3E1C54}
+.xsp-cta{display:inline-flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;white-space:nowrap;
+transition:background .15s ease}
+.xsp-cta:hover{background:var(--green-hover)}
+.xsp-cta-outline{display:inline-flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.45);
+color:#fff;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;min-height:44px;
+text-decoration:none;background:transparent;white-space:nowrap;transition:border-color .15s,color .15s}
+.xsp-cta-outline:hover{border-color:var(--green);color:var(--green)}
 
-    /* Primary Button (matches thermostat embed) */
-    .hx-btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:8px;
-      padding:12px 16px;border-radius:12px;border:1px solid var(--purple);
-      background:linear-gradient(180deg,#ffffff,#f8f8fb);
-      color:var(--purple);font-weight:800;letter-spacing:.01em;text-decoration:none;
-      box-shadow:0 2px 10px rgba(0,0,0,.05);cursor:pointer;user-select:none;
-      transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
-    }
-    .hx-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.08);}
-    .hx-btn:active{transform:translateY(0);}
-    .hx-btn .dot{width:8px;height:8px;border-radius:999px;background:var(--green);}
-    .hx-btn.center{display:flex;margin:10px auto 0;} /* centered in hero, just like thermostat */
+/* hero */
+.xsp-hero{background:linear-gradient(180deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);position:relative;color:#fff}
+.xsp-hero-mark{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.xsp-hero-mark img{position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;
+transform:rotate(-8deg);filter:brightness(0) invert(1)}
+.xsp-hero-grid{position:relative;display:grid;grid-template-columns:1fr 360px;gap:48px;
+max-width:1280px;margin:0 auto;padding:48px 40px 64px}
+.xsp-hero-grid.nocard{grid-template-columns:1fr;padding-bottom:48px}
+.xsp-crumbs{font-size:12px;font-weight:700;color:rgba(255,255,255,.7)}
+.xsp-crumbs a{color:rgba(255,255,255,.7);text-decoration:none}
+.xsp-crumbs a:hover{color:var(--green-hover)}
+.xsp-crumbs .cur{color:var(--green)}
+.xsp-crumbs .sep{margin:0 7px;opacity:.6}
+.xsp-h1{margin-top:14px;font-style:italic;font-weight:900;font-size:46px;line-height:1.08;letter-spacing:-1px;color:#fff}
+.xsp-h1 em{font-style:italic;color:var(--green)}
+.xsp-hero.sub .xsp-h1{font-size:42px}
+.xsp-intro{margin-top:16px;max-width:520px;font-size:15.5px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.82)}
+.xsp-chiprow{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.xsp-chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;
+padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff}
+.xsp-chip .st{color:var(--stars)}
+.xsp-hero-ctas{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.xsp-trustline{display:flex;gap:18px;margin-top:22px;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.85);flex-wrap:wrap}
+.xsp-trustline .st{color:var(--stars)}
+.xsp-trustline .di{color:var(--green)}
 
-    /* In-box call text (below body) */
-    .hx-call{
-      margin-top:10px; padding-top:10px;
-      font-weight:900; text-transform:uppercase; font-style:italic; letter-spacing:.02em;
-      color:var(--purple); line-height:1.25; font-size:clamp(15px,2.2vw,20px);
-      border-top:1px dashed rgba(84,39,112,.25);
-    }
-    .hx-call .num{ color:var(--green); text-decoration:none; }
-    .hx-call .city{ color:var(--purple); }
+/* booking card (hero overlap) */
+.xsp-bookcol{position:relative;margin-bottom:-84px;align-self:start}
+.xsp-book{background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(15,23,42,.25);padding:24px;color:var(--ink)}
+.xsp-book.inflow{box-shadow:0 12px 30px rgba(84,39,112,.12);border:1px solid var(--rule)}
+.xsp-book .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-dark)}
+.xsp-book .t{font-weight:800;font-size:18px;margin-top:8px}
+.xsp-book .s{font-size:13px;font-weight:500;color:var(--body);margin-top:6px;line-height:1.5}
+.xsp-book .btns{margin-top:16px}
+.xsp-book .trust{display:flex;align-items:center;justify-content:center;gap:14px;border-top:1px solid var(--rule);
+margin-top:16px;padding-top:14px;font-size:12px;font-weight:700;color:var(--body)}
+.xsp-book .trust .st{color:var(--stars)}
+.xsp-book .trust .bar{color:#D8D5DE}
 
-    /* Four-up service grid */
-    .hx-grid{ display:grid; gap:22px; grid-template-columns:repeat(4,minmax(0,1fr)); }
-    @media (max-width:1100px){ .hx-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
-    @media (max-width:680px){ .hx-grid{ grid-template-columns:1fr; } }
-    .hx-card{
-      background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow);
-      overflow:hidden; opacity:0; transform:translateY(14px); transition:opacity .55s, transform .55s;
-    }
-    .hx-card.reveal-in{ opacity:1; transform:translateY(0);}
-    .hx-card .img{ height:160px; overflow:hidden; }
-    .hx-card .img img{ width:100%; height:100%; object-fit:cover; display:block; }
-    .hx-card .body{ padding:16px; }
-    .hx-card .kicker{ font-weight:900; font-size:12px; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin-bottom:8px; }
-    .hx-card h4{ font-size:16px; color:var(--green); margin:0 0 8px; text-transform:uppercase; }
-    .hx-card p{ color:var(--muted); font-size:14px; line-height:1.55; margin:0; }
+/* pill sub-nav */
+.xsp-pillbar{background:#fff;border-bottom:1px solid var(--rule)}
+.xsp-pillbar-in{max-width:1280px;margin:0 auto;padding:14px 40px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.xsp-pill-label{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-pills{display:flex;gap:8px;flex-wrap:wrap}
+.xsp-pill{border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:700;text-decoration:none;
+color:var(--purple);background:var(--tint);min-height:32px;display:inline-flex;align-items:center;
+transition:background .15s,color .15s}
+.xsp-pill:hover{background:#E9E2F1}
+.xsp-pill.active{background:var(--purple);color:#fff;font-weight:800}
 
-    /* Section blocks */
-    .hx-panel{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow);
-      padding:clamp(16px,3vw,24px); opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
-    }
-    .hx-panel.reveal-in{ opacity:1; transform:translateY(0); }
-    .hx-rows{ display:grid; grid-template-columns:1fr 1fr; column-gap:26px; row-gap:8px; }
-    @media (max-width:860px){ .hx-rows{ grid-template-columns:1fr; } }
-    .hx-badge{ display:inline-block; background:linear-gradient(90deg,rgba(107,184,92,.18),rgba(84,39,112,.14)); color:var(--ink);
-      font-weight:900; font-size:12px; letter-spacing:.05em; text-transform:uppercase; padding:6px 10px; border-radius:999px; margin-bottom:10px;}
-    .hx-term{ color:var(--ink); font-weight:800; font-size:18px; margin-bottom:6px; }
-    .hx-desc{ color:var(--muted); font-size:15px; line-height:1.65; }
+/* body grid */
+.xsp-bodygrid{display:grid;grid-template-columns:1fr 360px;gap:48px;max-width:1280px;margin:0 auto;padding:56px 40px}
+.xsp-main{display:flex;flex-direction:column;gap:48px;min-width:0}
+.xsp-rail{padding-top:64px;display:flex;flex-direction:column;gap:16px;align-self:start}
+.xsp-rail.flush{padding-top:0}
+.xsp-eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-dark)}
+.xsp-eyebrow.purple{color:var(--purple)}
+.xsp-h2{margin-top:10px;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px;color:var(--ink)}
 
-    @media (prefers-reduced-motion:reduce){
-      .hx-title h2,.hx-title .bar,.hx-img,.hx-copy,.hx-card,.hx-panel{opacity:1!important; transform:none!important; transition:none!important;}
-    }
-  </style>
+/* checklist */
+.xsp-checks{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-top:20px}
+.xsp-check{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700;color:var(--body)}
+.xsp-check .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.xsp-callout{margin-top:20px;background:var(--green-tint);border-radius:12px;padding:14px 18px;
+font-size:13px;font-weight:600;color:var(--promo-green);line-height:1.55}
+.xsp-callout a{color:var(--promo-green);font-weight:800;text-decoration:none}
+.xsp-callout.safety{background:var(--ink);color:rgba(255,255,255,.85)}
+.xsp-callout.safety b{color:var(--green-hover)}
+.xsp-callout.safety a{color:#fff;font-weight:800}
 
-  <div class="hx-wrap">
+/* what-we-do cards */
+.xsp-cards3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-card{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff;display:flex;
+flex-direction:column;gap:8px;text-decoration:none;transition:box-shadow .18s,border-color .18s,transform .18s}
+.xsp-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);border-color:#D8CCE4;transform:translateY(-2px)}
+.xsp-card .t{font-weight:800;font-size:16.5px;color:var(--ink)}
+.xsp-card .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-card .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:2px}
+.xsp-card:hover .lm{color:var(--green-dark)}
+.xsp-glyph{position:relative;display:block;width:30px;height:30px;flex:none}
+.xsp-glyph i{position:absolute;inset:11px 2px;border-radius:2px;display:block}
+.xsp-glyph i:first-child{background:var(--purple);transform:rotate(45deg)}
+.xsp-glyph i:last-child{background:var(--green);transform:rotate(-45deg)}
 
-    <!-- Top Title -->
-    <div class="hx-title">
-      <h2 id="hx-head">Our Efficient Heating and Furnace Services in <span class="hx-city">City</span>, Ohio</h2>
-      <div class="bar"></div>
+/* process */
+.xsp-steps{display:flex;flex-direction:column;gap:22px;margin-top:20px}
+.xsp-step{display:flex;gap:0}
+.xsp-step .n{flex:0 0 44px;font-style:italic;font-weight:900;font-size:25px;color:var(--purple)}
+.xsp-step .t{font-weight:800;font-size:15px}
+.xsp-step .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px;max-width:560px}
+
+/* decision card */
+.xsp-decision{border:1px solid var(--rule);border-radius:16px;padding:20px 22px;background:#fff}
+.xsp-decision .t{font-weight:800;font-size:16.5px}
+.xsp-decision .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px;max-width:620px}
+.xsp-decision a{display:inline-flex;align-items:center;margin-top:12px;border:2px solid var(--purple);
+color:var(--purple);font-weight:800;font-size:13.5px;padding:10px 18px;border-radius:10px;min-height:40px;
+text-decoration:none;transition:background .15s,color .15s}
+.xsp-decision a:hover{background:var(--purple);color:#fff}
+
+/* faq */
+.xsp-faq{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.xsp-qa{border:1px solid var(--rule);border-radius:14px;background:#fff;overflow:hidden}
+.xsp-qa button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+padding:16px 18px;background:none;border:0;cursor:pointer;font-family:inherit;text-align:left;
+font-weight:700;font-size:15px;color:var(--ink);min-height:44px}
+.xsp-qa .tog{width:26px;height:26px;flex:none;border-radius:50%;background:var(--tint);color:var(--purple);
+display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;transition:background .15s,color .15s}
+.xsp-qa.open .tog{background:var(--purple);color:#fff}
+.xsp-qa .a{display:none;font-size:13.5px;line-height:1.6;font-weight:500;color:var(--body);
+padding:0 18px 16px;max-width:620px}
+.xsp-qa.open .a{display:block}
+
+/* rail photo + promos */
+.xsp-photo{height:220px;border-radius:14px;background:#F4F6F8;border:1px solid var(--rule);
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);
+letter-spacing:1px;overflow:hidden}
+.xsp-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.xsp-promo{border-radius:14px;padding:18px 20px;display:block;text-decoration:none}
+.xsp-promo.lav{background:var(--tint)}
+.xsp-promo.mint{background:var(--green-tint)}
+.xsp-promo .t{font-weight:800;font-size:15px;color:var(--purple)}
+.xsp-promo.mint .t{color:var(--promo-green)}
+.xsp-promo .d{font-size:12.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px}
+.xsp-promo .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:10px}
+.xsp-promo.mint .lm{color:var(--promo-green)}
+.xsp-promo:hover .lm{text-decoration:underline}
+.xsp-sibs{border:1px solid var(--rule);border-radius:14px;padding:18px 20px;background:#fff}
+.xsp-sibs .h{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-sibs a{display:flex;align-items:center;justify-content:space-between;padding:10px 0;
+font-size:13.5px;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:1px solid #F1F0F4;min-height:40px}
+.xsp-sibs a:last-child{border-bottom:0;padding-bottom:0}
+.xsp-sibs a:hover{color:var(--purple)}
+.xsp-sibs .ar{color:var(--purple);font-weight:800}
+
+/* emergency band */
+
+/* related strip */
+.xsp-rel{background:var(--soft)}
+.xsp-rel-in{max-width:1280px;margin:0 auto;padding:44px 40px}
+.xsp-rel-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
+.xsp-rel-card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(15,23,42,.05);
+text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-shadow .18s,transform .18s}
+.xsp-rel-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.xsp-rel-card .t{font-weight:800;font-size:15px;color:var(--ink)}
+.xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
+.xsp-rel-card:hover .lm{color:var(--green-dark)}
+
+/* ------------------------- mobile (2b stacking) ------------------------- */
+@media (max-width:809px){
+.xhac-svc{--xsp-anchor-offset:96px}
+.xsp-dt{display:none !important}
+.xsp-mb{display:revert !important}
+.xsp-wrap,.xsp-pillbar-in,.xsp-rel-in{padding-left:20px;padding-right:20px}
+.xsp-hero-grid{grid-template-columns:1fr;gap:0;padding:32px 20px 44px}
+.xsp-h1{font-size:34px;letter-spacing:-.5px}
+.xsp-hero.sub .xsp-h1{font-size:32px}
+.xsp-intro{font-size:14px}
+.xsp-hero-ctas{flex-direction:column;gap:14px}
+.xsp-hero-ctas.xsp-mb{display:flex !important;flex-direction:column;gap:14px}
+.xsp-hero-ctas .xsp-cta,.xsp-hero-ctas .xsp-cta-outline{width:100%}
+.xsp-chiprow{gap:8px}
+.xsp-chip{padding:7px 10px;font-size:11px;border-radius:10px}
+.xsp-bookcol{display:none}
+.xsp-bodygrid{grid-template-columns:1fr;gap:40px;padding:40px 20px 48px}
+.xsp-rail{display:none}
+.xsp-h2{font-size:24px;letter-spacing:-.4px}
+.xsp-checks{grid-template-columns:1fr;gap:10px}
+.xsp-cards3{grid-template-columns:1fr;gap:0;margin-top:12px}
+.xsp-card{flex-direction:row;align-items:center;gap:12px;border:0;border-radius:0;
+border-bottom:1px solid #F1F0F4;padding:13px 0;background:transparent}
+.xsp-card:hover{box-shadow:none;transform:none}
+.xsp-card .xsp-glyph{width:26px;height:26px}
+.xsp-card .glyphwrap{flex:none}
+.xsp-card .txt{flex:1}
+.xsp-card .t{font-size:14.5px}
+.xsp-card .d{font-size:11.5px;line-height:1.45}
+.xsp-card .lm{display:none}
+.xsp-card .mrow{display:block;color:var(--purple);font-weight:800}
+.xsp-step .d{font-size:13px}
+.xsp-rel-grid{grid-template-columns:1fr;gap:0;margin-top:10px}
+.xsp-rel-card{flex-direction:row;align-items:center;justify-content:space-between;border-radius:0;
+box-shadow:none;background:transparent;padding:13px 0;border-bottom:1px solid #F1F0F4}
+.xsp-rel-card:hover{box-shadow:none;transform:none}
+.xsp-mbrail.xsp-mb{display:flex !important;flex-direction:column;gap:14px}
+}
+@media (min-width:810px){
+.xsp-card .mrow{display:none}
+}
+
+.xsp-hubhero-grid{position:relative;display:grid;grid-template-columns:1fr .9fr;gap:48px;align-items:center;
+max-width:1280px;margin:0 auto;padding:48px 40px 72px}
+.xsp-hub-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.3);
+background:rgba(255,255,255,.1);border-radius:999px;padding:7px 14px;font-size:11.5px;font-weight:800;
+letter-spacing:2px;color:#fff}
+.xsp-hub-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.xsp-hubhero-grid .xsp-h1{font-size:44px}
+.xsp-hub-photo{position:relative;min-height:280px}
+.xsp-hub-photo .slashw{position:absolute;left:2%;right:-6%;bottom:26px;height:14px;background:#fff;opacity:.25;
+transform:rotate(-9deg) skewX(-16deg)}
+.xsp-hub-photo .slash{position:absolute;left:-6%;right:-2%;bottom:34px;height:44px;background:var(--green);
+transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.xsp-hub-photo .ph{position:relative;height:280px;border-radius:20px;overflow:hidden;background:#F4F6F8;
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px}
+.xsp-hub-photo .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.xsp-xplan-detail{list-style:none;margin:16px 0 0;padding:0;display:grid;
+grid-template-columns:1fr 1fr;gap:8px 22px}
+.xsp-xplan-detail li{display:flex;gap:9px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.9)}
+.xsp-xplan-detail li .c{width:17px;height:17px;flex:none;border-radius:50%;background:var(--green);
+color:var(--ink);font-size:10px;font-weight:800;display:grid;place-items:center}
+@media (max-width:809px){.xsp-xplan-detail{grid-template-columns:1fr}}
+.xsp-cut{position:relative;height:84px;background:#fff;clip-path:polygon(0 62%,100% 0,100% 100%,0 100%)}
+.xsp-promise{background:#fff;padding:6px 0 26px}
+.xsp-promise-in{max-width:1280px;margin:0 auto;padding:0 40px;display:flex;justify-content:space-between;
+align-items:center;gap:20px;flex-wrap:wrap}
+.xsp-promise-label{font-size:12px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-promise-items{display:flex;gap:26px;flex-wrap:wrap}
+.xsp-promise-items span{font-size:12.5px;font-weight:700;color:var(--body)}
+.xsp-promise-items .di{color:var(--green)}
+.xsp-hubsec{background:#fff;padding:44px 0 56px}
+.xsp-hubsec.soft{background:var(--soft)}
+.xsp-hubsec-in{max-width:1280px;margin:0 auto;padding:0 40px}
+.xsp-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-notsure{background:var(--tint);border:0;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px;
+text-decoration:none;transition:box-shadow .18s,transform .18s}
+.xsp-notsure:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.xsp-notsure .t{font-weight:800;font-size:16.5px;color:var(--purple)}
+.xsp-notsure .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-notsure .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:2px}
+.xsp-badge{display:inline-block;background:var(--green-tint);color:var(--green-dark);font-weight:800;
+font-size:9.5px;letter-spacing:.6px;border-radius:5px;padding:3px 7px;margin-left:8px;vertical-align:middle}
+a.xsp-xplan{text-decoration:none;cursor:pointer;transition:box-shadow .18s,transform .18s}
+a.xsp-xplan:hover{box-shadow:0 18px 44px rgba(84,39,112,.35);transform:translateY(-2px)}
+.xsp-xplan{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;padding:40px 44px;
+color:#fff;position:relative;overflow:hidden;display:grid;grid-template-columns:1.1fr auto;gap:32px;align-items:center}
+.xsp-xplan .mark{position:absolute;right:-40px;bottom:-46px;width:300px;opacity:.06;pointer-events:none;
+filter:brightness(0) invert(1)}
+.xsp-xplan .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-hover)}
+.xsp-xplan h2{margin-top:10px;font-style:italic;font-weight:900;font-size:30px;letter-spacing:-.5px;color:#fff}
+.xsp-xplan .chips{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
+.xsp-xplan .chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:999px;
+padding:8px 14px;font-size:12.5px;font-weight:700}
+.xsp-xplan .price{position:relative;text-align:right}
+.xsp-xplan .amt{font-style:italic;font-weight:900;font-size:34px}
+.xsp-xplan .per{font-size:15px;font-weight:700;opacity:.85;font-style:normal}
+.xsp-xplan .alt{font-size:13px;font-weight:700;color:rgba(255,255,255,.75);margin-top:4px}
+.xsp-xplan .xsp-cta{margin-top:14px}
+.xsp-cross{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.xsp-cross .xsp-promo .t{font-size:16.5px}
+@media (max-width:809px){
+.xsp-hubhero-grid{grid-template-columns:1fr;gap:28px;padding:32px 20px 52px}
+.xsp-hubhero-grid .xsp-h1{font-size:34px}
+.xsp-hub-photo{min-height:0}
+.xsp-hub-photo .ph{height:200px}
+.xsp-cut{height:44px;clip-path:polygon(0 55%,100% 0,100% 100%,0 100%)}
+.xsp-promise-in{padding:0 20px}
+.xsp-promise-items{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px}
+.xsp-hubsec-in{padding:0 20px}
+.xsp-grid3,.xsp-grid4{grid-template-columns:1fr;gap:10px;margin-top:14px}
+.xsp-xplan{grid-template-columns:1fr;padding:28px 22px;border-radius:20px}
+.xsp-xplan .price{text-align:left}
+.xsp-cross{grid-template-columns:1fr}
+}
+
+.xsp-bookcol.pricing .price-row{display:flex;align-items:baseline;gap:8px;margin-top:10px}
+.xsp-bookcol.pricing .amt{font-style:italic;font-weight:900;font-size:38px;color:var(--ink)}
+.xsp-bookcol.pricing .per{font-weight:700;font-size:14px;color:var(--body)}
+.xsp-bookcol.pricing .alt{font-size:13px;font-weight:600;color:var(--body);margin-top:4px}
+.xsp-benefits{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.xsp-benefit{border:1px solid var(--rule);border-radius:16px;padding:18px;background:#fff;display:flex;gap:12px}
+.xsp-benefit .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.xsp-benefit .t{font-weight:800;font-size:15px;color:var(--ink)}
+.xsp-benefit .d{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xsp-usecases{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-usecase{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff;display:flex;
+flex-direction:column;gap:8px}
+.xsp-usecase .t{font-weight:800;font-size:16.5px;color:var(--ink)}
+.xsp-usecase .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-value{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
+padding:36px 40px;color:#fff;margin-top:20px}
+.xsp-value .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-hover)}
+.xsp-value h3{margin-top:10px;font-style:italic;font-weight:900;font-size:26px;letter-spacing:-.5px;color:#fff}
+.xsp-value .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;margin-top:22px}
+.xsp-value .n{font-style:italic;font-weight:900;font-size:26px;color:#fff}
+.xsp-value .cap{font-size:12.5px;line-height:1.5;font-weight:500;color:rgba(255,255,255,.75);margin-top:6px}
+.xsp-joinband{background:var(--ink)}
+.xsp-joinband-in{max-width:1280px;margin:0 auto;padding:20px 40px;display:flex;align-items:center;
+justify-content:space-between;gap:24px;flex-wrap:wrap}
+.xsp-joinband b{font-weight:800;font-size:15px;color:#fff}
+.xsp-joinband span{font-size:13px;font-weight:500;color:rgba(255,255,255,.6)}
+@media (max-width:809px){
+.xsp-bookcol.pricing{display:block !important;margin:28px 0 0}
+.xsp-benefits,.xsp-usecases{grid-template-columns:1fr;gap:12px}
+.xsp-value{padding:26px 22px;border-radius:20px}
+.xsp-value .stats{grid-template-columns:1fr;gap:18px}
+.xsp-joinband-in{padding:20px;flex-direction:column;align-items:flex-start;gap:12px}
+}
+
+/* ------------------------- company pages (4a-4d) ------------------------- */
+.xco-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.xco-bcard{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff}
+.xco-bcard .t{font-weight:800;font-size:16.5px;margin-top:12px}
+.xco-bcard .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-bcard .xsp-cta{margin-top:14px;font-size:14px;padding:12px 18px}
+.xco-bcard .plink{display:inline-block;font-weight:800;font-size:14px;color:var(--purple);
+text-decoration:none;margin-top:16px;min-height:44px;display:inline-flex;align-items:center}
+.xco-bcard .plink:hover{color:var(--green-dark)}
+.xco-phone{font-style:italic;font-weight:900;font-size:27px;letter-spacing:-.5px;margin-top:8px}
+.xco-phone a{color:var(--ink);text-decoration:none}
+.xco-loc{border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#fff}
+.xco-loc-img{height:160px;background:#F4F6F8;border-bottom:1px solid var(--rule);display:flex;
+align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px}
+.xco-loc-img img{width:100%;height:100%;object-fit:cover;display:block}
+.xco-loc-body{padding:18px}
+.xco-loc-body .t{font-weight:800;font-size:16.5px}
+.xco-loc-body .addr{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-loc-body a{display:inline-block;font-weight:800;font-size:13px;color:var(--purple);
+text-decoration:none;margin-top:10px}
+.xco-loc-body a:hover{color:var(--green-dark)}
+.xco-hours{border:1px solid var(--rule);border-radius:16px;margin-top:20px;overflow:hidden}
+.xco-hours .row{display:flex;justify-content:space-between;gap:16px;padding:14px 20px;
+border-bottom:1px solid var(--rule)}
+.xco-hours .row:last-child{border-bottom:0}
+.xco-hours .row span:first-child{font-weight:700;font-size:14px}
+.xco-hours .row span:last-child{font-weight:600;font-size:14px;color:var(--body);text-align:right}
+.xco-hours .row.em{background:var(--green-tint)}
+.xco-hours .row.em span{font-weight:800;color:var(--promo-green)}
+.xco-body{max-width:1280px;margin:0 auto;padding:56px 40px;display:flex;flex-direction:column;gap:48px}
+.xco-split{display:grid;grid-template-columns:1fr 360px;gap:48px}
+.xco-heroslot{width:100%;height:250px;border-radius:16px;background:rgba(255,255,255,.08);
+border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
+font-size:12px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:1px;overflow:hidden}
+.xco-heroslot img{width:100%;height:100%;object-fit:cover;display:block}
+.xco-hero-grid-400{grid-template-columns:1fr 400px;align-items:center}
+.xco-ccard{border:1px solid var(--rule);border-radius:16px;padding:18px;background:#fff}
+.xco-ccard .c{width:18px;height:18px;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.xco-ccard .t{font-weight:800;font-size:15px;margin-top:10px}
+.xco-ccard .d{font-size:13px;line-height:1.5;font-weight:500;color:var(--body);margin-top:4px}
+.xco-lchips{display:flex;align-items:center;gap:10px;margin-top:22px;flex-wrap:wrap}
+.xco-lchips .lab{font-size:10.5px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,.5)}
+.xco-lchips .chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);
+border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;color:#fff}
+.xco-fine{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);margin-top:14px}
+.xco-coupons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xco-coupon{border:1.5px dashed #C4B5D4;border-radius:16px;padding:20px;display:flex;flex-direction:column}
+.xco-coupon .pill{align-self:flex-start;background:var(--tint);color:var(--purple);font-size:10px;
+font-weight:800;letter-spacing:1.5px;border-radius:999px;padding:5px 10px}
+.xco-coupon .val{font-style:italic;font-weight:900;font-size:34px;letter-spacing:-1px;margin-top:12px}
+.xco-coupon .val .per{font-size:16px;letter-spacing:0}
+.xco-coupon .t{font-weight:800;font-size:15.5px;margin-top:2px}
+.xco-coupon .d{font-size:13px;line-height:1.5;font-weight:500;color:var(--body);margin-top:4px;flex:1}
+.xco-coupon .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;
+margin-top:16px;padding-top:14px;border-top:1px solid #EDEAF2}
+.xco-coupon .lbl{font-size:11.5px;font-weight:700;color:var(--muted)}
+.xco-claim{display:inline-flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:13px;padding:10px 16px;border-radius:10px;min-height:40px;
+text-decoration:none;cursor:pointer;white-space:nowrap;transition:background .15s ease}
+.xco-claim:hover{background:var(--green-hover)}
+.xco-finenote{font-size:11.5px;line-height:1.6;font-weight:600;color:var(--muted);margin-top:24px}
+.xco-mail{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:16px;
+padding:22px;position:relative;overflow:hidden;color:#fff}
+.xco-mail .t{font-weight:800;font-size:16px}
+.xco-mail .d{font-size:12.5px;line-height:1.55;font-weight:500;color:rgba(255,255,255,.75);margin-top:6px}
+.xco-mail form{display:flex;gap:8px;margin-top:14px}
+.xco-mail input{flex:1;min-width:0;background:#fff;border:0;border-radius:10px;padding:12px 14px;
+font-size:13px;font-weight:600;color:var(--ink);font-family:inherit}
+.xco-mail button{background:var(--green);color:var(--ink);font-weight:800;font-size:13px;
+padding:12px 16px;border-radius:10px;border:0;cursor:pointer;font-family:inherit}
+.xco-story{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.xco-story p{margin-top:16px;font-size:14.5px;line-height:1.65;font-weight:500;color:var(--body)}
+.xco-story p + p{margin-top:12px}
+.xco-slot{width:100%;border-radius:16px;background:#F4F6F8;border:1px solid var(--rule);
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+color:var(--muted);letter-spacing:1px;overflow:hidden}
+.xco-slot img{width:100%;height:100%;object-fit:cover;display:block}
+.xco-vals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.xco-vals .xco-ccard .xsp-glyph{width:26px;height:26px}
+.xco-vals .xco-ccard .t{margin-top:12px}
+.xco-stats{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
+padding:32px 36px;position:relative;overflow:hidden}
+.xco-stats .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;position:relative}
+.xco-stats .n{font-style:italic;font-weight:900;font-size:30px;color:#fff}
+.xco-stats .n .st{color:var(--stars)}
+.xco-stats .cap{font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px}
+.xco-team{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.xco-team .slot{height:230px;border-radius:14px}
+.xco-team .name{font-weight:800;font-size:14px;margin-top:10px}
+.xco-team .role{font-size:12.5px;font-weight:600;color:var(--body)}
+@media (max-width:809px){
+.xco-2col{grid-template-columns:1fr;gap:12px;margin-top:16px}
+.xco-hours .row{padding:13px 16px}
+.xco-body{padding:40px 20px 48px;gap:40px}
+.xco-split{grid-template-columns:1fr;gap:40px}
+.xco-hero-grid-400{grid-template-columns:1fr}
+.xco-heroslot{height:200px;margin-top:24px}
+.xco-coupons{grid-template-columns:1fr;gap:12px}
+.xco-story{grid-template-columns:1fr;gap:20px}
+.xco-story .xco-slot{height:200px}
+.xco-vals{grid-template-columns:1fr;gap:12px}
+.xco-stats{padding:26px 22px;border-radius:20px}
+.xco-stats .grid{grid-template-columns:1fr 1fr;gap:18px}
+.xco-team{grid-template-columns:1fr 1fr;gap:12px}
+.xco-team .slot{height:180px}
+}
+
+/* --------------------------- location pages (5a-5h) --------------------------- */
+.xlc-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.xlc-card{position:relative;border:1px solid var(--rule);border-radius:16px;padding:20px;
+background:#fff;text-decoration:none;display:block;transition:box-shadow .15s ease,transform .15s ease}
+.xlc-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.xlc-card .t{font-weight:800;font-size:16.5px;color:var(--ink)}
+.xlc-card .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px}
+.xlc-card .lm{display:inline-block;margin-top:14px;font-weight:800;font-size:13.5px;color:var(--purple)}
+.xlc-card:hover .lm{color:var(--green-dark)}
+.xlc-new{position:absolute;top:14px;right:14px;background:var(--green);color:var(--ink);
+font-size:10px;font-weight:800;letter-spacing:1.2px;border-radius:999px;padding:4px 9px}
+.xlc-towns{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 24px;margin-top:20px}
+.xlc-town{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--body)}
+.xlc-town .c{width:18px;height:18px;flex:none;border-radius:50%;background:#3F852B;color:#fff;
+font-size:10px;font-weight:800;display:grid;place-items:center}
+.xlc-town a{color:var(--body);text-decoration:none}
+.xlc-town a:hover{color:var(--purple)}
+.xlc-note{font-size:13px;font-weight:600;color:var(--muted);margin-top:16px}
+.xlc-revs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.xlc-rev{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff}
+.xlc-rev .stars{color:var(--stars);font-size:14px;letter-spacing:2px}
+.xlc-rev .q{font-size:14px;line-height:1.6;font-weight:500;color:var(--body);margin-top:10px}
+.xlc-rev .who{font-size:12.5px;font-weight:700;color:var(--ink);margin-top:14px}
+.xlc-rev .who span{color:var(--muted);font-weight:600}
+.xlc-dir{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:20px}
+.xlc-dircol .lab{font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--purple);
+padding-bottom:10px;border-bottom:1px solid var(--rule)}
+.xlc-links{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 16px;margin-top:14px}
+.xlc-links a{font-size:13.5px;font-weight:600;color:var(--body);text-decoration:none}
+.xlc-links a:hover{color:var(--purple)}
+.xlc-metro{border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#fff;
+margin-top:20px}
+/* Atlist embed. It sizes itself internally, so the wrapper owns the height and the
+   iframe fills it — the same treatment the previous hub used. */
+.xlc-map{width:100%;height:clamp(420px,55vw,640px);overflow:hidden;background:#F4F6F8;
+border-bottom:1px solid var(--rule)}
+.xlc-map iframe{width:100%!important;height:100%!important;display:block;border:0}
+.xlc-metro .body{padding:20px;display:flex;flex-wrap:wrap;align-items:center;
+justify-content:space-between;gap:12px 24px}
+.xlc-metro .cta{display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+background:var(--green);color:var(--ink);font-weight:800;font-size:14px;padding:12px 20px;
+border-radius:10px;text-decoration:none;white-space:nowrap}
+.xlc-metro .cta:hover{background:var(--green-hover)}
+.xlc-metro .eyebrow{font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--purple)}
+.xlc-metro .t{font-style:italic;font-weight:900;font-size:22px;letter-spacing:-.4px;
+color:var(--ink);margin-top:8px}
+.xlc-metro .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:8px}
+.xlc-metro .lm{display:inline-block;margin-top:14px;font-weight:800;font-size:13.5px;color:var(--green-dark)}
+.xlc-zip{display:flex;gap:8px;margin-top:14px}
+.xlc-zip input{flex:1;min-width:0;border:1px solid var(--rule);border-radius:10px;padding:12px 14px;
+font-size:16px;font-weight:600;color:var(--ink);font-family:inherit}
+.xlc-zip input:focus-visible{outline:3px solid #61BC47;outline-offset:2px}
+.xlc-zipmsg{font-size:12.5px;font-weight:600;margin-top:10px;min-height:18px}
+.xlc-zipmsg.ok{color:var(--promo-green)} .xlc-zipmsg.no{color:var(--body)}
+.xlc-xp{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
+padding:32px 36px;color:#fff;margin-top:20px}
+.xlc-xp .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-hover)}
+.xlc-xp h3{margin-top:10px;font-style:italic;font-weight:900;font-size:26px;letter-spacing:-.5px}
+.xlc-xp ul{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+.xlc-xp li{display:flex;gap:10px;font-size:14px;font-weight:600;color:rgba(255,255,255,.9)}
+.xlc-xp li .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);
+color:var(--ink);font-size:10px;font-weight:800;display:grid;place-items:center}
+.xlc-xp .cta{display:inline-flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:15px;padding:13px 24px;border-radius:12px;min-height:44px;
+text-decoration:none;margin-top:22px}
+.xlc-xp .cta:hover{background:var(--green-hover)}
+.xlc-xp .fine{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.6);margin-top:12px}
+.xlc-pill{display:inline-block;background:var(--green);color:var(--ink);font-size:11px;
+font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin-bottom:14px}
+@media (max-width:809px){
+.xlc-grid3,.xlc-revs{grid-template-columns:1fr;gap:12px}
+.xlc-map{height:auto}
+.xlc-map iframe{height:575px!important}
+.xlc-towns,.xlc-dir,.xlc-xp ul{grid-template-columns:1fr;gap:10px}
+.xlc-links{grid-template-columns:1fr 1fr}
+.xlc-xp{padding:26px 22px;border-radius:20px}
+}
+</style>
+<div class="xsp-hero">
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-grid">
+    <div>
+      <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/locations">Locations</a><span class="sep">›</span><a href="/locations/dayton">Dayton</a><span class="sep">›</span><span class="cur">Heating</span></div>
+      
+      <h1 class="xsp-h1">Dayton heating help, <em>extremely fast</em></h1>
+      <p class="xsp-intro">Furnace repair, replacement, and heat pumps from techs who've worked every kind of Miami Valley home — with a 24/7 line for the January no-heat call.</p>
+      <div class="xsp-chiprow"><div class="xsp-chip">24/7 No-Heat Line</div><div class="xsp-chip">Upfront Pricing</div><div class="xsp-chip">All Makes &amp; Models</div></div>
     </div>
-
-    <!-- HERO -->
-    <div class="hx-hero">
-      <div class="hx-img">
-<img id="hx-city-img" loading="lazy" decoding="async"
-     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/cities/dayton.jpg"
-     alt="City view">
-      </div>
-
-      <div class="hx-copy">
-        <h3><span class="hx-city">City</span>, OH Furnace Installation, Repair, Maintenance & Replacement</h3>
-        <p>
-          Extreme Heating has serviced the <span class="hx-city">City</span>, OH region for many years. We are one of the most essential contacts you should have during the chilly winter days. Our team will provide:
-        </p>
-        <p>
-          Want fewer surprises and lower utility bills? Ask about scheduled
-          <a class="hx-link hx-lnk-maint" href="#">furnace maintenance</a>.
-          And if cooling’s on your mind, we also provide
-          <a class="hx-link hx-lnk-cooling" href="#">air conditioning services in <span class="hx-city">City</span></a>.
-        </p>
-
-        <!-- Centered Schedule button (fires same schedule bridge as thermostat embed) -->
-        <button class="hx-btn js-contact center" type="button" aria-label="Schedule Service">
-          <span class="dot" aria-hidden="true"></span> Schedule Now
-        </button>
-
-        <!-- Updated phone number -->
-        <p class="hx-call">
-          Call <a class="num" href="tel:18445847399">(844) 584-7399</a>
-          for service in <span class="city hx-city-upper">CITY</span>, OH
-        </p>
-      </div>
-    </div>
-
-    <div class="hx-spacer"></div>
-
-    <!-- Middle Title -->
-    <div class="hx-title">
-      <h2>Our Efficient Heating and Furnace Services in <span class="hx-city">City</span>, Ohio</h2>
-      <div class="bar"></div>
-    </div>
-
-    <!-- Four key services -->
-    <div class="hx-grid">
-      <article class="hx-card">
-        <div class="img"><img loading="lazy" decoding="async"
-     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/furnace.jpg"
-     alt="Furnace installation"></div>
-        <div class="body">
-          <div class="kicker">Install</div>
-          <h4><span class="hx-city-upper">CITY</span> FURNACE INSTALLATION</h4>
-          <p>When you are building your new home, you need professional heating and furnace installation. Our team will properly install your new system to ensure your home provides the cozy place of rest that you need.</p>
-        </div>
-      </article>
-
-      <article class="hx-card">
-        <div class="img"><img loading="lazy" decoding="async"
-     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/furnace2.jpg"
-     alt="Furnace repair"></div>
-        <div class="body">
-          <div class="kicker">Repair</div>
-          <h4><span class="hx-city-upper">CITY</span> FURNACE REPAIR</h4>
-          <p>If your unit suddenly loses heat, then you need emergency heating and furnace repair. Our trusted and credible HVAC service will come to your home quickly. Our team members are equipped for heating and furnace repair.</p>
-        </div>
-      </article>
-
-      <article class="hx-card">
-        <div class="img"><img loading="lazy" decoding="async"
-     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/furnace-replace.jpg"
-     alt="Furnace replacement"></div>
-        <div class="body">
-          <div class="kicker">Replace</div>
-          <h4><span class="hx-city-upper">CITY</span> FURNACE REPLACEMENT</h4>
-          <p>Your 15 or 20-year-old heater or furnace has reached its peak. So, now it’s time to call a professional heating and furnace replacement contractor. Our technicians can replace your weary system and get your home or business comfortable again.</p>
-        </div>
-      </article>
-
-      <article class="hx-card">
-        <div class="img"><img loading="lazy" decoding="async"
-     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/furnace-maintenance.jpg"
-     alt="Furnace maintenance"></div>
-        <div class="body">
-          <div class="kicker">Maintain</div>
-          <h4><span class="hx-city-upper">CITY</span> FURNACE MAINTENANCE</h4>
-          <p>As much as possible, you want to keep your heating and furnace system at home in its best condition. Thus, it will need regular care and maintenance. A reliable heating and furnace contractor will help you avoid unexpected damages.</p>
-        </div>
-      </article>
-    </div>
-
-    <div class="hx-spacer"></div>
-
-    <!-- Bottom Title -->
-    <div class="hx-title">
-      <h2>Your Local Reliable Heating and Furnace Solution</h2>
-      <div class="bar"></div>
-    </div>
-
-    <!-- Helpful reasons panel -->
-    <div class="hx-panel">
-      <div class="hx-rows">
-        <div>
-          <span class="hx-badge">Comfort</span>
-          <div class="hx-term">Even, Reliable Heat</div>
-          <p class="hx-desc">Proper sizing, ductwork, and controls deliver even temperatures throughout your home.</p>
-        </div>
-        <div>
-          <span class="hx-badge">Efficiency</span>
-          <div class="hx-term">Lower Energy Costs</div>
-          <p class="hx-desc">Modern high-efficiency furnaces can reduce usage and keep bills predictable all winter.</p>
-        </div>
-        <div>
-          <span class="hx-badge">Safety</span>
-          <div class="hx-term">Code-Compliant Work</div>
-          <p class="hx-desc">Our techs follow strict safety protocols for gas, venting, and electrical systems.</p>
-        </div>
-        <div>
-          <span class="hx-badge">Support</span>
-          <div class="hx-term">Trusted Local Pros</div>
-          <p class="hx-desc">We’ve served the <span class="hx-city">City</span> area for years with honest recommendations and dependable service.</p>
-        </div>
-      </div>
-    </div>
-
+    <div class="xsp-bookcol"><div class="xsp-book">
+  <div class="eyebrow">DAYTON HEATING</div>
+  <div class="t">Same-day in most cases.</div>
+  <div class="s">Book online in about a minute, or call and talk to a real person.</div>
+  <div class="btns">
+    <a class="xsp-btn-green js-schedule" href="#" role="button">Schedule Service</a>
+    <a class="xsp-btn-purple" href="tel:18445847399">Call (844) 584-7399</a>
   </div>
+  <div class="trust"><span><span class="st">★</span> 4.9 on Google</span><span class="bar">|</span><span>Dayton-based techs</span></div>
+</div></div>
+  </div>
+</div>
+<div class="xsp-bodygrid">
+  <div class="xsp-main"><div>
+  <div class="xsp-eyebrow">WHAT WE HANDLE</div>
+  <h2 class="xsp-h2">Every way a Dayton home stays warm.</h2>
+<div class="xlc-grid3"><div class="xlc-card"><div class="t">Furnace repair</div><div class="d">Any brand, any age — diagnosed and quoted upfront before work begins.</div></div><div class="xlc-card"><div class="t">Furnace installation</div><div class="d">High-efficiency replacements sized to your home, not a sales quota.</div></div><div class="xlc-card"><div class="t">Heat pumps</div><div class="d">Heating and cooling in one system — great fit for Ohio's swing seasons.</div></div><div class="xlc-card"><div class="t">Boilers &amp; radiators</div><div class="d">Older Dayton homes included — we know the quirks.</div></div><div class="xlc-card"><div class="t">Heating tune-ups</div><div class="d">Seasonal inspection and safety check — free twice a year on X-Plan.</div></div><div class="xlc-card"><div class="t">Smart thermostats</div><div class="d">Installed and configured so the schedule actually saves you money.</div></div></div>
+</div><div>
+  <div class="xsp-eyebrow">REPAIR OR REPLACE?</div>
+  <h2 class="xsp-h2">We'll tell you the honest answer.</h2>
+<div class="xco-2col"><div class="xco-ccard"><span class="c">✓</span><div class="t">Usually worth repairing</div><div class="d">Under ~12 years old · single failed part · repair well under a third of replacement cost · heats evenly otherwise.</div></div><div class="xco-ccard"><span class="c">✓</span><div class="t">Usually worth replacing</div><div class="d">15+ years with repeat repairs · cracked heat exchanger · bills creeping up · financing spreads the cost monthly.</div></div></div><div class="xlc-note">Either way you get a flat quote first — and a free second opinion on any replacement diagnosis.</div>
+</div><div class="xsp-mbrail xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/furnace-repair.jpg" alt="Extreme technician servicing a furnace" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
+  <div class="t">New furnace, monthly payments</div><div class="d">Finance a replacement through GoodLeap, Synchrony, or Wright-Patt Credit Union.</div><div class="lm">Financing Options →</div>
+</a><a class="xsp-promo mint" href="/maintenance">
+  <div class="t">Never think about tune-ups again</div><div class="d">X-Plan includes two a year, 15% off repairs, and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
+</a></div></div>
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/furnace-repair.jpg" alt="Extreme technician servicing a furnace" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
+  <div class="t">New furnace, monthly payments</div><div class="d">Finance a replacement through GoodLeap, Synchrony, or Wright-Patt Credit Union.</div><div class="lm">Financing Options →</div>
+</a><a class="xsp-promo mint" href="/maintenance">
+  <div class="t">Never think about tune-ups again</div><div class="d">X-Plan includes two a year, 15% off repairs, and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
+</a></aside>
+</div>
+<div class="xsp-band"><div class="xsp-band-in">
+  <div><div class="t">No heat tonight?</div><div class="d">Don't wait it out with space heaters — the emergency line is answered 24/7.</div></div>
+  <div class="btns"><a class="xsp-cta" href="tel:18445847399">Call (844) 584-7399</a></div>
+</div></div>
 
-<script>
-(function(){
-  const root = document.currentScript.closest('.xhac-heating'); if(!root) return;
-
-  // --- Config: jsDelivr base for your repo
-  const CDN_BASE = "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets";
-  const cityImgUrl = (cityNoSpaces) => `${CDN_BASE}/cities/${cityNoSpaces}.jpg`;
-  const descImgUrl = (file) => `${CDN_BASE}/descriptive/${file}`;
-  const FALLBACK_CITY = "Dayton"; // fallback if image missing
-
-  // --- City helpers (unchanged)
-  const ucWords = s => (!s ? "" : s.split("-").map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(" "));
-  const cityFrom = (url)=>{
-    try{
-      if(!url) return "";
-      const m = String(url).toLowerCase().match(/\/locations\/([^\/?#]+)/);
-      return (m && m[1]) ? ucWords(m[1]) : "";
-    }catch(e){ return ""; }
-  };
-  let city = (root.getAttribute('data-city')||"").trim()
-          || cityFrom(window.location && window.location.href)
-          || (function(){ try { return cityFrom(window.parent!==window ? window.parent.location.href : ""); } catch(e){ return ""; } })()
-          || cityFrom(document.referrer) || "Your Area";
-
-  // Inject city text (unchanged)
-  root.querySelectorAll('.hx-city').forEach(el=> el.textContent = city);
-  root.querySelectorAll('.hx-city-upper').forEach(el=> el.textContent = city.toUpperCase());
-
-  // Top heading (unchanged)
-  const head = root.querySelector('#hx-head');
-  if(head) head.innerHTML = 'Our Efficient Heating and Furnace Services in <span class="hx-city">'+city+'</span>, Ohio';
-
-  // Build ONLY maintenance + cooling links (unchanged)
-  const citySlug = city.toLowerCase().replace(/\s+/g,'-');
-  const link = p => '/locations/'+citySlug+'/'+p;
-  root.querySelectorAll('.hx-lnk-maint').forEach(a=> a.href = link('maintenance'));
-  root.querySelectorAll('.hx-lnk-cooling').forEach(a=> a.href = link('cooling'));
-
-  // Force links to break out of iframe (unchanged)
-  root.querySelectorAll('a').forEach(a => { a.setAttribute('target','_top'); a.setAttribute('rel','noopener'); });
-
-  // --- Dynamic hero city image -> jsDelivr /images/cities/{CityNoSpaces}.jpg
-  const cityFile = city.replace(/\s+/g,''); // e.g., "Beavercreek"
-  const hero = root.querySelector('#hx-city-img');
-  if(hero){
-    hero.src = cityImgUrl(cityFile);
-    hero.alt = city + ' skyline';
-    hero.onerror = () => { hero.src = cityImgUrl(FALLBACK_CITY); };
-  }
-
-  // --- Ensure the four card images point to /images/descriptive/... on jsDelivr
-  const setSrc = (selector, file) => {
-    const el = root.querySelector(selector);
-    if(el) el.src = descImgUrl(file);
-  };
-  setSrc('img[alt="Furnace installation"]', 'furnace.jpg');
-  setSrc('img[alt="Furnace repair"]', 'furnace2.jpg');
-  setSrc('img[alt="Furnace replacement"]', 'furnace-replace.jpg');
-  setSrc('img[alt="Furnace maintenance"]', 'furnace-maintenance.jpg');
-
-  // --- Animations (unchanged)
-  const reduce = (()=>{ try{ return matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; }})();
-  const toReveal = [
-    root.querySelector('.hx-title')?.parentElement,
-    root.querySelector('.hx-img'),
-    root.querySelector('.hx-copy'),
-    ...root.querySelectorAll('.hx-card'),
-    root.querySelector('.hx-panel')
-  ].filter(Boolean);
-
-  if(reduce || !('IntersectionObserver' in window)){
-    toReveal.forEach(el=> el.classList.add('reveal-in'));
-  }else{
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){ e.target.classList.add('reveal-in'); io.unobserve(e.target); }
+  <script>
+    (() => {
+      const root = document.currentScript.closest(".xhac-svc");
+      if (!root) return;
+      root.querySelectorAll("a[href]").forEach((a) => {
+        const h = a.getAttribute("href") || "";
+        if (h && !h.startsWith("#") && !h.startsWith("tel:")) {
+          // Default off-site links to _top so they escape the embed iframe instead
+          // of loading a full site inside a content-sized frame. A link that already
+          // declares a target (the lender application uses _blank) keeps its own.
+          if (!a.getAttribute("target")) a.setAttribute("target", "_top");
+          if (!a.getAttribute("rel")) a.setAttribute("rel", "noopener");
+        }
       });
-    }, {threshold:.15, rootMargin:'0px 0px -10% 0px'});
-    toReveal.forEach(el=> io.observe(el));
-  }
+      // In Framer the embed iframe is sized to its content, so this document has
+      // nothing to scroll — scrollIntoView has to cross the frame boundary to move
+      // the parent page. A plain hash jump never does that (the anchor just sets the
+      // hash and nothing moves), and "smooth" does not cross the boundary either —
+      // it silently no-ops. Instant is the behaviour that works in an embed, in a
+      // scrollable iframe, and standalone.
+      //
+      // The site header is position:sticky;top:0, so landing flush with the top hides
+      // the section heading underneath it. Measure the real header at jump time and
+      // clear it; --xsp-anchor-offset in the CSS is the fallback for when the parent
+      // can't be read.
+      // How far below the viewport top an anchored section should land: enough to
+      // clear the site's sticky header. Measured off the real header when the parent
+      // is readable; --xsp-anchor-offset in the CSS is the fallback.
+      const landingOffset = () => {
+        try {
+          const pw = window.parent;
+          if (pw && pw !== window && pw.document) {
+            let node = pw.document.elementFromPoint(Math.round(pw.innerWidth / 2), 4);
+            let headerH = 0, hops = 0;
+            while (node && hops++ < 12) {
+              const cs = pw.getComputedStyle(node);
+              if (cs.position === "sticky" || cs.position === "fixed") {
+                const r = node.getBoundingClientRect();
+                if (r.top <= 1 && r.height > 0 && r.height < pw.innerHeight * 0.5) {
+                  headerH = Math.max(headerH, r.height);
+                }
+              }
+              node = node.parentElement;
+            }
+            if (headerH) return Math.round(headerH + 20);
+          }
+        } catch (err) {}
+        const v = parseInt(getComputedStyle(document.documentElement)
+          .getPropertyValue("--xsp-anchor-offset"), 10);
+        return isNaN(v) ? 112 : v;
+      };
 
-  // --- Schedule Bridge (unchanged)
-  function triggerContact(){
-    const evtName = 'open-contact-dialog';
-    try{
-      if(window.parent && window.parent !== window){
-        window.parent.postMessage({ type: evtName, source: 'heating-embed' }, '*');
-      }
-      window.dispatchEvent(new CustomEvent(evtName));
-    }catch(e){}
-  }
-  root.querySelectorAll('.js-contact').forEach(el=>{
-    el.addEventListener('click', (e)=>{ e.preventDefault(); triggerContact(); });
-  });
+      const jumpTo = (target) => {
+        if (!target) return;
+        const offset = landingOffset();
+        // scrollIntoView cannot be trusted to cross the embed boundary correctly.
+        // Measured in a content-sized iframe under a sticky header: the browser
+        // scrolls the parent to (target's Y *within this document*) - offset and
+        // never adds the iframe's own offsetTop in the parent, so every anchor
+        // lands short by exactly however far down the page the embed sits. Compute
+        // the absolute position and drive the parent's scroll directly instead.
+        try {
+          const pw = window.parent;
+          const fe = window.frameElement;
+          if (pw && pw !== window && fe) {
+            const frameTop = fe.getBoundingClientRect().top + (pw.scrollY || pw.pageYOffset || 0);
+            const targetTop = target.getBoundingClientRect().top + (window.scrollY || 0);
+            pw.scrollTo(0, Math.max(0, Math.round(frameTop + targetTop - offset)));
+            if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+            try { target.focus({ preventScroll: true }); } catch (err) {}
+            return;
+          }
+        } catch (err) {}
+        // Standalone, or a parent we're not allowed to read: scrollIntoView is
+        // correct here because there is only one scrolling box involved.
+        target.style.scrollMarginTop = offset + "px";
+        target.scrollIntoView({ behavior: "auto", block: "start" });
+        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+        try { target.focus({ preventScroll: true }); } catch (err) {}
+      };
 
-})();
-</script>
+      root.querySelectorAll('a[href^="#"]').forEach((a) => {
+        const id = (a.getAttribute("href") || "").slice(1);
+        if (!id) return;
+        a.addEventListener("click", (e) => {
+          const target = document.getElementById(id);
+          if (!target) return;
+          e.preventDefault();
+          jumpTo(target);
+        });
+      });
+
+      // Deep links from another page (/terms#financing) land the hash on the PARENT
+      // url — this document never sees it, and the parent has no element with that
+      // id because the section lives in here. Read the parent's hash on load and, if
+      // it names something inside this embed, run the same jump an in-page anchor
+      // would. Without this a cross-page anchor silently lands at the top of the page.
+      try {
+        let hash = window.location.hash;
+        if (!hash && window.parent !== window) hash = window.parent.location.hash || "";
+        const id = decodeURIComponent(hash.replace(/^#/, ""));
+        const target = id ? document.getElementById(id) : null;
+        if (target) {
+          // Framer is still laying out (and loading images) when this runs, so the
+          // first jump can land short. Repeat once the layout settles, then stop —
+          // and abandon it the moment the reader scrolls, so we never yank the page
+          // out from under someone who has started reading.
+          let userMoved = false;
+          const release = () => { userMoved = true; };
+          ["wheel", "touchstart", "keydown"].forEach((evt) => {
+            window.addEventListener(evt, release, { once: true, passive: true });
+            try { window.parent.addEventListener(evt, release, { once: true, passive: true }); } catch (err) {}
+          });
+          const settle = (delay) => setTimeout(() => { if (!userMoved) jumpTo(target); }, delay);
+          requestAnimationFrame(() => requestAnimationFrame(() => jumpTo(target)));
+          settle(250);
+          settle(800);
+        }
+      } catch (err) {}
+
+      root.querySelectorAll(".js-schedule").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          try {
+            if (window.parent && window.parent !== window) {
+              window.parent.dispatchEvent(new window.parent.CustomEvent("open-contact-dialog"));
+              return;
+            }
+          } catch (err) {}
+          window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      root.querySelectorAll(".xsp-faq").forEach((faq) => {
+        faq.querySelectorAll(".xsp-qa > button").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const row = btn.parentElement;
+            const wasOpen = row.classList.contains("open");
+            faq.querySelectorAll(".xsp-qa").forEach((r) => {
+              r.classList.remove("open");
+              r.querySelector("button").setAttribute("aria-expanded", "false");
+              r.querySelector(".tog").textContent = "+";
+            });
+            if (!wasOpen) {
+              row.classList.add("open");
+              btn.setAttribute("aria-expanded", "true");
+              row.querySelector(".tog").textContent = "−";
+            }
+          });
+        });
+      });
+      const inIframe = window.parent && window.parent !== window;
+      const sendSize = () => {
+        try {
+          if (inIframe) window.parent.postMessage(
+            { type: "embed-resize", height: Math.ceil(root.getBoundingClientRect().height), source: "xhac-svc" }, "*");
+        } catch (e) {}
+      };
+      if ("ResizeObserver" in window) new ResizeObserver(sendSize).observe(root);
+      window.addEventListener("load", sendSize);
+      sendSize();
+    })();
+  </script>
 </section>
-

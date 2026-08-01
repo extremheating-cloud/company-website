@@ -495,6 +495,11 @@ PAGES.extend(referral.pages(ROOT))
 import terms
 PAGES.extend(terms.pages(ROOT))
 
+# ---------------- Location pages (5h, 5a-5g) — pages/locations/ ----------------
+# 267 pages from one template: the hub, 38 city overviews, and 6 service pages each.
+import location_pages
+PAGES.extend(location_pages.pages(ROOT))
+
 # ---------------------------------------------------------------- build
 def main():
     for path, builder, data, root_class in PAGES:

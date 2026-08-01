@@ -65,7 +65,13 @@ CSS = """
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
 font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-color:var(--ink);width:100%;overflow-x:hidden}
+color:var(--ink);width:100%;overflow-x:hidden;
+/* The embed is a bare <section>. Framer's page supplies the white behind it, but
+   standalone — a local preview, or anyone opening the file — whatever is behind
+   shows through, and on a dark-mode browser that is black under dark text.
+   Own the background so the embed renders correctly anywhere. color-scheme keeps
+   form controls light too, or the ZIP input renders dark-on-dark. */
+background:#fff;color-scheme:light}
 .xhac-svc *{box-sizing:border-box;margin:0}
 .xsp-wrap{max-width:1280px;margin:0 auto;padding:0 40px}
 .xsp-dt{}
@@ -751,6 +757,12 @@ transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .xsp-hub-photo .ph{position:relative;height:280px;border-radius:20px;overflow:hidden;background:#F4F6F8;
 display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px}
 .xsp-hub-photo .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.xsp-xplan-detail{list-style:none;margin:16px 0 0;padding:0;display:grid;
+grid-template-columns:1fr 1fr;gap:8px 22px}
+.xsp-xplan-detail li{display:flex;gap:9px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.9)}
+.xsp-xplan-detail li .c{width:17px;height:17px;flex:none;border-radius:50%;background:var(--green);
+color:var(--ink);font-size:10px;font-weight:800;display:grid;place-items:center}
+@media (max-width:809px){.xsp-xplan-detail{grid-template-columns:1fr}}
 .xsp-cut{position:relative;height:84px;background:#fff;clip-path:polygon(0 62%,100% 0,100% 100%,0 100%)}
 .xsp-promise{background:#fff;padding:6px 0 26px}
 .xsp-promise-in{max-width:1280px;margin:0 auto;padding:0 40px;display:flex;justify-content:space-between;
@@ -875,18 +887,44 @@ def hub_additional(d):
   <div class="xsp-grid4">{cards}</div>
 </div></div>'''
 
-def xplan_panel():
+# Every X-Plan fact the site states, in one place. Change a price here and it changes
+# on the hub, the maintenance page, and all 38 location maintenance pages at once.
+# Client-confirmed figures — see the extreme-brand skill before editing any of them.
+# Members pay DISCOUNTED service call rates, never free: writing "$0" or "free" here
+# would be wrong and is the mistake the handoff calls out by name.
+XPLAN = {
+    "annual": "$249",
+    "monthly": "$20.75",
+    "chips": ["Priority scheduling", "15% off repairs", "5-year repair warranty"],
+    "detail": [
+        "Both seasonal tune-ups included",
+        "15% off repairs",
+        "Priority scheduling",
+        "Member service calls: $77 vs $97 · $177 vs $197 after hours",
+    ],
+}
+
+def xplan_panel(detail=False):
+    """The X-Plan band. `detail` adds the member benefit list the location maintenance
+    pages carry; the pricing is the same object either way."""
+    rows = ""
+    if detail:
+        rows = ('<ul class="xsp-xplan-detail">' +
+                "".join(f'<li><span class="c">✓</span><span>{d}</span></li>'
+                        for d in XPLAN["detail"]) + "</ul>")
+    chips = "".join(f'<span class="chip">{c}</span>' for c in XPLAN["chips"])
     return f'''<div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
     <img class="mark" src="{CDN}/logo-white.png" alt="">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
-      <div class="chips"><span class="chip">Priority scheduling</span><span class="chip">15% off repairs</span><span class="chip">5-year repair warranty</span></div>
+      <div class="chips">{chips}</div>
+      {rows}
     </div>
     <div class="price">
-      <div class="amt">$249<span class="per"> / year</span></div>
-      <div class="alt">or $20.75 / month</div>
+      <div class="amt">{XPLAN["annual"]}<span class="per"> / year</span></div>
+      <div class="alt">or {XPLAN["monthly"]} / month per system</div>
       <span class="xsp-cta">Join X-Plan</span>
     </div>
   </a>

@@ -1,430 +1,743 @@
-<section class="xhac-location" data-city="Dayton">
+<section class="xhac-svc xsp-loc-dayton">
   <style>
-      .xhac-spacer{
-      width:100%;
-      height:6px;
-      margin:50px 0;
-      background:linear-gradient(90deg,#542770,#6bb85c);
-      border-radius:999px;
-    }
-    .xhac-location{
-      --purple:#542770; --green:#6bb85c; --ink:#0f172a; --muted:#475569; --rule:#e7e7ea;
-      --wrap:1200px; --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.06);
-      --section-gap: clamp(28px, 5vw, 48px);
-      font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-    }
-    .loc-wrap{max-width:var(--wrap); margin:0 auto; padding:26px 16px;}
-    .loc-section{ margin: var(--section-gap) 0; }
+.xhac-svc{--purple:#542770;--purple-light:#5E2C7E;--purple-dark:#3A1A4E;--green:#6BB85C;
+--green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
+--ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
+--stars:#F6A723;
+font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+color:var(--ink);width:100%;overflow-x:hidden;
+/* The embed is a bare <section>. Framer's page supplies the white behind it, but
+   standalone — a local preview, or anyone opening the file — whatever is behind
+   shows through, and on a dark-mode browser that is black under dark text.
+   Own the background so the embed renders correctly anywhere. color-scheme keeps
+   form controls light too, or the ZIP input renders dark-on-dark. */
+background:#fff;color-scheme:light}
+.xhac-svc *{box-sizing:border-box;margin:0}
+.xsp-wrap{max-width:1280px;margin:0 auto;padding:0 40px}
+.xsp-dt{}
+.xsp-mb{display:none !important}
 
-    /* Shared centered title */
-    .xhac-title{ text-align:center; margin:0 0 22px; }
-    .xhac-title h2{
-      font-size: clamp(22px, 3.2vw, 32px);
-      font-weight:800; color:var(--purple); margin:0 0 10px; letter-spacing:.015em;
-    }
-    .xhac-title .bar{ width:120px; height:6px; margin:0 auto; border-radius:999px;
-      background:linear-gradient(90deg,var(--purple),var(--green)); }
+/* Where in-page anchor links land. The site header is position:sticky;top:0, so a
+   section scrolled flush to the viewport top slides underneath it. scroll-margin-top
+   is honoured by scrollIntoView — including across the embed iframe boundary — and
+   pushes the landing point down by this much. TUNE THIS ONE VALUE if the header
+   height changes: it should be header height + ~20px of breathing room. */
+.xhac-svc{--xsp-anchor-offset:112px}
+.xhac-svc [id]{scroll-margin-top:var(--xsp-anchor-offset)}
 
-    /* ---------- TOP INTRO ---------- */
-    .xt-citykick{ margin-bottom:26px; border-bottom:1px solid var(--rule); padding-bottom:18px;
-      opacity:0; transform:translateY(12px); transition:opacity .55s ease, transform .55s ease; }
-    .xt-citykick.reveal-in{opacity:1; transform:translateY(0);}
-    .xt-citykick h1{ font-weight:900; letter-spacing:.02em; line-height:1.15; color:var(--purple);
-      text-transform:uppercase; font-size:clamp(22px,3.2vw,34px); margin:0 0 10px; }
-    .xt-citykick .sub{ font-weight:900; text-transform:uppercase; letter-spacing:.04em; color:var(--green); font-size:12.5px; }
+/* buttons */
+.xsp-btn-green{display:flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;width:100%;
+box-shadow:0 6px 18px rgba(107,184,92,.35);transition:background .15s ease,color .15s ease}
+.xsp-btn-green:hover{background:var(--green-dark);color:#fff}
+.xsp-btn-purple{display:flex;align-items:center;justify-content:center;background:var(--purple);
+color:#fff;font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;width:100%;margin-top:10px;
+transition:background .15s ease}
+.xsp-btn-purple:hover{background:#3E1C54}
+.xsp-cta{display:inline-flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;white-space:nowrap;
+transition:background .15s ease}
+.xsp-cta:hover{background:var(--green-hover)}
+.xsp-cta-outline{display:inline-flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.45);
+color:#fff;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;min-height:44px;
+text-decoration:none;background:transparent;white-space:nowrap;transition:border-color .15s,color .15s}
+.xsp-cta-outline:hover{border-color:var(--green);color:var(--green)}
 
-    .xt-cityrows{display:grid; gap:34px; margin:26px 0;}
-    .xt-cityrow{ display:grid; align-items:start; column-gap:26px; row-gap:16px; grid-template-columns:1fr 1fr;
-      opacity:0; transform:translateY(12px); transition:opacity .55s ease, transform .55s ease; transition-delay:var(--stagger,0ms); }
-    .xt-cityrow.reveal-in{opacity:1; transform:translateY(0);}
-    .xt-cityrow .img{width:100%; height:260px; overflow:hidden; border-radius:12px; border:1px solid var(--rule); box-shadow:var(--shadow);}
-    .xt-cityrow .img img{width:100%; height:100%; object-fit:cover; display:block;}
-    .xt-cityrow .copy h3{font-weight:900; font-size:13px; color:var(--green); text-transform:uppercase; letter-spacing:.04em; margin:0 0 10px;}
-    .xt-cityrow .copy p{color:var(--ink); font-size:15px; line-height:1.65; margin:0 0 12px;}
-    .xt-cityrow .copy p em{font-style:normal; font-weight:800; color:var(--purple);}
-    .xt-cityrow.alt .img{order:2;} .xt-cityrow.alt .copy{order:1;}
-    @media (max-width:860px){ .xt-cityrow{grid-template-columns:1fr;} .xt-cityrow.alt .img{order:1;} .xt-cityrow.alt .copy{order:2;} .xt-cityrow .img{height:220px;} }
+/* hero */
+.xsp-hero{background:linear-gradient(180deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);position:relative;color:#fff}
+.xsp-hero-mark{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.xsp-hero-mark img{position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;
+transform:rotate(-8deg);filter:brightness(0) invert(1)}
+.xsp-hero-grid{position:relative;display:grid;grid-template-columns:1fr 360px;gap:48px;
+max-width:1280px;margin:0 auto;padding:48px 40px 64px}
+.xsp-hero-grid.nocard{grid-template-columns:1fr;padding-bottom:48px}
+.xsp-crumbs{font-size:12px;font-weight:700;color:rgba(255,255,255,.7)}
+.xsp-crumbs a{color:rgba(255,255,255,.7);text-decoration:none}
+.xsp-crumbs a:hover{color:var(--green-hover)}
+.xsp-crumbs .cur{color:var(--green)}
+.xsp-crumbs .sep{margin:0 7px;opacity:.6}
+.xsp-h1{margin-top:14px;font-style:italic;font-weight:900;font-size:46px;line-height:1.08;letter-spacing:-1px;color:#fff}
+.xsp-h1 em{font-style:italic;color:var(--green)}
+.xsp-hero.sub .xsp-h1{font-size:42px}
+.xsp-intro{margin-top:16px;max-width:520px;font-size:15.5px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.82)}
+.xsp-chiprow{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.xsp-chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;
+padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff}
+.xsp-chip .st{color:var(--stars)}
+.xsp-hero-ctas{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.xsp-trustline{display:flex;gap:18px;margin-top:22px;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.85);flex-wrap:wrap}
+.xsp-trustline .st{color:var(--stars)}
+.xsp-trustline .di{color:var(--green)}
 
-    /* ---------- Panel headings (Reasons/Signs) ---------- */
-    .xt-head{ text-align:center; color:var(--purple); font-weight:800; font-size:clamp(22px,3.5vw,34px);
-      letter-spacing:.02em; line-height:1.15; margin:10px 0 18px; opacity:0; transform:translateY(10px);
-      transition:opacity .5s ease, transform .5s ease; }
-    .xt-head.reveal-in{opacity:1; transform:translateY(0);}
-    .xt-head::after{ content:""; display:block; width:84px; height:4px;
-      background:linear-gradient(90deg,var(--purple),var(--green)); border-radius:999px; margin:10px auto 0; }
+/* booking card (hero overlap) */
+.xsp-bookcol{position:relative;margin-bottom:-84px;align-self:start}
+.xsp-book{background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(15,23,42,.25);padding:24px;color:var(--ink)}
+.xsp-book.inflow{box-shadow:0 12px 30px rgba(84,39,112,.12);border:1px solid var(--rule)}
+.xsp-book .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-dark)}
+.xsp-book .t{font-weight:800;font-size:18px;margin-top:8px}
+.xsp-book .s{font-size:13px;font-weight:500;color:var(--body);margin-top:6px;line-height:1.5}
+.xsp-book .btns{margin-top:16px}
+.xsp-book .trust{display:flex;align-items:center;justify-content:center;gap:14px;border-top:1px solid var(--rule);
+margin-top:16px;padding-top:14px;font-size:12px;font-weight:700;color:var(--body)}
+.xsp-book .trust .st{color:var(--stars)}
+.xsp-book .trust .bar{color:#D8D5DE}
 
-    /* ---------- Panels + rows ---------- */
-    .xt-panel{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow);
-      padding:clamp(16px,3vw,26px); margin-bottom:26px; opacity:0; transform:translateY(12px);
-      transition:opacity .55s ease, transform .55s ease; }
-    .xt-panel.reveal-in{opacity:1; transform:translateY(0);}
-    .xt-rows{display:grid; gap:0;}
-    .xt-row{ display:grid; grid-template-columns:1fr 1fr; column-gap:clamp(16px,2.5vw,28px); row-gap:0;
-      padding:18px 0; border-bottom:1px solid var(--rule); opacity:0; transform:translateY(10px);
-      transition:opacity .45s ease, transform .45s ease; transition-delay:var(--stagger,0ms); }
-    .xt-row.reveal-in{opacity:1; transform:translateY(0);} .xt-row:last-child{border-bottom:none;}
-    @media (max-width:820px){ .xt-row{grid-template-columns:1fr; row-gap:16px;} }
-    .xt-badge{display:inline-block; background:linear-gradient(90deg,rgba(107,184,92,.18),rgba(84,39,112,.14)); color:var(--ink);
-      font-weight:900; font-size:12px; letter-spacing:.05em; text-transform:uppercase; padding:6px 10px; border-radius:999px; margin-bottom:10px;}
-    .xt-term{color:var(--ink); font-weight:800; font-size:clamp(16px,2.4vw,20px); margin-bottom:6px;}
-    .xt-desc{color:var(--muted); font-size:clamp(14px,2.2vw,16px); line-height:1.6;}
+/* pill sub-nav */
+.xsp-pillbar{background:#fff;border-bottom:1px solid var(--rule)}
+.xsp-pillbar-in{max-width:1280px;margin:0 auto;padding:14px 40px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.xsp-pill-label{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-pills{display:flex;gap:8px;flex-wrap:wrap}
+.xsp-pill{border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:700;text-decoration:none;
+color:var(--purple);background:var(--tint);min-height:32px;display:inline-flex;align-items:center;
+transition:background .15s,color .15s}
+.xsp-pill:hover{background:#E9E2F1}
+.xsp-pill.active{background:var(--purple);color:#fff;font-weight:800}
 
-    /* ---------- Services grid ---------- */
-    .xhac-services{ --card-bg:#fff; --card-br:#e5e7eb; --gap:18px; }
-    .xhac-grid{ display:grid; gap:var(--gap); grid-template-columns:repeat(3,minmax(0,1fr)); }
-    @media (max-width:980px){ .xhac-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
-    @media (max-width:809px){ .xhac-grid{ grid-template-columns:1fr; } }
-    .xhac-card{ display:flex; flex-direction:column; background:var(--card-bg); border:1px solid var(--card-br);
-      border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; min-height:380px; height:100%;
-      opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease; transition-delay: var(--stagger, 0ms); }
-    .xhac-card.is-inview{ opacity:1; transform:translateY(0); }
-    .xhac-imgwrap{ width:100%; height:160px; overflow:hidden; }
-    .xhac-imgwrap img{ width:100%; height:100%; object-fit:cover; display:block; }
-    .xhac-body{ display:flex; flex-direction:column; gap:10px; padding:16px; flex:1; }
-    .xhac-service-label{ font-weight:800; font-size:14px; letter-spacing:.04em; color:var(--purple); text-transform:uppercase; line-height:1.1; min-height:1.1em; }
-    .xhac-dynamic-title{ font-weight:700; font-size:18px; line-height:1.3; color:var(--ink); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.6em; }
-    .xhac-desc{ color:var(--muted); font-size:14px; line-height:1.55; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; min-height:4.65em; flex:1; }
-    .xhac-actions{ margin-top:12px; }
-    .xhac-btn{ display:inline-block; padding:10px 14px; border-radius:999px; background:var(--green); color:#0b1b0b;
-      font-weight:700; font-size:13px; text-decoration:none; transition: transform .14s ease, box-shadow .14s ease;
-      box-shadow:0 6px 18px rgba(0,0,0,.08); will-change: transform; }
-    .xhac-btn:hover,.xhac-btn:focus{ transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.12); }
-    .xhac-btn.is-pressed{ transform:scale(.96); box-shadow:0 4px 12px rgba(0,0,0,.1); }
+/* body grid */
+.xsp-bodygrid{display:grid;grid-template-columns:1fr 360px;gap:48px;max-width:1280px;margin:0 auto;padding:56px 40px}
+.xsp-main{display:flex;flex-direction:column;gap:48px;min-width:0}
+.xsp-rail{padding-top:64px;display:flex;flex-direction:column;gap:16px;align-self:start}
+.xsp-rail.flush{padding-top:0}
+.xsp-eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-dark)}
+.xsp-eyebrow.purple{color:var(--purple)}
+.xsp-h2{margin-top:10px;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px;color:var(--ink)}
 
-    /* ---------- NEW: Install list section ---------- */
-    .inst-grid{
-      display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px;
-      opacity:0; transform:translateY(12px); transition:opacity .55s ease, transform .55s ease;
-    }
-    .inst-grid.reveal-in{opacity:1; transform:translateY(0);}
-    @media (max-width:980px){ .inst-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
-    @media (max-width:680px){ .inst-grid{ grid-template-columns:1fr; } }
-    .inst-col{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 20px; }
-    .inst-col ul{ margin:0; padding-left:18px; }
-    .inst-col li{ margin:8px 0; color:var(--ink); font-size:15px; line-height:1.55; }
-    .inst-col li b{ font-weight:800; }
+/* checklist */
+.xsp-checks{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-top:20px}
+.xsp-check{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700;color:var(--body)}
+.xsp-check .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.xsp-callout{margin-top:20px;background:var(--green-tint);border-radius:12px;padding:14px 18px;
+font-size:13px;font-weight:600;color:var(--promo-green);line-height:1.55}
+.xsp-callout a{color:var(--promo-green);font-weight:800;text-decoration:none}
+.xsp-callout.safety{background:var(--ink);color:rgba(255,255,255,.85)}
+.xsp-callout.safety b{color:var(--green-hover)}
+.xsp-callout.safety a{color:#fff;font-weight:800}
 
-    /* ---------- Why choose us ---------- */
-    .wy-grid{ display:grid; gap:22px; grid-template-columns:repeat(3,minmax(0,1fr));
-      margin-bottom:28px; opacity:0; transform:translateY(12px); transition:opacity .55s ease, transform .55s ease; }
-    .wy-grid.reveal-in{opacity:1; transform:translateY(0);}
-    @media (max-width:980px){ .wy-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
-    @media (max-width:680px){ .wy-grid{grid-template-columns:1fr;} }
-    @media (min-width:1200px){ .wy-grid .wy-item:last-child{ grid-column:2; } } /* center last card */
-    .wy-item{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow);
-      padding:18px; display:grid; grid-template-columns:auto 1fr; column-gap:12px; row-gap:8px; align-items:start; }
-    .wy-icon{ width:38px; height:38px; border-radius:10px; display:grid; place-items:center;
-      background:linear-gradient(180deg,rgba(84,39,112,.08),rgba(107,184,92,.10)); border:1px solid var(--rule); }
-    .wy-title{ grid-column:2; font-weight:900; font-size:13px; letter-spacing:.04em; color:var(--green); text-transform:uppercase; }
-    .wy-copy{ grid-column:1 / -1; color:var(--ink); font-size:14px; line-height:1.7; }
-    .wy-slab{ margin-top:14px; display:grid; grid-template-columns:1.05fr .95fr; gap:26px; align-items:start; }
-    @media (max-width:920px){ .wy-slab{grid-template-columns:1fr;} }
-    .wy-photo{ width:100%; height:320px; border-radius:12px; overflow:hidden; border:1px solid var(--rule); box-shadow:var(--shadow);
-      opacity:0; transform:translateY(12px); transition:opacity .55s ease, transform .55s ease; transition-delay:60ms; }
-    .wy-photo.reveal-in{opacity:1; transform:translateY(0);}
-    .wy-photo img{width:100%; height:100%; object-fit:cover; display:block;}
-    .wy-blurb{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow);
-      padding:18px 18px 22px; opacity:0; transform:translateY(12px); transition:opacity .55s ease, transform .55s ease; transition-delay:120ms; }
-    .wy-blurb.reveal-in{opacity:1; transform:translateY(0);}
-    .wy-ctahead{ font-weight:900; letter-spacing:.03em; color:var(--purple); text-transform:uppercase; font-size:clamp(16px,2.6vw,18px); margin:2px 0 10px; }
-    .wy-p{color:var(--ink); font-size:15px; line-height:1.75; margin:10px 0;}
-    .wy-phone{color:#1a7f2b; font-weight:900; text-decoration:none;}
+/* what-we-do cards */
+.xsp-cards3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-card{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff;display:flex;
+flex-direction:column;gap:8px;text-decoration:none;transition:box-shadow .18s,border-color .18s,transform .18s}
+.xsp-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);border-color:#D8CCE4;transform:translateY(-2px)}
+.xsp-card .t{font-weight:800;font-size:16.5px;color:var(--ink)}
+.xsp-card .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-card .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:2px}
+.xsp-card:hover .lm{color:var(--green-dark)}
+.xsp-glyph{position:relative;display:block;width:30px;height:30px;flex:none}
+.xsp-glyph i{position:absolute;inset:11px 2px;border-radius:2px;display:block}
+.xsp-glyph i:first-child{background:var(--purple);transform:rotate(45deg)}
+.xsp-glyph i:last-child{background:var(--green);transform:rotate(-45deg)}
 
-    @media (prefers-reduced-motion:reduce){
-      .xt-head,.xt-panel,.xt-row,.xt-citykick,.xt-cityrow,.xhac-card,.wy-grid,.wy-photo,.wy-blurb,.inst-grid{opacity:1!important; transform:none!important; transition:none!important;}
-    }
-  </style>
+/* process */
+.xsp-steps{display:flex;flex-direction:column;gap:22px;margin-top:20px}
+.xsp-step{display:flex;gap:0}
+.xsp-step .n{flex:0 0 44px;font-style:italic;font-weight:900;font-size:25px;color:var(--purple)}
+.xsp-step .t{font-weight:800;font-size:15px}
+.xsp-step .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px;max-width:560px}
 
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+/* decision card */
+.xsp-decision{border:1px solid var(--rule);border-radius:16px;padding:20px 22px;background:#fff}
+.xsp-decision .t{font-weight:800;font-size:16.5px}
+.xsp-decision .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px;max-width:620px}
+.xsp-decision a{display:inline-flex;align-items:center;margin-top:12px;border:2px solid var(--purple);
+color:var(--purple);font-weight:800;font-size:13.5px;padding:10px 18px;border-radius:10px;min-height:40px;
+text-decoration:none;transition:background .15s,color .15s}
+.xsp-decision a:hover{background:var(--purple);color:#fff}
 
-  <div class="loc-wrap">
+/* faq */
+.xsp-faq{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.xsp-qa{border:1px solid var(--rule);border-radius:14px;background:#fff;overflow:hidden}
+.xsp-qa button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+padding:16px 18px;background:none;border:0;cursor:pointer;font-family:inherit;text-align:left;
+font-weight:700;font-size:15px;color:var(--ink);min-height:44px}
+.xsp-qa .tog{width:26px;height:26px;flex:none;border-radius:50%;background:var(--tint);color:var(--purple);
+display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;transition:background .15s,color .15s}
+.xsp-qa.open .tog{background:var(--purple);color:#fff}
+.xsp-qa .a{display:none;font-size:13.5px;line-height:1.6;font-weight:500;color:var(--body);
+padding:0 18px 16px;max-width:620px}
+.xsp-qa.open .a{display:block}
 
-    <!-- TOP INTRO / CITY -->
-    <div class="loc-section">
-      <div class="xt-citykick">
-        <h1 id="xt-city-head">Heating & Air Conditioning Services in <span class="xt-city">City</span>, Ohio.</h1>
-        <div class="sub" id="xt-city-sub"><span class="xt-city">City</span>, OH Heating & Air Conditioning Installation, Repair & Maintenance</div>
-      </div>
+/* rail photo + promos */
+.xsp-photo{height:220px;border-radius:14px;background:#F4F6F8;border:1px solid var(--rule);
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);
+letter-spacing:1px;overflow:hidden}
+.xsp-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.xsp-promo{border-radius:14px;padding:18px 20px;display:block;text-decoration:none}
+.xsp-promo.lav{background:var(--tint)}
+.xsp-promo.mint{background:var(--green-tint)}
+.xsp-promo .t{font-weight:800;font-size:15px;color:var(--purple)}
+.xsp-promo.mint .t{color:var(--promo-green)}
+.xsp-promo .d{font-size:12.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px}
+.xsp-promo .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:10px}
+.xsp-promo.mint .lm{color:var(--promo-green)}
+.xsp-promo:hover .lm{text-decoration:underline}
+.xsp-sibs{border:1px solid var(--rule);border-radius:14px;padding:18px 20px;background:#fff}
+.xsp-sibs .h{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-sibs a{display:flex;align-items:center;justify-content:space-between;padding:10px 0;
+font-size:13.5px;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:1px solid #F1F0F4;min-height:40px}
+.xsp-sibs a:last-child{border-bottom:0;padding-bottom:0}
+.xsp-sibs a:hover{color:var(--purple)}
+.xsp-sibs .ar{color:var(--purple);font-weight:800}
 
-      <div class="xt-cityrows">
-        <div class="xt-cityrow" style="--stagger:0ms">
-          <div class="img">
-            <img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/beavercreek-img1.jpg" alt="HVAC in City - technician working">
-          </div>
-          <div class="copy">
-            <h3>HVAC in <span class="xt-city">City</span> – Comprehensive HVAC Services</h3>
-            <p>Managing the changing seasons in <span class="xt-city">City</span> can be a challenge without a reliable HVAC system at your disposal. Whether you’re battling the summer heat or bracing for winter cold, a properly functioning HVAC system is more than a luxury—it’s a necessity.</p>
-            <p>At <em>Extreme Heating & Air Conditioning</em>, we’re proud to serve the <span class="xt-city">City</span> area with quality heating and cooling solutions—from fast repairs and expert installations to proactive maintenance and energy-smart upgrades.</p>
-          </div>
-        </div>
+/* emergency band */
 
-        <div class="xt-cityrow alt" style="--stagger:120ms">
-          <div class="img">
-            <img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/beavercreek-img2.jpg" alt="Technician servicing AC in City">
-          </div>
-          <div class="copy">
-            <h3>What Are Our HVAC Services?</h3>
-            <p>Our team handles installing, maintaining, and repairing heating, ventilation, and air conditioning systems—plus comprehensive support like design, upgrades, and performance optimization. We service furnaces, air conditioners, heat pumps, thermostats, ductwork, indoor air quality solutions, and more.</p>
-            <p>We serve both residential and commercial needs to keep your environment comfortable, safe, and efficient. Ask about seasonal tune-ups, energy audits, and our X-Plan maintenance program to protect your investment year-round.</p>
-          </div>
-        </div>
-      </div>
+/* related strip */
+.xsp-rel{background:var(--soft)}
+.xsp-rel-in{max-width:1280px;margin:0 auto;padding:44px 40px}
+.xsp-rel-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
+.xsp-rel-card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(15,23,42,.05);
+text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-shadow .18s,transform .18s}
+.xsp-rel-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.xsp-rel-card .t{font-weight:800;font-size:15px;color:var(--ink)}
+.xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
+.xsp-rel-card:hover .lm{color:var(--green-dark)}
+
+/* ------------------------- mobile (2b stacking) ------------------------- */
+@media (max-width:809px){
+.xhac-svc{--xsp-anchor-offset:96px}
+.xsp-dt{display:none !important}
+.xsp-mb{display:revert !important}
+.xsp-wrap,.xsp-pillbar-in,.xsp-rel-in{padding-left:20px;padding-right:20px}
+.xsp-hero-grid{grid-template-columns:1fr;gap:0;padding:32px 20px 44px}
+.xsp-h1{font-size:34px;letter-spacing:-.5px}
+.xsp-hero.sub .xsp-h1{font-size:32px}
+.xsp-intro{font-size:14px}
+.xsp-hero-ctas{flex-direction:column;gap:14px}
+.xsp-hero-ctas.xsp-mb{display:flex !important;flex-direction:column;gap:14px}
+.xsp-hero-ctas .xsp-cta,.xsp-hero-ctas .xsp-cta-outline{width:100%}
+.xsp-chiprow{gap:8px}
+.xsp-chip{padding:7px 10px;font-size:11px;border-radius:10px}
+.xsp-bookcol{display:none}
+.xsp-bodygrid{grid-template-columns:1fr;gap:40px;padding:40px 20px 48px}
+.xsp-rail{display:none}
+.xsp-h2{font-size:24px;letter-spacing:-.4px}
+.xsp-checks{grid-template-columns:1fr;gap:10px}
+.xsp-cards3{grid-template-columns:1fr;gap:0;margin-top:12px}
+.xsp-card{flex-direction:row;align-items:center;gap:12px;border:0;border-radius:0;
+border-bottom:1px solid #F1F0F4;padding:13px 0;background:transparent}
+.xsp-card:hover{box-shadow:none;transform:none}
+.xsp-card .xsp-glyph{width:26px;height:26px}
+.xsp-card .glyphwrap{flex:none}
+.xsp-card .txt{flex:1}
+.xsp-card .t{font-size:14.5px}
+.xsp-card .d{font-size:11.5px;line-height:1.45}
+.xsp-card .lm{display:none}
+.xsp-card .mrow{display:block;color:var(--purple);font-weight:800}
+.xsp-step .d{font-size:13px}
+.xsp-rel-grid{grid-template-columns:1fr;gap:0;margin-top:10px}
+.xsp-rel-card{flex-direction:row;align-items:center;justify-content:space-between;border-radius:0;
+box-shadow:none;background:transparent;padding:13px 0;border-bottom:1px solid #F1F0F4}
+.xsp-rel-card:hover{box-shadow:none;transform:none}
+.xsp-mbrail.xsp-mb{display:flex !important;flex-direction:column;gap:14px}
+}
+@media (min-width:810px){
+.xsp-card .mrow{display:none}
+}
+
+.xsp-hubhero-grid{position:relative;display:grid;grid-template-columns:1fr .9fr;gap:48px;align-items:center;
+max-width:1280px;margin:0 auto;padding:48px 40px 72px}
+.xsp-hub-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.3);
+background:rgba(255,255,255,.1);border-radius:999px;padding:7px 14px;font-size:11.5px;font-weight:800;
+letter-spacing:2px;color:#fff}
+.xsp-hub-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.xsp-hubhero-grid .xsp-h1{font-size:44px}
+.xsp-hub-photo{position:relative;min-height:280px}
+.xsp-hub-photo .slashw{position:absolute;left:2%;right:-6%;bottom:26px;height:14px;background:#fff;opacity:.25;
+transform:rotate(-9deg) skewX(-16deg)}
+.xsp-hub-photo .slash{position:absolute;left:-6%;right:-2%;bottom:34px;height:44px;background:var(--green);
+transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.xsp-hub-photo .ph{position:relative;height:280px;border-radius:20px;overflow:hidden;background:#F4F6F8;
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px}
+.xsp-hub-photo .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.xsp-xplan-detail{list-style:none;margin:16px 0 0;padding:0;display:grid;
+grid-template-columns:1fr 1fr;gap:8px 22px}
+.xsp-xplan-detail li{display:flex;gap:9px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.9)}
+.xsp-xplan-detail li .c{width:17px;height:17px;flex:none;border-radius:50%;background:var(--green);
+color:var(--ink);font-size:10px;font-weight:800;display:grid;place-items:center}
+@media (max-width:809px){.xsp-xplan-detail{grid-template-columns:1fr}}
+.xsp-cut{position:relative;height:84px;background:#fff;clip-path:polygon(0 62%,100% 0,100% 100%,0 100%)}
+.xsp-promise{background:#fff;padding:6px 0 26px}
+.xsp-promise-in{max-width:1280px;margin:0 auto;padding:0 40px;display:flex;justify-content:space-between;
+align-items:center;gap:20px;flex-wrap:wrap}
+.xsp-promise-label{font-size:12px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-promise-items{display:flex;gap:26px;flex-wrap:wrap}
+.xsp-promise-items span{font-size:12.5px;font-weight:700;color:var(--body)}
+.xsp-promise-items .di{color:var(--green)}
+.xsp-hubsec{background:#fff;padding:44px 0 56px}
+.xsp-hubsec.soft{background:var(--soft)}
+.xsp-hubsec-in{max-width:1280px;margin:0 auto;padding:0 40px}
+.xsp-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-notsure{background:var(--tint);border:0;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px;
+text-decoration:none;transition:box-shadow .18s,transform .18s}
+.xsp-notsure:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.xsp-notsure .t{font-weight:800;font-size:16.5px;color:var(--purple)}
+.xsp-notsure .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-notsure .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:2px}
+.xsp-badge{display:inline-block;background:var(--green-tint);color:var(--green-dark);font-weight:800;
+font-size:9.5px;letter-spacing:.6px;border-radius:5px;padding:3px 7px;margin-left:8px;vertical-align:middle}
+a.xsp-xplan{text-decoration:none;cursor:pointer;transition:box-shadow .18s,transform .18s}
+a.xsp-xplan:hover{box-shadow:0 18px 44px rgba(84,39,112,.35);transform:translateY(-2px)}
+.xsp-xplan{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;padding:40px 44px;
+color:#fff;position:relative;overflow:hidden;display:grid;grid-template-columns:1.1fr auto;gap:32px;align-items:center}
+.xsp-xplan .mark{position:absolute;right:-40px;bottom:-46px;width:300px;opacity:.06;pointer-events:none;
+filter:brightness(0) invert(1)}
+.xsp-xplan .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-hover)}
+.xsp-xplan h2{margin-top:10px;font-style:italic;font-weight:900;font-size:30px;letter-spacing:-.5px;color:#fff}
+.xsp-xplan .chips{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
+.xsp-xplan .chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:999px;
+padding:8px 14px;font-size:12.5px;font-weight:700}
+.xsp-xplan .price{position:relative;text-align:right}
+.xsp-xplan .amt{font-style:italic;font-weight:900;font-size:34px}
+.xsp-xplan .per{font-size:15px;font-weight:700;opacity:.85;font-style:normal}
+.xsp-xplan .alt{font-size:13px;font-weight:700;color:rgba(255,255,255,.75);margin-top:4px}
+.xsp-xplan .xsp-cta{margin-top:14px}
+.xsp-cross{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.xsp-cross .xsp-promo .t{font-size:16.5px}
+@media (max-width:809px){
+.xsp-hubhero-grid{grid-template-columns:1fr;gap:28px;padding:32px 20px 52px}
+.xsp-hubhero-grid .xsp-h1{font-size:34px}
+.xsp-hub-photo{min-height:0}
+.xsp-hub-photo .ph{height:200px}
+.xsp-cut{height:44px;clip-path:polygon(0 55%,100% 0,100% 100%,0 100%)}
+.xsp-promise-in{padding:0 20px}
+.xsp-promise-items{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px}
+.xsp-hubsec-in{padding:0 20px}
+.xsp-grid3,.xsp-grid4{grid-template-columns:1fr;gap:10px;margin-top:14px}
+.xsp-xplan{grid-template-columns:1fr;padding:28px 22px;border-radius:20px}
+.xsp-xplan .price{text-align:left}
+.xsp-cross{grid-template-columns:1fr}
+}
+
+.xsp-bookcol.pricing .price-row{display:flex;align-items:baseline;gap:8px;margin-top:10px}
+.xsp-bookcol.pricing .amt{font-style:italic;font-weight:900;font-size:38px;color:var(--ink)}
+.xsp-bookcol.pricing .per{font-weight:700;font-size:14px;color:var(--body)}
+.xsp-bookcol.pricing .alt{font-size:13px;font-weight:600;color:var(--body);margin-top:4px}
+.xsp-benefits{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.xsp-benefit{border:1px solid var(--rule);border-radius:16px;padding:18px;background:#fff;display:flex;gap:12px}
+.xsp-benefit .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.xsp-benefit .t{font-weight:800;font-size:15px;color:var(--ink)}
+.xsp-benefit .d{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xsp-usecases{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-usecase{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff;display:flex;
+flex-direction:column;gap:8px}
+.xsp-usecase .t{font-weight:800;font-size:16.5px;color:var(--ink)}
+.xsp-usecase .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-value{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
+padding:36px 40px;color:#fff;margin-top:20px}
+.xsp-value .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-hover)}
+.xsp-value h3{margin-top:10px;font-style:italic;font-weight:900;font-size:26px;letter-spacing:-.5px;color:#fff}
+.xsp-value .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;margin-top:22px}
+.xsp-value .n{font-style:italic;font-weight:900;font-size:26px;color:#fff}
+.xsp-value .cap{font-size:12.5px;line-height:1.5;font-weight:500;color:rgba(255,255,255,.75);margin-top:6px}
+.xsp-joinband{background:var(--ink)}
+.xsp-joinband-in{max-width:1280px;margin:0 auto;padding:20px 40px;display:flex;align-items:center;
+justify-content:space-between;gap:24px;flex-wrap:wrap}
+.xsp-joinband b{font-weight:800;font-size:15px;color:#fff}
+.xsp-joinband span{font-size:13px;font-weight:500;color:rgba(255,255,255,.6)}
+@media (max-width:809px){
+.xsp-bookcol.pricing{display:block !important;margin:28px 0 0}
+.xsp-benefits,.xsp-usecases{grid-template-columns:1fr;gap:12px}
+.xsp-value{padding:26px 22px;border-radius:20px}
+.xsp-value .stats{grid-template-columns:1fr;gap:18px}
+.xsp-joinband-in{padding:20px;flex-direction:column;align-items:flex-start;gap:12px}
+}
+
+/* ------------------------- company pages (4a-4d) ------------------------- */
+.xco-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.xco-bcard{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff}
+.xco-bcard .t{font-weight:800;font-size:16.5px;margin-top:12px}
+.xco-bcard .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-bcard .xsp-cta{margin-top:14px;font-size:14px;padding:12px 18px}
+.xco-bcard .plink{display:inline-block;font-weight:800;font-size:14px;color:var(--purple);
+text-decoration:none;margin-top:16px;min-height:44px;display:inline-flex;align-items:center}
+.xco-bcard .plink:hover{color:var(--green-dark)}
+.xco-phone{font-style:italic;font-weight:900;font-size:27px;letter-spacing:-.5px;margin-top:8px}
+.xco-phone a{color:var(--ink);text-decoration:none}
+.xco-loc{border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#fff}
+.xco-loc-img{height:160px;background:#F4F6F8;border-bottom:1px solid var(--rule);display:flex;
+align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px}
+.xco-loc-img img{width:100%;height:100%;object-fit:cover;display:block}
+.xco-loc-body{padding:18px}
+.xco-loc-body .t{font-weight:800;font-size:16.5px}
+.xco-loc-body .addr{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-loc-body a{display:inline-block;font-weight:800;font-size:13px;color:var(--purple);
+text-decoration:none;margin-top:10px}
+.xco-loc-body a:hover{color:var(--green-dark)}
+.xco-hours{border:1px solid var(--rule);border-radius:16px;margin-top:20px;overflow:hidden}
+.xco-hours .row{display:flex;justify-content:space-between;gap:16px;padding:14px 20px;
+border-bottom:1px solid var(--rule)}
+.xco-hours .row:last-child{border-bottom:0}
+.xco-hours .row span:first-child{font-weight:700;font-size:14px}
+.xco-hours .row span:last-child{font-weight:600;font-size:14px;color:var(--body);text-align:right}
+.xco-hours .row.em{background:var(--green-tint)}
+.xco-hours .row.em span{font-weight:800;color:var(--promo-green)}
+.xco-body{max-width:1280px;margin:0 auto;padding:56px 40px;display:flex;flex-direction:column;gap:48px}
+.xco-split{display:grid;grid-template-columns:1fr 360px;gap:48px}
+.xco-heroslot{width:100%;height:250px;border-radius:16px;background:rgba(255,255,255,.08);
+border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
+font-size:12px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:1px;overflow:hidden}
+.xco-heroslot img{width:100%;height:100%;object-fit:cover;display:block}
+.xco-hero-grid-400{grid-template-columns:1fr 400px;align-items:center}
+.xco-ccard{border:1px solid var(--rule);border-radius:16px;padding:18px;background:#fff}
+.xco-ccard .c{width:18px;height:18px;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.xco-ccard .t{font-weight:800;font-size:15px;margin-top:10px}
+.xco-ccard .d{font-size:13px;line-height:1.5;font-weight:500;color:var(--body);margin-top:4px}
+.xco-lchips{display:flex;align-items:center;gap:10px;margin-top:22px;flex-wrap:wrap}
+.xco-lchips .lab{font-size:10.5px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,.5)}
+.xco-lchips .chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);
+border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;color:#fff}
+.xco-fine{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);margin-top:14px}
+.xco-coupons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xco-coupon{border:1.5px dashed #C4B5D4;border-radius:16px;padding:20px;display:flex;flex-direction:column}
+.xco-coupon .pill{align-self:flex-start;background:var(--tint);color:var(--purple);font-size:10px;
+font-weight:800;letter-spacing:1.5px;border-radius:999px;padding:5px 10px}
+.xco-coupon .val{font-style:italic;font-weight:900;font-size:34px;letter-spacing:-1px;margin-top:12px}
+.xco-coupon .val .per{font-size:16px;letter-spacing:0}
+.xco-coupon .t{font-weight:800;font-size:15.5px;margin-top:2px}
+.xco-coupon .d{font-size:13px;line-height:1.5;font-weight:500;color:var(--body);margin-top:4px;flex:1}
+.xco-coupon .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;
+margin-top:16px;padding-top:14px;border-top:1px solid #EDEAF2}
+.xco-coupon .lbl{font-size:11.5px;font-weight:700;color:var(--muted)}
+.xco-claim{display:inline-flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:13px;padding:10px 16px;border-radius:10px;min-height:40px;
+text-decoration:none;cursor:pointer;white-space:nowrap;transition:background .15s ease}
+.xco-claim:hover{background:var(--green-hover)}
+.xco-finenote{font-size:11.5px;line-height:1.6;font-weight:600;color:var(--muted);margin-top:24px}
+.xco-mail{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:16px;
+padding:22px;position:relative;overflow:hidden;color:#fff}
+.xco-mail .t{font-weight:800;font-size:16px}
+.xco-mail .d{font-size:12.5px;line-height:1.55;font-weight:500;color:rgba(255,255,255,.75);margin-top:6px}
+.xco-mail form{display:flex;gap:8px;margin-top:14px}
+.xco-mail input{flex:1;min-width:0;background:#fff;border:0;border-radius:10px;padding:12px 14px;
+font-size:13px;font-weight:600;color:var(--ink);font-family:inherit}
+.xco-mail button{background:var(--green);color:var(--ink);font-weight:800;font-size:13px;
+padding:12px 16px;border-radius:10px;border:0;cursor:pointer;font-family:inherit}
+.xco-story{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.xco-story p{margin-top:16px;font-size:14.5px;line-height:1.65;font-weight:500;color:var(--body)}
+.xco-story p + p{margin-top:12px}
+.xco-slot{width:100%;border-radius:16px;background:#F4F6F8;border:1px solid var(--rule);
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+color:var(--muted);letter-spacing:1px;overflow:hidden}
+.xco-slot img{width:100%;height:100%;object-fit:cover;display:block}
+.xco-vals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.xco-vals .xco-ccard .xsp-glyph{width:26px;height:26px}
+.xco-vals .xco-ccard .t{margin-top:12px}
+.xco-stats{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
+padding:32px 36px;position:relative;overflow:hidden}
+.xco-stats .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;position:relative}
+.xco-stats .n{font-style:italic;font-weight:900;font-size:30px;color:#fff}
+.xco-stats .n .st{color:var(--stars)}
+.xco-stats .cap{font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px}
+.xco-team{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.xco-team .slot{height:230px;border-radius:14px}
+.xco-team .name{font-weight:800;font-size:14px;margin-top:10px}
+.xco-team .role{font-size:12.5px;font-weight:600;color:var(--body)}
+@media (max-width:809px){
+.xco-2col{grid-template-columns:1fr;gap:12px;margin-top:16px}
+.xco-hours .row{padding:13px 16px}
+.xco-body{padding:40px 20px 48px;gap:40px}
+.xco-split{grid-template-columns:1fr;gap:40px}
+.xco-hero-grid-400{grid-template-columns:1fr}
+.xco-heroslot{height:200px;margin-top:24px}
+.xco-coupons{grid-template-columns:1fr;gap:12px}
+.xco-story{grid-template-columns:1fr;gap:20px}
+.xco-story .xco-slot{height:200px}
+.xco-vals{grid-template-columns:1fr;gap:12px}
+.xco-stats{padding:26px 22px;border-radius:20px}
+.xco-stats .grid{grid-template-columns:1fr 1fr;gap:18px}
+.xco-team{grid-template-columns:1fr 1fr;gap:12px}
+.xco-team .slot{height:180px}
+}
+
+/* --------------------------- location pages (5a-5h) --------------------------- */
+.xlc-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.xlc-card{position:relative;border:1px solid var(--rule);border-radius:16px;padding:20px;
+background:#fff;text-decoration:none;display:block;transition:box-shadow .15s ease,transform .15s ease}
+.xlc-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.xlc-card .t{font-weight:800;font-size:16.5px;color:var(--ink)}
+.xlc-card .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px}
+.xlc-card .lm{display:inline-block;margin-top:14px;font-weight:800;font-size:13.5px;color:var(--purple)}
+.xlc-card:hover .lm{color:var(--green-dark)}
+.xlc-new{position:absolute;top:14px;right:14px;background:var(--green);color:var(--ink);
+font-size:10px;font-weight:800;letter-spacing:1.2px;border-radius:999px;padding:4px 9px}
+.xlc-towns{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 24px;margin-top:20px}
+.xlc-town{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--body)}
+.xlc-town .c{width:18px;height:18px;flex:none;border-radius:50%;background:#3F852B;color:#fff;
+font-size:10px;font-weight:800;display:grid;place-items:center}
+.xlc-town a{color:var(--body);text-decoration:none}
+.xlc-town a:hover{color:var(--purple)}
+.xlc-note{font-size:13px;font-weight:600;color:var(--muted);margin-top:16px}
+.xlc-revs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.xlc-rev{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff}
+.xlc-rev .stars{color:var(--stars);font-size:14px;letter-spacing:2px}
+.xlc-rev .q{font-size:14px;line-height:1.6;font-weight:500;color:var(--body);margin-top:10px}
+.xlc-rev .who{font-size:12.5px;font-weight:700;color:var(--ink);margin-top:14px}
+.xlc-rev .who span{color:var(--muted);font-weight:600}
+.xlc-dir{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:20px}
+.xlc-dircol .lab{font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--purple);
+padding-bottom:10px;border-bottom:1px solid var(--rule)}
+.xlc-links{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 16px;margin-top:14px}
+.xlc-links a{font-size:13.5px;font-weight:600;color:var(--body);text-decoration:none}
+.xlc-links a:hover{color:var(--purple)}
+.xlc-metro{border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#fff;
+margin-top:20px}
+/* Atlist embed. It sizes itself internally, so the wrapper owns the height and the
+   iframe fills it — the same treatment the previous hub used. */
+.xlc-map{width:100%;height:clamp(420px,55vw,640px);overflow:hidden;background:#F4F6F8;
+border-bottom:1px solid var(--rule)}
+.xlc-map iframe{width:100%!important;height:100%!important;display:block;border:0}
+.xlc-metro .body{padding:20px;display:flex;flex-wrap:wrap;align-items:center;
+justify-content:space-between;gap:12px 24px}
+.xlc-metro .cta{display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+background:var(--green);color:var(--ink);font-weight:800;font-size:14px;padding:12px 20px;
+border-radius:10px;text-decoration:none;white-space:nowrap}
+.xlc-metro .cta:hover{background:var(--green-hover)}
+.xlc-metro .eyebrow{font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--purple)}
+.xlc-metro .t{font-style:italic;font-weight:900;font-size:22px;letter-spacing:-.4px;
+color:var(--ink);margin-top:8px}
+.xlc-metro .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:8px}
+.xlc-metro .lm{display:inline-block;margin-top:14px;font-weight:800;font-size:13.5px;color:var(--green-dark)}
+.xlc-zip{display:flex;gap:8px;margin-top:14px}
+.xlc-zip input{flex:1;min-width:0;border:1px solid var(--rule);border-radius:10px;padding:12px 14px;
+font-size:16px;font-weight:600;color:var(--ink);font-family:inherit}
+.xlc-zip input:focus-visible{outline:3px solid #61BC47;outline-offset:2px}
+.xlc-zipmsg{font-size:12.5px;font-weight:600;margin-top:10px;min-height:18px}
+.xlc-zipmsg.ok{color:var(--promo-green)} .xlc-zipmsg.no{color:var(--body)}
+.xlc-xp{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
+padding:32px 36px;color:#fff;margin-top:20px}
+.xlc-xp .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-hover)}
+.xlc-xp h3{margin-top:10px;font-style:italic;font-weight:900;font-size:26px;letter-spacing:-.5px}
+.xlc-xp ul{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+.xlc-xp li{display:flex;gap:10px;font-size:14px;font-weight:600;color:rgba(255,255,255,.9)}
+.xlc-xp li .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);
+color:var(--ink);font-size:10px;font-weight:800;display:grid;place-items:center}
+.xlc-xp .cta{display:inline-flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:15px;padding:13px 24px;border-radius:12px;min-height:44px;
+text-decoration:none;margin-top:22px}
+.xlc-xp .cta:hover{background:var(--green-hover)}
+.xlc-xp .fine{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.6);margin-top:12px}
+.xlc-pill{display:inline-block;background:var(--green);color:var(--ink);font-size:11px;
+font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin-bottom:14px}
+@media (max-width:809px){
+.xlc-grid3,.xlc-revs{grid-template-columns:1fr;gap:12px}
+.xlc-map{height:auto}
+.xlc-map iframe{height:575px!important}
+.xlc-towns,.xlc-dir,.xlc-xp ul{grid-template-columns:1fr;gap:10px}
+.xlc-links{grid-template-columns:1fr 1fr}
+.xlc-xp{padding:26px 22px;border-radius:20px}
+}
+</style>
+<div class="xsp-hero">
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-grid">
+    <div>
+      <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/locations">Locations</a><span class="sep">›</span><span class="cur">Dayton</span></div>
       
-      <div class="xhac-spacer"></div>
-
-
-      <h2 class="xt-head">Reasons to Hire Our Expert HVAC Services</h2>
-      <div class="xt-panel">
-        <div class="xt-rows">
-          <div class="xt-row" style="--stagger:0ms">
-            <div><span class="xt-badge">Expertise</span><div class="xt-term">HVAC Expertise</div><p class="xt-desc">Our certified technicians deliver accurate diagnostics and effective solutions that prevent small issues from becoming major repairs. We handle complex systems and provide consistent, reliable results.</p></div>
-            <div><span class="xt-badge">Safety</span><div class="xt-term">Safety</div><p class="xt-desc">We follow strict safety protocols for high-voltage electricity, gas lines, and combustion equipment—protecting your home and everyone in it during installs, repairs, and maintenance.</p></div>
-          </div>
-          <div class="xt-row" style="--stagger:80ms">
-            <div><span class="xt-badge">Value</span><div class="xt-term">Cost-Effectiveness</div><p class="xt-desc">Pro service reduces breakdowns and keeps equipment efficient—lowering utility bills and extending system life. Long-term savings often outweigh the upfront cost.</p></div>
-            <div><span class="xt-badge">Quality</span><div class="xt-term">Access to Quality Equipment & Parts</div><p class="xt-desc">We source dependable parts and equipment that homeowners can’t easily obtain. Upgrades match or exceed manufacturer specs to preserve performance and longevity.</p></div>
-          </div>
-          <div class="xt-row" style="--stagger:160ms">
-            <div><span class="xt-badge">Guarantee</span><div class="xt-term">Guaranteed Workmanship</div><p class="xt-desc">We stand behind our work with clear guarantees. If an issue arises, we make it right—no hassle, just results.</p></div>
-            <div><span class="xt-badge">Support</span><div class="xt-term">Emergency Services</div><p class="xt-desc">Heating or cooling emergencies can happen anytime. Our team responds quickly to restore comfort and minimize downtime.</p></div>
-          </div>
-        </div>
-      </div>
-
-      <h2 class="xt-head">Signs Your HVAC System Needs Servicing</h2>
-      <div class="xt-panel">
-        <div class="xt-rows">
-          <div class="xt-row" style="--stagger:0ms">
-            <div><span class="xt-badge">Common Symptoms</span><div class="xt-term">Inconsistent Temperatures</div><p class="xt-desc">Hot and cold spots from room to room often indicate airflow issues, failing components, or a system that needs maintenance.</p></div>
-            <div><span class="xt-badge">Air & Odor Issues</span><div class="xt-term">Weak Airflow</div><p class="xt-desc">If vents produce weak air, it could be a clogged filter, duct restriction, failing blower, or another blockage that needs service.</p></div>
-          </div>
-          <div class="xt-row" style="--stagger:80ms">
-            <div><span class="xt-badge">Noise</span><div class="xt-term">Unusual Noises</div><p class="xt-desc">Banging, rattling, squealing, or hissing can point to loose parts, motor problems, or refrigerant issues that require attention.</p></div>
-            <div><span class="xt-badge">Smell</span><div class="xt-term">Unpleasant Odors</div><p class="xt-desc">Musty, burning, or chemical smells may indicate microbial growth, electrical problems, or contaminants in the system.</p></div>
-          </div>
-          <div class="xt-row" style="--stagger:160ms">
-            <div><span class="xt-badge">Efficiency</span><div class="xt-term">Increased Energy Bills</div><p class="xt-desc">A sudden rise in energy costs without a weather change usually signals the system is working harder than it should.</p></div>
-            <div><span class="xt-badge">Age</span><div class="xt-term">System Age</div><p class="xt-desc">As equipment passes 10+ years, wear impacts reliability and efficiency. Frequent repairs are a sign it may be time to plan for replacement.</p></div>
-          </div>
-        </div>
-      </div>
+      <h1 class="xsp-h1">Heating, air &amp; plumbing — <em>right here in Dayton</em></h1>
+      <p class="xsp-intro">Local techs who know Miami Valley homes. One number, same-day in most cases.</p>
+      <div class="xsp-chiprow"><div class="xsp-chip">Dayton-Based Techs</div><div class="xsp-chip">Same-Day in Most Cases</div><div class="xsp-chip">24/7 Emergency Line</div></div>
     </div>
-    
-    <div class="xhac-spacer"></div>
-
-
-    <!-- SERVICES GRID -->
-    <div class="loc-section xhac-services" aria-label="HVAC Services">
-      <div class="xhac-title">
-        <h2>Types of Heating and Cooling Services We Offer</h2>
-        <div class="bar"></div>
-      </div>
-
-      <div class="xhac-grid">
-        <article class="xhac-card" data-service="Heating & Furnace" style="--stagger:0ms">
-          <div class="xhac-imgwrap"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/furnace.jpg" alt="Heating & Furnace"></div>
-          <div class="xhac-body"><div class="xhac-service-label">HEATING & FURNACE</div><h3 class="xhac-dynamic-title">Local Heating & Furnace Services</h3><p class="xhac-desc">Install, repair, and tune-ups to keep your home warm, safe, and efficient all winter.</p><div class="xhac-actions"><a class="xhac-btn" href="/heating" target="_top" rel="noopener">More</a></div></div>
-        </article>
-
-        <article class="xhac-card" data-service="Air Conditioning" style="--stagger:60ms">
-          <div class="xhac-imgwrap"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/ac.jpg" alt="Air Conditioning"></div>
-          <div class="xhac-body"><div class="xhac-service-label">AIR CONDITIONING</div><h3 class="xhac-dynamic-title">Local Air Conditioning Services</h3><p class="xhac-desc">Fast repairs, expert installs, and maintenance for cool, reliable comfort.</p><div class="xhac-actions"><a class="xhac-btn" href="/air-conditioning" target="_top" rel="noopener">More</a></div></div>
-        </article>
-
-        <article class="xhac-card" data-service="Maintenance & Inspection" style="--stagger:120ms">
-          <div class="xhac-imgwrap"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/maintenance.jpg" alt="Maintenance & Inspection"></div>
-          <div class="xhac-body"><div class="xhac-service-label">MAINTENANCE & INSPECTION</div><h3 class="xhac-dynamic-title">Local Maintenance & Inspection Services</h3><p class="xhac-desc">Protect your system with X-Plan tune-ups and pre-sale HVAC inspections.</p><div class="xhac-actions"><a class="xhac-btn" href="/inspections" target="_top" rel="noopener">More</a></div></div>
-        </article>
-
-        <article class="xhac-card" data-service="Air Duct Cleaning" style="--stagger:240ms">
-          <div class="xhac-imgwrap"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/duct-technicians.jpg" alt="Air Duct Cleaning"></div>
-          <div class="xhac-body"><div class="xhac-service-label">AIR DUCT CLEANING</div><h3 class="xhac-dynamic-title">Local Air Duct Cleaning Services</h3><p class="xhac-desc">Remove dust and allergens for cleaner air and better airflow.</p><div class="xhac-actions"><a class="xhac-btn" href="/air-duct-cleaning" target="_top" rel="noopener">More</a></div></div>
-        </article>
-
-        <article class="xhac-card" data-service="Heat Pump" style="--stagger:300ms">
-          <div class="xhac-imgwrap"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/heatpump.jpg" alt="Heat Pump"></div>
-          <div class="xhac-body"><div class="xhac-service-label">HEAT PUMP</div><h3 class="xhac-dynamic-title">Local Heat Pump Services</h3><p class="xhac-desc">Year-round heating & cooling in one efficient system—install, repair, replace.</p><div class="xhac-actions"><a class="xhac-btn" href="/heat-pumps" target="_top" rel="noopener">More</a></div></div>
-        </article>
-
-        <article class="xhac-card" data-service="Humidifier" style="--stagger:360ms">
-          <div class="xhac-imgwrap"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/humidifier.jpg" alt="Humidifier"></div>
-          <div class="xhac-body"><div class="xhac-service-label">HUMIDIFIER</div><h3 class="xhac-dynamic-title">Local Humidifier Services</h3><p class="xhac-desc">Whole-home moisture control to relieve dry air and protect your home.</p><div class="xhac-actions"><a class="xhac-btn" href="/humidifiers" target="_top" rel="noopener">More</a></div></div>
-        </article>
-
-        <article class="xhac-card" data-service="Thermostat" style="--stagger:420ms">
-          <div class="xhac-imgwrap"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/thermostat.jpg" alt="Thermostat"></div>
-          <div class="xhac-body"><div class="xhac-service-label">THERMOSTAT</div><h3 class="xhac-dynamic-title">Local Thermostat Services</h3><p class="xhac-desc">Smart and standard thermostat installs for precise comfort control.</p><div class="xhac-actions"><a class="xhac-btn" href="/thermostats" target="_top" rel="noopener">More</a></div></div>
-        </article>
-
-        <article class="xhac-card" data-service="Indoor Air Quality" style="--stagger:480ms">
-          <div class="xhac-imgwrap"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/indoor-air-quality-services.jpg" alt="Indoor Air Quality"></div>
-          <div class="xhac-body"><div class="xhac-service-label">INDOOR AIR QUALITY</div><h3 class="xhac-dynamic-title">Local Indoor Air Quality Services</h3><p class="xhac-desc">Filtration, purification, and whole-home solutions for healthier air.</p><div class="xhac-actions"><a class="xhac-btn" href="/indoor-air-quality" target="_top" rel="noopener">More</a></div></div>
-        </article>
-      </div>
-    </div>
-    
-    <div class="xhac-spacer"></div>
-
-    <!-- NEW INSTALL LIST SECTION -->
-    <div class="loc-section">
-      <div class="xhac-title">
-        <h2>We Install All of the Following</h2>
-        <div class="bar"></div>
-      </div>
-
-      <div class="inst-grid">
-        <div class="inst-col">
-          <ul>
-            <li><b>Gas Furnaces</b></li>
-            <li><b>Central Air Conditioning</b></li>
-            <li><b>Ductless Mini Splits</b></li>
-            <li><b>Heat Pump Systems</b></li>
-            <li><b>Electric Air Handlers</b></li>
-          </ul>
-        </div>
-
-        <div class="inst-col">
-          <ul>
-            <li><b>Humidifiers</b></li>
-            <li><b>Zoning Systems</b></li>
-            <li><b>Air Purifiers</b></li>
-            <li><b>Air Cleaners</b></li>
-            <li><b>U-V Lights</b></li>
-          </ul>
-        </div>
-
-        <div class="inst-col">
-          <ul>
-            <li><b>Dual Fuel Systems</b></li>
-            <li><b>Oil Furnaces</b></li>
-            <li><b>Duct Work</b></li>
-            <li><b>Chimney Liners</b></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    
-    <div class="xhac-spacer"></div>
-
-
-    <!-- WHY CHOOSE US -->
-    <div class="loc-section">
-      <div class="xhac-title"><h2>Why Choose Us for HVAC Services?</h2><div class="bar"></div></div>
-
-      <div class="wy-grid">
-        <div class="wy-item"><div class="wy-icon">⏱️</div><div class="wy-title">Your Time Is Our #1 Priority.</div><div class="wy-copy">We design our processes for speed and efficiency. When you call for your <span class="xt-city">City</span> heating and cooling needs, expect prompt, reliable service—every time.</div></div>
-        <div class="wy-item"><div class="wy-icon">✅</div><div class="wy-title">100% Committed To You.</div><div class="wy-copy">From the first call to final walkthrough, our team aims to exceed expectations. We go above and beyond to make sure your comfort needs are met—without compromise.</div></div>
-        <div class="wy-item"><div class="wy-icon">👥</div><div class="wy-title">Our People Count.</div><div class="wy-copy">Knowledgeable, friendly, and detail-oriented technicians are the backbone of Extreme. You’ll get professional, respectful service in your home—start to finish.</div></div>
-        <div class="wy-item"><div class="wy-icon">⚡</div><div class="wy-title">24-Hour Emergency Service.</div><div class="wy-copy">HVAC issues don’t always wait for business hours. We’re prepared to respond quickly and restore comfort when you need it most.</div></div>
-      </div>
-
-      <div class="wy-slab">
-        <div class="wy-photo">
-          <img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/beavercreek-img3.jpg" alt="Extreme Heating technician working in City">
-        </div>
-        <div class="wy-blurb">
-          <div class="wy-ctahead">Schedule Now for Top-Quality HVAC Services in <span class="xt-city">City</span>, OH!</div>
-          <p class="wy-p">Extreme Heating is the trusted choice for HVAC services in <span class="xt-city">City</span>, delivering quality, efficiency, and value that keep systems running their best—season after season.</p>
-          <p class="wy-p">We’re available when you are, with responsive scheduling and well-trained technicians who get the job done right. Browse our reviews to see what your neighbors in <span class="xt-city">City</span> are saying.</p>
-          <p class="wy-p">If you suspect it’s time for a replacement—or you just need fast repair—don’t wait. We’re ready with top-tier, reliable service to keep your home comfortable.</p>
-          <p class="wy-p">Call <a class="wy-phone" href="tel:+19374317399">937-431-7399</a> or schedule online to book your appointment.</p>
-        </div>
-      </div>
-    </div>
-
+    <div class="xsp-bookcol"><div class="xsp-book">
+  <div class="eyebrow">SERVING DAYTON</div>
+  <div class="t">Same-day in most cases.</div>
+  <div class="s">Techs dispatched across Dayton and the Miami Valley — book online in about a minute, or call and talk to a real person.</div>
+  <div class="btns">
+    <a class="xsp-btn-green js-schedule" href="#" role="button">Schedule Service</a>
+    <a class="xsp-btn-purple" href="tel:18445847399">Call (844) 584-7399</a>
   </div>
+  <div class="trust"><span><span class="st">★</span> 4.9 on Google</span><span class="bar">|</span><span>Dayton-based techs</span></div>
+</div></div>
+  </div>
+</div>
+<div class="xco-body">
+  <div>
+  <div class="xsp-eyebrow">SERVICES IN DAYTON</div>
+  <h2 class="xsp-h2">Everything your house throws at you.</h2>
+<div class="xlc-grid3"><a class="xlc-card" href="/locations/dayton/heating"><div class="t">Heating</div><div class="d">Furnace repair, installs, heat pumps, and no-heat emergencies.</div><span class="lm">Dayton heating →</span></a><a class="xlc-card" href="/locations/dayton/cooling"><div class="t">Cooling</div><div class="d">AC repair, replacement, ductless, and seasonal tune-ups.</div><span class="lm">Dayton cooling →</span></a><a class="xlc-card" href="/locations/dayton/plumbing"><span class="xlc-new">NEW</span><div class="t">Plumbing</div><div class="d">Water heaters, drains, leaks, sump pumps — now in Dayton.</div><span class="lm">Dayton plumbing →</span></a><a class="xlc-card" href="/locations/dayton/maintenance"><div class="t">Maintenance</div><div class="d">Seasonal tune-ups and the X-Plan membership that automates them.</div><span class="lm">Dayton maintenance →</span></a><a class="xlc-card" href="/locations/dayton/duct-cleaning"><div class="t">Duct Cleaning</div><div class="d">Whole-home duct and dryer-vent cleaning, with before/after proof.</div><span class="lm">Dayton duct cleaning →</span></a><a class="xlc-card" href="/locations/dayton/indoor-air-quality"><div class="t">Indoor Air Quality</div><div class="d">Filtration, purifiers, humidity control, and fresh-air ventilation.</div><span class="lm">Dayton indoor air quality →</span></a></div>
+</div>
+  <div class="xco-stats"><img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/brand/x-mark.png" alt="" style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)"><div class="grid"><div><div class="n">20+</div><div class="cap">years serving Dayton and the Miami Valley</div></div><div><div class="n">4.9</div><div class="cap">average Google rating</div></div><div><div class="n">90%</div><div class="cap">of calls handled same-day</div></div><div><div class="n">24/7</div><div class="cap">emergency service line</div></div></div></div>
+  <div>
+  <div class="xsp-eyebrow">SERVICE AREA</div>
+  <h2 class="xsp-h2">If you're near Dayton, you're covered.</h2>
+<div class="xlc-towns"><div class="xlc-town"><span class="c">✓</span><a href="/locations/beavercreek">Beavercreek</a></div><div class="xlc-town"><span class="c">✓</span><a href="/locations/bellbrook">Bellbrook</a></div><div class="xlc-town"><span class="c">✓</span><a href="/locations/centerville">Centerville</a></div><div class="xlc-town"><span class="c">✓</span><a href="/locations/englewood">Englewood</a></div><div class="xlc-town"><span class="c">✓</span><a href="/locations/fairborn">Fairborn</a></div><div class="xlc-town"><span class="c">✓</span><a href="/locations/franklin">Franklin</a></div><div class="xlc-town"><span class="c">✓</span><a href="/locations/huber">Huber Heights</a></div><div class="xlc-town"><span class="c">✓</span><a href="/locations/kettering">Kettering</a></div><div class="xlc-town"><span class="c">✓</span><a href="/locations/miamisburg">Miamisburg</a></div><div class="xlc-town"><span class="c">✓</span><a href="/locations/moraine">Moraine</a></div></div><div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div><div style="margin-top:20px"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/cities/dayton.jpg" alt="Dayton, Ohio" loading="lazy" decoding="async"></div></div>
+</div>
+  <div>
+  <div class="xsp-eyebrow">DAYTON REVIEWS</div>
+  <h2 class="xsp-h2">Neighbors put it better than we can.</h2>
+<div class="xlc-revs"><div class="xlc-rev"><div class="stars">★★★★★</div><div class="q">“Furnace died on a Friday night — tech was here Saturday morning and had heat back by lunch.”</div><div class="who">Name here <span>· Beavercreek</span></div></div><div class="xlc-rev"><div class="stars">★★★★★</div><div class="q">“Quoted the price before they started and stuck to it. That alone earns the five stars.”</div><div class="who">Name here <span>· Bellbrook</span></div></div><div class="xlc-rev"><div class="stars">★★★★★</div><div class="q">“On the X-Plan for two years now — they call us to schedule the tune-ups. Zero effort.”</div><div class="who">Name here <span>· Centerville</span></div></div></div>
+</div>
+</div>
+<div class="xsp-band"><div class="xsp-band-in">
+  <div><div class="t">No heat, no AC, or water where it shouldn't be?</div><div class="d">The Dayton line is answered 24/7 — nights, weekends, holidays.</div></div>
+  <div class="btns"><a class="xsp-cta" href="tel:18445847399">Call (844) 584-7399</a></div>
+</div></div>
 
-<script>
-(function(){
-  var root = document.currentScript.closest('section.xhac-location'); if(!root) return;
-
-  function uc(s){ return !s ? "" : s.split("-").map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(" "); }
-  function cityFrom(url){ try{ if(!url) return ""; var m=String(url).toLowerCase().match(/\/locations\/([^\/?#]+)/); return (m&&m[1])?uc(m[1]):""; }catch(e){ return ""; } }
-
-  var city = (root.getAttribute('data-city')||"").trim()
-           || cityFrom(window.location && window.location.href)
-           || (function(){ try { return cityFrom(window.parent!==window ? window.parent.location.href : ""); } catch(e){ return ""; } })()
-           || cityFrom(document.referrer)
-           || "Local";
-
-  root.querySelectorAll('.xt-city').forEach(function(el){ el.textContent = city; });
-
-  // Update hero texts
-  var head = root.querySelector('#xt-city-head');
-  var sub  = root.querySelector('#xt-city-sub');
-  if(head) head.innerHTML = 'Heating & Air Conditioning Services in <span class="xt-city">'+city+'</span>, Ohio.';
-  if(sub)  sub.innerHTML  = '<span class="xt-city">'+city+'</span>, OH Heating & Air Conditioning Installation, Repair & Maintenance';
-
-  // Define link rules
-  var cityServices = {
-    "Heating & Furnace": "/locations/"+city.toLowerCase()+"/heating",
-    "Air Conditioning": "/locations/"+city.toLowerCase()+"/cooling",
-    "Maintenance & Inspection": "/locations/"+city.toLowerCase()+"/maintenance",
-    "Air Duct Cleaning": "/locations/"+city.toLowerCase()+"/duct-cleaning",
-    "Indoor Air Quality": "/locations/"+city.toLowerCase()+"/indoor-air-quality"
-  };
-
-  var fixedServices = {
-    "Heat Pump": "/heat-pump",
-    "Humidifier": "/humidifier",
-    "Thermostat": "/thermostat"
-  };
-
-  // Update service card titles + links
-  root.querySelectorAll('.xhac-card').forEach(function(card){
-    var service = card.getAttribute('data-service') || 'HVAC';
-    var titleEl = card.querySelector('.xhac-dynamic-title');
-    if(titleEl) titleEl.textContent = city + ' ' + service + ' Services';
-
-    var btn = card.querySelector('.xhac-btn');
-    if(btn){
-      if(cityServices[service]) btn.href = cityServices[service];
-      else if(fixedServices[service]) btn.href = fixedServices[service];
-    }
-  });
-
-  // Button micro-press effect
-  root.querySelectorAll('.xhac-btn').forEach(function(b){
-    b.addEventListener('click', function(){
-      b.classList.add('is-pressed');
-      setTimeout(function(){ b.classList.remove('is-pressed'); }, 180);
-    });
-  });
-
-  // Reveal animations
-  var reduce=false; try{ reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
-  if(reduce || !('IntersectionObserver' in window)){
-    root.querySelectorAll('.xt-citykick,.xt-cityrow,.xt-head,.xt-panel,.xt-row,.xhac-card,.wy-grid,.wy-photo,.wy-blurb,.inst-grid')
-      .forEach(function(el){ el.classList.add('reveal-in'); el.classList.add('is-inview'); });
-    return;
-  }
-
-  function observeReveal(nodes, opts){
-    if(!nodes) return;
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){
-          e.target.classList.add('reveal-in');
-          if(e.target.classList.contains('xhac-card')) e.target.classList.add('is-inview');
-          io.unobserve(e.target);
+  <script>
+    (() => {
+      const root = document.currentScript.closest(".xhac-svc");
+      if (!root) return;
+      root.querySelectorAll("a[href]").forEach((a) => {
+        const h = a.getAttribute("href") || "";
+        if (h && !h.startsWith("#") && !h.startsWith("tel:")) {
+          // Default off-site links to _top so they escape the embed iframe instead
+          // of loading a full site inside a content-sized frame. A link that already
+          // declares a target (the lender application uses _blank) keeps its own.
+          if (!a.getAttribute("target")) a.setAttribute("target", "_top");
+          if (!a.getAttribute("rel")) a.setAttribute("rel", "noopener");
         }
       });
-    }, opts || {threshold:0.15, rootMargin:'0px 0px -10% 0px'});
-    (nodes instanceof Element ? [nodes] : nodes).forEach(function(n){ io.observe(n); });
-  }
+      // In Framer the embed iframe is sized to its content, so this document has
+      // nothing to scroll — scrollIntoView has to cross the frame boundary to move
+      // the parent page. A plain hash jump never does that (the anchor just sets the
+      // hash and nothing moves), and "smooth" does not cross the boundary either —
+      // it silently no-ops. Instant is the behaviour that works in an embed, in a
+      // scrollable iframe, and standalone.
+      //
+      // The site header is position:sticky;top:0, so landing flush with the top hides
+      // the section heading underneath it. Measure the real header at jump time and
+      // clear it; --xsp-anchor-offset in the CSS is the fallback for when the parent
+      // can't be read.
+      // How far below the viewport top an anchored section should land: enough to
+      // clear the site's sticky header. Measured off the real header when the parent
+      // is readable; --xsp-anchor-offset in the CSS is the fallback.
+      const landingOffset = () => {
+        try {
+          const pw = window.parent;
+          if (pw && pw !== window && pw.document) {
+            let node = pw.document.elementFromPoint(Math.round(pw.innerWidth / 2), 4);
+            let headerH = 0, hops = 0;
+            while (node && hops++ < 12) {
+              const cs = pw.getComputedStyle(node);
+              if (cs.position === "sticky" || cs.position === "fixed") {
+                const r = node.getBoundingClientRect();
+                if (r.top <= 1 && r.height > 0 && r.height < pw.innerHeight * 0.5) {
+                  headerH = Math.max(headerH, r.height);
+                }
+              }
+              node = node.parentElement;
+            }
+            if (headerH) return Math.round(headerH + 20);
+          }
+        } catch (err) {}
+        const v = parseInt(getComputedStyle(document.documentElement)
+          .getPropertyValue("--xsp-anchor-offset"), 10);
+        return isNaN(v) ? 112 : v;
+      };
 
-  observeReveal(root.querySelector('.xt-citykick'));
-  observeReveal(root.querySelectorAll('.xt-cityrow'), {threshold:0.15, rootMargin:'0px 0px -8% 0px'});
-  observeReveal(root.querySelectorAll('.xt-head'));
-  observeReveal(root.querySelectorAll('.xt-panel'));
-  observeReveal(root.querySelectorAll('.xt-row'), {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
-  observeReveal(root.querySelectorAll('.xhac-card'), {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
-  observeReveal(root.querySelector('.inst-grid'));
-  observeReveal(root.querySelector('.wy-grid'));
-  observeReveal(root.querySelector('.wy-photo'));
-  observeReveal(root.querySelector('.wy-blurb'));
-})();
-</script>
+      const jumpTo = (target) => {
+        if (!target) return;
+        const offset = landingOffset();
+        // scrollIntoView cannot be trusted to cross the embed boundary correctly.
+        // Measured in a content-sized iframe under a sticky header: the browser
+        // scrolls the parent to (target's Y *within this document*) - offset and
+        // never adds the iframe's own offsetTop in the parent, so every anchor
+        // lands short by exactly however far down the page the embed sits. Compute
+        // the absolute position and drive the parent's scroll directly instead.
+        try {
+          const pw = window.parent;
+          const fe = window.frameElement;
+          if (pw && pw !== window && fe) {
+            const frameTop = fe.getBoundingClientRect().top + (pw.scrollY || pw.pageYOffset || 0);
+            const targetTop = target.getBoundingClientRect().top + (window.scrollY || 0);
+            pw.scrollTo(0, Math.max(0, Math.round(frameTop + targetTop - offset)));
+            if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+            try { target.focus({ preventScroll: true }); } catch (err) {}
+            return;
+          }
+        } catch (err) {}
+        // Standalone, or a parent we're not allowed to read: scrollIntoView is
+        // correct here because there is only one scrolling box involved.
+        target.style.scrollMarginTop = offset + "px";
+        target.scrollIntoView({ behavior: "auto", block: "start" });
+        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+        try { target.focus({ preventScroll: true }); } catch (err) {}
+      };
 
+      root.querySelectorAll('a[href^="#"]').forEach((a) => {
+        const id = (a.getAttribute("href") || "").slice(1);
+        if (!id) return;
+        a.addEventListener("click", (e) => {
+          const target = document.getElementById(id);
+          if (!target) return;
+          e.preventDefault();
+          jumpTo(target);
+        });
+      });
+
+      // Deep links from another page (/terms#financing) land the hash on the PARENT
+      // url — this document never sees it, and the parent has no element with that
+      // id because the section lives in here. Read the parent's hash on load and, if
+      // it names something inside this embed, run the same jump an in-page anchor
+      // would. Without this a cross-page anchor silently lands at the top of the page.
+      try {
+        let hash = window.location.hash;
+        if (!hash && window.parent !== window) hash = window.parent.location.hash || "";
+        const id = decodeURIComponent(hash.replace(/^#/, ""));
+        const target = id ? document.getElementById(id) : null;
+        if (target) {
+          // Framer is still laying out (and loading images) when this runs, so the
+          // first jump can land short. Repeat once the layout settles, then stop —
+          // and abandon it the moment the reader scrolls, so we never yank the page
+          // out from under someone who has started reading.
+          let userMoved = false;
+          const release = () => { userMoved = true; };
+          ["wheel", "touchstart", "keydown"].forEach((evt) => {
+            window.addEventListener(evt, release, { once: true, passive: true });
+            try { window.parent.addEventListener(evt, release, { once: true, passive: true }); } catch (err) {}
+          });
+          const settle = (delay) => setTimeout(() => { if (!userMoved) jumpTo(target); }, delay);
+          requestAnimationFrame(() => requestAnimationFrame(() => jumpTo(target)));
+          settle(250);
+          settle(800);
+        }
+      } catch (err) {}
+
+      root.querySelectorAll(".js-schedule").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          try {
+            if (window.parent && window.parent !== window) {
+              window.parent.dispatchEvent(new window.parent.CustomEvent("open-contact-dialog"));
+              return;
+            }
+          } catch (err) {}
+          window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      root.querySelectorAll(".xsp-faq").forEach((faq) => {
+        faq.querySelectorAll(".xsp-qa > button").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const row = btn.parentElement;
+            const wasOpen = row.classList.contains("open");
+            faq.querySelectorAll(".xsp-qa").forEach((r) => {
+              r.classList.remove("open");
+              r.querySelector("button").setAttribute("aria-expanded", "false");
+              r.querySelector(".tog").textContent = "+";
+            });
+            if (!wasOpen) {
+              row.classList.add("open");
+              btn.setAttribute("aria-expanded", "true");
+              row.querySelector(".tog").textContent = "−";
+            }
+          });
+        });
+      });
+      const inIframe = window.parent && window.parent !== window;
+      const sendSize = () => {
+        try {
+          if (inIframe) window.parent.postMessage(
+            { type: "embed-resize", height: Math.ceil(root.getBoundingClientRect().height), source: "xhac-svc" }, "*");
+        } catch (e) {}
+      };
+      if ("ResizeObserver" in window) new ResizeObserver(sendSize).observe(root);
+      window.addEventListener("load", sendSize);
+      sendSize();
+    })();
+  </script>
 </section>
