@@ -1,0 +1,581 @@
+<section class="xhac-svc xsp-gas-line-installation">
+  <style>
+.xhac-svc{--purple:#542770;--purple-light:#5E2C7E;--purple-dark:#3A1A4E;--green:#6BB85C;
+--green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
+--ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
+--stars:#F6A723;
+font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+color:var(--ink);width:100%;overflow-x:hidden}
+.xhac-svc *{box-sizing:border-box;margin:0}
+.xsp-wrap{max-width:1280px;margin:0 auto;padding:0 40px}
+.xsp-dt{}
+.xsp-mb{display:none !important}
+
+/* Where in-page anchor links land. The site header is position:sticky;top:0, so a
+   section scrolled flush to the viewport top slides underneath it. scroll-margin-top
+   is honoured by scrollIntoView — including across the embed iframe boundary — and
+   pushes the landing point down by this much. TUNE THIS ONE VALUE if the header
+   height changes: it should be header height + ~20px of breathing room. */
+.xhac-svc{--xsp-anchor-offset:112px}
+.xhac-svc [id]{scroll-margin-top:var(--xsp-anchor-offset)}
+
+/* buttons */
+.xsp-btn-green{display:flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;width:100%;
+box-shadow:0 6px 18px rgba(107,184,92,.35);transition:background .15s ease,color .15s ease}
+.xsp-btn-green:hover{background:var(--green-dark);color:#fff}
+.xsp-btn-purple{display:flex;align-items:center;justify-content:center;background:var(--purple);
+color:#fff;font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;width:100%;margin-top:10px;
+transition:background .15s ease}
+.xsp-btn-purple:hover{background:#3E1C54}
+.xsp-cta{display:inline-flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;white-space:nowrap;
+transition:background .15s ease}
+.xsp-cta:hover{background:var(--green-hover)}
+.xsp-cta-outline{display:inline-flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.45);
+color:#fff;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;min-height:44px;
+text-decoration:none;background:transparent;white-space:nowrap;transition:border-color .15s,color .15s}
+.xsp-cta-outline:hover{border-color:var(--green);color:var(--green)}
+
+/* hero */
+.xsp-hero{background:linear-gradient(180deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);position:relative;color:#fff}
+.xsp-hero-mark{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.xsp-hero-mark img{position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;
+transform:rotate(-8deg);filter:brightness(0) invert(1)}
+.xsp-hero-grid{position:relative;display:grid;grid-template-columns:1fr 360px;gap:48px;
+max-width:1280px;margin:0 auto;padding:48px 40px 64px}
+.xsp-hero-grid.nocard{grid-template-columns:1fr;padding-bottom:48px}
+.xsp-crumbs{font-size:12px;font-weight:700;color:rgba(255,255,255,.7)}
+.xsp-crumbs a{color:rgba(255,255,255,.7);text-decoration:none}
+.xsp-crumbs a:hover{color:var(--green-hover)}
+.xsp-crumbs .cur{color:var(--green)}
+.xsp-crumbs .sep{margin:0 7px;opacity:.6}
+.xsp-h1{margin-top:14px;font-style:italic;font-weight:900;font-size:46px;line-height:1.08;letter-spacing:-1px;color:#fff}
+.xsp-h1 em{font-style:italic;color:var(--green)}
+.xsp-hero.sub .xsp-h1{font-size:42px}
+.xsp-intro{margin-top:16px;max-width:520px;font-size:15.5px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.82)}
+.xsp-chiprow{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.xsp-chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;
+padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff}
+.xsp-chip .st{color:var(--stars)}
+.xsp-hero-ctas{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.xsp-trustline{display:flex;gap:18px;margin-top:22px;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.85);flex-wrap:wrap}
+.xsp-trustline .st{color:var(--stars)}
+.xsp-trustline .di{color:var(--green)}
+
+/* booking card (hero overlap) */
+.xsp-bookcol{position:relative;margin-bottom:-84px;align-self:start}
+.xsp-book{background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(15,23,42,.25);padding:24px;color:var(--ink)}
+.xsp-book.inflow{box-shadow:0 12px 30px rgba(84,39,112,.12);border:1px solid var(--rule)}
+.xsp-book .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-dark)}
+.xsp-book .t{font-weight:800;font-size:18px;margin-top:8px}
+.xsp-book .s{font-size:13px;font-weight:500;color:var(--body);margin-top:6px;line-height:1.5}
+.xsp-book .btns{margin-top:16px}
+.xsp-book .trust{display:flex;align-items:center;justify-content:center;gap:14px;border-top:1px solid var(--rule);
+margin-top:16px;padding-top:14px;font-size:12px;font-weight:700;color:var(--body)}
+.xsp-book .trust .st{color:var(--stars)}
+.xsp-book .trust .bar{color:#D8D5DE}
+
+/* pill sub-nav */
+.xsp-pillbar{background:#fff;border-bottom:1px solid var(--rule)}
+.xsp-pillbar-in{max-width:1280px;margin:0 auto;padding:14px 40px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.xsp-pill-label{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-pills{display:flex;gap:8px;flex-wrap:wrap}
+.xsp-pill{border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:700;text-decoration:none;
+color:var(--purple);background:var(--tint);min-height:32px;display:inline-flex;align-items:center;
+transition:background .15s,color .15s}
+.xsp-pill:hover{background:#E9E2F1}
+.xsp-pill.active{background:var(--purple);color:#fff;font-weight:800}
+
+/* body grid */
+.xsp-bodygrid{display:grid;grid-template-columns:1fr 360px;gap:48px;max-width:1280px;margin:0 auto;padding:56px 40px}
+.xsp-main{display:flex;flex-direction:column;gap:48px;min-width:0}
+.xsp-rail{padding-top:64px;display:flex;flex-direction:column;gap:16px;align-self:start}
+.xsp-rail.flush{padding-top:0}
+.xsp-eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-dark)}
+.xsp-eyebrow.purple{color:var(--purple)}
+.xsp-h2{margin-top:10px;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px;color:var(--ink)}
+
+/* checklist */
+.xsp-checks{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-top:20px}
+.xsp-check{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700;color:var(--body)}
+.xsp-check .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.xsp-callout{margin-top:20px;background:var(--green-tint);border-radius:12px;padding:14px 18px;
+font-size:13px;font-weight:600;color:var(--promo-green);line-height:1.55}
+.xsp-callout a{color:var(--promo-green);font-weight:800;text-decoration:none}
+.xsp-callout.safety{background:var(--ink);color:rgba(255,255,255,.85)}
+.xsp-callout.safety b{color:var(--green-hover)}
+.xsp-callout.safety a{color:#fff;font-weight:800}
+
+/* what-we-do cards */
+.xsp-cards3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-card{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff;display:flex;
+flex-direction:column;gap:8px;text-decoration:none;transition:box-shadow .18s,border-color .18s,transform .18s}
+.xsp-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);border-color:#D8CCE4;transform:translateY(-2px)}
+.xsp-card .t{font-weight:800;font-size:16.5px;color:var(--ink)}
+.xsp-card .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-card .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:2px}
+.xsp-card:hover .lm{color:var(--green-dark)}
+.xsp-glyph{position:relative;display:block;width:30px;height:30px;flex:none}
+.xsp-glyph i{position:absolute;inset:11px 2px;border-radius:2px;display:block}
+.xsp-glyph i:first-child{background:var(--purple);transform:rotate(45deg)}
+.xsp-glyph i:last-child{background:var(--green);transform:rotate(-45deg)}
+
+/* process */
+.xsp-steps{display:flex;flex-direction:column;gap:22px;margin-top:20px}
+.xsp-step{display:flex;gap:0}
+.xsp-step .n{flex:0 0 44px;font-style:italic;font-weight:900;font-size:25px;color:var(--purple)}
+.xsp-step .t{font-weight:800;font-size:15px}
+.xsp-step .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px;max-width:560px}
+
+/* decision card */
+.xsp-decision{border:1px solid var(--rule);border-radius:16px;padding:20px 22px;background:#fff}
+.xsp-decision .t{font-weight:800;font-size:16.5px}
+.xsp-decision .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px;max-width:620px}
+.xsp-decision a{display:inline-flex;align-items:center;margin-top:12px;border:2px solid var(--purple);
+color:var(--purple);font-weight:800;font-size:13.5px;padding:10px 18px;border-radius:10px;min-height:40px;
+text-decoration:none;transition:background .15s,color .15s}
+.xsp-decision a:hover{background:var(--purple);color:#fff}
+
+/* faq */
+.xsp-faq{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.xsp-qa{border:1px solid var(--rule);border-radius:14px;background:#fff;overflow:hidden}
+.xsp-qa button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+padding:16px 18px;background:none;border:0;cursor:pointer;font-family:inherit;text-align:left;
+font-weight:700;font-size:15px;color:var(--ink);min-height:44px}
+.xsp-qa .tog{width:26px;height:26px;flex:none;border-radius:50%;background:var(--tint);color:var(--purple);
+display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;transition:background .15s,color .15s}
+.xsp-qa.open .tog{background:var(--purple);color:#fff}
+.xsp-qa .a{display:none;font-size:13.5px;line-height:1.6;font-weight:500;color:var(--body);
+padding:0 18px 16px;max-width:620px}
+.xsp-qa.open .a{display:block}
+
+/* rail photo + promos */
+.xsp-photo{height:220px;border-radius:14px;background:#F4F6F8;border:1px solid var(--rule);
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);
+letter-spacing:1px;overflow:hidden}
+.xsp-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.xsp-promo{border-radius:14px;padding:18px 20px;display:block;text-decoration:none}
+.xsp-promo.lav{background:var(--tint)}
+.xsp-promo.mint{background:var(--green-tint)}
+.xsp-promo .t{font-weight:800;font-size:15px;color:var(--purple)}
+.xsp-promo.mint .t{color:var(--promo-green)}
+.xsp-promo .d{font-size:12.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px}
+.xsp-promo .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:10px}
+.xsp-promo.mint .lm{color:var(--promo-green)}
+.xsp-promo:hover .lm{text-decoration:underline}
+.xsp-sibs{border:1px solid var(--rule);border-radius:14px;padding:18px 20px;background:#fff}
+.xsp-sibs .h{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-sibs a{display:flex;align-items:center;justify-content:space-between;padding:10px 0;
+font-size:13.5px;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:1px solid #F1F0F4;min-height:40px}
+.xsp-sibs a:last-child{border-bottom:0;padding-bottom:0}
+.xsp-sibs a:hover{color:var(--purple)}
+.xsp-sibs .ar{color:var(--purple);font-weight:800}
+
+/* emergency band */
+
+/* related strip */
+.xsp-rel{background:var(--soft)}
+.xsp-rel-in{max-width:1280px;margin:0 auto;padding:44px 40px}
+.xsp-rel-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
+.xsp-rel-card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(15,23,42,.05);
+text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-shadow .18s,transform .18s}
+.xsp-rel-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.xsp-rel-card .t{font-weight:800;font-size:15px;color:var(--ink)}
+.xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
+.xsp-rel-card:hover .lm{color:var(--green-dark)}
+
+/* ------------------------- mobile (2b stacking) ------------------------- */
+@media (max-width:809px){
+.xhac-svc{--xsp-anchor-offset:96px}
+.xsp-dt{display:none !important}
+.xsp-mb{display:revert !important}
+.xsp-wrap,.xsp-pillbar-in,.xsp-rel-in{padding-left:20px;padding-right:20px}
+.xsp-hero-grid{grid-template-columns:1fr;gap:0;padding:32px 20px 44px}
+.xsp-h1{font-size:34px;letter-spacing:-.5px}
+.xsp-hero.sub .xsp-h1{font-size:32px}
+.xsp-intro{font-size:14px}
+.xsp-hero-ctas{flex-direction:column;gap:14px}
+.xsp-hero-ctas.xsp-mb{display:flex !important;flex-direction:column;gap:14px}
+.xsp-hero-ctas .xsp-cta,.xsp-hero-ctas .xsp-cta-outline{width:100%}
+.xsp-chiprow{gap:8px}
+.xsp-chip{padding:7px 10px;font-size:11px;border-radius:10px}
+.xsp-bookcol{display:none}
+.xsp-bodygrid{grid-template-columns:1fr;gap:40px;padding:40px 20px 48px}
+.xsp-rail{display:none}
+.xsp-h2{font-size:24px;letter-spacing:-.4px}
+.xsp-checks{grid-template-columns:1fr;gap:10px}
+.xsp-cards3{grid-template-columns:1fr;gap:0;margin-top:12px}
+.xsp-card{flex-direction:row;align-items:center;gap:12px;border:0;border-radius:0;
+border-bottom:1px solid #F1F0F4;padding:13px 0;background:transparent}
+.xsp-card:hover{box-shadow:none;transform:none}
+.xsp-card .xsp-glyph{width:26px;height:26px}
+.xsp-card .glyphwrap{flex:none}
+.xsp-card .txt{flex:1}
+.xsp-card .t{font-size:14.5px}
+.xsp-card .d{font-size:11.5px;line-height:1.45}
+.xsp-card .lm{display:none}
+.xsp-card .mrow{display:block;color:var(--purple);font-weight:800}
+.xsp-step .d{font-size:13px}
+.xsp-rel-grid{grid-template-columns:1fr;gap:0;margin-top:10px}
+.xsp-rel-card{flex-direction:row;align-items:center;justify-content:space-between;border-radius:0;
+box-shadow:none;background:transparent;padding:13px 0;border-bottom:1px solid #F1F0F4}
+.xsp-rel-card:hover{box-shadow:none;transform:none}
+.xsp-mbrail.xsp-mb{display:flex !important;flex-direction:column;gap:14px}
+}
+@media (min-width:810px){
+.xsp-card .mrow{display:none}
+}
+
+.xsp-hubhero-grid{position:relative;display:grid;grid-template-columns:1fr .9fr;gap:48px;align-items:center;
+max-width:1280px;margin:0 auto;padding:48px 40px 72px}
+.xsp-hub-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.3);
+background:rgba(255,255,255,.1);border-radius:999px;padding:7px 14px;font-size:11.5px;font-weight:800;
+letter-spacing:2px;color:#fff}
+.xsp-hub-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.xsp-hubhero-grid .xsp-h1{font-size:44px}
+.xsp-hub-photo{position:relative;min-height:280px}
+.xsp-hub-photo .slashw{position:absolute;left:2%;right:-6%;bottom:26px;height:14px;background:#fff;opacity:.25;
+transform:rotate(-9deg) skewX(-16deg)}
+.xsp-hub-photo .slash{position:absolute;left:-6%;right:-2%;bottom:34px;height:44px;background:var(--green);
+transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.xsp-hub-photo .ph{position:relative;height:280px;border-radius:20px;overflow:hidden;background:#F4F6F8;
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px}
+.xsp-hub-photo .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.xsp-cut{position:relative;height:84px;background:#fff;clip-path:polygon(0 62%,100% 0,100% 100%,0 100%)}
+.xsp-promise{background:#fff;padding:6px 0 26px}
+.xsp-promise-in{max-width:1280px;margin:0 auto;padding:0 40px;display:flex;justify-content:space-between;
+align-items:center;gap:20px;flex-wrap:wrap}
+.xsp-promise-label{font-size:12px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-promise-items{display:flex;gap:26px;flex-wrap:wrap}
+.xsp-promise-items span{font-size:12.5px;font-weight:700;color:var(--body)}
+.xsp-promise-items .di{color:var(--green)}
+.xsp-hubsec{background:#fff;padding:44px 0 56px}
+.xsp-hubsec.soft{background:var(--soft)}
+.xsp-hubsec-in{max-width:1280px;margin:0 auto;padding:0 40px}
+.xsp-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-notsure{background:var(--tint);border:0;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px;
+text-decoration:none;transition:box-shadow .18s,transform .18s}
+.xsp-notsure:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.xsp-notsure .t{font-weight:800;font-size:16.5px;color:var(--purple)}
+.xsp-notsure .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-notsure .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:2px}
+.xsp-badge{display:inline-block;background:var(--green-tint);color:var(--green-dark);font-weight:800;
+font-size:9.5px;letter-spacing:.6px;border-radius:5px;padding:3px 7px;margin-left:8px;vertical-align:middle}
+a.xsp-xplan{text-decoration:none;cursor:pointer;transition:box-shadow .18s,transform .18s}
+a.xsp-xplan:hover{box-shadow:0 18px 44px rgba(84,39,112,.35);transform:translateY(-2px)}
+.xsp-xplan{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;padding:40px 44px;
+color:#fff;position:relative;overflow:hidden;display:grid;grid-template-columns:1.1fr auto;gap:32px;align-items:center}
+.xsp-xplan .mark{position:absolute;right:-40px;bottom:-46px;width:300px;opacity:.06;pointer-events:none;
+filter:brightness(0) invert(1)}
+.xsp-xplan .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-hover)}
+.xsp-xplan h2{margin-top:10px;font-style:italic;font-weight:900;font-size:30px;letter-spacing:-.5px;color:#fff}
+.xsp-xplan .chips{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
+.xsp-xplan .chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:999px;
+padding:8px 14px;font-size:12.5px;font-weight:700}
+.xsp-xplan .price{position:relative;text-align:right}
+.xsp-xplan .amt{font-style:italic;font-weight:900;font-size:34px}
+.xsp-xplan .per{font-size:15px;font-weight:700;opacity:.85;font-style:normal}
+.xsp-xplan .alt{font-size:13px;font-weight:700;color:rgba(255,255,255,.75);margin-top:4px}
+.xsp-xplan .xsp-cta{margin-top:14px}
+.xsp-cross{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.xsp-cross .xsp-promo .t{font-size:16.5px}
+@media (max-width:809px){
+.xsp-hubhero-grid{grid-template-columns:1fr;gap:28px;padding:32px 20px 52px}
+.xsp-hubhero-grid .xsp-h1{font-size:34px}
+.xsp-hub-photo{min-height:0}
+.xsp-hub-photo .ph{height:200px}
+.xsp-cut{height:44px;clip-path:polygon(0 55%,100% 0,100% 100%,0 100%)}
+.xsp-promise-in{padding:0 20px}
+.xsp-promise-items{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px}
+.xsp-hubsec-in{padding:0 20px}
+.xsp-grid3,.xsp-grid4{grid-template-columns:1fr;gap:10px;margin-top:14px}
+.xsp-xplan{grid-template-columns:1fr;padding:28px 22px;border-radius:20px}
+.xsp-xplan .price{text-align:left}
+.xsp-cross{grid-template-columns:1fr}
+}
+
+.xsp-bookcol.pricing .price-row{display:flex;align-items:baseline;gap:8px;margin-top:10px}
+.xsp-bookcol.pricing .amt{font-style:italic;font-weight:900;font-size:38px;color:var(--ink)}
+.xsp-bookcol.pricing .per{font-weight:700;font-size:14px;color:var(--body)}
+.xsp-bookcol.pricing .alt{font-size:13px;font-weight:600;color:var(--body);margin-top:4px}
+.xsp-benefits{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.xsp-benefit{border:1px solid var(--rule);border-radius:16px;padding:18px;background:#fff;display:flex;gap:12px}
+.xsp-benefit .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.xsp-benefit .t{font-weight:800;font-size:15px;color:var(--ink)}
+.xsp-benefit .d{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xsp-usecases{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-usecase{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff;display:flex;
+flex-direction:column;gap:8px}
+.xsp-usecase .t{font-weight:800;font-size:16.5px;color:var(--ink)}
+.xsp-usecase .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-value{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
+padding:36px 40px;color:#fff;margin-top:20px}
+.xsp-value .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-hover)}
+.xsp-value h3{margin-top:10px;font-style:italic;font-weight:900;font-size:26px;letter-spacing:-.5px;color:#fff}
+.xsp-value .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;margin-top:22px}
+.xsp-value .n{font-style:italic;font-weight:900;font-size:26px;color:#fff}
+.xsp-value .cap{font-size:12.5px;line-height:1.5;font-weight:500;color:rgba(255,255,255,.75);margin-top:6px}
+.xsp-joinband{background:var(--ink)}
+.xsp-joinband-in{max-width:1280px;margin:0 auto;padding:20px 40px;display:flex;align-items:center;
+justify-content:space-between;gap:24px;flex-wrap:wrap}
+.xsp-joinband b{font-weight:800;font-size:15px;color:#fff}
+.xsp-joinband span{font-size:13px;font-weight:500;color:rgba(255,255,255,.6)}
+@media (max-width:809px){
+.xsp-bookcol.pricing{display:block !important;margin:28px 0 0}
+.xsp-benefits,.xsp-usecases{grid-template-columns:1fr;gap:12px}
+.xsp-value{padding:26px 22px;border-radius:20px}
+.xsp-value .stats{grid-template-columns:1fr;gap:18px}
+.xsp-joinband-in{padding:20px;flex-direction:column;align-items:flex-start;gap:12px}
+}
+</style>
+<div class="xsp-hero sub">
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-grid nocard">
+    <div>
+      <div class="xsp-crumbs"><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><a href="/plumbing/gas-line/overview">Gas Line Services</a><span class="sep">›</span><span class="cur">Installation</span></div>
+      <h1 class="xsp-h1">New gas lines, <em>run to code</em>.</h1>
+      <p class="xsp-intro">Ranges, dryers, grills, fire pits, and generators — new gas runs sized, installed, and tested to code.</p>
+      <div class="xsp-hero-ctas">
+        <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Estimate</a>
+        <a class="xsp-cta-outline" href="tel:18445847399">Call Now</a>
+      </div>
+      <div class="xsp-trustline"><span><span class="st">★</span> 4.9 on Google</span><span>◆ 20+ years locally owned</span><span>◆ 24/7 emergency service</span></div>
+    </div>
+  </div>
+</div>
+<div class="xsp-pillbar"><div class="xsp-pillbar-in">
+  <span class="xsp-pill-label">GAS LINE SERVICES</span>
+  <div class="xsp-pills"><a class="xsp-pill" href="/plumbing/gas-line/overview">Overview</a><a class="xsp-pill" href="/plumbing/gas-line/repair">Repair</a><a class="xsp-pill active" href="/plumbing/gas-line/installation" aria-current="page">Installation</a></div>
+</div></div>
+<div class="xsp-bodygrid">
+  <div class="xsp-main"><div>
+  <div class="xsp-eyebrow">ADDING GAS?</div>
+  <h2 class="xsp-h2">What we run lines for.</h2>
+  <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Gas range or cooktop</div><div class="xsp-check"><span class="c">✓</span>Clothes dryer conversion</div><div class="xsp-check"><span class="c">✓</span>Outdoor grill or fire pit</div><div class="xsp-check"><span class="c">✓</span>Standby generator</div><div class="xsp-check"><span class="c">✓</span>Garage heater</div><div class="xsp-check"><span class="c">✓</span>Pool or spa heater</div></div>
+  <div class="xsp-callout">Planning a project? Call <a href="tel:18445847399">(844) 584-7399</a> early — a right-sized line saves headaches later.</div>
+</div><div>
+  <div class="xsp-eyebrow">WHAT TO EXPECT</div>
+  <h2 class="xsp-h2">A visit without surprises.</h2>
+  <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
+    <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
+    <div><div class="t">Sized & quoted upfront</div><div class="d">BTU load calculated across appliances so everything runs right.</div></div></div><div class="xsp-step"><div class="n">03</div>
+    <div><div class="t">Connected and certified</div><div class="d">Pressure-tested, leak-checked, and inspected — with permits handled.</div></div></div></div>
+</div><div class="xsp-decision">
+  <div class="t">Upgrading appliances too?</div>
+  <div class="d">If old lines are corroded or undersized, we'll flag it during the estimate — before it's a problem.</div>
+  <a href="/plumbing/gas-line/repair">Gas Line Repair →</a>
+</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+  <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
+</a></div><div>
+  <div class="xsp-eyebrow">INSTALLATION QUESTIONS</div>
+  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <div class="xsp-faq"><div class="xsp-qa open">
+    <button type="button" aria-expanded="true"><span>How fast can you run a new gas line?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">Most residential runs are done in a day once permits clear — we handle the paperwork.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Do I need a permit?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes for most gas work — and we pull it, schedule inspection, and close it out for you.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Can you convert my dryer or range to gas?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes — line, shutoff, and safe hookup, tested before first use.</div>
+  </div></div>
+</div></div>
+  <aside class="xsp-rail flush"><div class="xsp-book inflow">
+  <div class="eyebrow">BOOK AN ESTIMATE</div>
+  <div class="t">Project-ready gas runs.</div>
+  <div class="s">Permits and inspection handled.</div>
+  <div class="btns">
+    <a class="xsp-btn-green js-schedule" href="#" role="button">Schedule Estimate</a>
+    <a class="xsp-btn-purple" href="tel:18445847399">Call (844) 584-7399</a>
+  </div>
+  <div class="trust"><span><span class="st">★</span> 4.9 on Google</span><span class="bar">|</span><span>20+ years local</span></div>
+</div><a class="xsp-promo lav js-schedule" href="#">
+  <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
+</a><div class="xsp-sibs"><div class="h">GAS LINE SERVICES</div><a href="/plumbing/gas-line/overview">Gas Line Overview<span class="ar">→</span></a><a href="/plumbing/gas-line/repair">Gas Line Repair<span class="ar">→</span></a><a href="/plumbing/water-heater/overview">Water Heater Services<span class="ar">→</span></a></div><div class="xsp-photo"><img src="https://media.istockphoto.com/id/1272276339/photo/ceiling-with-multiple-utility-lines-gas-electrical-water-internet-and-sewer.jpg?s=612x612&w=0&k=20&c=rEtMb6DNqRx5JxjmCtLb7n_ZkzGIAT8ya0Z250G7640=" alt="" loading="lazy" decoding="async"></div></aside>
+</div>
+<div class="xsp-hubsec"><div class="xsp-hubsec-in">
+  <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/brand/logo-white.png" alt="">
+    <div>
+      <div class="eyebrow">X-PLAN MAINTENANCE</div>
+      <h2>Never think about tune-ups again.</h2>
+      <div class="chips"><span class="chip">Priority scheduling</span><span class="chip">15% off repairs</span><span class="chip">5-year repair warranty</span></div>
+    </div>
+    <div class="price">
+      <div class="amt">$249<span class="per"> / year</span></div>
+      <div class="alt">or $20.75 / month</div>
+      <span class="xsp-cta">Join X-Plan</span>
+    </div>
+  </a>
+</div></div>
+
+  <script>
+    (() => {
+      const root = document.currentScript.closest(".xhac-svc");
+      if (!root) return;
+      root.querySelectorAll("a[href]").forEach((a) => {
+        const h = a.getAttribute("href") || "";
+        if (h && !h.startsWith("#") && !h.startsWith("tel:")) {
+          // Default off-site links to _top so they escape the embed iframe instead
+          // of loading a full site inside a content-sized frame. A link that already
+          // declares a target (the lender application uses _blank) keeps its own.
+          if (!a.getAttribute("target")) a.setAttribute("target", "_top");
+          if (!a.getAttribute("rel")) a.setAttribute("rel", "noopener");
+        }
+      });
+      // In Framer the embed iframe is sized to its content, so this document has
+      // nothing to scroll — scrollIntoView has to cross the frame boundary to move
+      // the parent page. A plain hash jump never does that (the anchor just sets the
+      // hash and nothing moves), and "smooth" does not cross the boundary either —
+      // it silently no-ops. Instant is the behaviour that works in an embed, in a
+      // scrollable iframe, and standalone.
+      //
+      // The site header is position:sticky;top:0, so landing flush with the top hides
+      // the section heading underneath it. Measure the real header at jump time and
+      // clear it; --xsp-anchor-offset in the CSS is the fallback for when the parent
+      // can't be read.
+      // How far below the viewport top an anchored section should land: enough to
+      // clear the site's sticky header. Measured off the real header when the parent
+      // is readable; --xsp-anchor-offset in the CSS is the fallback.
+      const landingOffset = () => {
+        try {
+          const pw = window.parent;
+          if (pw && pw !== window && pw.document) {
+            let node = pw.document.elementFromPoint(Math.round(pw.innerWidth / 2), 4);
+            let headerH = 0, hops = 0;
+            while (node && hops++ < 12) {
+              const cs = pw.getComputedStyle(node);
+              if (cs.position === "sticky" || cs.position === "fixed") {
+                const r = node.getBoundingClientRect();
+                if (r.top <= 1 && r.height > 0 && r.height < pw.innerHeight * 0.5) {
+                  headerH = Math.max(headerH, r.height);
+                }
+              }
+              node = node.parentElement;
+            }
+            if (headerH) return Math.round(headerH + 20);
+          }
+        } catch (err) {}
+        const v = parseInt(getComputedStyle(document.documentElement)
+          .getPropertyValue("--xsp-anchor-offset"), 10);
+        return isNaN(v) ? 112 : v;
+      };
+
+      const jumpTo = (target) => {
+        if (!target) return;
+        const offset = landingOffset();
+        // scrollIntoView cannot be trusted to cross the embed boundary correctly.
+        // Measured in a content-sized iframe under a sticky header: the browser
+        // scrolls the parent to (target's Y *within this document*) - offset and
+        // never adds the iframe's own offsetTop in the parent, so every anchor
+        // lands short by exactly however far down the page the embed sits. Compute
+        // the absolute position and drive the parent's scroll directly instead.
+        try {
+          const pw = window.parent;
+          const fe = window.frameElement;
+          if (pw && pw !== window && fe) {
+            const frameTop = fe.getBoundingClientRect().top + (pw.scrollY || pw.pageYOffset || 0);
+            const targetTop = target.getBoundingClientRect().top + (window.scrollY || 0);
+            pw.scrollTo(0, Math.max(0, Math.round(frameTop + targetTop - offset)));
+            if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+            try { target.focus({ preventScroll: true }); } catch (err) {}
+            return;
+          }
+        } catch (err) {}
+        // Standalone, or a parent we're not allowed to read: scrollIntoView is
+        // correct here because there is only one scrolling box involved.
+        target.style.scrollMarginTop = offset + "px";
+        target.scrollIntoView({ behavior: "auto", block: "start" });
+        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+        try { target.focus({ preventScroll: true }); } catch (err) {}
+      };
+
+      root.querySelectorAll('a[href^="#"]').forEach((a) => {
+        const id = (a.getAttribute("href") || "").slice(1);
+        if (!id) return;
+        a.addEventListener("click", (e) => {
+          const target = document.getElementById(id);
+          if (!target) return;
+          e.preventDefault();
+          jumpTo(target);
+        });
+      });
+
+      // Deep links from another page (/terms#financing) land the hash on the PARENT
+      // url — this document never sees it, and the parent has no element with that
+      // id because the section lives in here. Read the parent's hash on load and, if
+      // it names something inside this embed, run the same jump an in-page anchor
+      // would. Without this a cross-page anchor silently lands at the top of the page.
+      try {
+        let hash = window.location.hash;
+        if (!hash && window.parent !== window) hash = window.parent.location.hash || "";
+        const id = decodeURIComponent(hash.replace(/^#/, ""));
+        const target = id ? document.getElementById(id) : null;
+        if (target) {
+          // Framer is still laying out (and loading images) when this runs, so the
+          // first jump can land short. Repeat once the layout settles, then stop —
+          // and abandon it the moment the reader scrolls, so we never yank the page
+          // out from under someone who has started reading.
+          let userMoved = false;
+          const release = () => { userMoved = true; };
+          ["wheel", "touchstart", "keydown"].forEach((evt) => {
+            window.addEventListener(evt, release, { once: true, passive: true });
+            try { window.parent.addEventListener(evt, release, { once: true, passive: true }); } catch (err) {}
+          });
+          const settle = (delay) => setTimeout(() => { if (!userMoved) jumpTo(target); }, delay);
+          requestAnimationFrame(() => requestAnimationFrame(() => jumpTo(target)));
+          settle(250);
+          settle(800);
+        }
+      } catch (err) {}
+
+      root.querySelectorAll(".js-schedule").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          try {
+            if (window.parent && window.parent !== window) {
+              window.parent.dispatchEvent(new window.parent.CustomEvent("open-contact-dialog"));
+              return;
+            }
+          } catch (err) {}
+          window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      root.querySelectorAll(".xsp-faq").forEach((faq) => {
+        faq.querySelectorAll(".xsp-qa > button").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const row = btn.parentElement;
+            const wasOpen = row.classList.contains("open");
+            faq.querySelectorAll(".xsp-qa").forEach((r) => {
+              r.classList.remove("open");
+              r.querySelector("button").setAttribute("aria-expanded", "false");
+              r.querySelector(".tog").textContent = "+";
+            });
+            if (!wasOpen) {
+              row.classList.add("open");
+              btn.setAttribute("aria-expanded", "true");
+              row.querySelector(".tog").textContent = "−";
+            }
+          });
+        });
+      });
+      const inIframe = window.parent && window.parent !== window;
+      const sendSize = () => {
+        try {
+          if (inIframe) window.parent.postMessage(
+            { type: "embed-resize", height: Math.ceil(root.getBoundingClientRect().height), source: "xhac-svc" }, "*");
+        } catch (e) {}
+      };
+      if ("ResizeObserver" in window) new ResizeObserver(sendSize).observe(root);
+      window.addEventListener("load", sendSize);
+      sendSize();
+    })();
+  </script>
+</section>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>body{margin:0;background:#ECEAF1;font-family:'Montserrat',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#0F172A} a{color:#542770;text-decoration:none} a:hover{color:#4E9B41}</style>
+</helmet>
+<section style="padding:48px 56px">
+  <div style="margin-bottom:24px">
+    <div style="font-weight:800;font-size:16px">4 · Company pages — About, Contact, Financing, Specials</div>
+    <div style="font-size:13px;color:#475569;margin-top:4px">/about · /contact · /financing · /specials — same finalized scheme (solid header, purple hero, rail promos, emergency band) · desktop 1280 · mobile stacks per 2b rules</div>
+  </div>
+  <div style="display:flex;gap:56px;align-items:flex-start">
+
+    <div id="4a" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:monospace;font-weight:800;font-size:12px;background:#0F172A;color:#fff;border-radius:6px;padding:4px 9px">4a</span><span style="font-weight:700;font-size:13px;color:#475569">About page — desktop 1280</span></div>
+      <div style="width:1280px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 20px 50px rgba(15,23,42,.15)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:#5E2C7E">
+          <img src="assets/logo-white.png" style="height:44px" alt="Extreme Heating, Air, Plumbing">
+          <div style="display:flex;align-items:center;gap:26px;font-weight:600;font-size:14px;color:#fff">
+            <span>Plumbing <span style="font-size:9px;color:rgba(255,255,255,.55)">▼</span></span><span>Heating &amp; Air <span style="font-size:9px;color:rgba(255,255,255,.55)">▼</span></span><span>Locations</span><span>Specials</span><span style="color:#8FD481">About</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:18px">
+            <span style="color:#fff;font-weight:800;font-size:15px">(844) 584-7399</span>
+            <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;cursor:pointer">Schedule Service</div>
+          </div>
+        </div>
+        <div style="background:linear-gradient(150deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);position:relative">
+          <div style="position:absolute;inset:0;overflow:hidden"><img src="assets/x-mark.png" style="position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)" alt=""></div>
+          <div style="display:grid;grid-template-columns:1fr 400px;gap:48px;padding:40px 40px 48px;position:relative;align-items:center">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.55)">Home <span style="margin:0 6px">›</span> <span style="color:#8FD481">About Us</span></div>
+              <h1 style="margin:14px 0 0;font-style:italic;font-weight:900;font-size:46px;line-height:1.08;letter-spacing:-1px;color:#fff">Locally owned. <span style="color:#6BB85C">Extremely</span> committed.</h1>
+              <p style="margin:16px 0 0;max-width:520px;font-size:15.5px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.82)">The Extreme Team is a family-owned heating, cooling, and plumbing company serving Dayton and Cincinnati — built on honest pricing, clean workmanship, and neighbors referring neighbors.</p>
+              <div style="display:flex;gap:10px;margin-top:24px">
+                <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">Family Owned &amp; Operated</div>
+                <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">20+ Years Local</div>
+                <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff"><span style="color:#F6A723">★</span> 4.9 on Google</div>
+              </div>
+            </div>
+            <image-slot id="svc-4a-hero" style="width:100%;height:250px" shape="rounded" radius="16" placeholder="Drop a team photo here"></image-slot>
+          </div>
+        </div>
+        <div style="padding:56px 40px;display:flex;flex-direction:column;gap:48px">
+          <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center">
+            <div>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">OUR STORY</div>
+              <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">From one van to the whole Miami Valley.</h2>
+              <p style="margin:16px 0 0;font-size:14.5px;line-height:1.65;font-weight:500;color:#475569">Extreme Heating, Air, Plumbing started the way most good service companies do — one van, one toolbox, and a promise to show up when we said we would. Two decades later we cover Dayton and Cincinnati with a full team of licensed HVAC and plumbing pros.</p>
+              <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;font-weight:500;color:#475569">The size changed. The promise didn't: upfront pricing before any work begins, techs who treat your home like their own, and a real person answering the phone — day or night.</p>
+            </div>
+            <image-slot id="svc-4a-story" style="width:100%;height:280px" shape="rounded" radius="16" placeholder="Drop a founders / first-van photo here"></image-slot>
+          </div>
+          <div>
+            <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">WHAT WE STAND FOR</div>
+            <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">Four things we never compromise on.</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-top:20px">
+              <div style="border:1px solid #E7E7EA;border-radius:16px;padding:18px"><div style="position:relative;width:26px;height:26px"><div style="position:absolute;inset:9px 0;background:#542770;border-radius:2px;transform:rotate(45deg)"></div><div style="position:absolute;inset:9px 0;background:#6BB85C;border-radius:2px;transform:rotate(-45deg)"></div></div><div style="font-weight:800;font-size:15px;margin-top:12px">Honest pricing, upfront</div><div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Flat quotes you approve before we start. No surprise line items, ever.</div></div>
+              <div style="border:1px solid #E7E7EA;border-radius:16px;padding:18px"><div style="position:relative;width:26px;height:26px"><div style="position:absolute;inset:9px 0;background:#542770;border-radius:2px;transform:rotate(45deg)"></div><div style="position:absolute;inset:9px 0;background:#6BB85C;border-radius:2px;transform:rotate(-45deg)"></div></div><div style="font-weight:800;font-size:15px;margin-top:12px">Your home, respected</div><div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Shoe covers, drop cloths, and a workspace left cleaner than we found it.</div></div>
+              <div style="border:1px solid #E7E7EA;border-radius:16px;padding:18px"><div style="position:relative;width:26px;height:26px"><div style="position:absolute;inset:9px 0;background:#542770;border-radius:2px;transform:rotate(45deg)"></div><div style="position:absolute;inset:9px 0;background:#6BB85C;border-radius:2px;transform:rotate(-45deg)"></div></div><div style="font-weight:800;font-size:15px;margin-top:12px">Fast when it matters</div><div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">90% of calls handled same-day, with a 24/7 line for real emergencies.</div></div>
+              <div style="border:1px solid #E7E7EA;border-radius:16px;padding:18px"><div style="position:relative;width:26px;height:26px"><div style="position:absolute;inset:9px 0;background:#542770;border-radius:2px;transform:rotate(45deg)"></div><div style="position:absolute;inset:9px 0;background:#6BB85C;border-radius:2px;transform:rotate(-45deg)"></div></div><div style="font-weight:800;font-size:15px;margin-top:12px">Built on referrals</div><div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Most new customers come from old ones. We earn that, one visit at a time.</div></div>
+            </div>
+          </div>
+          <div style="background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;padding:32px 36px;position:relative;overflow:hidden">
+            <img src="assets/x-mark.png" style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)" alt="">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px;position:relative">
+              <div><div style="font-style:italic;font-weight:900;font-size:30px;color:#fff">20+</div><div style="font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px">years serving Ohio homes</div></div>
+              <div><div style="font-style:italic;font-weight:900;font-size:30px;color:#fff"><span style="color:#F6A723">★</span> 4.9</div><div style="font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px">average Google rating</div></div>
+              <div><div style="font-style:italic;font-weight:900;font-size:30px;color:#fff">90%</div><div style="font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px">of calls handled same-day</div></div>
+              <div><div style="font-style:italic;font-weight:900;font-size:30px;color:#fff">24/7</div><div style="font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px">emergency service line</div></div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">MEET THE TEAM</div>
+            <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">The faces at your door.</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-top:20px">
+              <div><image-slot id="svc-4a-team-1" style="width:100%;height:230px" shape="rounded" radius="14" placeholder="Tech headshot"></image-slot><div style="font-weight:800;font-size:14px;margin-top:10px">Name here</div><div style="font-size:12.5px;font-weight:600;color:#475569">Role / years with team</div></div>
+              <div><image-slot id="svc-4a-team-2" style="width:100%;height:230px" shape="rounded" radius="14" placeholder="Tech headshot"></image-slot><div style="font-weight:800;font-size:14px;margin-top:10px">Name here</div><div style="font-size:12.5px;font-weight:600;color:#475569">Role / years with team</div></div>
+              <div><image-slot id="svc-4a-team-3" style="width:100%;height:230px" shape="rounded" radius="14" placeholder="Tech headshot"></image-slot><div style="font-weight:800;font-size:14px;margin-top:10px">Name here</div><div style="font-size:12.5px;font-weight:600;color:#475569">Role / years with team</div></div>
+              <div><image-slot id="svc-4a-team-4" style="width:100%;height:230px" shape="rounded" radius="14" placeholder="Tech headshot"></image-slot><div style="font-weight:800;font-size:14px;margin-top:10px">Name here</div><div style="font-size:12.5px;font-weight:600;color:#475569">Role / years with team</div></div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">WHERE WE WORK</div>
+            <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">Two home bases, one Extreme Team.</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px">
+              <div style="border:1px solid #E7E7EA;border-radius:16px;padding:20px"><div style="font-weight:800;font-size:16.5px">Dayton</div><div style="font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:4px">Serving Dayton, Kettering, Beavercreek, Centerville, Springboro, and surrounding Miami Valley communities.</div><div style="font-weight:800;font-size:13px;color:#542770;margin-top:10px">Dayton location &amp; service area →</div></div>
+              <div style="border:1px solid #E7E7EA;border-radius:16px;padding:20px"><div style="font-weight:800;font-size:16.5px">Cincinnati</div><div style="font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:4px">Serving Cincinnati, Mason, West Chester, Loveland, Fairfield, and communities across the metro.</div><div style="font-weight:800;font-size:13px;color:#542770;margin-top:10px">Cincinnati location &amp; service area →</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#0F172A;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+          <div><span style="font-weight:800;font-size:15px;color:#fff">Love the trade? So do we.</span> <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.6)">We're always looking for great techs and friendly office folks.</span></div>
+          <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;white-space:nowrap;cursor:pointer">See Open Roles</div>
+        </div>
+        <div style="height:4px;background:linear-gradient(90deg,#6BB85C,#542770)"></div>
+        <div style="background:#0F172A;padding:36px 40px;display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-style:italic;font-weight:900;font-size:24px;color:#fff">Need help today? The Extreme Team is ready.</div><div style="font-size:13px;font-weight:500;color:rgba(255,255,255,.6);margin-top:6px">Same-day service in most cases · (844) 584-7399</div></div>
+          <div style="display:flex;gap:12px"><div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:13px 22px;border-radius:10px;cursor:pointer">Schedule Service</div><div style="border:1.5px solid rgba(255,255,255,.45);color:#fff;font-weight:800;font-size:14px;padding:13px 22px;border-radius:10px;cursor:pointer">Call Now</div></div>
+        </div>
+        <div style="background:#0F172A;border-top:1px solid rgba(255,255,255,.1);padding:10px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.35)">Full footer continues per screen 3a of homepage handoff</div>
+      </div>
+    </div>
+
+    <div id="4b" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:monospace;font-weight:800;font-size:12px;background:#0F172A;color:#fff;border-radius:6px;padding:4px 9px">4b</span><span style="font-weight:700;font-size:13px;color:#475569">Contact page — desktop 1280</span></div>
+      <div style="width:1280px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 20px 50px rgba(15,23,42,.15)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:#5E2C7E">
+          <img src="assets/logo-white.png" style="height:44px" alt="Extreme Heating, Air, Plumbing">
+          <div style="display:flex;align-items:center;gap:26px;font-weight:600;font-size:14px;color:#fff">
+            <span>Plumbing <span style="font-size:9px;color:rgba(255,255,255,.55)">▼</span></span><span>Heating &amp; Air <span style="font-size:9px;color:rgba(255,255,255,.55)">▼</span></span><span>Locations</span><span>Specials</span><span>About</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:18px">
+            <span style="color:#fff;font-weight:800;font-size:15px">(844) 584-7399</span>
+            <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;cursor:pointer">Schedule Service</div>
+          </div>
+        </div>
+        <div style="background:linear-gradient(150deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);position:relative">
+          <div style="position:absolute;inset:0;overflow:hidden"><img src="assets/x-mark.png" style="position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)" alt=""></div>
+          <div style="display:grid;grid-template-columns:1fr 360px;gap:48px;padding:40px 40px 44px;position:relative">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.55)">Home <span style="margin:0 6px">›</span> <span style="color:#8FD481">Contact</span></div>
+              <h1 style="margin:14px 0 0;font-style:italic;font-weight:900;font-size:46px;line-height:1.08;letter-spacing:-1px;color:#fff">Get in touch with the <span style="color:#6BB85C">Extreme Team</span>.</h1>
+              <p style="margin:16px 0 0;max-width:520px;font-size:15.5px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.82)">Call or book online in a couple of clicks — a real person answers, and most visits happen the same day you reach out.</p>
+              <div style="display:flex;gap:10px;margin-top:24px">
+                <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">Same-Day in Most Cases</div>
+                <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">24/7 Emergency Line</div>
+                <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">Dayton &amp; Cincinnati</div>
+              </div>
+            </div>
+            <div style="position:relative;margin-bottom:-84px">
+              <div style="background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(15,23,42,.25);padding:24px">
+                <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">CONTACT US</div>
+                <div style="font-style:italic;font-weight:900;font-size:27px;letter-spacing:-.5px;margin-top:8px">(844) 584-7399</div>
+                <div style="font-size:13px;font-weight:500;color:#475569;margin-top:4px;line-height:1.5">Office hours Mon–Fri · emergencies 24/7.</div>
+                <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:15px;padding:14px;border-radius:10px;text-align:center;margin-top:16px;box-shadow:0 6px 18px rgba(107,184,92,.35);cursor:pointer">Schedule Service</div>
+                <div style="background:#542770;color:#fff;font-weight:800;font-size:15px;padding:14px;border-radius:10px;text-align:center;margin-top:10px;cursor:pointer">Call (844) 584-7399</div>
+                <div style="display:flex;align-items:center;justify-content:center;gap:14px;border-top:1px solid #E7E7EA;margin-top:16px;padding-top:14px;font-size:12px;font-weight:700;color:#475569"><span><span style="color:#F6A723">★</span> 4.9 on Google</span><span style="color:#D8D5DE">|</span><span>20+ years local</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 360px;gap:48px;padding:56px 40px">
+          <div style="display:flex;flex-direction:column;gap:48px">
+            <div>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">BOOK A VISIT</div>
+              <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">Two ways to get on the schedule.</h2>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px">
+                <div style="border:1px solid #E7E7EA;border-radius:16px;padding:20px">
+                  <div style="position:relative;width:30px;height:30px"><div style="position:absolute;inset:11px 0;background:#542770;border-radius:2px;transform:rotate(45deg)"></div><div style="position:absolute;inset:11px 0;background:#6BB85C;border-radius:2px;transform:rotate(-45deg)"></div></div>
+                  <div style="font-weight:800;font-size:16.5px;margin-top:12px">Schedule online</div>
+                  <div style="font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:4px">Hit Schedule Service and pick a time that works — it takes about a minute, day or night.</div>
+                  <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:12px 18px;border-radius:10px;display:inline-block;margin-top:14px;cursor:pointer">Schedule Service</div>
+                </div>
+                <div style="border:1px solid #E7E7EA;border-radius:16px;padding:20px">
+                  <div style="position:relative;width:30px;height:30px"><div style="position:absolute;inset:11px 0;background:#542770;border-radius:2px;transform:rotate(45deg)"></div><div style="position:absolute;inset:11px 0;background:#6BB85C;border-radius:2px;transform:rotate(-45deg)"></div></div>
+                  <div style="font-weight:800;font-size:16.5px;margin-top:12px">Call the office</div>
+                  <div style="font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:4px">Talk to a real person — same-day dispatch in most cases, and 24/7 help in emergencies.</div>
+                  <div style="font-weight:800;font-size:14px;color:#542770;margin-top:16px">(844) 584-7399 →</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">VISIT US</div>
+              <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">Two locations, one phone number.</h2>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px">
+                <div style="border:1px solid #E7E7EA;border-radius:16px;overflow:hidden">
+                  <image-slot id="svc-4b-map-1" style="width:100%;height:160px" shape="rect" placeholder="Drop Dayton map / storefront photo"></image-slot>
+                  <div style="padding:18px"><div style="font-weight:800;font-size:16.5px">Dayton</div><div style="font-size:13px;line-height:1.55;font-weight:500;color:#475569;margin-top:4px">Street address here<br>Dayton, OH ZIP</div><div style="font-weight:800;font-size:13px;color:#542770;margin-top:10px">Get directions →</div></div>
+                </div>
+                <div style="border:1px solid #E7E7EA;border-radius:16px;overflow:hidden">
+                  <image-slot id="svc-4b-map-2" style="width:100%;height:160px" shape="rect" placeholder="Drop Cincinnati map / storefront photo"></image-slot>
+                  <div style="padding:18px"><div style="font-weight:800;font-size:16.5px">Cincinnati</div><div style="font-size:13px;line-height:1.55;font-weight:500;color:#475569;margin-top:4px">Street address here<br>Cincinnati, OH ZIP</div><div style="font-weight:800;font-size:13px;color:#542770;margin-top:10px">Get directions →</div></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">HOURS</div>
+              <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">When to reach us.</h2>
+              <div style="border:1px solid #E7E7EA;border-radius:16px;margin-top:20px;overflow:hidden">
+                <div style="display:flex;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #E7E7EA"><span style="font-weight:700;font-size:14px">Monday – Friday</span><span style="font-weight:600;font-size:14px;color:#475569">Office hours — confirm times</span></div>
+                <div style="display:flex;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #E7E7EA"><span style="font-weight:700;font-size:14px">Saturday – Sunday</span><span style="font-weight:600;font-size:14px;color:#475569">Emergency service</span></div>
+                <div style="display:flex;justify-content:space-between;padding:14px 20px;background:#EEF7EC"><span style="font-weight:800;font-size:14px;color:#3D7A33">Emergencies</span><span style="font-weight:800;font-size:14px;color:#3D7A33">24/7 — every day of the year</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;padding-top:64px">
+            <image-slot id="svc-4b-rail" style="width:100%;height:220px" shape="rounded" radius="14" placeholder="Drop an office / dispatcher photo here"></image-slot>
+            <div style="background:#F4F1F8;border-radius:14px;padding:18px 20px">
+              <div style="font-weight:800;font-size:15px;color:#542770">Need help right now?</div>
+              <div style="font-size:12.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:6px">Skip the form — call and we'll dispatch a tech, same-day in most cases.</div>
+              <div style="font-weight:800;font-size:13px;color:#542770;margin-top:10px">Call (844) 584-7399 →</div>
+            </div>
+            <div style="background:#EEF7EC;border-radius:14px;padding:18px 20px">
+              <div style="font-weight:800;font-size:15px;color:#3D7A33">X-Plan members skip the line</div>
+              <div style="font-size:12.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:6px">Priority scheduling, two tune-ups a year, and 15% off repairs.</div>
+              <div style="font-weight:800;font-size:13px;color:#3D7A33;margin-top:10px">Explore X-Plan →</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#0F172A;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+          <div><span style="font-weight:800;font-size:15px;color:#fff">No heat? No AC? Water everywhere?</span> <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.6)">The emergency line is answered 24/7 — nights, weekends, holidays.</span></div>
+          <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;white-space:nowrap;cursor:pointer">Call (844) 584-7399</div>
+        </div>
+        <div style="height:4px;background:linear-gradient(90deg,#6BB85C,#542770)"></div>
+        <div style="background:#0F172A;padding:36px 40px;display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-style:italic;font-weight:900;font-size:24px;color:#fff">Need help today? The Extreme Team is ready.</div><div style="font-size:13px;font-weight:500;color:rgba(255,255,255,.6);margin-top:6px">Same-day service in most cases · (844) 584-7399</div></div>
+          <div style="display:flex;gap:12px"><div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:13px 22px;border-radius:10px;cursor:pointer">Schedule Service</div><div style="border:1.5px solid rgba(255,255,255,.45);color:#fff;font-weight:800;font-size:14px;padding:13px 22px;border-radius:10px;cursor:pointer">Call Now</div></div>
+        </div>
+        <div style="background:#0F172A;border-top:1px solid rgba(255,255,255,.1);padding:10px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.35)">Full footer continues per screen 3a of homepage handoff</div>
+      </div>
+    </div>
+
+    <div id="4c" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:monospace;font-weight:800;font-size:12px;background:#0F172A;color:#fff;border-radius:6px;padding:4px 9px">4c</span><span style="font-weight:700;font-size:13px;color:#475569">Financing options — desktop 1280</span></div>
+      <div style="width:1280px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 20px 50px rgba(15,23,42,.15)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:#5E2C7E">
+          <img src="assets/logo-white.png" style="height:44px" alt="Extreme Heating, Air, Plumbing">
+          <div style="display:flex;align-items:center;gap:26px;font-weight:600;font-size:14px;color:#fff">
+            <span>Plumbing <span style="font-size:9px;color:rgba(255,255,255,.55)">▼</span></span><span>Heating &amp; Air <span style="font-size:9px;color:rgba(255,255,255,.55)">▼</span></span><span>Locations</span><span>Specials</span><span>About</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:18px">
+            <span style="color:#fff;font-weight:800;font-size:15px">(844) 584-7399</span>
+            <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;cursor:pointer">Schedule Service</div>
+          </div>
+        </div>
+        <div style="background:linear-gradient(150deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);position:relative">
+          <div style="position:absolute;inset:0;overflow:hidden"><img src="assets/x-mark.png" style="position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)" alt=""></div>
+          <div style="display:grid;grid-template-columns:1fr 360px;gap:48px;padding:40px 40px 44px;position:relative">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.55)">Home <span style="margin:0 6px">›</span> <span style="color:#8FD481">Financing</span></div>
+              <h1 style="margin:14px 0 0;font-style:italic;font-weight:900;font-size:46px;line-height:1.08;letter-spacing:-1px;color:#fff">A new system now. <span style="color:#6BB85C">Payments</span> that fit.</h1>
+              <p style="margin:16px 0 0;max-width:520px;font-size:15.5px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.82)">Don't put off a failing furnace or AC because of one big bill. Flexible monthly payment plans through our lenders — GoodLeap, Synchrony, and Wright-Patt Credit Union — make the right fix affordable.</p>
+              <div style="display:flex;gap:10px;margin-top:24px">
+                <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">Apply in Minutes</div>
+                <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">$0 Down Options</div>
+                <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">Options for Most Credit</div>
+              </div>
+            </div>
+            <div style="position:relative;margin-bottom:-84px">
+              <div style="background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(15,23,42,.25);padding:24px">
+                <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">FINANCING</div>
+                <div style="font-weight:800;font-size:18px;margin-top:8px">Apply in minutes.</div>
+                <div style="font-size:13px;font-weight:500;color:#475569;margin-top:6px;line-height:1.5">A quick, secure application — most decisions come back right away.</div>
+                <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:15px;padding:14px;border-radius:10px;text-align:center;margin-top:16px;box-shadow:0 6px 18px rgba(107,184,92,.35);cursor:pointer">Apply Online</div>
+                <div style="background:#542770;color:#fff;font-weight:800;font-size:15px;padding:14px;border-radius:10px;text-align:center;margin-top:10px;cursor:pointer">Call (844) 584-7399</div>
+                <div style="display:flex;align-items:center;justify-content:center;gap:14px;border-top:1px solid #E7E7EA;margin-top:16px;padding-top:14px;font-size:12px;font-weight:700;color:#475569"><span>Secure application</span><span style="color:#D8D5DE">|</span><span>No obligation</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 360px;gap:48px;padding:56px 40px">
+          <div style="display:flex;flex-direction:column;gap:48px">
+            <div>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">WHY FINANCE</div>
+              <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">The right fix, without draining savings.</h2>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px">
+                <div style="border:1px solid #E7E7EA;border-radius:16px;padding:18px"><div style="width:18px;height:18px;border-radius:999px;background:#6BB85C;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center">✓</div><div style="font-weight:800;font-size:15px;margin-top:10px">One bill becomes a monthly payment</div><div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Spread the cost of a new system over time instead of paying it all at once.</div></div>
+                <div style="border:1px solid #E7E7EA;border-radius:16px;padding:18px"><div style="width:18px;height:18px;border-radius:999px;background:#6BB85C;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center">✓</div><div style="font-weight:800;font-size:15px;margin-top:10px">Don't downgrade the fix</div><div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Choose the system that's right for your home — not just the one that fits this month's budget.</div></div>
+                <div style="border:1px solid #E7E7EA;border-radius:16px;padding:18px"><div style="width:18px;height:18px;border-radius:999px;background:#6BB85C;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center">✓</div><div style="font-weight:800;font-size:15px;margin-top:10px">Keep your emergency fund intact</div><div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Breakdowns never pick a convenient month. Financing keeps your cushion where it belongs.</div></div>
+                <div style="border:1px solid #E7E7EA;border-radius:16px;padding:18px"><div style="width:18px;height:18px;border-radius:999px;background:#6BB85C;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center">✓</div><div style="font-weight:800;font-size:15px;margin-top:10px">Stacks with specials &amp; rebates</div><div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Combine financing with seasonal offers and utility rebates for the best total price.</div></div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">WHAT QUALIFIES</div>
+              <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">Finance more than just new systems.</h2>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-top:20px">
+                <div style="display:flex;gap:10px;align-items:center"><div style="width:18px;height:18px;border-radius:999px;background:#6BB85C;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none">✓</div><span style="font-size:13.5px;font-weight:700;color:#475569">New AC or furnace installation</span></div>
+                <div style="display:flex;gap:10px;align-items:center"><div style="width:18px;height:18px;border-radius:999px;background:#6BB85C;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none">✓</div><span style="font-size:13.5px;font-weight:700;color:#475569">Heat pumps &amp; ductless systems</span></div>
+                <div style="display:flex;gap:10px;align-items:center"><div style="width:18px;height:18px;border-radius:999px;background:#6BB85C;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none">✓</div><span style="font-size:13.5px;font-weight:700;color:#475569">Water heaters — tank &amp; tankless</span></div>
+                <div style="display:flex;gap:10px;align-items:center"><div style="width:18px;height:18px;border-radius:999px;background:#6BB85C;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none">✓</div><span style="font-size:13.5px;font-weight:700;color:#475569">Major HVAC &amp; plumbing repairs</span></div>
+                <div style="display:flex;gap:10px;align-items:center"><div style="width:18px;height:18px;border-radius:999px;background:#6BB85C;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none">✓</div><span style="font-size:13.5px;font-weight:700;color:#475569">Indoor air quality equipment</span></div>
+                <div style="display:flex;gap:10px;align-items:center"><div style="width:18px;height:18px;border-radius:999px;background:#6BB85C;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none">✓</div><span style="font-size:13.5px;font-weight:700;color:#475569">Sewer line &amp; repiping projects</span></div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">HOW IT WORKS</div>
+              <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">Three steps to yes.</h2>
+              <div style="display:flex;flex-direction:column;gap:18px;margin-top:20px">
+                <div style="display:flex;gap:16px;align-items:flex-start"><div style="font-style:italic;font-weight:900;font-size:25px;color:#542770;width:44px;flex:none">01</div><div><div style="font-weight:800;font-size:15px">Get your upfront quote</div><div style="font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:3px">Your tech or comfort advisor prices the work first — so you know exactly what you're financing.</div></div></div>
+                <div style="display:flex;gap:16px;align-items:flex-start"><div style="font-style:italic;font-weight:900;font-size:25px;color:#542770;width:44px;flex:none">02</div><div><div style="font-weight:800;font-size:15px">Apply online in minutes</div><div style="font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:3px">A short, secure application through one of our lenders — most decisions come back right away.</div></div></div>
+                <div style="display:flex;gap:16px;align-items:flex-start"><div style="font-style:italic;font-weight:900;font-size:25px;color:#542770;width:44px;flex:none">03</div><div><div style="font-weight:800;font-size:15px">Approved &amp; installed</div><div style="font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:3px">We schedule the work — often the same week — and your monthly plan starts after the job is done right.</div></div></div>
+              </div>
+            </div>
+            <div style="background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;padding:32px 36px;position:relative;overflow:hidden">
+              <img src="assets/x-mark.png" style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)" alt="">
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#8FD481;position:relative">GOOD TO KNOW</div>
+              <div style="font-style:italic;font-weight:900;font-size:22px;color:#fff;margin-top:8px;position:relative">Financing that works like you'd hope.</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:22px;position:relative">
+                <div><div style="font-style:italic;font-weight:900;font-size:26px;color:#fff">Minutes</div><div style="font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px">to apply and get a decision — right from your kitchen table.</div></div>
+                <div><div style="font-style:italic;font-weight:900;font-size:26px;color:#fff">$0 down</div><div style="font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px">options available on qualifying plans.</div></div>
+                <div><div style="font-style:italic;font-weight:900;font-size:26px;color:#fff">No penalty</div><div style="font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px">for paying your plan off early.</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:22px;position:relative"><span style="font-size:10.5px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,.5)">OUR LENDERS</span><div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;color:#fff">GoodLeap</div><div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;color:#fff">Synchrony</div><div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;color:#fff">Wright-Patt Credit Union</div></div>
+              <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);margin-top:14px;position:relative">Financing subject to credit approval. Swap in current program rates and terms before build.</div>
+            </div>
+            <div>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">FINANCING QUESTIONS</div>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+                <div style="border:1px solid #E7E7EA;border-radius:14px;padding:16px 18px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font-weight:700;font-size:15px">Does applying affect my credit score?</span><div style="width:26px;height:26px;border-radius:999px;background:#542770;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none">−</div></div>
+                  <div style="font-size:13.5px;line-height:1.6;font-weight:500;color:#475569;margin-top:8px;max-width:620px">Checking your options starts with a soft inquiry that doesn't affect your score. A full application follows only if you decide to move forward.</div>
+                </div>
+                <div style="border:1px solid #E7E7EA;border-radius:14px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font-weight:700;font-size:15px">What if my credit isn't perfect?</span><div style="width:26px;height:26px;border-radius:999px;background:#F4F1F8;color:#542770;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none">+</div></div>
+                <div style="border:1px solid #E7E7EA;border-radius:14px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font-weight:700;font-size:15px">Can I pay it off early?</span><div style="width:26px;height:26px;border-radius:999px;background:#F4F1F8;color:#542770;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none">+</div></div>
+                <div style="border:1px solid #E7E7EA;border-radius:14px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font-weight:700;font-size:15px">Can I combine financing with specials?</span><div style="width:26px;height:26px;border-radius:999px;background:#F4F1F8;color:#542770;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none">+</div></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;padding-top:64px">
+            <image-slot id="svc-4c-rail" style="width:100%;height:220px" shape="rounded" radius="14" placeholder="Drop a new-install photo here"></image-slot>
+            <div style="background:#F4F1F8;border-radius:14px;padding:18px 20px">
+              <div style="font-weight:800;font-size:15px;color:#542770">Stack a seasonal special</div>
+              <div style="font-size:12.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:6px">Current offers can be combined with financing for the best total price.</div>
+              <div style="font-weight:800;font-size:13px;color:#542770;margin-top:10px">See Specials →</div>
+            </div>
+            <div style="background:#EEF7EC;border-radius:14px;padding:18px 20px">
+              <div style="font-weight:800;font-size:15px;color:#3D7A33">Protect the new system</div>
+              <div style="font-size:12.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:6px">X-Plan keeps your warranty valid with two documented tune-ups a year.</div>
+              <div style="font-weight:800;font-size:13px;color:#3D7A33;margin-top:10px">Explore X-Plan →</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#0F172A;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+          <div><span style="font-weight:800;font-size:15px;color:#fff">System down and the timing couldn't be worse?</span> <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.6)">Repairs and replacements can both be financed — call and ask.</span></div>
+          <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;white-space:nowrap;cursor:pointer">Call (844) 584-7399</div>
+        </div>
+        <div style="height:4px;background:linear-gradient(90deg,#6BB85C,#542770)"></div>
+        <div style="background:#0F172A;padding:36px 40px;display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-style:italic;font-weight:900;font-size:24px;color:#fff">Need help today? The Extreme Team is ready.</div><div style="font-size:13px;font-weight:500;color:rgba(255,255,255,.6);margin-top:6px">Same-day service in most cases · (844) 584-7399</div></div>
+          <div style="display:flex;gap:12px"><div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:13px 22px;border-radius:10px;cursor:pointer">Schedule Service</div><div style="border:1.5px solid rgba(255,255,255,.45);color:#fff;font-weight:800;font-size:14px;padding:13px 22px;border-radius:10px;cursor:pointer">Call Now</div></div>
+        </div>
+        <div style="background:#0F172A;border-top:1px solid rgba(255,255,255,.1);padding:10px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.35)">Full footer continues per screen 3a of homepage handoff</div>
+      </div>
+    </div>
+
+    <div id="4d" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:monospace;font-weight:800;font-size:12px;background:#0F172A;color:#fff;border-radius:6px;padding:4px 9px">4d</span><span style="font-weight:700;font-size:13px;color:#475569">Specials page — desktop 1280 · placeholder offers</span></div>
+      <div style="width:1280px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 20px 50px rgba(15,23,42,.15)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:#5E2C7E">
+          <img src="assets/logo-white.png" style="height:44px" alt="Extreme Heating, Air, Plumbing">
+          <div style="display:flex;align-items:center;gap:26px;font-weight:600;font-size:14px;color:#fff">
+            <span>Plumbing <span style="font-size:9px;color:rgba(255,255,255,.55)">▼</span></span><span>Heating &amp; Air <span style="font-size:9px;color:rgba(255,255,255,.55)">▼</span></span><span>Locations</span><span style="color:#8FD481">Specials</span><span>About</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:18px">
+            <span style="color:#fff;font-weight:800;font-size:15px">(844) 584-7399</span>
+            <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;cursor:pointer">Schedule Service</div>
+          </div>
+        </div>
+        <div style="background:linear-gradient(150deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);position:relative">
+          <div style="position:absolute;inset:0;overflow:hidden"><img src="assets/x-mark.png" style="position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)" alt=""></div>
+          <div style="padding:40px 40px 48px;position:relative">
+            <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.55)">Home <span style="margin:0 6px">›</span> <span style="color:#8FD481">Specials</span></div>
+            <h1 style="margin:14px 0 0;font-style:italic;font-weight:900;font-size:46px;line-height:1.08;letter-spacing:-1px;color:#fff">Seasonal specials, <span style="color:#6BB85C">extreme savings</span>.</h1>
+            <p style="margin:16px 0 0;max-width:560px;font-size:15.5px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.82)">Real offers on the work you actually need — no gimmicks, no fine-print traps. Mention the offer when you book and we apply it to your invoice.</p>
+            <div style="display:flex;gap:10px;margin-top:24px">
+              <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">Updated Seasonally</div>
+              <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">Mention at Booking</div>
+              <div style="border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff">Combine with Financing</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:56px 40px;display:flex;flex-direction:column;gap:48px">
+          <div>
+            <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">CURRENT OFFERS</div>
+            <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">This season's deals.</h2>
+            <div style="font-size:12.5px;font-weight:600;color:#94A3B8;margin-top:6px">Placeholder offers shown — swap in live promotions before build.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px">
+              <div style="border:1.5px dashed #C4B5D4;border-radius:16px;padding:20px;display:flex;flex-direction:column">
+                <div style="align-self:flex-start;background:#F4F1F8;color:#542770;font-size:10px;font-weight:800;letter-spacing:1.5px;border-radius:999px;padding:5px 10px">HEATING &amp; AIR</div>
+                <div style="font-style:italic;font-weight:900;font-size:34px;letter-spacing:-1px;margin-top:12px">$79</div>
+                <div style="font-weight:800;font-size:15.5px;margin-top:2px">AC or Furnace Tune-Up</div>
+                <div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Full seasonal inspection and tune-up. Regularly priced higher — X-Plan members get two a year included.</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid #EDEAF2"><span style="font-size:11.5px;font-weight:700;color:#94A3B8">Limited time</span><div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:13px;padding:10px 16px;border-radius:10px;cursor:pointer">Claim Offer</div></div>
+              </div>
+              <div style="border:1.5px dashed #C4B5D4;border-radius:16px;padding:20px;display:flex;flex-direction:column">
+                <div style="align-self:flex-start;background:#F4F1F8;color:#542770;font-size:10px;font-weight:800;letter-spacing:1.5px;border-radius:999px;padding:5px 10px">ANY SERVICE</div>
+                <div style="font-style:italic;font-weight:900;font-size:34px;letter-spacing:-1px;margin-top:12px">$50 off</div>
+                <div style="font-weight:800;font-size:15.5px;margin-top:2px">Any Repair Over $250</div>
+                <div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">HVAC or plumbing — take $50 off any qualifying repair when you mention this offer at booking.</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid #EDEAF2"><span style="font-size:11.5px;font-weight:700;color:#94A3B8">Limited time</span><div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:13px;padding:10px 16px;border-radius:10px;cursor:pointer">Claim Offer</div></div>
+              </div>
+              <div style="border:1.5px dashed #C4B5D4;border-radius:16px;padding:20px;display:flex;flex-direction:column">
+                <div style="align-self:flex-start;background:#F4F1F8;color:#542770;font-size:10px;font-weight:800;letter-spacing:1.5px;border-radius:999px;padding:5px 10px">NEW SYSTEMS</div>
+                <div style="font-style:italic;font-weight:900;font-size:34px;letter-spacing:-1px;margin-top:12px">Up to $500 off</div>
+                <div style="font-weight:800;font-size:15.5px;margin-top:2px">A New Comfort System</div>
+                <div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Save on a qualifying high-efficiency AC, furnace, or heat pump install — stackable with financing.</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid #EDEAF2"><span style="font-size:11.5px;font-weight:700;color:#94A3B8">Limited time</span><div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:13px;padding:10px 16px;border-radius:10px;cursor:pointer">Claim Offer</div></div>
+              </div>
+              <div style="border:1.5px dashed #C4B5D4;border-radius:16px;padding:20px;display:flex;flex-direction:column">
+                <div style="align-self:flex-start;background:#F4F1F8;color:#542770;font-size:10px;font-weight:800;letter-spacing:1.5px;border-radius:999px;padding:5px 10px">PLUMBING</div>
+                <div style="font-style:italic;font-weight:900;font-size:34px;letter-spacing:-1px;margin-top:12px">$99</div>
+                <div style="font-weight:800;font-size:15.5px;margin-top:2px">Drain Clearing Special</div>
+                <div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Single accessible drain cleared, with a camera check if the clog keeps coming back.</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid #EDEAF2"><span style="font-size:11.5px;font-weight:700;color:#94A3B8">Limited time</span><div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:13px;padding:10px 16px;border-radius:10px;cursor:pointer">Claim Offer</div></div>
+              </div>
+              <div style="border:1.5px dashed #C4B5D4;border-radius:16px;padding:20px;display:flex;flex-direction:column">
+                <div style="align-self:flex-start;background:#F4F1F8;color:#542770;font-size:10px;font-weight:800;letter-spacing:1.5px;border-radius:999px;padding:5px 10px">NEW SYSTEMS</div>
+                <div style="font-style:italic;font-weight:900;font-size:34px;letter-spacing:-1px;margin-top:12px">Free</div>
+                <div style="font-weight:800;font-size:15.5px;margin-top:2px">Second Opinion on Replacement</div>
+                <div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Told you need a whole new system? Get a no-pressure second look before you commit.</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid #EDEAF2"><span style="font-size:11.5px;font-weight:700;color:#94A3B8">Limited time</span><div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:13px;padding:10px 16px;border-radius:10px;cursor:pointer">Claim Offer</div></div>
+              </div>
+              <div style="border:1.5px dashed #C4B5D4;border-radius:16px;padding:20px;display:flex;flex-direction:column">
+                <div style="align-self:flex-start;background:#F4F1F8;color:#542770;font-size:10px;font-weight:800;letter-spacing:1.5px;border-radius:999px;padding:5px 10px">MEMBERSHIP</div>
+                <div style="font-style:italic;font-weight:900;font-size:34px;letter-spacing:-1px;margin-top:12px">$249<span style="font-size:16px;letter-spacing:0">/yr</span></div>
+                <div style="font-weight:800;font-size:15.5px;margin-top:2px">Join X-Plan Maintenance</div>
+                <div style="font-size:13px;line-height:1.5;font-weight:500;color:#475569;margin-top:4px">Two tune-ups a year, 15% off repairs, priority scheduling, and discounted service calls.</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid #EDEAF2"><span style="font-size:11.5px;font-weight:700;color:#94A3B8">Always available</span><div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:13px;padding:10px 16px;border-radius:10px;cursor:pointer">Join X-Plan</div></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 360px;gap:48px">
+            <div>
+              <div style="font-size:11.5px;font-weight:800;letter-spacing:2px;color:#4E9B41">HOW TO REDEEM</div>
+              <h2 style="margin:10px 0 0;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px">Three steps, zero coupons to print.</h2>
+              <div style="display:flex;flex-direction:column;gap:18px;margin-top:20px">
+                <div style="display:flex;gap:16px;align-items:flex-start"><div style="font-style:italic;font-weight:900;font-size:25px;color:#542770;width:44px;flex:none">01</div><div><div style="font-weight:800;font-size:15px">Pick your offer</div><div style="font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:3px">One offer per visit — choose the one that saves you the most.</div></div></div>
+                <div style="display:flex;gap:16px;align-items:flex-start"><div style="font-style:italic;font-weight:900;font-size:25px;color:#542770;width:44px;flex:none">02</div><div><div style="font-weight:800;font-size:15px">Mention it when you book</div><div style="font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:3px">Tell us on the phone or note it in the online scheduler — we attach it to your appointment.</div></div></div>
+                <div style="display:flex;gap:16px;align-items:flex-start"><div style="font-style:italic;font-weight:900;font-size:25px;color:#542770;width:44px;flex:none">03</div><div><div style="font-weight:800;font-size:15px">Savings applied on your invoice</div><div style="font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:3px">The discount shows up in your upfront quote — before any work begins.</div></div></div>
+              </div>
+              <div style="font-size:11.5px;line-height:1.6;font-weight:600;color:#94A3B8;margin-top:24px">Offers can't be combined with other discounts unless noted. One offer per household per visit. Must be mentioned at time of booking. Expiration dates and full terms set per promotion.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                <img src="assets/x-mark.png" style="position:absolute;right:-50px;bottom:-40px;width:200px;opacity:.07;transform:rotate(-8deg);filter:brightness(0) invert(1)" alt="">
+                <div style="font-weight:800;font-size:16px;color:#fff;position:relative">Never miss a deal</div>
+                <div style="font-size:12.5px;line-height:1.55;font-weight:500;color:rgba(255,255,255,.75);margin-top:6px;position:relative">Get seasonal offers in your inbox — no spam, just savings.</div>
+                <div style="display:flex;gap:8px;margin-top:14px;position:relative">
+                  <div style="flex:1;background:#fff;border-radius:10px;padding:12px 14px;font-size:13px;font-weight:600;color:#94A3B8">Email address</div>
+                  <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:13px;padding:12px 16px;border-radius:10px;cursor:pointer">Sign Up</div>
+                </div>
+              </div>
+              <div style="background:#F4F1F8;border-radius:14px;padding:18px 20px">
+                <div style="font-weight:800;font-size:15px;color:#542770">Big job? Finance it.</div>
+                <div style="font-size:12.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:6px">Specials stack with monthly payment plans through our lenders.</div>
+                <div style="font-weight:800;font-size:13px;color:#542770;margin-top:10px">Financing Options →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#0F172A;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+          <div><span style="font-weight:800;font-size:15px;color:#fff">Don't see a special for what you need?</span> <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.6)">Call anyway — we'll find you the best price on the right fix.</span></div>
+          <div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;white-space:nowrap;cursor:pointer">Call (844) 584-7399</div>
+        </div>
+        <div style="height:4px;background:linear-gradient(90deg,#6BB85C,#542770)"></div>
+        <div style="background:#0F172A;padding:36px 40px;display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-style:italic;font-weight:900;font-size:24px;color:#fff">Need help today? The Extreme Team is ready.</div><div style="font-size:13px;font-weight:500;color:rgba(255,255,255,.6);margin-top:6px">Same-day service in most cases · (844) 584-7399</div></div>
+          <div style="display:flex;gap:12px"><div style="background:#6BB85C;color:#0F172A;font-weight:800;font-size:14px;padding:13px 22px;border-radius:10px;cursor:pointer">Schedule Service</div><div style="border:1.5px solid rgba(255,255,255,.45);color:#fff;font-weight:800;font-size:14px;padding:13px 22px;border-radius:10px;cursor:pointer">Call Now</div></div>
+        </div>
+        <div style="background:#0F172A;border-top:1px solid rgba(255,255,255,.1);padding:10px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.35)">Full footer continues per screen 3a of homepage handoff</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+</body>
+</html>
