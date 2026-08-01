@@ -314,14 +314,17 @@ OVERVIEW_CARDS = [
     ("indoor-air-quality", "Indoor Air Quality", "Filtration, purifiers, humidity control, and fresh-air ventilation."),
 ]
 
-# TODO (marketing): placeholder quotes and names, straight from the mockup. Pull real
-# Google reviews per city before launch — the handoff calls these out explicitly, and
-# they are the main thing keeping these pages from reading as find-replace.
-REVIEWS = [
-    ("Furnace died on a Friday night — tech was here Saturday morning and had heat back by lunch.", "Name here"),
-    ("Quoted the price before they started and stuck to it. That alone earns the five stars.", "Name here"),
-    ("On the X-Plan for two years now — they call us to schedule the tune-ups. Zero effort.", "Name here"),
-]
+# The homepage's real curated Google reviews, not invented placeholders. Each city
+# shows three, rotated deterministically by its position in the list so 38 pages
+# don't all repeat the same trio — the handoff warns specifically against pure
+# find-replace pages. Same pool, different slice.
+#
+# To show the SAME three everywhere instead, return REVIEWS[:3] from city_reviews().
+from reviews import REVIEWS
+
+def city_reviews(slug, n=3):
+    i = L.ALL.index(next(x for x in L.ALL if x[0] == slug))
+    return [REVIEWS[(i * n + k) % len(REVIEWS)] for k in range(n)]
 
 # ---------------------------------------------------------------- promos
 T.PROMOS["locFinanceHeat"] = dict(cls="lav", t="New furnace, monthly payments",
@@ -387,8 +390,8 @@ def city_overview(city, slug, group):
         f'<a href="/locations/{ns}">{nn}</a></div>' for ns, nn in neighbours(slug, group))
     revs = "".join(
         f'<div class="xlc-rev"><div class="stars">★★★★★</div><div class="q">“{q}”</div>'
-        f'<div class="who">{who} <span>· {nn}</span></div></div>'
-        for (q, who), (ns, nn) in zip(REVIEWS, neighbours(slug, group, 3)))
+        f'<div class="who">{who}{f" <span>· {rc}</span>" if rc else ""}</div></div>'
+        for q, who, rc in city_reviews(slug))
     hero_img = T.cdn_asset(L.hero(slug))
     body = f'''{_hero(city,
         [("Home", "/"), ("Locations", "/locations"), (city, "")],
@@ -406,7 +409,7 @@ def city_overview(city, slug, group):
     f'<div class="xlc-towns">{towns}</div>'
     f'<div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div>'
     f'<div style="margin-top:20px">{T.photo_slot("", hero_img, f"{city}, Ohio")}</div>')}
-  {section(f"{city.upper()} REVIEWS", "Neighbors put it better than we can.",
+  {section("WHAT NEIGHBORS SAY", "Neighbors put it better than we can.",
     f'<div class="xlc-revs">{revs}</div>')}
 </div>
 {_band("No heat, no AC, or water where it shouldn't be?",
