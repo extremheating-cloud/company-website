@@ -2,7 +2,10 @@
 __pycache__/
 *.py[cod]
 
-# Local preview scaffolding — served from the repo root during checks, never shipped
+# Local machine config — not part of the site
+.claude/
+
+# Local preview scaffolding, served from the repo root during checks
 _preview*.html
 _p.jpg
 _ruud-cropped.jpg
