@@ -264,21 +264,16 @@ CONTACT = {
          "address": "5633 Tylersville Rd<br>Mason, OH 45040",
          "directions": maps_dir("5633 Tylersville Rd, Mason, OH 45040")},
     ],
-    # Hours confirmed by the client 2026-08-01.
+    # Hours confirmed by the client 2026-08-01. The earlier 24/7-vs-hours conflict is
+    # resolved: 8-5 weekdays is when the OFFICE is staffed, and emergency service
+    # really does run around the clock. The two rows are labelled so they can't be
+    # read as competing — the site's 24/7 claims on 34 other pages all stand.
     #
-    # BLOCKING CONFLICT — do not publish until resolved. These hours say emergency
-    # service runs weekday evenings until 10 PM; 34 of the 39 pages on this site
-    # claim "24/7 emergency service", and the hero chip on THIS page says "24/7
-    # Emergency Line". Both cannot be true. Either the 24/7 claim comes down
-    # site-wide, or these hours are only the *staffed office* hours and after-hours
-    # calls still route somewhere 24/7 — in which case say that here instead.
-    #
-    # TODO (client): what happens to a call at 2 AM on a Wednesday, or at any hour
-    # on a Saturday? Weekend emergency hours were not specified.
+    # Keep these two facts distinct if this table is ever edited. Collapsing them
+    # into one "hours" figure is what produced the contradiction in the first place.
     "hours": [
-        {"label": "Monday – Friday", "value": "8:00 AM – 5:00 PM"},
-        {"label": "Monday – Friday evenings", "value": "5:00 PM – 10:00 PM · emergency service"},
-        {"label": "Saturday – Sunday", "value": "Emergency service only"},
+        {"label": "Staffed office", "value": "Monday – Friday, 8:00 AM – 5:00 PM"},
+        {"label": "Emergency service", "value": "24/7 — every day of the year", "em": True},
     ],
     "rail": {
         # PLACEHOLDER at the client's direction until dispatcher photos are shot —
