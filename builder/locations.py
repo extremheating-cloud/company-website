@@ -79,9 +79,11 @@ GROUPS = [
 
 ALL = DAYTON + CINCINNATI + COUNTIES
 
-# Hero photo per location, if assets/cities/ has one. Two gaps, both real:
-#   west-carrollton — assets/cities/wc.jpg is almost certainly it, unconfirmed
-#   hamilton-county — no image in the set at all
+# Hero photo per location, from assets/cities/. One gap:
+#   hamilton-county — no image in the set at all. Either shoot one or fall back to
+#   the Cincinnati photo, since Hamilton County is the Cincinnati county.
+# wc.jpg is West Carrollton (client-confirmed 2026-08-01) — the only filename in
+# assets/cities/ that isn't already its slug.
 HERO_OVERRIDES = {"west-carrollton": "wc"}   # slug -> assets/cities/<name>.jpg
 NO_HERO = {"hamilton-county"}
 
