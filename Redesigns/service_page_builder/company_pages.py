@@ -199,6 +199,14 @@ def book_cards(d):
 </div>'''
     return section("BOOK A VISIT", "Two ways to get on the schedule.", cards)
 
+def maps_dir(address):
+    """A Google Maps directions link for a street address. The link text says "Get
+    directions", so this uses the dir endpoint rather than a name search — a search
+    for the company name can land on the wrong pin or a disambiguation list."""
+    from urllib.parse import quote
+    # & is escaped because this goes straight into an href in the HTML.
+    return f"https://www.google.com/maps/dir/?api=1&amp;destination={quote(address)}"
+
 def slot_img(cls, photo, label, style=""):
     """A fixed-height photo box that renders either a placeholder or a real image.
     photo is a dict: {src, alt, pos?}. pos is object-position — the boxes here are
@@ -238,21 +246,23 @@ CONTACT = {
     "h1Highlight": "Extreme Team",
     "intro": "Call or book online in a couple of clicks — a real person answers, and most visits happen the same day you reach out.",
     "heroChips": ["Same-Day in Most Cases", "24/7 Emergency Line", "Dayton &amp; Cincinnati"],
+    # Addresses confirmed by the client 2026-08-01. The cards are headed by metro
+    # ("Dayton" / "Cincinnati") because that is how people search, with the actual
+    # suburb in the address line beneath. Directions links point at the address
+    # itself rather than a name search, so they resolve to one pin every time.
     "locations": [
-        # TODO: replace placeholder street addresses + ZIPs with real ones (handoff 4b)
-        # TODO: swap Get-directions links to real Google Maps place links once addresses are confirmed
         {"city": "Dayton",
          # 65% pushes the crop down onto the sign so the 712 street number stays in
          # frame — it is the thing that makes this read as a location card.
          "photo": {"src": PHOTOS["beavercreek"], "pos": "50% 65%",
                    "alt": "Extreme service van at the Beavercreek office sign on North Fairfield Road"},
-         "address": "<!-- TODO: real address -->Street address here<br>Dayton, OH ZIP",
-         "directions": "https://www.google.com/maps/search/?api=1&amp;query=Extreme+Heating+Air+Plumbing+Dayton+OH"},
+         "address": "712 N Fairfield Rd<br>Beavercreek, OH 45434",
+         "directions": maps_dir("712 N Fairfield Rd, Beavercreek, OH 45434")},
         {"city": "Cincinnati",
          "photo": {"src": PHOTOS["mason"],
                    "alt": "The Extreme office building in the Cincinnati metro"},
-         "address": "<!-- TODO: real address -->Street address here<br>Cincinnati, OH ZIP",
-         "directions": "https://www.google.com/maps/search/?api=1&amp;query=Extreme+Heating+Air+Plumbing+Cincinnati+OH"},
+         "address": "5633 Tylersville Rd<br>Mason, OH 45040",
+         "directions": maps_dir("5633 Tylersville Rd, Mason, OH 45040")},
     ],
     "hours": [
         # TODO: confirm real office hours before launch (handoff 4b)

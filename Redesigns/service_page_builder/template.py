@@ -52,17 +52,21 @@ X_MARK = f"{CDN}/x-mark.png"
 #
 # Filenames carry spaces and, for Mason, an uppercase .JPG. Both are reproduced
 # exactly as they are in the repo; cdn_asset percent-encodes the spaces.
-_C_OFFICES = "0f41b44a460e14db2bc80ac5c1570df605398fbb"   # the three office/van shots
-_C_ABOUT   = "58f95208958365d6e9098b23d57752ed09915814"   # images/About/*
+# Pins are per file, not per upload batch: resizing two photos moves only those two
+# to a new commit, and the rest must keep pointing at the commit that still holds
+# their current bytes.
+_C_OFFICES = "0f41b44a460e14db2bc80ac5c1570df605398fbb"   # Beavercreek + Vans, as uploaded
+_C_ABOUT   = "58f95208958365d6e9098b23d57752ed09915814"   # images/About/Troy.jpg
 _C_RUUD_HP = "8bb4ceb09f92e2d7b02df451eb2db2b21b3d49fc"   # RUUD Heat Pump.jpg
 _C_RUUD_IN = "46ae5afa623c7db4e58af5fd560ce794cb436ab8"   # ruud-install.jpg (cropped)
+_C_RESIZED = "d7331e1b8b2fbde0b6ef2428b7d2636cd1ee11e3"   # Mason + 2026, resized for web
 
 PHOTOS = {
     "beavercreek":  cdn_asset("descriptive/Beavercreek - Office.jpg",       _C_OFFICES),
-    "mason":        cdn_asset("descriptive/Mason - Office.JPG",             _C_OFFICES),
+    "mason":        cdn_asset("descriptive/Mason - Office.JPG",             _C_RESIZED),
     "vans":         cdn_asset("descriptive/Vans Leaving - Action Shot.jpg", _C_OFFICES),
     "troy":         cdn_asset("About/Troy.jpg",                             _C_ABOUT),
-    "skyline":      cdn_asset("About/2026.jpg",                             _C_ABOUT),
+    "skyline":      cdn_asset("About/2026.jpg",                             _C_RESIZED),
     "ruudHeatPump": cdn_asset("descriptive/RUUD Heat Pump.jpg",             _C_RUUD_HP),
     # Cropped so the competitor's service sticker on the plenum falls outside the
     # frame. Never use the uncropped "RUUD Install.jpg" in customer-facing work.
