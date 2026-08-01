@@ -94,6 +94,31 @@ color:var(--ink);font-weight:800;font-size:15px;padding:13px 24px;border-radius:
 text-decoration:none;margin-top:22px}
 .xlc-xp .cta:hover{background:var(--green-hover)}
 .xlc-xp .fine{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.6);margin-top:12px}
+/* --- page-specific ink CTA band (handoff: ink #0F172A band + 4px green-to-purple
+   hairline). These pages emit .xsp-band, which had no styles at all — the markup was
+   rendering unformatted. --- */
+.xsp-band{background:var(--ink)}
+.xsp-band-in{max-width:1280px;margin:0 auto;padding:34px 40px;display:flex;align-items:center;
+justify-content:space-between;gap:18px 32px;flex-wrap:wrap}
+.xsp-band .t{font-style:italic;font-weight:900;font-size:26px;letter-spacing:-.5px;color:#fff}
+.xsp-band .d{font-size:14px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.72);
+margin-top:8px;max-width:64ch}
+.xsp-band .btns{flex:none;display:flex;gap:10px}
+.xsp-band .xsp-cta{white-space:nowrap}
+.xsp-band::after{content:"";display:block;height:4px;
+background:linear-gradient(90deg,var(--green),var(--purple))}
+
+/* The hero booking card is pulled -84px into the body. On the overview and hub there
+   is no rail to absorb it, so the first section crowded the card. */
+.xco-body{padding-top:96px}
+
+@media (max-width:809px){
+.xsp-band-in{padding:26px 20px;flex-direction:column;align-items:flex-start;gap:16px}
+.xsp-band .t{font-size:21px}
+.xsp-band .btns{width:100%}
+.xsp-band .xsp-cta{width:100%}
+.xco-body{padding-top:40px}
+}
 .xlc-pill{display:inline-block;background:var(--green);color:var(--ink);font-size:11px;
 font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin-bottom:14px}
 @media (max-width:809px){
@@ -540,52 +565,65 @@ def hub():
 </div>
 {_band("Not sure if we cover you?",
        "One call settles it — and if we can't help, we'll point you to someone who can.")}'''
-    return shell("xsp-locations", body, extra_css=LOC_CSS + ZIP_JS)
+    return shell("xsp-locations", body + ZIP_JS, extra_css=LOC_CSS)
 
-# The hub's ZIP box is a client-side match against the town list — the handoff allows
-# "a simple match list" — with a call fallback when nothing matches. No ZIP data exists
-# yet, so it matches on town name too and tells the truth when it can't place you.
+# The hub's lookup box. Emitted at the end of the hub body so the markup it binds to
+# already exists — sitting it in the <style> block put it ahead of the input, and it
+# bailed out silently every time.
+#
+# It matches town names, not ZIP codes: exact, then prefix, then contains. There is no
+# ZIP data yet, so a five-digit entry gets the phone number rather than a guess about
+# whether we serve someone. TODO: add ZIPs to builder/locations.py and match them here.
 ZIP_JS = """
-</style><script>
+<script>
 (function(){
-  var root=document.currentScript.closest('.xhac-svc'); if(!root) return;
-  var box=root.querySelector('#xlc-zip'), go=root.querySelector('#xlc-zipgo'),
-      msg=root.querySelector('#xlc-zipmsg');
-  if(!box||!go||!msg) return;
-  var towns={};
+  var root = document.currentScript.closest('.xhac-svc');
+  if (!root) return;
+  var box = root.querySelector('#xlc-zip'),
+      go  = root.querySelector('#xlc-zipgo'),
+      msg = root.querySelector('#xlc-zipmsg');
+  if (!box || !go || !msg) return;
+
+  var towns = {};
   root.querySelectorAll('.xlc-links a').forEach(function(a){
-    towns[a.textContent.trim().toLowerCase()]=a.getAttribute('href');
+    towns[a.textContent.trim().toLowerCase()] = a.getAttribute('href');
   });
+
+  function title(t){ return t.replace(/\\b\\w/g, function(c){ return c.toUpperCase(); }); }
+
   function check(){
-    var v=(box.value||'').trim().toLowerCase().replace(/[.,]/g,'');
-    if(!v){ msg.className='xlc-zipmsg no'; msg.textContent='Enter a town name to check.'; return; }
-    /* exact, then prefix, then contains - so "west ch" finds West Chester */
-    var href=towns[v]||null, hits=[], k;
-    if(!href){
-      for(k in towns){ if(k.indexOf(v)===0) hits.push(k); }
-      if(!hits.length){ for(k in towns){ if(k.indexOf(v)>-1) hits.push(k); } }
-      if(hits.length===1) href=towns[hits[0]];
+    var v = (box.value || '').trim().toLowerCase().replace(/[.,]/g, '');
+    if (!v){ msg.className = 'xlc-zipmsg no'; msg.textContent = 'Enter a town name to check.'; return; }
+
+    var href = towns[v] || null, hits = [], k;
+    if (!href){
+      for (k in towns){ if (k.indexOf(v) === 0) hits.push(k); }
+      if (!hits.length){ for (k in towns){ if (k.indexOf(v) > -1) hits.push(k); } }
+      if (hits.length === 1) href = towns[hits[0]];
     }
-    if(href){ msg.className='xlc-zipmsg ok'; msg.textContent='Yes - opening that page.';
-              window.top.location.href=href; return; }
-    if(hits.length>1){
-      msg.className='xlc-zipmsg no';
-      msg.textContent='Did you mean: '+hits.slice(0,4).map(function(h){
-        return h.replace(/\b\w/g,function(c){return c.toUpperCase();}); }).join(', ')+'?';
+
+    if (href){
+      msg.className = 'xlc-zipmsg ok';
+      msg.textContent = 'Yes - opening that page.';
+      // the page is an embed, so navigate the top window, not the iframe
+      try { window.top.location.href = href; } catch (e) { window.location.href = href; }
       return;
     }
-    /* A five-digit ZIP lands here: there is no ZIP-to-city map yet, so rather than
-       guess whether we serve someone, say what we actually know and hand over the
-       phone number. TODO: add ZIP data to builder/locations.py and match it here. */
-    msg.className='xlc-zipmsg no';
-    msg.textContent=/^[0-9]{5}$/.test(v)
+    if (hits.length > 1){
+      msg.className = 'xlc-zipmsg no';
+      msg.textContent = 'Did you mean: ' + hits.slice(0, 4).map(title).join(', ') + '?';
+      return;
+    }
+    msg.className = 'xlc-zipmsg no';
+    msg.textContent = /^[0-9]{5}$/.test(v)
       ? 'We cannot match a ZIP yet - call (844) 584-7399 and we will tell you straight away.'
       : 'Not on the list - call (844) 584-7399. If we can reach you, we will.';
   }
-  go.addEventListener('click',function(e){ e.preventDefault(); check(); });
-  box.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); check(); } });
+
+  go.addEventListener('click', function(e){ e.preventDefault(); check(); });
+  box.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); check(); } });
 })();
-</script><style>
+</script>
 """
 
 # ---------------------------------------------------------------- registry
