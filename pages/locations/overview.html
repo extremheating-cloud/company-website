@@ -1,18 +1,228 @@
-<!--
-  PLACEHOLDER — this page has not been built yet.
+<section class="xhac-locations">
+  <style>
+    .xhac-locations{
+      --purple:#542770; --green:#6bb85c; --ink:#0f172a; --muted:#475569; --br:#e5e7eb;
+      --wrap:1200px; --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.06);
+      --gap:28px;
+      font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+    }
+    .xl-wrap{max-width:var(--wrap); margin:0 auto; padding:26px 16px;}
+    .xl-spacer{width:100%; height:6px; margin:38px 0; background:linear-gradient(90deg,var(--purple),var(--green)); border-radius:999px;}
 
-  URL       /locations
-  Title     Service Areas
-  Type      locations landing page
+    /* Title + bar */
+    .xl-title{ text-align:center; margin:0 0 22px; }
+    .xl-title h2{
+      font-size: clamp(22px, 3.2vw, 32px);
+      font-weight:800; color:var(--purple); margin:0 0 10px; letter-spacing:.015em;
+      opacity:0; transform:translateY(10px); transition:opacity .5s, transform .5s;
+    }
+    .xl-title .bar{
+      width:120px; height:6px; margin:0 auto; border-radius:999px;
+      background:linear-gradient(90deg,var(--purple),var(--green));
+      opacity:0; transform:translateY(8px); transition:opacity .5s .06s, transform .5s .06s;
+    }
+    .reveal-in .xl-title h2, .reveal-in .xl-title .bar{opacity:1; transform:translateY(0);}
 
-  Lists     38 locations — Dayton 20, Cincinnati 9, Counties 9
-  Children  38 location overviews, each with 6 service pages (228)
+    /* Phone + Schedule */
+    .hx-btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:12px 16px;border-radius:12px;border:1px solid var(--purple);
+      background:linear-gradient(180deg,#ffffff,#f8f8fb);
+      color:var(--purple);font-weight:800;letter-spacing:.01em;text-decoration:none;
+      box-shadow:0 2px 10px rgba(0,0,0,.05);cursor:pointer;user-select:none;
+      transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .hx-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.08);}
+    .hx-btn:active{transform:translateY(0);}
+    .hx-btn .dot{width:8px;height:8px;border-radius:999px;background:var(--green);}
+    .hx-call{
+      margin-top:10px; padding-top:10px;
+      font-weight:900; text-transform:uppercase; font-style:italic; letter-spacing:.02em;
+      color:var(--purple); line-height:1.25; font-size:clamp(15px,2.2vw,20px);
+      border-top:1px dashed rgba(84,39,112,.25); text-align:center;
+    }
+    .hx-call .num{ color:var(--green); text-decoration:none; }
+    .hx-call .or-wrap{ display:inline-flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; }
 
-  This is the hub the two-column city list on the live site links into. Build it
-  from builder/ like every other page in this repo; do not hand-write it here.
-  builder/locations.py holds the location list, the service list, and the hero
-  lookup this file was generated from.
+    /* Full-width interactive map container */
+    .xl-map{
+      width:100%;
+      height: clamp(420px, 55vw, 640px);
+      border:1px solid var(--br);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      background:#fff;
+    }
+    .atlist-embed{ width:100% !important; height:100% !important; display:block; border:0; }
 
-  Deliberately empty below this comment: if it gets pasted into Framer by mistake it
-  renders nothing, rather than half a page.
--->
+    /* Centered decks under each map */
+    .xl-panedeck{ margin:18px auto 0; display:grid; gap:var(--gap); align-items:start; }
+    .xl-panedeck.two{ max-width:1000px; grid-template-columns:1fr 1fr; }
+    .xl-panedeck.one{ max-width:640px; grid-template-columns:1fr; }
+
+    .xl-pane{
+      padding:18px 20px 22px 20px; background:#fff;
+      border:1px solid var(--br); border-radius:12px; box-shadow:var(--shadow);
+      opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
+    }
+    .xl-pane.reveal-in{opacity:1; transform:translateY(0);}
+    .xl-head{font-weight:900; letter-spacing:.05em; text-transform:uppercase; color:var(--green); margin-bottom:12px; font-size:13px;}
+    .xl-sub{font-weight:800; color:var(--purple); margin:6px 0 12px; font-size:18px;}
+    ul.xl-list{list-style:disc; padding-left:20px; margin:0;}
+    .xl-list li{margin:6px 0;}
+    .xl-list a{ color:var(--ink); text-decoration:none; border-bottom:1px dotted rgba(84,39,112,.35); }
+    .xl-list a:hover{color:var(--purple);}
+
+    /* Responsive stacks */
+    @media (max-width: 900px){ .xl-panedeck.two{ grid-template-columns:1fr; max-width:640px; } }
+
+    /* Mobile map height override you provided */
+    @media only screen and (max-width: 640px){
+      .xl-map{ height:auto; }                /* let iframe control height */
+      .atlist-embed{ height:575px !important; }  /* your requested mobile height */
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      .xl-title h2,.xl-title .bar,.xl-pane{opacity:1!important; transform:none!important; transition:none!important;}
+    }
+  </style>
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <div class="xl-wrap">
+    <!-- Title + bar -->
+    <div class="xl-title">
+      <h2>Our Service Areas</h2>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Phone + Schedule -->
+    <p class="hx-call">
+      <span class="or-wrap">
+        Call <a class="num" href="tel:18445847399">(844) 584-7399</a> or
+        <button class="hx-btn js-contact" type="button" aria-label="Schedule Service">
+          <span class="dot" aria-hidden="true"></span> Schedule Now
+        </button>
+      </span>
+    </p>
+
+    <div class="xl-spacer"></div>
+
+    <!-- ===== Block 1: DAYTON MAP (swap src when your Dayton map is ready) ===== -->
+    <div class="xl-map" aria-label="Dayton service area map">
+      <iframe
+        class="atlist-embed"
+        src="https://my.atlist.com/map/d1e71909-39c0-4d7e-ab21-5d63f440a852?share=true"
+        allow="geolocation 'self' https://my.atlist.com"
+        loading="lazy"
+        scrolling="no"
+        allowfullscreen
+        title="Dayton Service Area Map">
+      </iframe>
+    </div>
+
+    <!-- Dayton: Cities + Counties -->
+    <div class="xl-panedeck two">
+      <aside class="xl-pane">
+        <div class="xl-head">We service the following cities in the Dayton, OH area:</div>
+        <div class="xl-sub">Dayton-Area Cities</div>
+        <ul class="xl-list" id="daytonCities"></ul>
+      </aside>
+
+      <aside class="xl-pane">
+        <div class="xl-head">We service the following counties in Ohio:</div>
+        <div class="xl-sub">Counties</div>
+        <ul class="xl-list" id="counties"></ul>
+      </aside>
+    </div>
+
+    <div class="xl-spacer"></div>
+
+    <!-- ===== Block 2: CINCINNATI MAP ===== -->
+    <div class="xl-map" aria-label="Cincinnati service area map">
+      <iframe
+        class="atlist-embed"
+        src="https://my.atlist.com/map/010b1b45-cc77-4644-b0e8-8492892ea87b?share=true"
+        allow="geolocation 'self' https://my.atlist.com"
+        loading="lazy"
+        scrolling="no"
+        allowfullscreen
+        title="Cincinnati Service Area Map">
+      </iframe>
+    </div>
+
+    <!-- Cincinnati: Cities only -->
+    <div class="xl-panedeck one">
+      <aside class="xl-pane">
+        <div class="xl-head">We also service the following cities in the Cincinnati, Ohio area:</div>
+        <div class="xl-sub">Cincinnati-Area Cities</div>
+        <ul class="xl-list" id="cincinnatiCities"></ul>
+      </aside>
+    </div>
+  </div>
+
+<script>
+  // Data
+  const daytonCities=["Dayton","Beavercreek","Bellbrook","Centerville","Englewood","Fairborn","Franklin","Huber Heights","Kettering","Miamisburg","Moraine","Oakwood","Riverside","Springboro","Springfield","Tipp City","Troy","Vandalia","West Carrollton","Xenia"];
+  const cincinnatiCities=["Blue Ash","Cincinnati","Fairfield","Lebanon","Middletown","Mason","Northgate","Sharonville","West Chester"];
+  const counties=["Butler County","Montgomery County","Miami County","Clark County","Greene County","Hamilton County","Preble County","Darke County","Warren County"];
+
+  const slugify=(s)=>s.toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+  const makeLink=(label,href)=>{const li=document.createElement("li");const a=document.createElement("a");a.textContent=`${label} HVAC Services`;a.href=href;a.target="_top";a.rel="noopener";li.appendChild(a);return li;};
+
+  // Render lists
+  const dUL=document.getElementById("daytonCities");
+  daytonCities.forEach(city=>{let slug;if(city==="Huber Heights") slug="huber"; else if(city==="Tipp City") slug="tipp"; else slug=slugify(city);dUL.appendChild(makeLink(city,`/locations/${slug}`));});
+
+  const cUL=document.getElementById("cincinnatiCities");
+  cincinnatiCities.forEach(city=>{cUL.appendChild(makeLink(city,`/locations/${slugify(city)}`));});
+
+  const ctUL=document.getElementById("counties");
+  counties.forEach(county=>{const base=slugify(county.replace(/county/i,"")).replace(/-$/,"");ctUL.appendChild(makeLink(county,`/locations/${base}-county`));});
+
+  // Reveal animations
+  const reduce=(()=>{try{return matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}})();
+  const root=document.currentScript.closest('.xhac-locations');
+  const toReveal=[root?.querySelector('.xl-title')?.parentElement,...root.querySelectorAll('.xl-pane')].filter(Boolean);
+  if(reduce||!("IntersectionObserver"in window)){toReveal.forEach(el=>el.classList.add('reveal-in'));}else{
+    const io=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('reveal-in');io.unobserve(e.target);}});},{threshold:.15,rootMargin:"0px 0px -10% 0px"});
+    toReveal.forEach(el=>io.observe(el));
+  }
+
+
+// Schedule trigger → Original Schedule Engine (matches Hero)
+function openScheduleEngine() {
+  try {
+    // Prefer parent window (Framer page)
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.dispatchEvent(
+          new window.parent.CustomEvent("open-contact-dialog")
+        );
+        return;
+      }
+    } catch (e) {
+      // parent might be cross-origin; ignore and fall back
+    }
+
+    // Fallback: dispatch in this window
+    window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+  } catch (err) {
+    console.warn("[XHAC] Failed to dispatch open-contact-dialog", err);
+  }
+}
+
+
+root.querySelectorAll(".js-contact").forEach((el) => {
+  el.addEventListener("click", (e) => {
+    e.preventDefault();
+    openScheduleEngine();
+  });
+});
+
+
+   
+</script>
+</section>

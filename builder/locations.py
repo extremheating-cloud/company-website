@@ -79,16 +79,19 @@ GROUPS = [
 
 ALL = DAYTON + CINCINNATI + COUNTIES
 
-# Hero photo per location, from assets/cities/. One gap:
-#   hamilton-county — no image in the set at all. Either shoot one or fall back to
-#   the Cincinnati photo, since Hamilton County is the Cincinnati county.
-# wc.jpg is West Carrollton (client-confirmed 2026-08-01) — the only filename in
-# assets/cities/ that isn't already its slug.
-HERO_OVERRIDES = {"west-carrollton": "wc"}   # slug -> assets/cities/<name>.jpg
-NO_HERO = {"hamilton-county"}
+# Hero photo per location, from assets/cities/. Every location has one.
+#
+#   west-carrollton  wc.jpg is West Carrollton (client-confirmed 2026-08-01) — the
+#                    only filename in assets/cities/ that isn't already its slug
+#   hamilton-county  reuses the Cincinnati photo (client-confirmed 2026-08-01);
+#                    Hamilton County is the Cincinnati county, so it is the same
+#                    place rather than a stand-in. It is the one image used twice —
+#                    if the two pages ever appear together, shoot a second frame.
+HERO_OVERRIDES = {                           # slug -> assets/cities/<name>.jpg
+    "west-carrollton": "wc",
+    "hamilton-county": "cincinnati",
+}
 
 def hero(slug):
-    """Path under assets/ for a location's hero, or None if we don't have one."""
-    if slug in NO_HERO:
-        return None
+    """Path under assets/ for a location's hero. Every location has one."""
     return f"cities/{HERO_OVERRIDES.get(slug, slug)}.jpg"
