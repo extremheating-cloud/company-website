@@ -20,7 +20,7 @@ type Props = {
 }
 
 const LOGO_TIGHT =
-    "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@main/assets/brand/logo-white-tight.png"
+    "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/brand/logo-white-tight.png"
 
 type CoreRow = {
     title: string

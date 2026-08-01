@@ -95,7 +95,7 @@ const REVIEWS: { quote: string; name: string; city?: string }[] = [
 const VIDEO_EMBED =
     "https://www.youtube.com/embed/lUjB1pt9yBw?autoplay=1&rel=0&modestbranding=1"
 const VIDEO_THUMB =
-    "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@main/assets/brand/van.png"
+    "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/brand/van.png"
 
 const FAQS = [
     {

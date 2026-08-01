@@ -9,7 +9,7 @@ import {
 // Transparent PNGs, full colour — the grey is a CSS filter, so a pre-greyed logo
 // could never light up on hover. Transparent padding was trimmed off each canvas
 // so object-fit compares the marks themselves rather than three different canvases.
-const BRAND_COMMIT = "main" // pin to a commit SHA after pushing changed assets
+const BRAND_COMMIT = "c83bf3b6254c9bd3dbc1bd101024085c183abd20" // pin to a commit SHA after pushing changed assets
 const BRAND_CDN =
     "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@" +
     BRAND_COMMIT +

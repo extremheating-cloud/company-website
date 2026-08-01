@@ -83,7 +83,9 @@ AIR_CONDITIONING = {
          "a": "Yes — every major make and model, regardless of who installed it. Our techs receive ongoing training across all common residential systems."},
     ],
     "rail": {
-        "photo": "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@main/assets/service/ac-repair.jpg?v=2",
+        # Was a hardcoded @main URL with a ?v=2 cache-buster — the query string does
+        # nothing on jsDelivr; the commit pin is what actually busts the cache.
+        "photo": T.cdn_asset("service/ac-repair.jpg"),
         "photoAlt": "Extreme technician servicing an air conditioner",
         "promos": ["financing", "xplan"],
     },

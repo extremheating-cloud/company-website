@@ -58,11 +58,11 @@ export function ensureMontserrat() {
 export const PHONE_DISPLAY = "(844) 584-7399"
 export const PHONE_TEL = "tel:18445847399"
 
-const CDN = "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@main/assets/brand"
+const CDN = "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/brand"
 export const ASSETS = {
     logoWhite: `${CDN}/logo-white.png`,
     xMark: `${CDN}/x-mark.png`,
-    van: "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@main/assets/brand/van.png",
+    van: "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/brand/van.png",
 }
 
 export function openScheduleDialog() {
