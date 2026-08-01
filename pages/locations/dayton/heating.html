@@ -1,17 +1,330 @@
-<!--
-  PLACEHOLDER — this page has not been built yet.
+<section class="xhac-heating" data-city="Dayton">
+  <style>
+    .xhac-heating{
+      --purple:#542770; --green:#6bb85c; --ink:#0f172a; --muted:#475569; --rule:#e7e7ea;
+      --wrap:1200px; --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.06);
+      --section-gap: clamp(28px, 5vw, 48px);
+      font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+    }
+    .hx-wrap{max-width:var(--wrap); margin:0 auto; padding:26px 16px;}
+    .hx-spacer{width:100%; height:6px; margin:38px 0; background:linear-gradient(90deg,var(--purple),var(--green)); border-radius:999px;}
 
-  URL      /locations/dayton/heating
-  Title    Heating in Dayton, OH
-  Type     location service page
-  Location Dayton (Dayton area)
-  Service  Heating
-  Hero     assets/cities/dayton.jpg
+    /* Titles */
+    .hx-title{ text-align:center; margin:0 0 22px; }
+    .hx-title h2{
+      font-size: clamp(22px, 3.2vw, 32px);
+      font-weight:800; color:var(--purple); margin:0 0 10px; letter-spacing:.015em;
+      opacity:0; transform:translateY(10px); transition:opacity .5s, transform .5s;
+    }
+    .hx-title .bar{ width:120px; height:6px; margin:0 auto; border-radius:999px;
+      background:linear-gradient(90deg,var(--purple),var(--green)); opacity:0; transform:translateY(8px); transition:opacity .5s .06s, transform .5s .06s; }
+    .reveal-in .hx-title h2, .reveal-in .hx-title .bar{opacity:1; transform:translateY(0);}
 
-  Build it from builder/ like every other page in this repo; do not hand-write it
-  here. builder/locations.py holds the location list and service list this file was
-  generated from.
+    /* Hero row */
+    .hx-hero{ display:grid; grid-template-columns:1.05fr .95fr; gap:26px; align-items:start; }
+    @media (max-width:940px){ .hx-hero{ grid-template-columns:1fr; } }
+    .hx-img{
+      height:300px; border-radius:12px; overflow:hidden; border:1px solid var(--rule); box-shadow:var(--shadow);
+      opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
+    }
+    .hx-img.reveal-in{opacity:1; transform:translateY(0);}
+    .hx-img img{width:100%; height:100%; object-fit:cover; display:block;}
+    .hx-copy{
+      background:#fff; border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow);
+      padding:18px 18px 20px; opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .hx-copy.reveal-in{opacity:1; transform:translateY(0);}
+    .hx-copy h3{ font-weight:900; font-size:13px; color:var(--green); text-transform:uppercase; letter-spacing:.04em; margin:0 0 6px; }
+    .hx-copy p{ color:var(--ink); font-size:15px; line-height:1.7; margin:6px 0; }
+    .hx-link{ color:var(--green); font-weight:800; text-decoration:none; border-bottom:1px solid transparent; }
+    .hx-link:hover{ border-bottom-color:var(--green); }
 
-  Deliberately empty below this comment: if it gets pasted into Framer by mistake it
-  renders nothing, rather than half a page.
--->
+    /* Primary Button (matches thermostat embed) */
+    .hx-btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:12px 16px;border-radius:12px;border:1px solid var(--purple);
+      background:linear-gradient(180deg,#ffffff,#f8f8fb);
+      color:var(--purple);font-weight:800;letter-spacing:.01em;text-decoration:none;
+      box-shadow:0 2px 10px rgba(0,0,0,.05);cursor:pointer;user-select:none;
+      transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .hx-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.08);}
+    .hx-btn:active{transform:translateY(0);}
+    .hx-btn .dot{width:8px;height:8px;border-radius:999px;background:var(--green);}
+    .hx-btn.center{display:flex;margin:10px auto 0;} /* centered in hero, just like thermostat */
+
+    /* In-box call text (below body) */
+    .hx-call{
+      margin-top:10px; padding-top:10px;
+      font-weight:900; text-transform:uppercase; font-style:italic; letter-spacing:.02em;
+      color:var(--purple); line-height:1.25; font-size:clamp(15px,2.2vw,20px);
+      border-top:1px dashed rgba(84,39,112,.25);
+    }
+    .hx-call .num{ color:var(--green); text-decoration:none; }
+    .hx-call .city{ color:var(--purple); }
+
+    /* Four-up service grid */
+    .hx-grid{ display:grid; gap:22px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+    @media (max-width:1100px){ .hx-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:680px){ .hx-grid{ grid-template-columns:1fr; } }
+    .hx-card{
+      background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow);
+      overflow:hidden; opacity:0; transform:translateY(14px); transition:opacity .55s, transform .55s;
+    }
+    .hx-card.reveal-in{ opacity:1; transform:translateY(0);}
+    .hx-card .img{ height:160px; overflow:hidden; }
+    .hx-card .img img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .hx-card .body{ padding:16px; }
+    .hx-card .kicker{ font-weight:900; font-size:12px; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin-bottom:8px; }
+    .hx-card h4{ font-size:16px; color:var(--green); margin:0 0 8px; text-transform:uppercase; }
+    .hx-card p{ color:var(--muted); font-size:14px; line-height:1.55; margin:0; }
+
+    /* Section blocks */
+    .hx-panel{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:clamp(16px,3vw,24px); opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
+    }
+    .hx-panel.reveal-in{ opacity:1; transform:translateY(0); }
+    .hx-rows{ display:grid; grid-template-columns:1fr 1fr; column-gap:26px; row-gap:8px; }
+    @media (max-width:860px){ .hx-rows{ grid-template-columns:1fr; } }
+    .hx-badge{ display:inline-block; background:linear-gradient(90deg,rgba(107,184,92,.18),rgba(84,39,112,.14)); color:var(--ink);
+      font-weight:900; font-size:12px; letter-spacing:.05em; text-transform:uppercase; padding:6px 10px; border-radius:999px; margin-bottom:10px;}
+    .hx-term{ color:var(--ink); font-weight:800; font-size:18px; margin-bottom:6px; }
+    .hx-desc{ color:var(--muted); font-size:15px; line-height:1.65; }
+
+    @media (prefers-reduced-motion:reduce){
+      .hx-title h2,.hx-title .bar,.hx-img,.hx-copy,.hx-card,.hx-panel{opacity:1!important; transform:none!important; transition:none!important;}
+    }
+  </style>
+
+  <div class="hx-wrap">
+
+    <!-- Top Title -->
+    <div class="hx-title">
+      <h2 id="hx-head">Our Efficient Heating and Furnace Services in <span class="hx-city">City</span>, Ohio</h2>
+      <div class="bar"></div>
+    </div>
+
+    <!-- HERO -->
+    <div class="hx-hero">
+      <div class="hx-img">
+<img id="hx-city-img" loading="lazy" decoding="async"
+     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/cities/Dayton.jpg"
+     alt="City view">
+      </div>
+
+      <div class="hx-copy">
+        <h3><span class="hx-city">City</span>, OH Furnace Installation, Repair, Maintenance & Replacement</h3>
+        <p>
+          Extreme Heating has serviced the <span class="hx-city">City</span>, OH region for many years. We are one of the most essential contacts you should have during the chilly winter days. Our team will provide:
+        </p>
+        <p>
+          Want fewer surprises and lower utility bills? Ask about scheduled
+          <a class="hx-link hx-lnk-maint" href="#">furnace maintenance</a>.
+          And if cooling’s on your mind, we also provide
+          <a class="hx-link hx-lnk-cooling" href="#">air conditioning services in <span class="hx-city">City</span></a>.
+        </p>
+
+        <!-- Centered Schedule button (fires same schedule bridge as thermostat embed) -->
+        <button class="hx-btn js-contact center" type="button" aria-label="Schedule Service">
+          <span class="dot" aria-hidden="true"></span> Schedule Now
+        </button>
+
+        <!-- Updated phone number -->
+        <p class="hx-call">
+          Call <a class="num" href="tel:18445847399">(844) 584-7399</a>
+          for service in <span class="city hx-city-upper">CITY</span>, OH
+        </p>
+      </div>
+    </div>
+
+    <div class="hx-spacer"></div>
+
+    <!-- Middle Title -->
+    <div class="hx-title">
+      <h2>Our Efficient Heating and Furnace Services in <span class="hx-city">City</span>, Ohio</h2>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Four key services -->
+    <div class="hx-grid">
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async"
+     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/furnace.jpg"
+     alt="Furnace installation"></div>
+        <div class="body">
+          <div class="kicker">Install</div>
+          <h4><span class="hx-city-upper">CITY</span> FURNACE INSTALLATION</h4>
+          <p>When you are building your new home, you need professional heating and furnace installation. Our team will properly install your new system to ensure your home provides the cozy place of rest that you need.</p>
+        </div>
+      </article>
+
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async"
+     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/furnace2.jpg"
+     alt="Furnace repair"></div>
+        <div class="body">
+          <div class="kicker">Repair</div>
+          <h4><span class="hx-city-upper">CITY</span> FURNACE REPAIR</h4>
+          <p>If your unit suddenly loses heat, then you need emergency heating and furnace repair. Our trusted and credible HVAC service will come to your home quickly. Our team members are equipped for heating and furnace repair.</p>
+        </div>
+      </article>
+
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async"
+     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/furnace-replace.jpg"
+     alt="Furnace replacement"></div>
+        <div class="body">
+          <div class="kicker">Replace</div>
+          <h4><span class="hx-city-upper">CITY</span> FURNACE REPLACEMENT</h4>
+          <p>Your 15 or 20-year-old heater or furnace has reached its peak. So, now it’s time to call a professional heating and furnace replacement contractor. Our technicians can replace your weary system and get your home or business comfortable again.</p>
+        </div>
+      </article>
+
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async"
+     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/furnace-maintenance.jpg"
+     alt="Furnace maintenance"></div>
+        <div class="body">
+          <div class="kicker">Maintain</div>
+          <h4><span class="hx-city-upper">CITY</span> FURNACE MAINTENANCE</h4>
+          <p>As much as possible, you want to keep your heating and furnace system at home in its best condition. Thus, it will need regular care and maintenance. A reliable heating and furnace contractor will help you avoid unexpected damages.</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="hx-spacer"></div>
+
+    <!-- Bottom Title -->
+    <div class="hx-title">
+      <h2>Your Local Reliable Heating and Furnace Solution</h2>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Helpful reasons panel -->
+    <div class="hx-panel">
+      <div class="hx-rows">
+        <div>
+          <span class="hx-badge">Comfort</span>
+          <div class="hx-term">Even, Reliable Heat</div>
+          <p class="hx-desc">Proper sizing, ductwork, and controls deliver even temperatures throughout your home.</p>
+        </div>
+        <div>
+          <span class="hx-badge">Efficiency</span>
+          <div class="hx-term">Lower Energy Costs</div>
+          <p class="hx-desc">Modern high-efficiency furnaces can reduce usage and keep bills predictable all winter.</p>
+        </div>
+        <div>
+          <span class="hx-badge">Safety</span>
+          <div class="hx-term">Code-Compliant Work</div>
+          <p class="hx-desc">Our techs follow strict safety protocols for gas, venting, and electrical systems.</p>
+        </div>
+        <div>
+          <span class="hx-badge">Support</span>
+          <div class="hx-term">Trusted Local Pros</div>
+          <p class="hx-desc">We’ve served the <span class="hx-city">City</span> area for years with honest recommendations and dependable service.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+(function(){
+  const root = document.currentScript.closest('.xhac-heating'); if(!root) return;
+
+  // --- Config: jsDelivr base for your repo
+  const CDN_BASE = "https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images";
+  const cityImgUrl = (cityNoSpaces) => `${CDN_BASE}/cities/${cityNoSpaces}.jpg`;
+  const descImgUrl = (file) => `${CDN_BASE}/descriptive/${file}`;
+  const FALLBACK_CITY = "Dayton"; // fallback if image missing
+
+  // --- City helpers (unchanged)
+  const ucWords = s => (!s ? "" : s.split("-").map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(" "));
+  const cityFrom = (url)=>{
+    try{
+      if(!url) return "";
+      const m = String(url).toLowerCase().match(/\/locations\/([^\/?#]+)/);
+      return (m && m[1]) ? ucWords(m[1]) : "";
+    }catch(e){ return ""; }
+  };
+  let city = (root.getAttribute('data-city')||"").trim()
+          || cityFrom(window.location && window.location.href)
+          || (function(){ try { return cityFrom(window.parent!==window ? window.parent.location.href : ""); } catch(e){ return ""; } })()
+          || cityFrom(document.referrer) || "Your Area";
+
+  // Inject city text (unchanged)
+  root.querySelectorAll('.hx-city').forEach(el=> el.textContent = city);
+  root.querySelectorAll('.hx-city-upper').forEach(el=> el.textContent = city.toUpperCase());
+
+  // Top heading (unchanged)
+  const head = root.querySelector('#hx-head');
+  if(head) head.innerHTML = 'Our Efficient Heating and Furnace Services in <span class="hx-city">'+city+'</span>, Ohio';
+
+  // Build ONLY maintenance + cooling links (unchanged)
+  const citySlug = city.toLowerCase().replace(/\s+/g,'-');
+  const link = p => '/locations/'+citySlug+'/'+p;
+  root.querySelectorAll('.hx-lnk-maint').forEach(a=> a.href = link('maintenance'));
+  root.querySelectorAll('.hx-lnk-cooling').forEach(a=> a.href = link('cooling'));
+
+  // Force links to break out of iframe (unchanged)
+  root.querySelectorAll('a').forEach(a => { a.setAttribute('target','_top'); a.setAttribute('rel','noopener'); });
+
+  // --- Dynamic hero city image -> jsDelivr /images/cities/{CityNoSpaces}.jpg
+  const cityFile = city.replace(/\s+/g,''); // e.g., "Beavercreek"
+  const hero = root.querySelector('#hx-city-img');
+  if(hero){
+    hero.src = cityImgUrl(cityFile);
+    hero.alt = city + ' skyline';
+    hero.onerror = () => { hero.src = cityImgUrl(FALLBACK_CITY); };
+  }
+
+  // --- Ensure the four card images point to /images/descriptive/... on jsDelivr
+  const setSrc = (selector, file) => {
+    const el = root.querySelector(selector);
+    if(el) el.src = descImgUrl(file);
+  };
+  setSrc('img[alt="Furnace installation"]', 'furnace.jpg');
+  setSrc('img[alt="Furnace repair"]', 'furnace2.jpg');
+  setSrc('img[alt="Furnace replacement"]', 'furnace-replace.jpg');
+  setSrc('img[alt="Furnace maintenance"]', 'furnace-maintenance.jpg');
+
+  // --- Animations (unchanged)
+  const reduce = (()=>{ try{ return matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; }})();
+  const toReveal = [
+    root.querySelector('.hx-title')?.parentElement,
+    root.querySelector('.hx-img'),
+    root.querySelector('.hx-copy'),
+    ...root.querySelectorAll('.hx-card'),
+    root.querySelector('.hx-panel')
+  ].filter(Boolean);
+
+  if(reduce || !('IntersectionObserver' in window)){
+    toReveal.forEach(el=> el.classList.add('reveal-in'));
+  }else{
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('reveal-in'); io.unobserve(e.target); }
+      });
+    }, {threshold:.15, rootMargin:'0px 0px -10% 0px'});
+    toReveal.forEach(el=> io.observe(el));
+  }
+
+  // --- Schedule Bridge (unchanged)
+  function triggerContact(){
+    const evtName = 'open-contact-dialog';
+    try{
+      if(window.parent && window.parent !== window){
+        window.parent.postMessage({ type: evtName, source: 'heating-embed' }, '*');
+      }
+      window.dispatchEvent(new CustomEvent(evtName));
+    }catch(e){}
+  }
+  root.querySelectorAll('.js-contact').forEach(el=>{
+    el.addEventListener('click', (e)=>{ e.preventDefault(); triggerContact(); });
+  });
+
+})();
+</script>
+</section>
+

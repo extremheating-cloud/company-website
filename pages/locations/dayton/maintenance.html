@@ -1,17 +1,345 @@
-<!--
-  PLACEHOLDER — this page has not been built yet.
+<section class="xhac-maintenance" data-city="Dayton">
+  <style>
+    .xhac-maintenance{
+      --purple:#542770; --green:#6bb85c; --ink:#0f172a; --muted:#475569; --rule:#e7e7ea;
+      --wrap:1200px; --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.06);
+      --section-gap: clamp(28px, 5vw, 48px);
+      font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+    }
+    .hx-wrap{max-width:var(--wrap); margin:0 auto; padding:26px 16px;}
+    .hx-spacer{width:100%; height:6px; margin:38px 0; background:linear-gradient(90deg,var(--purple),var(--green)); border-radius:999px;}
 
-  URL      /locations/dayton/maintenance
-  Title    Maintenance in Dayton, OH
-  Type     location service page
-  Location Dayton (Dayton area)
-  Service  Maintenance
-  Hero     assets/cities/dayton.jpg
+    /* Titles (identical system) */
+    .hx-title{ text-align:center; margin:0 0 22px; }
+    .hx-title h2{
+      font-size: clamp(22px, 3.2vw, 32px);
+      font-weight:800; color:var(--purple); margin:0 0 10px; letter-spacing:.015em;
+      opacity:0; transform:translateY(10px); transition:opacity .5s, transform .5s;
+    }
+    .hx-title .bar{ width:120px; height:6px; margin:0 auto; border-radius:999px;
+      background:linear-gradient(90deg,var(--purple),var(--green)); opacity:0; transform:translateY(8px); transition:opacity .5s .06s, transform .5s .06s; }
+    .reveal-in .hx-title h2, .reveal-in .hx-title .bar{opacity:1; transform:translateY(0);}
 
-  Build it from builder/ like every other page in this repo; do not hand-write it
-  here. builder/locations.py holds the location list and service list this file was
-  generated from.
+    /* Hero row */
+    .hx-hero{ display:grid; grid-template-columns:1.05fr .95fr; gap:26px; align-items:start; }
+    @media (max-width:940px){ .hx-hero{ grid-template-columns:1fr; } }
+    .hx-img{
+      height:300px; border-radius:12px; overflow:hidden; border:1px solid var(--rule); box-shadow:var(--shadow);
+      opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
+      background:#fff;
+    }
+    .hx-img.reveal-in{opacity:1; transform:translateY(0);}
+    .hx-img img{width:100%; height:100%; object-fit:contain; display:block; background:#fff;}
 
-  Deliberately empty below this comment: if it gets pasted into Framer by mistake it
-  renders nothing, rather than half a page.
--->
+    .hx-copy{
+      background:#fff; border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow);
+      padding:18px 18px 20px; opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .hx-copy.reveal-in{opacity:1; transform:translateY(0);}
+    .hx-copy h3{ font-weight:900; font-size:13px; color:var(--green); text-transform:uppercase; letter-spacing:.04em; margin:0 0 10px; }
+    .hx-copy p{ color:var(--ink); font-size:15px; line-height:1.7; margin:10px 0; }
+    .hx-link{ color:var(--green); font-weight:800; text-decoration:none; border-bottom:1px solid transparent; }
+    .hx-link:hover{ border-bottom-color:var(--green); }
+
+    /* Primary Button (matches other embeds) */
+    .hx-btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:12px 16px;border-radius:12px;border:1px solid var(--purple);
+      background:linear-gradient(180deg,#ffffff,#f8f8fb);
+      color:var(--purple);font-weight:800;letter-spacing:.01em;text-decoration:none;
+      box-shadow:0 2px 10px rgba(0,0,0,.05);cursor:pointer;user-select:none;
+      transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .hx-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.08);}
+    .hx-btn:active{transform:translateY(0);}
+    .hx-btn .dot{width:8px;height:8px;border-radius:999px;background:var(--green);}
+    .hx-btn.center{display:flex;margin:10px auto 0;} /* centered in hero like other pages */
+
+    /* Call line inside text container */
+    .hx-call{
+      margin-top:10px; padding-top:10px;
+      font-weight:900; text-transform:uppercase; font-style:italic; letter-spacing:.02em;
+      color:var(--purple); line-height:1.25; font-size:clamp(15px,2.2vw,20px);
+      border-top:1px dashed rgba(84,39,112,.25);
+    }
+    .hx-call .num{ color:var(--green); text-decoration:none; }
+    .hx-call .city{ color:var(--purple); }
+
+    /* Two stacked panels: Maintenance bullets + Inspection bullets */
+    .hx-panel{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:clamp(16px,3vw,24px); opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
+    }
+    .hx-panel.reveal-in{ opacity:1; transform:translateY(0); }
+    .hx-kicker{ font-weight:900; font-size:12px; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin-bottom:10px; }
+    .hx-term{ color:var(--ink); font-weight:800; font-size:18px; margin-bottom:6px; }
+    .hx-desc{ color:var(--muted); font-size:15px; line-height:1.65; margin-bottom:12px; }
+
+    .hx-list{ list-style:none; padding:0; margin:8px 0 0; }
+    .hx-list li{ position:relative; padding-left:26px; margin:8px 0; color:var(--ink); }
+    .hx-list li:before{
+      content:"✔"; position:absolute; left:0; top:0; line-height:1;
+      color:var(--green); font-weight:900;
+    }
+
+    /* X-Plan container */
+    .hx-xplan{
+      display:grid; grid-template-columns:1fr 1.2fr; gap:22px; align-items:center;
+      background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:clamp(16px,3vw,24px); opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
+    }
+    @media (max-width:940px){ .hx-xplan{ grid-template-columns:1fr; } }
+    .hx-xplan.reveal-in{opacity:1; transform:translateY(0);}
+    .x-left{ border:1px solid var(--rule); border-radius:12px; overflow:hidden; background:#fff; }
+    .x-left img{ width:100%; height:100%; display:block; object-fit:contain; background:#fff; }
+    .x-right h4{ margin:0 0 10px; font-size:18px; color:var(--purple); font-weight:800; }
+    .x-right p{ margin:8px 0; color:var(--muted); }
+    .x-rows{ display:grid; grid-template-columns:1fr 1fr; gap:14px 24px; margin-top:12px; }
+    @media (max-width:720px){ .x-rows{ grid-template-columns:1fr; } }
+    .x-row h5{ margin:0 0 6px; font-size:14px; color:var(--green); text-transform:uppercase; letter-spacing:.04em; }
+    .x-row ul{ list-style:none; padding:0; margin:0; }
+    .x-row li{ position:relative; padding-left:22px; margin:6px 0; color:var(--ink); font-size:14px; }
+    .x-row li:before{ content:"•"; position:absolute; left:0; top:0; color:var(--green); font-weight:900; }
+
+    .x-logo{ height:28px; display:inline-block; vertical-align:middle; margin-left:8px; }
+    .x-logo img{ height:100%; width:auto; display:block; }
+
+    @media (prefers-reduced-motion:reduce){
+      .hx-title h2,.hx-title .bar,.hx-img,.hx-copy,.hx-panel,.hx-xplan{opacity:1!important; transform:none!important; transition:none!important;}
+    }
+  </style>
+
+  <div class="hx-wrap">
+
+    <!-- Top Title -->
+    <div class="hx-title">
+      <h2 id="hx-head">HVAC Maintenance in <span class="hx-city">City</span>, Ohio</h2>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hx-hero">
+      <div class="hx-img">
+        <img id="hx-van-img" loading="lazy" decoding="async"
+          src="https://framerusercontent.com/images/g7mpSxLve9VidYMifK8pCEOMfA.png?width=5000&height=3000"
+          alt="Extreme Heating van">
+      </div>
+      <div class="hx-copy">
+        <h3><span class="hx-city">City</span>, OH HVAC Maintenance & Inspection</h3>
+        <p>
+          Over time, your HVAC system can become damaged without you realizing it. Preventative maintenance helps
+          lower the risk of unexpected repair costs and keeps your indoor air healthy. For questions or to book a visit,
+          <a id="hx-contact-link" class="hx-link" href="/contact">contact us</a>.
+        </p>
+        <p>
+          Extreme Heating & Air Conditioning has served <span class="hx-city">City</span> residents and businesses for years
+          with quality service focused on reliability, safety, and air quality.
+        </p>
+
+        <!-- Centered Schedule Now button -->
+        <button class="hx-btn js-contact center" type="button" aria-label="Schedule Service">
+          <span class="dot" aria-hidden="true"></span> Schedule Now
+        </button>
+
+        <!-- Updated call line -->
+        <p class="hx-call">
+          Call <a class="num" href="tel:18445847399">(844) 584-7399</a>
+          for service in <span class="city hx-city-upper">CITY</span>, OH
+        </p>
+      </div>
+    </div>
+
+    <div class="hx-spacer"></div>
+
+    <!-- Maintenance Services Panel -->
+    <div class="hx-title">
+      <h2>HVAC Maintenance in <span class="hx-city">City</span>, OH</h2>
+      <div class="bar"></div>
+    </div>
+    <div class="hx-panel">
+      <div class="hx-kicker">Our Routine Maintenance Includes</div>
+      <p class="hx-desc">
+        Our local HVAC contractors provide routine maintenance for heating and cooling units across <span class="hx-city">City</span>.
+        These services help prolong equipment life and improve indoor air quality.
+      </p>
+      <ul class="hx-list">
+        <li>Cleaning the drains inside air conditioning units</li>
+        <li>Air duct cleaning to improve indoor air quality</li>
+        <li>Ductwork repairs</li>
+        <li>Part lubrication for HVAC systems</li>
+        <li>Air and water balancing for air conditioner units</li>
+        <li>Elements and coil cleaning</li>
+      </ul>
+    </div>
+
+    <div class="hx-spacer"></div>
+
+    <!-- Inspection Panel -->
+    <div class="hx-title">
+      <h2>HVAC Inspection in <span class="hx-city">City</span>, OH</h2>
+      <div class="bar"></div>
+    </div>
+    <div class="hx-panel">
+      <div class="hx-kicker">What We Inspect</div>
+      <p class="hx-desc">
+        Along with routine maintenance, our technicians perform inspections to spot issues early and help improve
+        indoor air quality in <span class="hx-city">City</span>.
+      </p>
+      <ul class="hx-list">
+        <li>Motor operations inspection</li>
+        <li>Connection inspection</li>
+        <li>Refrigerant pressure checks</li>
+        <li>Fire and smoke damper inspection</li>
+      </ul>
+      <p class="hx-desc">
+        Have questions? <a class="hx-link" id="hx-contact-link-2" href="/contact">Contact us</a> to schedule a convenient appointment.
+      </p>
+    </div>
+
+    <div class="hx-spacer"></div>
+
+    <!-- X-PLAN -->
+    <div class="hx-title">
+      <h2>Get the X-Plan</h2>
+      <div class="bar"></div>
+    </div>
+
+    <style>
+      /* minor additions just for this block */
+      .x-sub{font-weight:800; color:#542770; letter-spacing:.02em; text-transform:uppercase; margin:8px 0 14px;}
+      .x-sub small{font-weight:700; opacity:.85;}
+      .x-headline{ color:#22c55e; font-weight:900; margin:8px 0 6px; }
+      .x-note{ font-weight:800; color:#4b5563; }
+    </style>
+
+    <div class="hx-xplan">
+      <div class="x-left">
+        <img loading="lazy" decoding="async"
+             src="https://framerusercontent.com/images/g7mpSxLve9VidYMifK8pCEOMfA.png?width=5000&height=3000"
+             alt="Extreme X-Plan van">
+      </div>
+
+      <div class="x-right">
+        <h4>
+          Set it and forget it with the X-Plan
+          <span class="x-logo">
+            <img loading="lazy" decoding="async"
+                 src="https://framerusercontent.com/images/6koKmOKNDZTP6HvC2eynnx7IY.png?width=334&height=107"
+                 alt="X-Plan logo">
+          </span>
+        </h4>
+        <div class="x-sub"><small>Performance • Protection • Preventative Maintenance</small></div>
+
+        <div class="x-headline">Zero Risk Investment</div>
+        <p class="x-note">
+          100% of the investment of your X-PLAN membership in consecutive years is applied
+          toward your end of life equipment replacement! Up to $2500 or 10 years.
+        </p>
+
+        <div class="x-rows">
+          <div class="x-row">
+            <h5>What’s included with your X-Plan</h5>
+            <ul>
+              <li>Two Safety &amp; Performance Visits a Year</li>
+              <li>Multi-Point Air Conditioner Tune-Up and Service</li>
+              <li>Calibrate Refrigerant Charge up to 1lb Included</li>
+              <li>Ensure Air Conditioner is Optimized for Peak Performance</li>
+              <li>Professional Recommendations to Prolong Equipment Life</li>
+              <li>Heating System Safety Checkup and Service</li>
+              <li>Detailed Evaluation and Efficiency Measurements</li>
+              <li>Airflow Adjustments as Needed</li>
+              <li>Thermostat Calibration and Configuration</li>
+            </ul>
+          </div>
+
+          <div class="x-row">
+            <h5>Additional X-Plan Benefits</h5>
+            <ul>
+              <li>X-Plan Members receive Extreme Priority Scheduling</li>
+              <li>Exclusive Offers &amp; Discounts</li>
+              <li>15% Off All Repairs</li>
+              <li>Reduced Service Fee including Afterhours and Holidays</li>
+              <li>Worry Free 5 Year Warranty on all Qualified Repairs by Extreme Technicians</li>
+              <li>X-Plan is 100% Transferable</li>
+              <li>Discount on Complete line of Indoor Air Quality Components, including Air Duct Cleaning</li>
+              <li>Drug Tested and Background Checked Technicians for Your Safety</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function(){
+      const root = document.currentScript.closest('.xhac-maintenance'); if(!root) return;
+
+      // --- City helpers (same as other embeds)
+      const ucWords = s => (!s ? "" : s.split("-").map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(" "));
+      const cityFrom = (url)=>{
+        try{
+          if(!url) return "";
+          const m = String(url).toLowerCase().match(/\/locations\/([^\/?#]+)/);
+          return (m && m[1]) ? ucWords(m[1]) : "";
+        }catch(e){ return ""; }
+      };
+      let city = (root.getAttribute('data-city')||"").trim()
+              || cityFrom(window.location && window.location.href)
+              || (function(){ try { return cityFrom(window.parent!==window ? window.parent.location.href : ""); } catch(e){ return ""; } })()
+              || cityFrom(document.referrer) || "Your Area";
+
+      // Inject city text everywhere
+      root.querySelectorAll('.hx-city').forEach(el=> el.textContent = city);
+      root.querySelectorAll('.hx-city-upper').forEach(el=> el.textContent = city.toUpperCase());
+
+      // Title text
+      const head = root.querySelector('#hx-head');
+      if(head) head.innerHTML = 'HVAC Maintenance in <span class="hx-city">'+city+'</span>, Ohio';
+
+      // Ensure contact links + phone behave at top window
+      ['#hx-contact-link','#hx-contact-link-2'].forEach(sel=>{
+        const a = root.querySelector(sel);
+        if(a){ a.href = '/contact'; a.setAttribute('target','_top'); a.setAttribute('rel','noopener'); }
+      });
+      root.querySelectorAll('a.num').forEach(a=>{
+        a.setAttribute('target','_top'); a.setAttribute('rel','noopener');
+      });
+
+      // --- Animations (same as heating/cooling)
+      const reduce = (()=>{ try{ return matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; }})();
+      const toReveal = [
+        root.querySelector('.hx-title')?.parentElement,
+        root.querySelector('.hx-img'),
+        root.querySelector('.hx-copy'),
+        ...root.querySelectorAll('.hx-panel'),
+        root.querySelector('.hx-xplan')
+      ].filter(Boolean);
+
+      if(reduce || !('IntersectionObserver' in window)){
+        toReveal.forEach(el=> el.classList.add('reveal-in'));
+      }else{
+        const io = new IntersectionObserver((entries)=>{
+          entries.forEach(e=>{
+            if(e.isIntersecting){ e.target.classList.add('reveal-in'); io.unobserve(e.target); }
+          });
+        }, {threshold:.15, rootMargin:'0px 0px -10% 0px'});
+        toReveal.forEach(el=> io.observe(el));
+      }
+
+      // --- Schedule Bridge: fire "open-contact-dialog" like other embeds ---
+      function triggerContact(){
+        const evtName = 'open-contact-dialog';
+        try{
+          if(window.parent && window.parent !== window){
+            window.parent.postMessage({ type: evtName, source: 'maintenance-embed' }, '*');
+          }
+          window.dispatchEvent(new CustomEvent(evtName));
+        }catch(e){}
+      }
+      root.querySelectorAll('.js-contact').forEach(el=>{
+        el.addEventListener('click',(e)=>{ e.preventDefault(); triggerContact(); });
+      });
+    })();
+  </script>
+</section>

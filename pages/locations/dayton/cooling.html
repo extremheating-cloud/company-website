@@ -1,17 +1,290 @@
-<!--
-  PLACEHOLDER — this page has not been built yet.
+<section class="xhac-cooling" data-city="Dayton">
+  <style>
+    .xhac-cooling{
+      --purple:#542770; --green:#6bb85c; --ink:#0f172a; --muted:#475569; --rule:#e7e7ea;
+      --wrap:1200px; --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.06);
+      --section-gap: clamp(28px, 5vw, 48px);
+      font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+    }
+    .hx-wrap{max-width:var(--wrap); margin:0 auto; padding:26px 16px;}
+    .hx-spacer{width:100%; height:6px; margin:38px 0; background:linear-gradient(90deg,var(--purple),var(--green)); border-radius:999px;}
 
-  URL      /locations/dayton/cooling
-  Title    Cooling in Dayton, OH
-  Type     location service page
-  Location Dayton (Dayton area)
-  Service  Cooling
-  Hero     assets/cities/dayton.jpg
+    /* Titles (kept identical to heating) */
+    .hx-title{ text-align:center; margin:0 0 22px; }
+    .hx-title h2{
+      font-size: clamp(22px, 3.2vw, 32px);
+      font-weight:800; color:var(--purple); margin:0 0 10px; letter-spacing:.015em;
+      opacity:0; transform:translateY(10px); transition:opacity .5s, transform .5s;
+    }
+    .hx-title .bar{ width:120px; height:6px; margin:0 auto; border-radius:999px;
+      background:linear-gradient(90deg,var(--purple),var(--green)); opacity:0; transform:translateY(8px); transition:opacity .5s .06s, transform .5s .06s; }
+    .reveal-in .hx-title h2, .reveal-in .hx-title .bar{opacity:1; transform:translateY(0);}
 
-  Build it from builder/ like every other page in this repo; do not hand-write it
-  here. builder/locations.py holds the location list and service list this file was
-  generated from.
+    /* Hero row */
+    .hx-hero{ display:grid; grid-template-columns:1.05fr .95fr; gap:26px; align-items:start; }
+    @media (max-width:940px){ .hx-hero{ grid-template-columns:1fr; } }
+    .hx-img{
+      height:300px; border-radius:12px; overflow:hidden; border:1px solid var(--rule); box-shadow:var(--shadow);
+      opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
+    }
+    .hx-img.reveal-in{opacity:1; transform:translateY(0);}
+    .hx-img img{width:100%; height:100%; object-fit:cover; display:block;}
+    .hx-copy{
+      background:#fff; border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow);
+      padding:18px 18px 20px; opacity:0; transform:translateY(12px); transition:opacity .55s, transform .55s;
+    }
+    .hx-copy.reveal-in{opacity:1; transform:translateY(0);}
+    .hx-copy h3{ font-weight:900; font-size:13px; color:var(--green); text-transform:uppercase; letter-spacing:.04em; margin:0 0 10px; }
+    .hx-copy p{ color:var(--ink); font-size:15px; line-height:1.7; margin:10px 0; }
+    .hx-link{ color:var(--green); font-weight:800; text-decoration:none; border-bottom:1px solid transparent; }
+    .hx-link:hover{ border-bottom-color:var(--green); }
 
-  Deliberately empty below this comment: if it gets pasted into Framer by mistake it
-  renders nothing, rather than half a page.
--->
+    /* Primary Button (matches thermostat/heating) */
+    .hx-btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:12px 16px;border-radius:12px;border:1px solid var(--purple);
+      background:linear-gradient(180deg,#ffffff,#f8f8fb);
+      color:var(--purple);font-weight:800;letter-spacing:.01em;text-decoration:none;
+      box-shadow:0 2px 10px rgba(0,0,0,.05);cursor:pointer;user-select:none;
+      transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .hx-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.08);}
+    .hx-btn:active{transform:translateY(0);}
+    .hx-btn .dot{width:8px;height:8px;border-radius:999px;background:var(--green);}
+    .hx-btn.center{display:flex;margin:10px auto 0;} /* centered hero button */
+
+    /* Call line (like heating/thermostat) */
+    .hx-call{
+      margin-top:10px; padding-top:10px;
+      font-weight:900; text-transform:uppercase; font-style:italic; letter-spacing:.02em;
+      color:var(--purple); line-height:1.25; font-size:clamp(15px,2.2vw,20px);
+      border-top:1px dashed rgba(84,39,112,.25);
+    }
+    .hx-call .num{ color:var(--green); text-decoration:none; }
+
+    /* Four-up service grid */
+    .hx-grid{ display:grid; gap:22px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+    @media (max-width:1100px){ .hx-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:680px){ .hx-grid{ grid-template-columns:1fr; } }
+    .hx-card{
+      background:#fff; border:1px solid var(--rule); border-radius:var(--radius); box-shadow:var(--shadow);
+      overflow:hidden; opacity:0; transform:translateY(14px); transition:opacity .55s, transform .55s;
+    }
+    .hx-card.reveal-in{ opacity:1; transform:translateY(0);}
+    .hx-card .img{ height:160px; overflow:hidden; }
+    .hx-card .img img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .hx-card .body{ padding:16px; }
+    .hx-card .kicker{ font-weight:900; font-size:12px; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin-bottom:8px; }
+    .hx-card h4{ font-size:16px; color:var(--green); margin:0 0 8px; text-transform:uppercase; }
+    .hx-card p{ color:var(--muted); font-size:14px; line-height:1.55; margin:0; }
+
+    @media (prefers-reduced-motion:reduce){
+      .hx-title h2,.hx-title .bar,.hx-img,.hx-copy,.hx-card{opacity:1!important; transform:none!important; transition:none!important;}
+    }
+  </style>
+
+  <div class="hx-wrap">
+
+    <!-- Top Title -->
+    <div class="hx-title">
+      <h2 id="hx-head">Our Efficient Air Conditioning Services in <span class="hx-city">City</span>, Ohio</h2>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Hero intro -->
+    <div class="hx-hero">
+      <div class="hx-img">
+        <img id="hx-city-img" loading="lazy" decoding="async"
+            src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/cities/Dayton.jpg"
+            alt="City view">
+      </div>
+      <div class="hx-copy">
+        <h3><span class="hx-city">City</span>, OH Cooling & Air Conditioning Services</h3>
+        <p>
+          When you have the best HVAC system at home, your weekends are great—even if you stay indoors.
+          With the best air conditioning unit available, your home stays comfortable. If your AC suddenly
+          loses its cool, call the Extreme team. Learn more <a id="xc-first-link" class="hx-link" href="/about">about us</a>.
+        </p>
+        <p>
+          Extreme Heating & Air Conditioning is your reliable, professional local HVAC contractor—here to
+          deliver trusted AC services in <span class="hx-city">City</span>, Ohio.
+        </p>
+
+        <!-- Centered Schedule Now button -->
+        <button class="hx-btn js-contact center" type="button" aria-label="Schedule Service">
+          <span class="dot" aria-hidden="true"></span> Schedule Now
+        </button>
+
+        <!-- Updated phone number -->
+        <p class="hx-call">
+          Call <a class="num" href="tel:18445847399">(844) 584-7399</a> for fast help
+        </p>
+      </div>
+    </div>
+
+    <div class="hx-spacer"></div>
+
+    <!-- Middle Title (kept for uniformity/animation) -->
+    <div class="hx-title">
+      <h2>Our Best Air Conditioning Services in <span class="hx-city">City</span>, Ohio</h2>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Four key services -->
+    <div class="hx-grid">
+      <!-- Repair -->
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async"
+     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/furnace2.jpg"
+     alt="AC Repair"></div>
+        <div class="body">
+          <div class="kicker">Repair</div>
+          <h4><span class="hx-city-upper">CITY</span> AIR CONDITIONING REPAIR</h4>
+          <p>
+            If your AC needs a professional touch, our team can diagnose and fix issues fast.
+            Learn more about our services in
+            <a class="hx-link hx-lnk-repair"> <span class="hx-city">City</span> </a>.
+          </p>
+        </div>
+      </article>
+
+      <!-- Replacement -->
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async"
+          src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/ac-replacement.jpg" alt="Air Conditioning Replacement"></div>
+        <div class="body">
+          <div class="kicker">Replace</div>
+          <h4><span class="hx-city-upper">CITY</span> AIR CONDITIONING REPLACEMENT</h4>
+          <p>
+            Older AC units can waste energy and strain your budget. Improve comfort and air quality—
+            learn more about indoor air quality in
+            <a class="hx-link hx-lnk-replace"> <span class="hx-city">City</span> </a>.
+          </p>
+        </div>
+      </article>
+
+      <!-- Installation (no link) -->
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async"
+          src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/ac-install.jpg" alt="Air Conditioning Installation"></div>
+        <div class="body">
+          <div class="kicker">Install</div>
+          <h4><span class="hx-city-upper">CITY</span> AIR CONDITIONING INSTALLATION</h4>
+          <p>Professional installation for a new central or ductless system—proper sizing and setup for reliable cooling season after season.</p>
+        </div>
+      </article>
+
+      <!-- Maintenance (no link) -->
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async"
+          src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/ac-maintenance.jpg" alt="Air Conditioner Maintenance"></div>
+        <div class="body">
+          <div class="kicker">Maintain</div>
+          <h4><span class="hx-city-upper">CITY</span> AIR CONDITIONER MAINTENANCE</h4>
+          <p>Routine maintenance helps maximize efficiency and extend equipment life. Keep breakdowns at bay with preventative service.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+
+<script>
+  (function(){
+    const root = document.currentScript.closest('.xhac-cooling'); if(!root) return;
+
+    // --- City helpers ---
+    const ucWords = s => (!s ? "" : s.split("-").map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(" "));
+    const cityFrom = (url)=>{
+      try{
+        if(!url) return "";
+        const m = String(url).toLowerCase().match(/\/locations\/([^\/?#]+)/);
+        return (m && m[1]) ? ucWords(m[1]) : "";
+      }catch(e){ return ""; }
+    };
+    let city = (root.getAttribute('data-city')||"").trim()
+            || cityFrom(window.location && window.location.href)
+            || (function(){ try { return cityFrom(window.parent!==window ? window.parent.location.href : ""); } catch(e){ return ""; } })()
+            || cityFrom(document.referrer) || "Your Area";
+
+    // Inject city text everywhere
+    root.querySelectorAll('.hx-city').forEach(el=> el.textContent = city);
+    root.querySelectorAll('.hx-city-upper').forEach(el=> el.textContent = city.toUpperCase());
+
+    // Top heading text
+    const head = root.querySelector('#hx-head');
+    if(head) head.innerHTML = 'Our Efficient Air Conditioning Services in <span class="hx-city">'+city+'</span>, Ohio';
+
+    // --- jsDelivr base for GitHub assets ---
+    const CDN_BASE = "https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images";
+
+    // Dynamic hero image → jsDelivr /images/cities/{City}.jpg
+    const cityFile = city.replace(/\s+/g,'');
+    const hero = root.querySelector('#hx-city-img');
+    if(hero){
+      hero.src = `${CDN_BASE}/cities/${cityFile}.jpg`;
+      hero.alt = city+' skyline';
+      hero.onerror = () => { hero.src = `${CDN_BASE}/cities/Dayton.jpg`; };
+    }
+
+    // Build city slug for links
+    const citySlug = city.toLowerCase().replace(/\s+/g,'-');
+
+    // First inline link → /about
+    const firstLink = root.querySelector('#xc-first-link');
+    if(firstLink){
+      firstLink.href = '/about';
+      firstLink.setAttribute('target','_top');
+      firstLink.setAttribute('rel','noopener');
+    }
+
+    // Card body links (text shows city; hrefs are dynamic)
+    root.querySelectorAll('.hx-lnk-repair').forEach(a=>{
+      a.href = '/locations/'+citySlug;
+      a.setAttribute('target','_top');
+      a.setAttribute('rel','noopener');
+    });
+    root.querySelectorAll('.hx-lnk-replace').forEach(a=>{
+      a.href = '/locations/'+citySlug+'/indoor-air-quality';
+      a.setAttribute('target','_top');
+      a.setAttribute('rel','noopener');
+    });
+
+    // Ensure all other links open top-level
+    root.querySelectorAll('a').forEach(a => { a.setAttribute('target','_top'); a.setAttribute('rel','noopener'); });
+
+    // --- Animations (same as heating) ---
+    const reduce = (()=>{ try{ return matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; }})();
+    const toReveal = [
+      root.querySelector('.hx-title')?.parentElement,
+      root.querySelector('.hx-img'),
+      root.querySelector('.hx-copy'),
+      ...root.querySelectorAll('.hx-card')
+    ].filter(Boolean);
+
+    if(reduce || !('IntersectionObserver' in window)){
+      toReveal.forEach(el=> el.classList.add('reveal-in'));
+    }else{
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){ e.target.classList.add('reveal-in'); io.unobserve(e.target); }
+        });
+      }, {threshold:.15, rootMargin:'0px 0px -10% 0px'});
+      toReveal.forEach(el=> io.observe(el));
+    }
+
+    // --- Schedule Bridge: fire "open-contact-dialog" like thermostat/heating embeds ---
+    function triggerContact(){
+      const evtName = 'open-contact-dialog';
+      try{
+        if(window.parent && window.parent !== window){
+          window.parent.postMessage({ type: evtName, source: 'cooling-embed' }, '*');
+        }
+        window.dispatchEvent(new CustomEvent(evtName));
+      }catch(e){}
+    }
+    root.querySelectorAll('.js-contact').forEach(el=>{
+      el.addEventListener('click',(e)=>{ e.preventDefault(); triggerContact(); });
+    });
+  })();
+</script>
+</section>
+

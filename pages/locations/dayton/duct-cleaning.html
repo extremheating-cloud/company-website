@@ -1,17 +1,397 @@
-<!--
-  PLACEHOLDER — this page has not been built yet.
+<section class="xhac-duct" data-city="Dayton">
+  <style>
+    .xhac-duct{
+      --purple:#542770; --green:#6bb85c; --ink:#0f172a; --muted:#475569; --rule:#e7e7ea;
+      --wrap:1200px; --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.06);
+      --section-gap:clamp(28px,5vw,48px);
+      font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+    }
+    .hx-wrap{max-width:var(--wrap);margin:0 auto;padding:26px 16px;}
+    .hx-spacer{width:100%;height:6px;margin:38px 0;background:linear-gradient(90deg,var(--purple),var(--green));border-radius:999px;}
 
-  URL      /locations/dayton/duct-cleaning
-  Title    Duct Cleaning in Dayton, OH
-  Type     location service page
-  Location Dayton (Dayton area)
-  Service  Duct Cleaning
-  Hero     assets/cities/dayton.jpg
+    /* Titles */
+    .hx-title{text-align:center;margin:0 0 22px;}
+    .hx-title h2{font-size:clamp(22px,3.2vw,32px);font-weight:800;color:var(--purple);margin:0 0 10px;letter-spacing:.015em;opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s;}
+    .hx-title .bar{width:120px;height:6px;margin:0 auto;border-radius:999px;background:linear-gradient(90deg,var(--purple),var(--green));opacity:0;transform:translateY(8px);transition:opacity .5s .06s,transform .5s .06s;}
+    .reveal-in .hx-title h2,.reveal-in .hx-title .bar{opacity:1;transform:translateY(0);}
 
-  Build it from builder/ like every other page in this repo; do not hand-write it
-  here. builder/locations.py holds the location list and service list this file was
-  generated from.
+    /* Hero */
+    .hx-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:start;}
+    @media (max-width:940px){.hx-hero{grid-template-columns:1fr;}}
+    .hx-img{height:300px;border-radius:12px;overflow:hidden;border:1px solid var(--rule);box-shadow:var(--shadow);opacity:0;transform:translateY(12px);transition:opacity .55s,transform .55s;}
+    .hx-img.reveal-in{opacity:1;transform:translateY(0);}
+    .hx-img img{width:100%;height:100%;object-fit:cover;display:block;}
+    .hx-copy{background:#fff;border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);padding:18px 18px 20px;opacity:0;transform:translateY(12px);transition:opacity .55s,transform .55s;}
+    .hx-copy.reveal-in{opacity:1;transform:translateY(0);}
+    .hx-copy h3{font-weight:900;font-size:13px;color:var(--green);text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;}
+    .hx-copy p{color:var(--ink);font-size:15px;line-height:1.7;margin:10px 0;}
+    .hx-link{color:var(--green);font-weight:800;text-decoration:none;border-bottom:1px solid transparent;}
+    .hx-link:hover{border-bottom-color:var(--green);}
+    .hx-call{margin-top:10px;padding-top:10px;font-weight:900;text-transform:uppercase;font-style:italic;letter-spacing:.02em;color:var(--purple);line-height:1.25;font-size:clamp(15px,2.2vw,20px);border-top:1px dashed rgba(84,39,112,.25);}
+    .hx-call .num{color:var(--green);text-decoration:none;}
+    .hx-call .city{color:var(--purple);}
 
-  Deliberately empty below this comment: if it gets pasted into Framer by mistake it
-  renders nothing, rather than half a page.
--->
+    /* Primary CTA button (kept separate from financing .hx-btn) */
+    .hx-cta{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:12px 16px;border-radius:12px;border:1px solid var(--purple);
+      background:linear-gradient(180deg,#ffffff,#f8f8fb);
+      color:var(--purple);font-weight:800;letter-spacing:.01em;text-decoration:none;
+      box-shadow:0 2px 10px rgba(0,0,0,.05);cursor:pointer;user-select:none;
+      transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .hx-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.08);}
+    .hx-cta:active{transform:translateY(0);}
+    .hx-cta .dot{width:8px;height:8px;border-radius:999px;background:var(--green);}
+    .hx-cta.center{display:flex;margin:10px auto 0;}
+
+    /* Three-up cards */
+    .hx-grid3{display:grid;gap:22px;grid-template-columns:repeat(3,minmax(0,1fr));}
+    @media (max-width:1100px){.hx-grid3{grid-template-columns:1fr 1fr;}}
+    @media (max-width:740px){.hx-grid3{grid-template-columns:1fr;}}
+    .hx-card{background:#fff;border:1px solid var(--rule);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;opacity:0;transform:translateY(14px);transition:opacity .55s,transform .55s;}
+    .hx-card.reveal-in{opacity:1;transform:translateY(0);}
+    .hx-card .img{height:260px;overflow:hidden;}
+    .hx-card .img img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
+    .hx-card .body{padding:16px;}
+    .hx-card .kicker{font-weight:900;font-size:12px;letter-spacing:.05em;color:var(--green);text-transform:uppercase;margin-bottom:8px;}
+    .hx-card h4{font-size:16px;color:var(--green);margin:0 0 8px;text-transform:uppercase;}
+    .hx-card p{color:var(--muted);font-size:14px;line-height:1.55;margin:0;}
+
+    /* Panels */
+    .hx-panel{background:#fff;border:1px solid var(--rule);border-radius:16px;box-shadow:var(--shadow);padding:clamp(16px,3vw,24px);opacity:0;transform:translateY(12px);transition:opacity .55s,transform .55s;}
+    .hx-panel.reveal-in{opacity:1;transform:translateY(0);}
+    .hx-kicker{font-weight:900;font-size:12px;letter-spacing:.05em;color:var(--green);text-transform:uppercase;margin-bottom:10px;}
+    .hx-desc{color:var(--muted);font-size:15px;line-height:1.65;margin-bottom:12px;}
+
+    /* Bullet list with logo icon */
+    .hx-list{list-style:none;padding:0;margin:8px 0 0;}
+    .hx-list li{position:relative;padding-left:28px;margin:10px 0;color:var(--ink);}
+    .hx-list li:before{content:"";position:absolute;left:0;top:2px;width:18px;height:18px;background:url('https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/logo-icon.ico') no-repeat center/contain;}
+
+    /* Process */
+    .hx-process-video{border:1px solid var(--rule);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);background:#000;opacity:0;transform:translateY(12px);transition:opacity .55s,transform .55s;}
+    .hx-process-video.reveal-in{opacity:1;transform:translateY(0);}
+    .hx-video{width:100%;aspect-ratio:16/9;border:0;display:block;}
+    .hx-process-row{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:start;margin-top:18px;}
+    @media (max-width:1020px){.hx-process-row{grid-template-columns:1fr;}}
+    .hx-media{border:1px solid var(--rule);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
+    .hx-media img{width:100%;height:340px;object-fit:cover;display:block;}
+
+    /* Common Signs */
+    .hx-common{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:top;}
+    @media (max-width:960px){.hx-common{grid-template-columns:1fr;}}
+    .hx-common .hx-media img{width:100%;height:420px;object-fit:cover;display:block;border-radius:16px;}
+
+    /* Financing */
+    .hx-finance{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:top;}
+    @media (max-width:960px){.hx-finance{grid-template-columns:1fr;}}
+    .hx-btn{display:inline-block;padding:10px 16px;border-radius:12px;background:var(--green);color:#fff;font-weight:800;text-decoration:none;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.05);}
+    .hx-btn:hover{filter:brightness(.96);}
+
+    @media (prefers-reduced-motion:reduce){
+      .hx-title h2,.hx-title .bar,.hx-img,.hx-copy,.hx-card,.hx-panel,.hx-process-video{opacity:1!important;transform:none!important;transition:none!important;}
+    }
+  </style>
+
+  <div class="hx-wrap">
+
+    <!-- Top Title -->
+    <div class="hx-title">
+      <h2 id="hx-head">HVAC Duct Cleaning in <span class="hx-city">City</span>, Ohio</h2>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hx-hero">
+      <div class="hx-img">
+        <img id="hx-city-img" loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/cities/Dayton.jpg" alt="City view">
+      </div>
+      <div class="hx-copy">
+        <h3><span class="hx-city">City</span>, OH Air Duct Cleaning Services</h3>
+        <p>Indoor pollution is a major health hazard that can trigger asthma and other respiratory problems. Help your family or employees breathe better with professional HVAC duct cleaning in <span class="hx-city">City</span>.</p>
+        <p>If you need quality, affordable, and professional HVAC duct cleaning in greater <span class="hx-city">City</span> and surrounding areas, Extreme Heating &amp; Air Conditioning is here to help.</p>
+
+        <!-- Centered Schedule Now button -->
+        <button class="hx-cta js-contact center" type="button" aria-label="Schedule Service">
+          <span class="dot" aria-hidden="true"></span> Schedule Now
+        </button>
+
+        <p class="hx-call">Call <a class="num" href="tel:18445847399">(844) 584-7399</a> for service in <span class="city hx-city-upper">CITY</span>, OH</p>
+      </div>
+    </div>
+
+    <div class="hx-spacer"></div>
+
+    <!-- Why Choose Us -->
+    <div class="hx-title">
+      <h2>Why Choose Us for HVAC Duct Cleaning in <span class="hx-city">City</span>?</h2>
+      <div class="bar"></div>
+    </div>
+
+    <div class="hx-grid3">
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/air-duct-truck.jpg" alt="Extreme duct cleaning truck"></div>
+        <div class="body">
+          <div class="kicker">Top-Notch Technicians</div>
+          <h4>Licensed &amp; Insured Experts</h4>
+          <p>Our IICRC-certified technicians follow local and national standards to deliver reliable, safe duct cleaning in <span class="hx-city">City</span>.</p>
+        </div>
+      </article>
+
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/duct-Technicians.jpg" alt="Technician cleaning duct"></div>
+        <div class="body">
+          <div class="kicker">World-Class Equipment</div>
+          <h4>Advanced Technology</h4>
+          <p>We use modern sanitation tools to remove dust, mold, and debris so your system runs cleaner and more efficiently.</p>
+        </div>
+      </article>
+
+      <article class="hx-card">
+        <div class="img"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/before-after-ducts.jpg" alt="Before and after duct cleaning"></div>
+        <div class="body">
+          <div class="kicker">Thorough Results</div>
+          <h4>Cleaning &amp; Sanitation</h4>
+          <p>
+            We guarantee fully sanitized, dry air ducts and dryer vents to prevent mold growth
+            and <a class="hx-link hx-lnk-iaq">improve indoor air quality</a>.
+          </p>
+        </div>
+      </article>
+    </div>
+
+    <div class="hx-spacer"></div>
+
+    <!-- Process -->
+    <div class="hx-title">
+      <h2>Our Process of Duct Cleaning in <span class="hx-city">City</span>, Ohio</h2>
+      <div class="bar"></div>
+    </div>
+
+    <div class="hx-process-video">
+      <iframe id="hx-duct-video" class="hx-video" src="https://www.youtube.com/embed/E_cZVpgYvIw?enablejsapi=1&mute=1" title="Duct Cleaning Process" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>
+    </div>
+
+    <div class="hx-panel" style="margin-top:18px;">
+      <div class="hx-process-row">
+        <div class="hx-media">
+          <img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/duct-cleaning.jpg" alt="Duct cleaning in progress">
+        </div>
+        <div>
+          <ol class="hx-list" style="list-style:none;counter-reset:step;margin-top:0;">
+            <li style="counter-increment:step;"><strong><span style="color:var(--green);">1.</span> Initial Inspection.</strong> A full assessment of your HVAC system and ductwork to identify issues and create a tailored cleaning plan.</li>
+            <li style="counter-increment:step;"><strong><span style="color:var(--green);">2.</span> Preparation.</strong> We protect furnishings and flooring to prevent dust or debris from soiling them during service.</li>
+            <li style="counter-increment:step;"><strong><span style="color:var(--green);">3.</span> Negative Pressure Setup.</strong> Powerful vacuum equipment creates negative pressure to contain and remove contaminants.</li>
+            <li style="counter-increment:step;"><strong><span style="color:var(--green);">4.</span> Duct Cleaning.</strong> Thorough cleaning using specialized tools and methods to remove dust, allergens, and debris.</li>
+            <li style="counter-increment:step;"><strong><span style="color:var(--green);">5.</span> Sanitization.</strong> Eco-friendly agents are applied to help eliminate remaining bacteria and mold spores.</li>
+            <li style="counter-increment:step;"><strong><span style="color:var(--green);">6.</span> Final Inspection.</strong> A final walkthrough ensures everything meets our standards and addresses any concerns.</li>
+            <li style="counter-increment:step;"><strong><span style="color:var(--green);">7.</span> Post-Cleaning Advice.</strong> Recommendations to maintain your HVAC system and indoor air quality going forward.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="hx-spacer"></div>
+
+    <!-- Common Signs -->
+    <div class="hx-title">
+      <h2>Common Signs You Need to Clean Your Duct System</h2>
+      <div class="bar"></div>
+    </div>
+
+    <div class="hx-panel hx-common">
+      <div class="hx-media">
+        <img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/common-signs-duct-system.jpg" alt="Dirty duct signs">
+      </div>
+      <div>
+        <ul class="hx-list">
+          <li><strong>Increased allergies &amp; respiratory issues.</strong> Dust and allergens inside the system can trigger symptoms.</li>
+          <li><strong>Visible dust &amp; debris.</strong> Dust on vents or around the system often indicates ducts need cleaning.</li>
+          <li><strong>Unpleasant odors.</strong> Musty smells may suggest mold or debris buildup in your ducts.</li>
+          <li><strong>Dusty home or workplace.</strong> Frequent dust and clean surfaces that get dirty fast are red flags.</li>
+          <li><strong>Increased energy bills.</strong> A dirty HVAC system works harder to maintain temperatures.</li>
+          <li><strong>Inconsistent airflow.</strong> Some rooms feel uneven—there may be blockages.</li>
+          <li><strong>Mold growth.</strong> Any mold around ducts or the HVAC system requires immediate cleaning.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="hx-spacer"></div>
+
+    <!-- Financing -->
+    <div class="hx-title">
+      <h2>We Provide Financing Options and Great Deals!</h2>
+      <div class="bar"></div>
+    </div>
+
+    <div class="hx-panel hx-finance">
+      <div class="hx-media">
+        <img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/financing-options.jpg" alt="HVAC financing options">
+      </div>
+      <div>
+        <div class="hx-kicker">Flexible Payments</div>
+        <p class="hx-desc">Quality duct cleaning can be a big investment. Our financing plans can help you maintain a healthy home without financial stress.</p>
+        <a class="hx-btn" id="hx-finance-btn" href="/financing-options">Learn More</a>
+      </div>
+    </div>
+
+  </div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+  let ductPlayer, ductPlayerReady = false;
+
+  function onYouTubeIframeAPIReady(){
+    const el = document.getElementById('hx-duct-video');
+    if (!el) return;
+
+    // Create player with autoplay-friendly settings
+    ductPlayer = new YT.Player('hx-duct-video', {
+      playerVars: {
+        autoplay: 1,     // request autoplay
+        mute: 1,         // required by most browsers for autoplay
+        playsinline: 1,  // iOS inline playback
+        rel: 0,
+        modestbranding: 1,
+        controls: 1
+      },
+      events: {
+        onReady: (e) => {
+          ductPlayerReady = true;
+
+          // Make sure iframe explicitly allows autoplay
+          try {
+            const iframe = e.target.getIframe();
+            iframe && iframe.setAttribute('allow', 'autoplay; encrypted-media');
+          } catch (_) {}
+
+          // If the video is already at least 50% in view, start it
+          try {
+            const v = document.getElementById('hx-duct-video');
+            if (v && isHalfVisible(v)) {
+              safePlay();
+            }
+          } catch (_) {}
+        }
+      }
+    });
+  }
+
+  // Helper: viewport visibility >= 50%
+  function isHalfVisible(el){
+    const r = el.getBoundingClientRect();
+    const vh = (window.innerHeight || document.documentElement.clientHeight);
+    const vw = (window.innerWidth  || document.documentElement.clientWidth);
+    if (r.bottom <= 0 || r.right <= 0 || r.left >= vw || r.top >= vh) return false;
+    const visibleY = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
+    const visibleX = Math.max(0, Math.min(r.right,  vw) - Math.max(r.left, 0));
+    const visibleArea = visibleX * visibleY;
+    const elemArea = r.width * r.height || 1;
+    return (visibleArea / elemArea) >= 0.5;
+  }
+
+  function safePlay(){
+    if (ductPlayer && ductPlayerReady && typeof ductPlayer.playVideo === 'function') {
+      try { ductPlayer.playVideo(); } catch (_) {}
+    }
+  }
+  function safePause(){
+    if (ductPlayer && typeof ductPlayer.pauseVideo === 'function') {
+      try { ductPlayer.pauseVideo(); } catch (_) {}
+    }
+  }
+
+  (function(){
+    const root = document.currentScript.closest('.xhac-duct'); if(!root) return;
+
+    const ucWords = s => (!s ? "" : s.split("-").map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(" "));
+    const cityFrom = url => { try { if(!url) return ""; const m = String(url).toLowerCase().match(/\/locations\/([^\/?#]+)/); return (m && m[1]) ? ucWords(m[1]) : ""; } catch(e){ return ""; } };
+    let city = (root.getAttribute('data-city')||"").trim()
+            || cityFrom(window.location && window.location.href)
+            || (function(){ try { return cityFrom(window.parent!==window ? window.parent.location.href : ""); } catch(e){ return ""; }})()
+            || cityFrom(document.referrer) || "Your Area";
+
+    root.querySelectorAll('.hx-city').forEach(el=>el.textContent=city);
+    root.querySelectorAll('.hx-city-upper').forEach(el=>el.textContent=city.toUpperCase());
+
+    const head = root.querySelector('#hx-head');
+    if(head) head.innerHTML = 'HVAC Duct Cleaning in <span class="hx-city">'+city+'</span>, Ohio';
+
+    /* === jsDelivr swap for city hero image (unchanged from prior) === */
+    const CDN_BASE = "https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images";
+    const hero = root.querySelector('#hx-city-img');
+    const cityFile = city.replace(/\s+/g,''); // e.g., Beavercreek
+    if (hero) {
+      hero.src = `${CDN_BASE}/cities/${cityFile}.jpg`;
+      hero.alt = city + ' skyline';
+      hero.onerror = () => { hero.src = `${CDN_BASE}/cities/Dayton.jpg`; };
+    }
+    /* === end swap === */
+
+    // Links should open at top level
+    root.querySelectorAll('a').forEach(a=>{ a.setAttribute('target','_top'); a.setAttribute('rel','noopener'); });
+
+    // Dynamic Indoor Air Quality link
+    const citySlug = city.toLowerCase().replace(/\s+/g,'-');
+    root.querySelectorAll('.hx-lnk-iaq').forEach(a=>{
+      a.href = '/locations/'+citySlug+'/indoor-air-quality';
+      a.setAttribute('target','_top');
+      a.setAttribute('rel','noopener');
+    });
+
+    const reduce = (()=>{ try{ return matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; }})();
+    const toReveal = [
+      root.querySelector('.hx-title')?.parentElement,
+      root.querySelector('.hx-img'),
+      root.querySelector('.hx-copy'),
+      ...root.querySelectorAll('.hx-card'),
+      ...root.querySelectorAll('.hx-panel'),
+      root.querySelector('.hx-process-video')
+    ].filter(Boolean);
+
+    if(reduce || !('IntersectionObserver' in window)){
+      toReveal.forEach(el=>el.classList.add('reveal-in'));
+    }else{
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){ e.target.classList.add('reveal-in'); io.unobserve(e.target); }
+        });
+      }, {threshold:.15, rootMargin:'0px 0px -10% 0px'});
+      toReveal.forEach(el=> io.observe(el));
+    }
+
+    // Video autoplay when >= 50% visible; pause otherwise
+    const videoEl = document.getElementById('hx-duct-video');
+    if(videoEl && 'IntersectionObserver' in window){
+      const vio = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if (e.isIntersecting && e.intersectionRatio >= 0.5) {
+            safePlay();
+          } else {
+            safePause();
+          }
+        });
+      }, {threshold:[0,0.5,1]});
+      vio.observe(videoEl);
+    } else {
+      // Fallback: try to play once when ready if no IO support
+      if (ductPlayerReady) safePlay();
+    }
+
+    // --- Schedule Bridge (unchanged) ---
+    function triggerContact(){
+      const evtName='open-contact-dialog';
+      try{
+        if(window.parent && window.parent !== window){
+          window.parent.postMessage({ type: evtName, source: 'duct-cleaning-embed' }, '*');
+        }
+        window.dispatchEvent(new CustomEvent(evtName));
+      }catch(e){}
+    }
+    root.querySelectorAll('.js-contact').forEach(el=>{
+      el.addEventListener('click',(e)=>{ e.preventDefault(); triggerContact(); });
+    });
+  })();
+</script>
+</section>
