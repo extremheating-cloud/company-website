@@ -156,7 +156,7 @@ def contact_card():
     return f'''<div class="xsp-book">
   <div class="eyebrow">CONTACT US</div>
   <div class="xco-phone"><a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a></div>
-  <div class="s"><!-- TODO: confirm office hours -->Office hours Mon–Fri · emergencies 24/7.</div>
+  <div class="s">Office staffed Mon–Fri, 8–5 · emergencies 24/7.</div>
   <div class="btns">
     {T.schedule_btn("Schedule Service")}
     {T.call_btn(f"Call {T.PHONE_DISPLAY}")}
@@ -448,14 +448,17 @@ def lenders_panel(v):
     stats = "".join(
         f'<div><div class="n">{s["n"]}</div><div class="cap">{s["cap"]}</div></div>' for s in v["stats"])
     chips = "".join(lender_chip(l) for l in v["lenders"])
-    # TODO: swap in current program rates/terms from each lender before launch (handoff 4c)
+    # No rates, APRs, or program terms here — by client instruction 2026-08-01,
+    # Extreme is not permitted to advertise them. This is a standing constraint, not
+    # a gap waiting to be filled: do not add a rate later thinking it was an
+    # oversight. The lender states its own terms on its own application.
     return f'''<div class="xsp-value" id="xco-lenders">
   <div class="eyebrow">GOOD TO KNOW</div>
   <h3>{v["h2"]}</h3>
   <div class="stats">{stats}</div>
   <div class="xco-lchips"><span class="lab">OUR LENDERS</span>{chips}</div>
   {apply_panel()}
-  <div class="xco-fine"><!-- TODO: current program rates/terms -->{v["fine"]}</div>
+  <div class="xco-fine">{v["fine"]}</div>
 </div>'''
 
 FINANCING = {
@@ -463,6 +466,13 @@ FINANCING = {
     "h1": "A new system now. {X} that fit.",
     "h1Highlight": "Payments",
     "intro": "Don't put off a failing furnace or AC because of one big bill. Flexible monthly payment plans through our lenders — GoodLeap, Synchrony, and Wright-Patt Credit Union — make the right fix affordable.",
+    # "$0 Down Options" and the "$0 down" stat below state a downpayment amount.
+    # Under Reg Z (12 CFR 1026.24(d)) that is a "triggering term" for closed-end
+    # credit — an ad that states it must also disclose the terms of repayment and
+    # the APR. Since Extreme is not permitted to advertise rates, those two claims
+    # may need rewording to something non-triggering ("financing available",
+    # "low monthly payments"). Flagged for the client and their lender 2026-08-01;
+    # NOT changed unilaterally, because it is approved marketing copy.
     "heroChips": ["Apply in Minutes", "$0 Down Options", "Options for Most Credit"],
     "why": [
         {"t": "One bill becomes a monthly payment",
