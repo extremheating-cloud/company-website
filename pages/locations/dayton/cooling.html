@@ -95,7 +95,7 @@
     <div class="hx-hero">
       <div class="hx-img">
         <img id="hx-city-img" loading="lazy" decoding="async"
-            src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/cities/Dayton.jpg"
+            src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/cities/dayton.jpg"
             alt="City view">
       </div>
       <div class="hx-copy">
@@ -135,7 +135,7 @@
       <!-- Repair -->
       <article class="hx-card">
         <div class="img"><img loading="lazy" decoding="async"
-     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/furnace2.jpg"
+     src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/furnace2.jpg"
      alt="AC Repair"></div>
         <div class="body">
           <div class="kicker">Repair</div>
@@ -151,7 +151,7 @@
       <!-- Replacement -->
       <article class="hx-card">
         <div class="img"><img loading="lazy" decoding="async"
-          src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/ac-replacement.jpg" alt="Air Conditioning Replacement"></div>
+          src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/ac-replacement.jpg" alt="Air Conditioning Replacement"></div>
         <div class="body">
           <div class="kicker">Replace</div>
           <h4><span class="hx-city-upper">CITY</span> AIR CONDITIONING REPLACEMENT</h4>
@@ -166,7 +166,7 @@
       <!-- Installation (no link) -->
       <article class="hx-card">
         <div class="img"><img loading="lazy" decoding="async"
-          src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/ac-install.jpg" alt="Air Conditioning Installation"></div>
+          src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/ac-install.jpg" alt="Air Conditioning Installation"></div>
         <div class="body">
           <div class="kicker">Install</div>
           <h4><span class="hx-city-upper">CITY</span> AIR CONDITIONING INSTALLATION</h4>
@@ -177,7 +177,7 @@
       <!-- Maintenance (no link) -->
       <article class="hx-card">
         <div class="img"><img loading="lazy" decoding="async"
-          src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/ac-maintenance.jpg" alt="Air Conditioner Maintenance"></div>
+          src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/ac-maintenance.jpg" alt="Air Conditioner Maintenance"></div>
         <div class="body">
           <div class="kicker">Maintain</div>
           <h4><span class="hx-city-upper">CITY</span> AIR CONDITIONER MAINTENANCE</h4>
@@ -214,15 +214,17 @@
     if(head) head.innerHTML = 'Our Efficient Air Conditioning Services in <span class="hx-city">'+city+'</span>, Ohio';
 
     // --- jsDelivr base for GitHub assets ---
-    const CDN_BASE = "https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images";
+    const CDN_BASE = "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets";
 
-    // Dynamic hero image → jsDelivr /images/cities/{City}.jpg
-    const cityFile = city.replace(/\s+/g,'');
+    // Hero image → assets/cities/<slug>.jpg. Names are lowercase-hyphen; these
+    // three don't follow from the city name (see builder/locations.py HERO_OVERRIDES).
+    const CITY_FILE = { "huber heights":"huber", "tipp city":"tipp", "west carrollton":"wc" };
+    const cityFile = CITY_FILE[city.toLowerCase()] || city.toLowerCase().replace(/\s+/g,'-');
     const hero = root.querySelector('#hx-city-img');
     if(hero){
       hero.src = `${CDN_BASE}/cities/${cityFile}.jpg`;
       hero.alt = city+' skyline';
-      hero.onerror = () => { hero.src = `${CDN_BASE}/cities/Dayton.jpg`; };
+      hero.onerror = () => { hero.src = `${CDN_BASE}/cities/dayton.jpg`; };
     }
 
     // Build city slug for links

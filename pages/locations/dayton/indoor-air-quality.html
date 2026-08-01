@@ -68,7 +68,7 @@
     /* Bullet list with logo */
     .hx-list{list-style:none;padding:0;margin:8px 0 0;}
     .hx-list li{position:relative;padding-left:28px;margin:10px 0;color:var(--ink);}
-    .hx-list li:before{content:"";position:absolute;left:0;top:2px;width:18px;height:18px;background:url('https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/logo-icon.ico') no-repeat center/contain;}
+    .hx-list li:before{content:"";position:absolute;left:0;top:2px;width:18px;height:18px;background:url('https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/brand/logo-icon.ico') no-repeat center/contain;}
 
     @media (prefers-reduced-motion:reduce){
       .hx-title h2,.hx-title .bar,.hx-img,.hx-copy,.hx-card,.hx-panel{opacity:1!important;transform:none!important;transition:none!important;}
@@ -86,7 +86,7 @@
     <!-- Hero -->
     <div class="hx-hero">
       <div class="hx-img">
-        <img id="hx-city-img" loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/cities/Dayton.jpg" alt="City view">
+        <img id="hx-city-img" loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/cities/dayton.jpg" alt="City view">
       </div>
       <div class="hx-copy">
         <h3><span class="hx-city">City</span>, OH Indoor Air Quality Services</h3>
@@ -112,7 +112,7 @@
 
     <div class="hx-grid3">
       <article class="hx-card">
-        <div class="img"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/duct-air-quality.jpg" alt="Dust and dirt"></div>
+        <div class="img"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/duct-air-quality.jpg" alt="Dust and dirt"></div>
         <div class="body">
           <div class="kicker">Dirt &amp; Dust</div>
           <h4>Particles in the Air</h4>
@@ -121,7 +121,7 @@
       </article>
 
         <article class="hx-card">
-        <div class="img"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/chemical-air-quality.jpg" alt="Chemicals"></div>
+        <div class="img"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/chemical-air-quality.jpg" alt="Chemicals"></div>
         <div class="body">
           <div class="kicker">Chemicals</div>
           <h4>Household Pollutants</h4>
@@ -130,7 +130,7 @@
       </article>
 
       <article class="hx-card">
-        <div class="img"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images/descriptive/moisture-air-quality.jpg" alt="Moisture"></div>
+        <div class="img"><img loading="lazy" decoding="async" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets/service/moisture-air-quality.jpg" alt="Moisture"></div>
         <div class="body">
           <div class="kicker">Moisture</div>
           <h4>Mold &amp; Mildew Growth</h4>
@@ -193,13 +193,16 @@
     if(head) head.innerHTML='Indoor Air Quality Services in <span class="hx-city">'+city+'</span>, Ohio';
 
     /* === jsDelivr swap for hero image === */
-    const CDN_BASE="https://cdn.jsdelivr.net/gh/extremheating-cloud/extreme-assets@main/images";
+    const CDN_BASE="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@2ef000e51f217eb522232eb5b03d9b3276b305ef/assets";
     const hero=root.querySelector('#hx-city-img');
-    const cityFile=city.replace(/\s+/g,'');
+    // Asset names are lowercase-hyphen; these three don't follow from the city
+    // name (see builder/locations.py HERO_OVERRIDES).
+    const CITY_FILE={ "huber heights":"huber", "tipp city":"tipp", "west carrollton":"wc" };
+    const cityFile=CITY_FILE[city.toLowerCase()]||city.toLowerCase().replace(/\s+/g,'-');
     if(hero){
       hero.src=`${CDN_BASE}/cities/${cityFile}.jpg`;
       hero.alt=city+' skyline';
-      hero.onerror=()=>{ hero.src=`${CDN_BASE}/cities/Dayton.jpg`; };
+      hero.onerror=()=>{ hero.src=`${CDN_BASE}/cities/dayton.jpg`; };
     }
     /* === end swap === */
 
