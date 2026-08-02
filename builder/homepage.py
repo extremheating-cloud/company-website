@@ -55,20 +55,24 @@ color:#fff;overflow:hidden}
 .hp-hero-mark{position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;
 transform:rotate(-8deg);filter:brightness(0) invert(1);pointer-events:none}
 .hp-wrap{position:relative;max-width:1280px;margin:0 auto;padding:0 40px}
-.hp-hero-grid{display:grid;grid-template-columns:1fr .95fr;gap:32px;align-items:end;
+.hp-hero-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:24px;align-items:end;
 padding:56px 0 0}
-.hp-hero-in{padding:0 0 64px;max-width:640px}
+/* The slash is decorative and bleeds left out of the van column. Copy sits above
+   it unconditionally so a wider van can never cut into the text. */
+.hp-hero-in{padding:0 0 64px;max-width:640px;position:relative;z-index:2}
 
 /* Van column. The slash is a rotated + skewed bar behind the van — the same geometry
    the Framer hero used, expressed as percentages so it tracks the column at any width. */
 .hp-van-col{position:relative;width:100%;align-self:end;min-height:0;
-aspect-ratio:569 / 480;max-height:480px}
-.hp-slash{position:absolute;left:-10.5%;right:-14%;bottom:20%;height:13.3%;
+aspect-ratio:569 / 430;max-height:560px}
+.hp-slash{position:absolute;left:-4%;right:-16%;bottom:20%;height:13.3%;
 background:#6BB85C;transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.hp-slash-w{position:absolute;left:-3.5%;right:-21%;bottom:17.5%;height:3.75%;
+.hp-slash-w{position:absolute;left:1%;right:-23%;bottom:17.5%;height:3.75%;
 background:#fff;opacity:.25;transform:rotate(-9deg) skewX(-16deg)}
-.hp-van{position:absolute;left:50%;bottom:20%;transform:translateX(-52%);
-width:104%;max-width:660px;filter:drop-shadow(0 24px 30px rgba(0,0,0,.35))}
+/* Bleeds past the column edge on purpose — the hero is overflow:hidden, so the
+   van reads as driving out of frame rather than sitting in a box. */
+.hp-van{position:absolute;left:50%;bottom:20%;transform:translateX(-50%);
+width:126%;max-width:none;filter:drop-shadow(0 26px 34px rgba(0,0,0,.38))}
 /* Mobile stage: van sits under the copy instead of beside it. */
 .hp-van-stage{display:none;position:relative;aspect-ratio:350 / 210;margin-top:22px}
 .hp-van-stage .hp-slash{left:-11.4%;right:-11.4%;bottom:25.7%;height:19%}
@@ -193,7 +197,8 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
 @media (max-width:1023px){
   .hp-wrap{padding:0 24px}
   .hp-cards,.hp-revs{grid-template-columns:1fr 1fr}
-  .hp-hero-grid{grid-template-columns:1fr .8fr;gap:20px}
+  .hp-hero-grid{grid-template-columns:1fr .95fr;gap:18px}
+  .hp-van{width:112%}
   .hp-about{grid-template-columns:1fr;gap:28px}
   .hp-xp-grid{grid-template-columns:1fr;gap:26px}
   .hp-promise-in{padding:14px 24px}

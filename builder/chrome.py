@@ -183,8 +183,8 @@ border:0;cursor:pointer;font-family:inherit;white-space:nowrap}
 .xf-btn-green:hover{background:#8FD481}
 .xf-btn-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4)}
 .xf-btn-outline:hover{border-color:#6BB85C;color:#8FD481}
-.xf-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;gap:32px;padding:34px 0 30px}
-.xf-logo{height:40px;width:auto;display:block}
+.xf-grid{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr 1fr;gap:32px;padding:34px 0 30px}
+.xf-logo{height:76px;width:auto;display:block}
 .xf-blurb{margin:14px 0 0;font-size:13px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.72)}
 .xf-247{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12.5px;font-weight:700}
 .xf-247 .dot{width:8px;height:8px;border-radius:50%;background:#6BB85C}
@@ -213,6 +213,7 @@ font-size:12px;color:rgba(255,255,255,.55)}
 @media (max-width:1023px){
   .xf-wrap{padding:0 24px}
   .xf-grid{grid-template-columns:1.4fr 1fr 1fr;gap:28px}
+  .xf-logo{height:60px}
   .xf-mark{width:240px}
 }
 @media (max-width:809px){
@@ -222,6 +223,7 @@ font-size:12px;color:rgba(255,255,255,.55)}
   .xf-cta-btns{flex-direction:column}
   .xf-btn-green,.xf-btn-outline{width:100%;min-height:48px}
   .xf-grid{grid-template-columns:1fr 1fr;gap:24px 20px;padding:30px 0 26px}
+  .xf-logo{height:46px}
   .xf-brand{grid-column:1 / -1}
   .xf-bottom{flex-direction:column;align-items:flex-start;gap:10px}
   .xf-mark{width:150px;top:12px;right:-24px}
