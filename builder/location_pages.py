@@ -108,22 +108,14 @@ margin-top:8px;max-width:64ch}
 .xsp-band::after{content:"";display:block;height:4px;
 background:linear-gradient(90deg,var(--green),var(--purple))}
 
-/* The booking card overhangs the hero into the section below — the treatment the
-   service pages already had, now on every location page including the overview and
-   the hub. align-self:end pins the card to the bottom of the hero grid so the -84px
-   margin actually pulls it past the edge; with align-self:start the card floated at
-   the top of a taller row and never overhung at all.
-   The body then needs clearance so nothing collides with what is hanging into it. */
-.xsp-bookcol{align-self:end}
-.xco-body{padding-top:104px}
-.xsp-bodygrid{padding-top:104px}
+/* The overhanging booking card and the body clearance it needs now live in
+   template.py / company_pages.py, so every page type gets the same treatment. */
 
 @media (max-width:809px){
 .xsp-band-in{padding:26px 20px;flex-direction:column;align-items:flex-start;gap:16px}
 .xsp-band .t{font-size:21px}
 .xsp-band .btns{width:100%}
 .xsp-band .xsp-cta{width:100%}
-.xco-body{padding-top:40px}
 }
 /* The NEW pill belongs to the headline, not the breadcrumb. Sitting flush under the
    crumbs it read as another nav item; the spacing now groups it with the H1 below. */

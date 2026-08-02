@@ -12,6 +12,7 @@ them.
 
 ```
 assets/     images served to the live site, by subject
+  js/           built JavaScript (schedule.js — the booking wizard bundle)
   brand/        Extreme logos, X mark, van
   brands/       manufacturer logos (Trane, Ruud, Daikin)
   cities/       city and county photos
@@ -29,6 +30,9 @@ pages/      generated HTML embeds — do not hand-edit
 framer/     hand-maintained Framer code components
   header/  footer/  homepage/  schedule/  theme.tsx
 
+src/        browser JavaScript sources
+  schedule/     mount.tsx — the self-hosted entry for the booking wizard
+
 builder/    the Python generator
 design/     mockups and design handoff docs
 ```
@@ -40,6 +44,29 @@ cd builder && python3 build.py
 ```
 
 Regenerates all 39 pages into `pages/`. Standard library only, no dependencies.
+
+The self-hosted site is a second target from the same generator:
+
+```bash
+cd builder && python3 build_site.py
+```
+
+That writes 307 pages to `site/` (gitignored — it is output, not source), each one a
+full HTML document with the header, footer, meta and schema, and copies
+`assets/js/schedule.js` to `site/js/`. Serve it with any static host, or preview it
+with `python3 -m http.server 8800` from inside `site/`.
+
+The booking wizard is the one part with a JavaScript build:
+
+```bash
+npm install && npm run build:schedule
+```
+
+esbuild bundles `src/schedule/mount.tsx` plus `framer/schedule/ContactFlowDialog.tsx`
+and React into `assets/js/schedule.js`. Run it after editing either file — the built
+bundle is committed, so nothing on a server needs Node. Pages do not load it up
+front: `chrome.py` listens for the `open-contact-dialog` event every Schedule button
+already fires and fetches the bundle the first time one is used.
 
 Generated HTML is committed alongside its source on purpose: it is pasted into
 Framer by hand, so the built output is what actually ships and its diffs are what

@@ -72,8 +72,14 @@ padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff}
 .xsp-trustline .st{color:var(--stars)}
 .xsp-trustline .di{color:var(--green)}
 
-/* booking card (hero overlap) */
-.xsp-bookcol{position:relative;margin-bottom:-84px;align-self:start}
+/* booking card (hero overlap)
+   align-self:end pins the card to the bottom of the hero grid so the -84px margin
+   actually pulls it past the edge and it hangs over the section below. With
+   align-self:start the card floated at the top of a taller row and the negative
+   margin did nothing — which is why the service pages never overhung. Every page
+   that renders a .xsp-bookcol also renders a body section below it, so the
+   clearance on .xsp-bodygrid / .xco-body is unconditional. */
+.xsp-bookcol{position:relative;margin-bottom:-84px;align-self:end}
 .xsp-book{background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(15,23,42,.25);padding:24px;color:var(--ink)}
 .xsp-book.inflow{box-shadow:0 12px 30px rgba(84,39,112,.12);border:1px solid var(--rule)}
 .xsp-book .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-dark)}
@@ -98,6 +104,11 @@ transition:background .15s,color .15s}
 
 /* body grid */
 .xsp-bodygrid{display:grid;grid-template-columns:1fr 360px;gap:48px;max-width:1280px;margin:0 auto;padding:56px 40px}
+/* Only the pages whose hero carries a booking card need clearance for it — the sub
+   pages put that card in the rail instead, and padding them too would just open a
+   48px hole. Scoped with :has() so no generator has to remember to flag it; a browser
+   without :has() falls back to the plain 56px, which is what shipped before. */
+.xhac-svc:has(.xsp-bookcol) .xsp-bodygrid{padding-top:104px}
 .xsp-main{display:flex;flex-direction:column;gap:48px;min-width:0}
 .xsp-rail{padding-top:64px;display:flex;flex-direction:column;gap:16px;align-self:start}
 .xsp-rail.flush{padding-top:0}
@@ -208,10 +219,12 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-hero-ctas{flex-direction:column;gap:14px}
 .xsp-hero-ctas.xsp-mb{display:flex !important;flex-direction:column;gap:14px}
 .xsp-hero-ctas .xsp-cta,.xsp-hero-ctas .xsp-cta-outline{width:100%}
-.xsp-chiprow{gap:8px}
+.xsp-chiprow{gap:8px;justify-content:center}
 .xsp-chip{padding:7px 10px;font-size:11px;border-radius:10px}
 .xsp-bookcol{display:none}
 .xsp-bodygrid{grid-template-columns:1fr;gap:40px;padding:40px 20px 48px}
+/* the hero card is display:none here, so there is nothing to clear */
+.xhac-svc:has(.xsp-bookcol) .xsp-bodygrid{padding-top:40px}
 .xsp-rail{display:none}
 .xsp-h2{font-size:24px;letter-spacing:-.4px}
 .xsp-checks{grid-template-columns:1fr;gap:10px}
@@ -383,7 +396,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="t">Add a battery backup?</div>
   <div class="d">Storms that flood basements also knock out power — a backup keeps pumping when the grid doesn't.</div>
   <a href="/plumbing/sump-pump/overview">Sump Pump Overview →</a>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-mbrail xsp-mb"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/543315814/photo/backup-sump-pump.jpg?s=612x612&w=0&k=20&c=54X5S_0_SQsod4RTcZuLS_sMEUFdG6rZ0yYbpXdTLQw=" alt="" loading="lazy" decoding="async"></div><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a></div><div>
   <div class="xsp-eyebrow">INSTALLATION QUESTIONS</div>

@@ -12,3 +12,7 @@ _ruud-cropped.jpg
 
 # Built self-hosted site — regenerate with: cd builder && python3 build_site.py
 site/
+
+# npm — the built bundle and the lockfile are committed, the tree that produced
+# them is not
+node_modules/

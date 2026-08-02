@@ -70,14 +70,38 @@ background:#6BB85C;transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px 
 .hp-slash-w{position:absolute;left:1%;right:-23%;bottom:17.5%;height:3.75%;
 background:#fff;opacity:.25;transform:rotate(-9deg) skewX(-16deg)}
 /* Bleeds past the column edge on purpose — the hero is overflow:hidden, so the
-   van reads as driving out of frame rather than sitting in a box. */
-.hp-van{position:absolute;left:50%;bottom:16%;transform:translateX(-48%);
-width:150%;max-width:none;filter:drop-shadow(0 26px 34px rgba(0,0,0,.38))}
-/* Mobile stage: van sits under the copy instead of beside it. */
-.hp-van-stage{display:none;position:relative;aspect-ratio:350 / 210;margin-top:22px}
+   van reads as driving out of frame rather than sitting in a box.
+   These three numbers are not eyeballed. The van artwork is 1024x576 with the
+   vehicle itself occupying x 189-825, y 166-441 — roughly 62% of the width and 48%
+   of the height, the rest transparent. Width, bottom and translateX were solved so
+   that painted region lands on the box marked on the design screenshot: at 1440 the
+   van reads 736x318 at x 661, y 239. Change one, re-solve the other two. */
+.hp-van{position:absolute;left:50%;bottom:-25.7%;transform:translateX(-44.5%);
+width:169%;max-width:none;filter:drop-shadow(0 26px 34px rgba(0,0,0,.38))}
+/* Mobile stage: van sits under the copy instead of beside it. The image carries
+   ~29% empty space above the van and ~23% below, so the element is much taller than
+   what reads as the van — width:140% is what puts the van itself at ~78% of the
+   viewport. The stage is decorative, so the transparent top overlapping the trust
+   pills is fine as long as it can't swallow a tap. */
+.hp-van-stage{display:none;position:relative;aspect-ratio:350 / 250;margin-top:22px;
+pointer-events:none}
 .hp-van-stage .hp-slash{left:-11.4%;right:-11.4%;bottom:25.7%;height:19%}
-.hp-van-stage .hp-van{bottom:26.7%;transform:translateX(-50%);width:100%;max-width:none;
+.hp-van-stage .hp-van{bottom:16%;transform:translateX(-50%);width:140%;max-width:none;
 filter:drop-shadow(0 16px 20px rgba(0,0,0,.35))}
+
+/* The van drives into frame on load. It faces left, so it enters from the right and
+   decelerates into the resting position solved above. The start offset is in vw so
+   it clears the right edge at any width instead of at one, and the whole run is
+   clipped by .hp-hero{overflow:hidden} — no horizontal scrollbar at any point.
+   prefers-reduced-motion is handled globally in shell.py: the animation collapses to
+   its end state, which is the resting transform, so nothing moves and nothing is
+   left out of place. */
+@keyframes hp-drive{from{transform:translateX(calc(-44.5% + 75vw))}
+to{transform:translateX(-44.5%)}}
+@keyframes hp-drive-mb{from{transform:translateX(calc(-50% + 100vw))}
+to{transform:translateX(-50%)}}
+.hp-van-col .hp-van{animation:hp-drive 1.15s cubic-bezier(.17,.84,.34,1) .12s both}
+.hp-van-stage .hp-van{animation:hp-drive-mb 1s cubic-bezier(.17,.84,.34,1) .12s both}
 .hp-badge{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,.3);
 background:rgba(255,255,255,.1);border-radius:999px;padding:8px 15px;font-size:11.5px;
 font-weight:800;letter-spacing:1.4px}
@@ -201,7 +225,7 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
   .hp-wrap{padding:0 24px}
   .hp-cards,.hp-revs{grid-template-columns:1fr 1fr}
   .hp-hero-grid{grid-template-columns:1fr .95fr;gap:18px}
-  .hp-van{width:112%}
+  .hp-van{width:126%}
   .hp-about{grid-template-columns:1fr;gap:28px}
   .hp-xp-grid{grid-template-columns:1fr;gap:26px}
   .hp-promise-in{padding:14px 24px}
@@ -210,6 +234,9 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
   .hp-wrap{padding:0 20px}
   .hp-hero-grid{grid-template-columns:1fr;gap:0;padding:38px 0 0}
   .hp-hero-in{padding:0 0 8px;max-width:none}
+  /* The shared clamp bottoms out at 34px on a phone, which left the headline
+     smaller than the buttons under it. */
+  .hp-h1{font-size:min(11vw,46px)}
   .hp-van-col{display:none}
   .hp-van-stage{display:block}
   .hp-sec{padding:44px 0}

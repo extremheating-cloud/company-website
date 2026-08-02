@@ -41,6 +41,9 @@ border-bottom:1px solid var(--rule)}
 .xco-hours .row.em{background:var(--green-tint)}
 .xco-hours .row.em span{font-weight:800;color:var(--promo-green)}
 .xco-body{max-width:1280px;margin:0 auto;padding:56px 40px;display:flex;flex-direction:column;gap:48px}
+/* Clearance for the hero booking card, which hangs into this section — only on the
+   pages that actually render one (see .xsp-bookcol in template.py). */
+.xhac-svc:has(.xsp-bookcol) .xco-body{padding-top:104px}
 .xco-split{display:grid;grid-template-columns:1fr 360px;gap:48px}
 .xco-heroslot{width:100%;height:250px;border-radius:16px;background:rgba(255,255,255,.08);
 border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
@@ -106,6 +109,7 @@ padding:32px 36px;position:relative;overflow:hidden}
 .xco-2col{grid-template-columns:1fr;gap:12px;margin-top:16px}
 .xco-hours .row{padding:13px 16px}
 .xco-body{padding:40px 20px 48px;gap:40px}
+.xhac-svc:has(.xsp-bookcol) .xco-body{padding-top:40px}
 .xco-split{grid-template-columns:1fr;gap:40px}
 .xco-hero-grid-400{grid-template-columns:1fr}
 .xco-heroslot{height:200px;margin-top:24px}

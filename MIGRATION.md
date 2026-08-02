@@ -52,8 +52,8 @@ needed any.
 | `framer/header/MobileHeader.tsx` | **Port and merge** with desktop — 86% shared. |
 | `framer/header/TabletHeader.tsx` | **Delete.** 52 lines that re-export DesktopHeader with one prop flipped. Becomes a media query. |
 | `framer/theme.tsx` | **Fold into `template.py`.** Its tokens already exist there as CSS variables. |
-| `framer/schedule/ContactFlowDialog.tsx` | **Keep unchanged.** All 2,816 lines import only React — no Framer runtime. Needs a `createRoot()` entry file and a bundler step. |
-| `framer/schedule/OpenContactDialog.tsx` | **Delete.** Framer Override glue; the CustomEvent it wraps already works natively. |
+| `framer/schedule/ContactFlowDialog.tsx` | **Done — unchanged.** All 2,816 lines import only React, no Framer runtime. `src/schedule/mount.tsx` is the `createRoot()` entry; esbuild bundles both to `assets/js/schedule.js` (59KB gzipped), loaded on demand the first time a Schedule button is used. |
+| `framer/schedule/OpenContactDialog.tsx` | **Delete at cutover.** Framer Override glue; the CustomEvent it wraps already works natively. Still referenced by the live Framer site, so it stays until that site is retired. |
 | `framer/homepage/*.tsx` x4 | **Port to the builder.** Hero, AboutFaqReviews, XPlan, Brands. Already CSS-in-template-literal, the same shape `template.py` uses. |
 | `builder/build.py` | Emit `index.html` so paths map to URLs on a static host. |
 | `pages/**` (306) | **No change.** Regenerated with the new shell. |

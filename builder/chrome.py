@@ -177,6 +177,9 @@ justify-content:center;min-height:48px;border-radius:12px;font-weight:800;font-s
 border:0;cursor:pointer;font-family:inherit;text-decoration:none}
 .xh-callbar .call{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28)}
 .xh-callbar .sched{background:#6BB85C;color:#0F172A}
+/* Set by the header script while the mobile menu is open; the panel has its own
+   pinned Schedule/Call pair and the bar was landing on top of it. */
+.xh-menu-open .xh-callbar{display:none}
 
 @media (max-width:1023px){
   .xh-bar{padding:12px 24px;gap:14px}
@@ -218,7 +221,9 @@ border:0;cursor:pointer;font-family:inherit;white-space:nowrap}
 .xf-btn-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4)}
 .xf-btn-outline:hover{border-color:#6BB85C;color:#8FD481}
 .xf-grid{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr 1fr;gap:32px;padding:34px 0 30px}
-.xf-logo{height:76px;width:auto;display:block}
+/* The tight file, not logo-white.png: that one is 55% transparent padding, so a
+   76px box only ever drew a 34px logo. Same box, nearly twice the mark. */
+.xf-logo{height:64px;width:auto;display:block}
 .xf-blurb{margin:14px 0 0;font-size:13px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.72)}
 .xf-247{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12.5px;font-weight:700}
 .xf-247 .dot{width:8px;height:8px;border-radius:50%;background:#6BB85C}
@@ -247,7 +252,7 @@ font-size:12px;color:rgba(255,255,255,.55)}
 @media (max-width:1023px){
   .xf-wrap{padding:0 24px}
   .xf-grid{grid-template-columns:1.4fr 1fr 1fr;gap:28px}
-  .xf-logo{height:60px}
+  .xf-logo{height:56px}
   .xf-mark{width:240px}
 }
 @media (max-width:809px){
@@ -257,7 +262,7 @@ font-size:12px;color:rgba(255,255,255,.55)}
   .xf-cta-btns{flex-direction:column}
   .xf-btn-green,.xf-btn-outline{width:100%;min-height:48px}
   .xf-grid{grid-template-columns:1fr 1fr;gap:24px 20px;padding:30px 0 26px}
-  .xf-logo{height:46px}
+  .xf-logo{height:50px}
   .xf-brand{grid-column:1 / -1}
   .xf-bottom{flex-direction:column;align-items:flex-start;gap:10px}
   .xf-mark{width:150px;top:12px;right:-24px}
@@ -411,7 +416,7 @@ def header(current=""):
 
 <div class="xh-callbar">
   <a class="call" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
-  <button class="sched js-schedule" type="button">Schedule</button>
+  <button class="sched js-schedule" type="button">Schedule Online</button>
 </div>'''
 
 # ---------------------------------------------------------------- footer
@@ -445,7 +450,7 @@ def footer():
 
     <div class="xf-grid">
       <div class="xf-col xf-brand">
-        <img class="xf-logo" src="{LOGO}" alt="{D.COMPANY}">
+        <img class="xf-logo" src="{LOGO_TIGHT}" alt="{D.COMPANY}">
         <p class="xf-blurb">Locally owned &amp; operated, serving the Miami Valley and Greater
         Cincinnati for over 20 years.</p>
         <div class="xf-247"><span class="dot"></span>Available 24/7 · 7 days a week</div>
@@ -482,9 +487,14 @@ def footer():
 </footer>'''
 
 # ---------------------------------------------------------------- behaviour
+# Where build_site.py publishes the schedule wizard bundle (built from
+# src/schedule/mount.tsx by `npm run build:schedule`).
+SCHEDULE_SRC = "/js/schedule.js"
+
 JS = """
 <script>
 (function(){
+  var SCHEDULE_SRC = '/js/schedule.js';
   var hd = document.querySelector('.xh-hd');
   if (!hd) return;
 
@@ -530,10 +540,16 @@ JS = """
   var panel = hd.querySelector('.xh-panel'),
       burger = hd.querySelector('.xh-burger'),
       closeBtn = hd.querySelector('.xh-close');
+  /* The menu-open flag also hides the sticky call bar — the panel pins its own
+     Schedule and Call buttons to the bottom and the two were stacking on top of
+     each other. */
   function openPanel(){ panel.dataset.open='true'; burger.setAttribute('aria-expanded','true');
+                        document.documentElement.classList.add('xh-menu-open');
                         document.body.style.overflow='hidden'; }
   function closePanel(){ if(!panel) return; panel.dataset.open='false';
-                         burger.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+                         burger.setAttribute('aria-expanded','false');
+                         document.documentElement.classList.remove('xh-menu-open');
+                         document.body.style.overflow=''; }
   if (burger) burger.addEventListener('click', openPanel);
   if (closeBtn) closeBtn.addEventListener('click', closePanel);
   hd.querySelectorAll('.xh-panel a').forEach(function(a){ a.addEventListener('click', closePanel); });
@@ -553,6 +569,37 @@ JS = """
       closePanel();
       window.dispatchEvent(new CustomEvent('open-contact-dialog'));
     });
+  });
+
+  /* --- schedule wizard: load on demand ------------------------------------
+     The wizard is React and weighs ~59KB gzipped, so it is not on the critical
+     path of a page whose whole job is to be read. Instead this listens for the
+     same 'open-contact-dialog' event every Schedule button already fires — the
+     header, the footer, the hero, the booking cards, the promo tiles — and pulls
+     the bundle in the first time one of them is used. Once the dialog is mounted
+     it answers the event itself and this listener steps aside.
+     Warming on the first hover/touch means the click usually finds it cached. */
+  var loading = false;
+  function loadWizard(replay){
+    if (window.XHSchedule) { if (replay) window.XHSchedule.open(); return; }
+    if (replay) window.__xhScheduleWanted = true;
+    if (loading) return;
+    loading = true;
+    var s = document.createElement('script');
+    s.src = SCHEDULE_SRC;
+    s.defer = true;
+    s.onerror = function(){
+      loading = false;
+      /* No wizard, no dead end: the contact page has the form and the phone number. */
+      if (window.__xhScheduleWanted) { window.__xhScheduleWanted = false; location.href = '/contact'; }
+    };
+    document.head.appendChild(s);
+  }
+  window.addEventListener('open-contact-dialog', function(){ loadWizard(true); });
+  ['pointerover','touchstart','focusin'].forEach(function(evt){
+    document.addEventListener(evt, function(e){
+      if (e.target && e.target.closest && e.target.closest('.js-schedule')) loadWizard(false);
+    }, {passive:true});
   });
 })();
 </script>

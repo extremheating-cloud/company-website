@@ -71,6 +71,17 @@ def main():
                 f.write(shell.document(meta, body))
             written.append(url)
 
+    # --- schedule wizard bundle ---
+    # Built by `npm run build:schedule` and committed to assets/js/, because site/ is
+    # generated and gitignored. Missing bundle is a warning, not a failure: the loader
+    # in chrome.py falls back to /contact if the script 404s.
+    src_js = os.path.join(ROOT, "assets", "js", "schedule.js")
+    if os.path.exists(src_js):
+        os.makedirs(os.path.join(SITE, "js"), exist_ok=True)
+        shutil.copy2(src_js, os.path.join(SITE, "js", "schedule.js"))
+    else:
+        print("  ! assets/js/schedule.js missing — run: npm run build:schedule")
+
     # --- redirects, for hosts that read a _redirects file (Cloudflare, Netlify) ---
     with open(os.path.join(SITE, "_redirects"), "w") as f:
         f.write("/refer  /referral  301\n")
