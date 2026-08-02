@@ -217,7 +217,10 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
   .hp-xp{padding:26px 22px;border-radius:20px}
   .hp-head-row{flex-direction:column;align-items:flex-start;gap:10px}
   .hp-brand img{height:38px;max-width:150px}
-  .hp-promise-in{padding:14px 20px;gap:8px 18px}
+  /* Wrapping put two items on some rows and one on others, which read as ragged.
+     One per line on mobile. */
+  .hp-promise-in{padding:16px 20px;flex-direction:column;align-items:flex-start;gap:9px}
+  .hp-promise .lab{margin-bottom:2px}
 }
 """
 
