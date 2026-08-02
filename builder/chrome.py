@@ -111,36 +111,70 @@ background:none;border:0;padding:0;cursor:pointer;font-family:inherit}
 .xm-promo.mint a,.xm-promo.mint button{color:#3D7A33}
 .xm-promo a:hover,.xm-promo button:hover{text-decoration:underline}
 
-/* ---- mobile ---- */
-.xh-burger{display:none;background:none;border:0;cursor:pointer;padding:10px;
-width:44px;height:44px;align-items:center;justify-content:center}
-.xh-burger span{display:block;width:22px;height:2px;background:#fff;position:relative}
-.xh-burger span::before,.xh-burger span::after{content:"";position:absolute;left:0;width:22px;
-height:2px;background:#fff}
-.xh-burger span::before{top:-7px} .xh-burger span::after{top:7px}
-.xh-panel{display:none;position:fixed;inset:0;top:0;background:#3A1A4E;z-index:950;
-overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 96px}
-.xh-panel[data-open="true"]{display:block}
+/* ---- mobile: bar trigger + full-screen panel, matching the Framer mobile header ---- */
+.xh-burger{display:none;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.4);
+border-radius:12px;background:transparent;cursor:pointer;align-items:center;justify-content:center}
+.xh-burger span{display:block;width:18px;height:2px;background:#fff;
+box-shadow:0 5px 0 #fff,0 -5px 0 #fff}
+.xh-burger:active{transform:scale(.96)}
+
+.xh-panel{display:none;position:fixed;inset:0;z-index:950;flex-direction:column;
+background:linear-gradient(160deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);color:#fff}
+.xh-panel[data-open="true"]{display:flex}
 .xh-panel-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;
-position:sticky;top:0;background:#3A1A4E}
-.xh-close{background:none;border:0;color:#fff;font-size:26px;line-height:1;cursor:pointer;
-width:44px;height:44px}
-.xh-acc{border-top:1px solid rgba(255,255,255,.12)}
-.xh-acc>button{width:100%;display:flex;align-items:center;justify-content:space-between;
-background:none;border:0;color:#fff;font:inherit;font-weight:700;font-size:16px;
-padding:16px 20px;min-height:56px;cursor:pointer}
-.xh-acc>div{display:none;padding:0 20px 12px}
-.xh-acc[data-open="true"]>div{display:block}
-.xh-acc a{display:block;padding:11px 0;font-size:14.5px;font-weight:600;
-color:rgba(255,255,255,.82);border-bottom:1px solid rgba(255,255,255,.08)}
-.xh-acc a:last-child{border-bottom:0}
-.xh-panel .xh-simple a{display:block;padding:16px 20px;font-weight:700;font-size:16px;color:#fff;
-border-top:1px solid rgba(255,255,255,.12)}
-.xh-callbar{position:fixed;left:0;right:0;bottom:0;z-index:960;display:none;gap:10px;padding:10px 16px;
+border-bottom:1px solid rgba(255,255,255,.12);flex:none}
+.xh-panel-bar .xh-logo img{width:min(52vw,200px);height:auto;margin:3px 0 0 -6px}
+.xh-close{width:44px;height:44px;border:1.5px solid rgba(255,255,255,.45);border-radius:11px;
+background:transparent;color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center}
+.xh-close:active{transform:scale(.96)}
+.xh-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:4px 20px 16px}
+
+/* Rows are large italic display type, one per line with a rule beneath. */
+.xh-acc>button,.xh-simple a{width:100%;display:flex;align-items:center;
+justify-content:space-between;gap:10px;padding:16px 2px;min-height:44px;background:none;
+border:0;border-bottom:1px solid rgba(255,255,255,.12);cursor:pointer;text-align:left;
+font-style:italic;font-weight:900;font-size:19px;color:#fff;font-family:inherit;
+text-decoration:none}
+.xh-acc>button:focus-visible,.xh-simple a:focus-visible{outline:2px solid #fff;outline-offset:-2px}
+.xh-caret{font-style:normal;font-size:13px;color:rgba(255,255,255,.55)}
+.xh-acc[data-open="true"] .xh-caret{color:#6BB85C}
+.xh-save{display:inline-block;margin-left:10px;vertical-align:middle;background:#6BB85C;
+color:#0F172A;font-style:normal;font-weight:800;font-size:9.5px;letter-spacing:1px;
+border-radius:5px;padding:3px 7px}
+
+/* Expanded content sits in an inset card, two columns, green section labels. */
+.xh-acc>div{display:none}
+.xh-acc[data-open="true"]>div{display:block;margin:12px 0 16px;
+background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+border-radius:14px;padding:16px 16px 14px}
+.xh-mini{font-weight:800;font-size:9.5px;letter-spacing:1.6px;color:#8FD481;margin:0 0 8px}
+.xh-mini + .xh-grid + .xh-mini{margin-top:14px}
+.xh-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;margin-bottom:12px}
+.xh-grid a{display:flex;align-items:center;min-height:40px;padding:4px 2px;
+font-weight:600;font-size:13px;color:rgba(255,255,255,.92);text-decoration:none;
+border-bottom:0}
+.xh-grid a:active{color:#8FD481}
+.xh-all{display:inline-block;font-weight:800;font-size:13px;color:#8FD481;
+text-decoration:none;padding:6px 2px;min-height:32px}
+
+/* Pinned actions at the foot of the panel. */
+.xh-pinned{flex:none;background:rgba(15,23,42,.25);border-top:1px solid rgba(255,255,255,.12);
+padding:14px 20px calc(14px + env(safe-area-inset-bottom));display:grid;gap:10px}
+.xh-pinned .cta{width:100%;min-height:48px;border:0;border-radius:12px;cursor:pointer;
+background:#6BB85C;color:#0F172A;font-weight:800;font-size:15.5px;font-family:inherit}
+.xh-pinned .call{width:100%;min-height:48px;display:flex;align-items:center;
+justify-content:center;border:1.5px solid rgba(255,255,255,.45);border-radius:12px;
+color:#fff;font-weight:800;font-size:15px;text-decoration:none}
+.xh-pinned .trust{display:flex;align-items:center;justify-content:center;gap:8px;
+font-weight:700;font-size:12px;color:rgba(255,255,255,.82)}
+.xh-pinned .trust .s{color:#F6A723;letter-spacing:1px}
+
+.xh-callbar{position:fixed;left:0;right:0;bottom:0;z-index:940;display:none;gap:10px;
+padding:10px 16px calc(10px + env(safe-area-inset-bottom));
 background:rgba(58,26,78,.97);backdrop-filter:blur(8px);border-top:1px solid rgba(255,255,255,.14)}
-.xh-callbar a,.xh-callbar button{flex:1;display:inline-flex;align-items:center;justify-content:center;
-min-height:48px;border-radius:12px;font-weight:800;font-size:15px;border:0;cursor:pointer;
-font-family:inherit;text-decoration:none}
+.xh-callbar a,.xh-callbar button{flex:1;display:inline-flex;align-items:center;
+justify-content:center;min-height:48px;border-radius:12px;font-weight:800;font-size:15px;
+border:0;cursor:pointer;font-family:inherit;text-decoration:none}
 .xh-callbar .call{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28)}
 .xh-callbar .sched{background:#6BB85C;color:#0F172A}
 
@@ -302,12 +336,20 @@ def _nav_item(label, key):
       {label} <span class="car" aria-hidden="true">▼</span><span class="bar" aria-hidden="true"></span>
     </button>'''
 
-def _panel_acc(label, core, additional):
-    links = "".join(f'<a href="{h}">{t}</a>' for t, d, h, c in core)
-    links += "".join(f'<a href="{h}">{t}</a>' for t, h, b in additional)
+def _panel_acc(label, core, additional, all_label, all_href):
+    core_links = "".join(f'<a href="{h}">{t}</a>' for t, d, h, c in core)
+    add_links = "".join(f'<a href="{h}">{t}</a>' for t, h, b in additional)
     return f'''<div class="xh-acc">
-      <button type="button" aria-expanded="false">{label}<span aria-hidden="true">＋</span></button>
-      <div>{links}</div>
+      <button type="button" aria-expanded="false">
+        <span>{label}</span><span class="xh-caret" aria-hidden="true">▼</span>
+      </button>
+      <div>
+        <p class="xh-mini">CORE SERVICES</p>
+        <div class="xh-grid">{core_links}</div>
+        <p class="xh-mini">ADDITIONAL</p>
+        <div class="xh-grid">{add_links}</div>
+        <a class="xh-all" href="{all_href}">{all_label} →</a>
+      </div>
     </div>'''
 
 def header(current=""):
@@ -316,7 +358,11 @@ def header(current=""):
         return ' is-current' if current and current.startswith(href) else ''
     simple = "".join(
         f'<a class="xh-link{cls(h)}" href="{h}">{l}</a>' for l, h in D.NAV_SIMPLE)
-    panel_simple = "".join(f'<a href="{h}">{l}</a>' for l, h in D.NAV_SIMPLE)
+    # Specials carries a SAVE badge in the mobile panel.
+    panel_simple = "".join(
+        f'<a href="{h}"><span>{l}'
+        f'{"<span class=\'xh-save\'>SAVE</span>" if l == "Specials" else ""}</span></a>'
+        for l, h in D.NAV_SIMPLE)
     return f'''<header class="xh-hd">
   <div class="xh-bar">
     <a class="xh-logo" href="/" aria-label="{D.COMPANY} — home">
@@ -348,9 +394,18 @@ def header(current=""):
       <a class="xh-logo" href="/"><img src="{LOGO_TIGHT}" alt="{D.COMPANY}"></a>
       <button class="xh-close" type="button" aria-label="Close menu">×</button>
     </div>
-    {_panel_acc("Plumbing", D.PLUMB_CORE, D.PLUMB_ADDITIONAL)}
-    {_panel_acc("Heating &amp; Air", D.HVAC_CORE, D.HVAC_ADDITIONAL)}
-    <div class="xh-simple">{panel_simple}</div>
+    <div class="xh-scroll">
+      {_panel_acc("Plumbing", D.PLUMB_CORE, D.PLUMB_ADDITIONAL,
+                  "All Plumbing Services", "/plumbing/services")}
+      {_panel_acc("Heating &amp; Air", D.HVAC_CORE, D.HVAC_ADDITIONAL,
+                  "All HVAC Services", "/services")}
+      <div class="xh-simple">{panel_simple}</div>
+    </div>
+    <div class="xh-pinned">
+      <button class="cta js-schedule" type="button">Schedule Service</button>
+      <a class="call" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
+      <div class="trust"><span class="s">★★★★★</span> {D.GOOGLE_RATING} on Google · 24/7 emergency</div>
+    </div>
   </div>
 </header>
 
@@ -488,7 +543,6 @@ JS = """
       var acc = b.parentElement, open = acc.dataset.open === 'true';
       acc.dataset.open = open ? 'false' : 'true';
       b.setAttribute('aria-expanded', open ? 'false' : 'true');
-      b.querySelector('span').textContent = open ? '＋' : '−';
     });
   });
 

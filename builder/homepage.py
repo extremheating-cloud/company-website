@@ -55,24 +55,24 @@ color:#fff;overflow:hidden}
 .hp-hero-mark{position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;
 transform:rotate(-8deg);filter:brightness(0) invert(1);pointer-events:none}
 .hp-wrap{position:relative;max-width:1280px;margin:0 auto;padding:0 40px}
-.hp-hero-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:24px;align-items:end;
-padding:56px 0 0}
+.hp-hero-grid{display:grid;grid-template-columns:1fr 1.45fr;gap:16px;align-items:center;
+padding:48px 0 0}
 /* The slash is decorative and bleeds left out of the van column. Copy sits above
    it unconditionally so a wider van can never cut into the text. */
 .hp-hero-in{padding:0 0 64px;max-width:640px;position:relative;z-index:2}
 
 /* Van column. The slash is a rotated + skewed bar behind the van — the same geometry
    the Framer hero used, expressed as percentages so it tracks the column at any width. */
-.hp-van-col{position:relative;width:100%;align-self:end;min-height:0;
-aspect-ratio:569 / 430;max-height:560px}
+.hp-van-col{position:relative;width:100%;align-self:center;min-height:0;
+aspect-ratio:569 / 360;max-height:none}
 .hp-slash{position:absolute;left:-4%;right:-16%;bottom:20%;height:13.3%;
 background:#6BB85C;transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .hp-slash-w{position:absolute;left:1%;right:-23%;bottom:17.5%;height:3.75%;
 background:#fff;opacity:.25;transform:rotate(-9deg) skewX(-16deg)}
 /* Bleeds past the column edge on purpose — the hero is overflow:hidden, so the
    van reads as driving out of frame rather than sitting in a box. */
-.hp-van{position:absolute;left:50%;bottom:20%;transform:translateX(-50%);
-width:126%;max-width:none;filter:drop-shadow(0 26px 34px rgba(0,0,0,.38))}
+.hp-van{position:absolute;left:50%;bottom:16%;transform:translateX(-48%);
+width:150%;max-width:none;filter:drop-shadow(0 26px 34px rgba(0,0,0,.38))}
 /* Mobile stage: van sits under the copy instead of beside it. */
 .hp-van-stage{display:none;position:relative;aspect-ratio:350 / 210;margin-top:22px}
 .hp-van-stage .hp-slash{left:-11.4%;right:-11.4%;bottom:25.7%;height:19%}
@@ -100,9 +100,12 @@ font-family:inherit;text-decoration:none;white-space:nowrap}
 .hp-btn-green:hover{background:#8FD481}
 .hp-btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.45)}
 .hp-btn-ghost:hover{border-color:#6BB85C;color:#8FD481}
-.hp-trust{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:26px;font-size:13px;font-weight:700;
-color:rgba(255,255,255,.8)}
-.hp-trust .st{color:#F6A723;letter-spacing:1px}
+.hp-trust{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.hp-trust > span{display:inline-flex;align-items:center;gap:8px;
+border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);border-radius:12px;
+padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff}
+.hp-trust .st{color:#F6A723;letter-spacing:1.5px;font-size:11px}
+.hp-trust .dot{width:7px;height:7px;border-radius:50%;background:#6BB85C}
 .hp-promise{background:#0F172A;color:#fff}
 .hp-promise-in{max-width:1280px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;
 gap:12px 30px;flex-wrap:wrap}
@@ -212,8 +215,10 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
   .hp-sec{padding:44px 0}
   .hp-cards,.hp-revs,.hp-brands{grid-template-columns:1fr;gap:12px}
   .hp-stats{grid-template-columns:1fr 1fr;gap:16px}
-  .hp-cta-row{flex-direction:column;align-items:stretch}
-  .hp-btn{width:100%}
+  .hp-cta-row{flex-direction:column;align-items:stretch;gap:10px;margin-top:24px}
+  .hp-btn{width:100%;min-height:52px;font-size:15.5px}
+  .hp-trust{justify-content:center;gap:8px;margin-top:26px}
+  .hp-trust > span{padding:9px 13px}
   .hp-xp{padding:26px 22px;border-radius:20px}
   .hp-head-row{flex-direction:column;align-items:flex-start;gap:10px}
   .hp-brand img{height:38px;max-width:150px}
@@ -221,6 +226,18 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
      One per line on mobile. */
   .hp-promise-in{padding:16px 20px;flex-direction:column;align-items:flex-start;gap:9px}
   .hp-promise .lab{margin-bottom:2px}
+}
+/* ---- desktop / mobile copy swap -------------------------------------------------
+   The hero carries two versions of the badge, lede and trust row: the desktop copy is
+   too long for a phone, and the Framer hero swapped it rather than wrapping onto four
+   lines. These selectors are element+class deliberately — a bare .hp-mb loses to
+   .hp-trust{display:flex} on source order and both rows render at once. */
+.hp-badge .hp-mb,p.hp-lede.hp-mb,div.hp-trust.hp-mb{display:none}
+@media (max-width:809px){
+  .hp-badge .hp-dt,p.hp-lede.hp-dt,div.hp-trust.hp-dt{display:none}
+  .hp-badge .hp-mb{display:inline}
+  p.hp-lede.hp-mb{display:block}
+  div.hp-trust.hp-mb{display:flex}
 }
 """
 
@@ -252,20 +269,27 @@ def homepage():
 <section class="hp-hero">
   <img class="hp-hero-mark" src="{X_MARK}" alt="" aria-hidden="true">
   <div class="hp-wrap"><div class="hp-hero-grid"><div class="hp-hero-in">
-    <span class="hp-badge"><span class="dot"></span>LOCALLY OWNED · DAYTON + CINCINNATI</span>
+    <span class="hp-badge"><span class="dot"></span><span class="hp-dt">LOCALLY OWNED · DAYTON + CINCINNATI</span><span class="hp-mb">DAYTON + CINCINNATI · 24/7</span></span>
     <h1 class="hp-h1">Trusted Team<br>for
       <span class="hp-roll"><ul>{roll}</ul></span>
     </h1>
-    <p class="hp-lede">Fast repairs, full system replacements, routine maintenance, and dependable
-    plumbing help — delivered by a team your neighbors already trust.</p>
+    <p class="hp-lede hp-dt">Fast repairs, full system replacements, routine maintenance, and
+    dependable plumbing help — delivered by a team your neighbors already trust.</p>
+    <p class="hp-lede hp-mb">Fast repairs, replacements, maintenance, and plumbing help from a team
+    your neighbors trust.</p>
     <div class="hp-cta-row">
       <button class="hp-btn hp-btn-green js-schedule" type="button">Schedule Service&nbsp;&nbsp;→</button>
       <a class="hp-btn hp-btn-ghost" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
     </div>
-    <div class="hp-trust">
+    <div class="hp-trust hp-dt">
       <span><span class="st">★★★★★</span> {D.GOOGLE_RATING} on Google</span>
       <span>◆ {D.YEARS_LOCAL} Years Locally Owned</span>
       <span>◆ 24/7 Emergency</span>
+    </div>
+    <div class="hp-trust hp-mb">
+      <span><span class="st">★★★★★</span> {D.GOOGLE_RATING}</span>
+      <span>{D.YEARS_LOCAL} yrs</span>
+      <span><span class="dot"></span>24/7</span>
     </div>
 
     <div class="hp-van-stage" aria-hidden="true">
