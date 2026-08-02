@@ -451,8 +451,48 @@ PHOTO_OVERRIDES = {
     },
 }
 
+# Alt text for the rail photos, keyed by a distinctive piece of the image URL.
+# rollout.py's detail()/sub() take a photo but never took an alt, so every page that
+# got its image this way rendered alt="" — 25 pages whose lead content photo said
+# nothing at all to a screen reader. Each line below was written after looking at the
+# actual image, except where noted, where the stock title in the URL is the
+# photographer's own description and the subject is unambiguous.
+IMAGE_ALTS = {
+    # Extreme's own photography
+    "duct-cleaning-truck.jpg": "The Extreme air duct cleaning truck parked outside a home",
+    "muv-401h.jpg": "A PremierOne MUV-401H UV air purifier with its lamp lit",
+    # Licensed/carried-over stock — described from the image, not the page topic
+    "furnace-repair.jpg": "A technician working inside an open gas furnace",
+    "humidifier.jpg": "A whole-home humidifier and furnace in a basement utility area",
+    "dirty-duct.jpg": "The inside of an air duct heavily coated with dust",
+    "air-quality.jpg": ("Breakdown of indoor air pollutants: 35% particulate, "
+                        "34% bioaerosols, 31% volatile organic compounds"),
+    "sale.jpg": "A for-sale sign in the front yard of a two-storey house",
+    "smart-thermostat.jpg": "A smart thermostat set from a phone app",
+    "a-pipe-clogged": "Two cut sections of drain pipe, both clogged solid with grease",
+    "worried-man-calling-plumber": "A man phoning for help under a leaking sink",
+    "repairing-a-broken-pipe": "Gloved hands joining a broken pipe in a muddy trench",
+    "backup-sump-pump": "A sump pump and float switch in a basement pit",
+    "360_F_53961667": "A technician adjusting the thermostat dial on a water heater",
+    "360_F_632498826": "A technician working on the valves of a wall-mounted water heater",
+    "360_F_507146518": "A plumber installing an under-sink water filtration system",
+    # From the stock title in the URL; subject unambiguous, image not opened
+    "ceiling-with-multiple-utility-lines": "Gas, water and electrical lines running along a basement ceiling",
+    "male-engineer-checking-boiler-system": "A technician checking a boiler system in a basement",
+    "home-inspector-use-thermal-imager": "An inspector scanning for leaks with a thermal imaging camera",
+    "pumping-out-household-septic-tank": "A septic tank being pumped out",
+    "a-plumber-repairing-a-sump-pump": "A plumber repairing a sump pump in a flooded basement",
+    "man-plumber-in-uniform-installing-toilet-bowl": "A plumber installing a toilet",
+}
+
+def _alt_for(url):
+    for key, alt in IMAGE_ALTS.items():
+        if key in url:
+            return alt
+    return None
+
 def _wire_image(data, rel):
-    """Attach the page's own legacy image (CDN or carried-over stock)."""
+    """Attach the page's own legacy image (CDN or carried-over stock), with alt text."""
     override = PHOTO_OVERRIDES.get(rel)
     if override:
         data["rail"].update(override)
@@ -460,6 +500,9 @@ def _wire_image(data, rel):
     img = old_img(rel)
     if img and "Logo" not in img:
         data["rail"]["photo"] = img
+        alt = _alt_for(img)
+        if alt and not data["rail"].get("photoAlt"):
+            data["rail"]["photoAlt"] = alt
     return data
 
 for fname, data in rollout.HVAC_PAGES.items():

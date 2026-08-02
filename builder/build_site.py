@@ -82,6 +82,17 @@ def main():
     else:
         print("  ! assets/js/schedule.js missing — run: npm run build:schedule")
 
+    # --- favicons ---
+    # Served same-origin rather than from the CDN: the browser requests /favicon.ico
+    # on every page load whether or not it is declared, and it was 404ing on all 307.
+    for src_name, dest_name in (("logo-icon.ico", "favicon.ico"),
+                                ("apple-touch-icon.png", "apple-touch-icon.png")):
+        src = os.path.join(ROOT, "assets", "brand", src_name)
+        if os.path.exists(src):
+            shutil.copy2(src, os.path.join(SITE, dest_name))
+        else:
+            print(f"  ! assets/brand/{src_name} missing")
+
     # --- redirects, for hosts that read a _redirects file (Cloudflare, Netlify) ---
     with open(os.path.join(SITE, "_redirects"), "w") as f:
         f.write("/refer  /referral  301\n")

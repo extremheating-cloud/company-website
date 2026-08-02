@@ -479,6 +479,14 @@ def esc(s):
     return s  # copy strings are authored with entities where needed
 
 def crumbs(items):
+    # Every trail starts at Home. The service and plumbing pages used to start at
+    # their own category, so 31 pages offered no way back to the homepage from the
+    # breadcrumb while all 267 location pages did. Prepending here rather than in 31
+    # data definitions keeps the two from drifting apart again; pages that already
+    # start at Home are left alone.
+    items = list(items)
+    if not items or items[0][1] != "/":
+        items = [("Home", "/")] + items
     out = []
     for i, (label, href) in enumerate(items):
         last = i == len(items) - 1

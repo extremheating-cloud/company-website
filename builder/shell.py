@@ -90,6 +90,8 @@ def document(page, body_html):
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{canonical}">
 <meta name="theme-color" content="#5E2C7E">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{FONT}">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">

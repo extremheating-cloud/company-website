@@ -730,14 +730,15 @@ ABOUT = {
         {"name": "Joe Richardson",  "role": "Comfort Advisor", "photo": PHOTOS["team"]["joe-richardson"]},
         {"name": "Tyler Hardy",     "role": "Installer", "photo": PHOTOS["team"]["tyler-hardy"]},
     ],
-    # TODO: confirm /locations vs per-city location page URLs (handoff URL map)
+    # Both cards used to point at /locations, so two differently-labelled links went
+    # to the same place. The per-city pages exist; these are them.
     "areas": [
         {"t": "Dayton",
          "d": "Serving Dayton, Kettering, Beavercreek, Centerville, Springboro, and surrounding Miami Valley communities.",
-         "lm": "Dayton location &amp; service area →", "href": "/locations"},
+         "lm": "Dayton location &amp; service area →", "href": "/locations/dayton"},
         {"t": "Cincinnati",
          "d": "Serving Cincinnati, Mason, West Chester, Loveland, Fairfield, and communities across the metro.",
-         "lm": "Cincinnati location &amp; service area →", "href": "/locations"},
+         "lm": "Cincinnati location &amp; service area →", "href": "/locations/cincinnati"},
     ],
 }
 
