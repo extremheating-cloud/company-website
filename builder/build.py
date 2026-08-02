@@ -36,10 +36,21 @@ def old_img(page_rel, idx=0):
 AIR_CONDITIONING = {
     "trade": "hvac",
     "breadcrumb": [("Heating & Air", "/services"), ("Air Conditioning", "")],
-    "h1": "Fast, honest {X} in Dayton & Cincinnati.",
-    "h1Highlight": "AC service",
-    "intro": "Repairs, replacements, and tune-ups from the locally owned Extreme Team — upfront pricing, clean workmanship, and cool air back fast.",
-    "heroChips": ["4.9 on Google", "90% Same-Day Service", "24/7 Emergency"],
+    "h1": "Air conditioning service in {X}.",
+    "h1Highlight": "Dayton & Cincinnati",
+    # The answer-first block. Entity, both metros and two stat tokens in 48 words, no
+    # first person and no rates — this is the passage an engine lifts, so nothing in
+    # it may need the rest of the page for context.
+    "answer": ("Extreme Heating, Air, Plumbing repairs, replaces and tunes up residential "
+               "air conditioners across the Dayton and Cincinnati, Ohio metros. Central air "
+               "systems and heat pumps in cooling mode are covered on every major brand, "
+               "whoever installed them. The company has completed 25,000+ jobs and offers "
+               "90% same-day service."),
+    "intro": "Repairs, replacements and tune-ups from the locally owned Extreme Team. Upfront pricing, clean workmanship, and cool air back fast.",
+    # The 1,595-review figure is a Birdeye aggregate pooling several platforms, so the
+    # chip cannot say "on Google" — that is the one review claim a competitor can
+    # disprove in thirty seconds. facts.md confirms 4.9 / 1,595 for on-site display.
+    "heroChips": ["4.9 from 1,595 reviews", "90% Same-Day Service", "24/7 Emergency"],
     "bookingCard": {
         "eyebrow": "BOOK AC SERVICE",
         "title": "Get a tech to your door.",
@@ -47,7 +58,7 @@ AIR_CONDITIONING = {
     },
     "symptoms": {
         "eyebrow": "IS YOUR AC ACTING UP?",
-        "h2": "Signs it's time to call.",
+        "h2": "What are the signs an air conditioner is failing?",
         "items": [
             "Blowing warm or room-temp air",
             "Weak airflow in some rooms",
@@ -56,10 +67,10 @@ AIR_CONDITIONING = {
             "Water or refrigerant leaks",
             "Energy bills creeping up",
         ],
-        "callout": f'Noticing more than one? Small AC problems become compressor problems — call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> before it gets expensive.',
+        "callout": f'Noticing more than one? Small AC problems become compressor problems. Call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> before it gets expensive, or read what each symptom usually means on our <a href="/ac-repair">AC repair</a> page.',
     },
     "whatWeDo": {
-        "h2": "Repair, replace, or maintain — we handle it all.",
+        "h2": "What air conditioning services does Extreme offer in Dayton and Cincinnati?",
         "cards": [
             {"title": "AC Repair",
              "desc": "Same-day diagnostics and honest repair options for every make and model — approved by you before we start.",
@@ -72,6 +83,57 @@ AIR_CONDITIONING = {
              "href": "/maintenance"},
         ],
     },
+    # The decision table and the lifespan/brand questions sit before Process; the two
+    # "how do I actually book this" questions sit after it, in sectionsTail. Symptoms
+    # and emergencies belong to /ac-repair and cost and sizing to /ac-installation —
+    # every section that brushes one of those hands off with a link instead of
+    # competing with it.
+    "sections": [
+        {"eyebrow": "DECIDING",
+         "id": "repair-or-replace",
+         "h2": "Should I repair or replace my air conditioner?",
+         "body": ("Age and repair cost decide it, not the symptom. A newer system with a "
+                  "failed capacitor or contactor is a repair. An older system facing a "
+                  "compressor or coil replacement is usually the point where a new unit "
+                  "costs less over the years it has left."),
+         # No dollar figures anywhere in this table, by design: the one-third rule of
+         # thumb is client-approved, a published repair price is not.
+         "table": {
+             "caption": "Repair or replace an air conditioner: what Extreme Heating, Air, Plumbing weighs on a Dayton or Cincinnati service call.",
+             "takeaway": ("Extreme Heating, Air, Plumbing recommends replacement over repair "
+                          "when an air conditioner is past its expected service life and the "
+                          "repair quote approaches a third of replacement cost."),
+             "columns": ["Factor", "Repair usually makes sense when",
+                         "Replacement usually makes sense when"],
+             "rows": [
+                 ["System age", "The air conditioner is under 10 years old",
+                  "The air conditioner is past 12 to 15 years"],
+                 ["Repair cost", "The quote is well under a third of replacement cost",
+                  "The quote is at or above roughly a third of replacement cost"],
+                 ["Breakdown history", "This is the first failure in several cooling seasons",
+                  "This is the second or third service call in one season"],
+                 ["Refrigerant", "The system uses a refrigerant still in production",
+                  "The system uses R-22, which has not been produced or imported in the US since 2020"],
+                 ["Energy bills", "Cooling bills are steady year over year",
+                  "Cooling bills climb with no change in how the house is used"],
+                 ["Comfort", "One room or one symptom is affected",
+                  "Temperatures are uneven throughout the house"],
+                 # Deliverable wrote "labour"; the rest of the site is US spelling.
+                 ["Warranty", "Parts are still under manufacturer warranty",
+                  "Parts and labor warranties have both run out"],
+             ],
+         }},
+        {"h2": "How long does a central air conditioner last?",
+         "body": ("Twelve to fifteen years is the normal working life for a central air "
+                  "conditioner in this climate, and a maintained system reaches the top of "
+                  "that range more often than a neglected one. Past fifteen, most homeowners "
+                  "spend more on repairs than a replacement would have cost.")},
+        {"h2": "Which air conditioner brands does Extreme service?",
+         "body": ("Every major residential make and model, regardless of who installed them. "
+                  "Our techs train across the systems common in Dayton and Cincinnati "
+                  "housing, so a warranty repair on one brand and a twenty-year-old unit "
+                  "from another brand both get handled.")},
+    ],
     "process": {
         "steps": [
             {"title": "Book in minutes",
@@ -82,17 +144,37 @@ AIR_CONDITIONING = {
              "desc": "Clean workmanship, tested before we leave, and backed by our satisfaction guarantee."},
         ],
     },
-    "faqEyebrow": "AC QUESTIONS",
-    "faq": [
-        {"q": "How fast can you get here?",
-         "a": "In most cases, same day. About 90% of our calls are handled the day you reach out, and 24/7 emergency service is available for no-cool situations in extreme heat."},
-        {"q": "Should I repair or replace my AC?",
-         "a": "If your system is under 10 years old and the repair is minor, repair usually wins. Past 12–15 years with a major failure — like a compressor — replacement often costs less over time. We'll give you both numbers upfront, no pressure."},
-        {"q": "How often does my AC need a tune-up?",
-         "a": "Once a year, ideally in spring before the cooling season. X-Plan members get two seasonal tune-ups a year — one for cooling, one for heating — plus priority scheduling."},
-        {"q": "Do you service all brands?",
-         "a": "Yes — every major make and model, regardless of who installed it. Our techs receive ongoing training across all common residential systems."},
+    "sectionsTail": [
+        {"h2": "How often should an air conditioner be serviced?",
+         "body": ("Once a year, in spring, before the first stretch of ninety-degree weather. "
+                  "A tune-up cleans the coil, checks refrigerant charge and tests the "
+                  "electrical parts that fail first in heat. "
+                  '<a href="/maintenance">X-Plan</a> members get two visits a year, one for '
+                  "cooling and one for heating.")},
+        {"h2": "How do I book AC service in Dayton or Cincinnati?",
+         "body": (f'Call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> or schedule online, and '
+                  "you get an arrival window before the tech leaves the shop. Extreme "
+                  "Heating, Air, Plumbing handles about 90% of service calls the same day, "
+                  "with 24/7 emergency service when a house has no cooling in a heat wave.")},
     ],
+    "faqEyebrow": "AC QUESTIONS",
+    "faqH2": "What do homeowners ask before booking AC service?",
+    "faq": [
+        {"q": "Is it worth replacing an R-22 air conditioner?",
+         "a": "Usually yes. R-22 has not been produced or imported in the United States since 2020, so a system that needs a recharge is paying for a shrinking reclaimed supply. If an R-22 unit needs a compressor or a coil, replacement almost always costs less over the years left in it."},
+        {"q": "Can the air conditioner be replaced without replacing the furnace?",
+         "a": "Yes, and often it should be. The indoor coil has to be matched to the new outdoor unit, so the furnace gets opened up either way. If the furnace is also near the end of its life, replacing both in one visit costs less than two separate jobs a few years apart."},
+        {"q": "Do you offer emergency AC repair?",
+         "a": "Yes. Extreme Heating, Air, Plumbing runs 24/7 emergency service across the Dayton and Cincinnati metros, every day of the year. Office phones are staffed Monday to Friday, 8:00 AM to 5:00 PM, and the emergency line never closes."},
+        {"q": "Does X-Plan cover the air conditioner?",
+         "a": "Yes. X-Plan includes two seasonal safety and performance visits a year, one of them a multi-point air conditioner tune-up with refrigerant charge calibration up to 1 lb included. Members also get 15% off all repairs and priority scheduling."},
+        {"q": "How long does an air conditioner replacement take?",
+         "a": "Most straight-swap replacements are a one-day job. Adding or reworking ductwork, moving the indoor unit, or changing system type adds time. Sizing and pricing for a replacement live on our <a href=\"/ac-installation\">AC installation</a> page."},
+    ],
+    # The copy on this page was rewritten 2026-08-02. shell.py prefers this stated date
+    # over its content-hash ledger, so it must move only when the copy actually does.
+    "updated": "August 2, 2026",
+    "updatedISO": "2026-08-02",
     "rail": {
         # Was a hardcoded @main URL with a ?v=2 cache-buster — the query string does
         # nothing on jsDelivr; the commit pin is what actually busts the cache.
@@ -100,7 +182,7 @@ AIR_CONDITIONING = {
         # this is a real Extreme diagnostic — gauges and meter on an open condenser.
         "photo": T.PHOTOS["acRepairGauges"],
         "photoPos": "50% 45%",
-        "photoAlt": "Gauges and a meter connected to an open air conditioner control panel",
+        "photoAlt": "Refrigerant gauges and a multimeter connected to an open air conditioner control panel during a service call",
         "promos": ["financing", "xplan"],
     },
     "related": [
@@ -117,8 +199,20 @@ PAGES.append((os.path.join(HVAC, "air-conditioning.html"), T.detail_page, AIR_CO
 # ================================================================
 HVAC_HUB = {
     "eyebrow": "OUR HVAC SERVICES",
+    # /services and /plumbing/services were the only two non-top-level pages on the
+    # site rendering no breadcrumb trail, so they were also the only two with no
+    # BreadcrumbList in their schema (shell.py reads the rendered trail, it does not
+    # invent one). The data is here now; hub_hero() still has to render it —
+    # see handoff-build.md.
+    "breadcrumb": [("Heating & Air", "")],
     "h1": "Every comfort system, {X}.",
     "h1Highlight": "one Extreme Team",
+    # 47 words, three sentences, entity and both metros present, no first person.
+    "answer": ("Extreme Heating, Air, Plumbing repairs, replaces and maintains residential "
+               "heating, cooling and indoor air quality systems across the Dayton and "
+               "Cincinnati, Ohio metros. Every major brand is covered, whoever installed it, "
+               "under Ohio HVAC license #37179. The company has completed 25,000+ jobs since "
+               "2004."),
     "intro": "Heating, cooling, air quality, and maintenance for Dayton & Cincinnati homes — explore every service below, or just tell us what's wrong.",
     # Replaced ac-install.jpg: that photo's condenser carries a visible CARRIER badge,
     # so the HVAC hub was advertising a competitor's equipment. This is a real Ruud
@@ -158,15 +252,25 @@ PAGES.append((os.path.join(HVAC, "services.html"), T.hub_page, HVAC_HUB, "xsp-hv
 # ================================================================
 PLUMB_HUB = {
     "eyebrow": "OUR PLUMBING SERVICES",
-    "h1": "Every drain and drop, {X}.",
-    "h1Highlight": "one Extreme Team",
-    "intro": "Drains, water heaters, sump pumps, and gas lines for Dayton & Cincinnati homes — explore every service below, or just tell us what's wrong.",
+    # Same breadcrumb gap as the HVAC hub — see the note there.
+    "breadcrumb": [("Plumbing", "")],
+    "h1": "Licensed plumbers serving {X} homes.",
+    "h1Highlight": "Dayton & Cincinnati",
+    # 49 words, three sentences. The Ohio plumbing licence number is the cheapest
+    # checkable credibility signal a plumbing page has, and checkable is what makes a
+    # passage citable. facts.md confirms OH LIC #13557.
+    "answer": ("Extreme Heating, Air, Plumbing provides residential plumbing service across "
+               "38 communities in the Dayton and Cincinnati, Ohio metros. Coverage includes "
+               "drains, water heaters, sewer lines, sump pumps and gas lines, all performed "
+               "under Ohio plumbing license #13557. The company offers 24/7 emergency "
+               "service and 90% same-day service."),
+    "intro": "Same trucks, same phone number, same people you already call about the furnace.",
     # PLACEHOLDER: the slot wants a plumber on the job and no such photo exists yet
     # (Block A of the shot list). A real branded van beats an empty grey box until
     # then — swap it when the session delivers.
     "photo": T.PHOTOS["vans"],
-    "photoAlt": "Extreme service vans heading out on calls",
-    "coreH2": "Reliable help for your home plumbing systems.",
+    "photoAlt": "Extreme Heating, Air, Plumbing service vans leaving the Beavercreek shop at the start of a work day",
+    "coreH2": "What plumbing services does Extreme offer in Dayton and Cincinnati?",
     "core": [
         {"title": "Clogged Drain", "desc": "Fast help for clogged and slow drains.", "href": "/plumbing/clogged-drain"},
         {"title": "Water Heater", "desc": "Repair, replacement, and tankless upgrades.", "href": "/plumbing/water-heater/overview"},
@@ -199,9 +303,19 @@ PAGES.append((os.path.join(PLUMB, "services.html"), T.hub_page, PLUMB_HUB, "xsp-
 FURNACE_REPAIR = {
     "trade": "hvac",
     "breadcrumb": [("Heating & Air", "/services"), ("Furnace & Heating", "/furnace-heating"), ("Repair", "")],
-    "h1": "Fast, safe {X} — day or night.",
-    "h1Highlight": "furnace repair",
+    "h1": "Furnace repair in {X}, 24/7.",
+    "h1Highlight": "Dayton & Cincinnati",
+    # 55 words, four sentences. Both metros, the entity, and three approved stat
+    # tokens; no first person, no rates, no response-time promise beyond the tokens.
+    "answer": ("Extreme Heating, Air, Plumbing repairs gas and electric furnaces across the "
+               "Dayton and Cincinnati, Ohio metros. No-heat calls are prioritized, and every "
+               "repair is quoted flat before work begins and safety-checked afterward. The "
+               "company offers 24/7 emergency service and 90% same-day service. Licensed and "
+               "insured technicians handle every call, and 25,000+ jobs have been completed."),
     "intro": "No heat is an emergency in an Ohio winter. We diagnose fast, price upfront, and repair every make and model — 24/7.",
+    # Sub pages default to SUB_CHIPS, which says "4.9 on Google". The 1,595-review
+    # figure is a Birdeye aggregate, so the source is named accurately here instead.
+    "heroChips": ["4.9 from 1,595 reviews", "Locally Owned", "24/7 Emergency"],
     "scheduleLabel": "Schedule Repair",
     "pillNav": {
         "label": "FURNACE & HEATING",
@@ -223,8 +337,81 @@ FURNACE_REPAIR = {
             "Heating bills creeping up",
         ],
         "safety": True,
-        "callout": f'<b>Safety first:</b> smell gas or suspect carbon monoxide? Leave the house first, then call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> — 24/7.',
+        # [NEEDS: the gas utility 24-hour emergency numbers for the Dayton and the
+        # Cincinnati service areas. keywords.md flags them as must-not-guess, so the
+        # sentence says "the gas utility" until they are confirmed.]
+        "callout": f'<b>Safety first:</b> smell gas or suspect carbon monoxide? Leave the house first. Call the gas utility from outside, then call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>. The emergency line is answered 24/7.',
     },
+    # Diagnosis questions before Process, the decision and booking questions after it.
+    "sections": [
+        {"h2": "Why is my furnace blowing cold air?",
+         "body": ("Cold air from a running furnace usually means the burners are not lighting "
+                  "or are shutting down early. The most common causes are a dirty flame "
+                  "sensor, a failed ignitor, a blocked condensate drain on a high-efficiency "
+                  "unit, or a thermostat left on Fan rather than Auto."),
+         "h3s": [
+             {"h3": "The thermostat check that costs nothing",
+              "body": ('A <a href="/thermostat">thermostat</a> set to Fan runs the blower '
+                       "constantly, whether the burners are lit or not, which feels exactly "
+                       "like a furnace blowing cold air. Set it to Auto first. That single "
+                       "switch ends a fair number of no-heat calls before anyone is "
+                       "dispatched.")},
+         ]},
+        {"h2": "What can I check before calling for furnace repair?",
+         "body": ("A handful of checks take about five minutes and fix a real share of "
+                  "no-heat calls. If none of them work, the fault is inside the furnace and "
+                  "needs a technician. None of them involve opening the gas train or the "
+                  "burner compartment."),
+         "h3s": [
+             # Rendered as one paragraph with ticked lines rather than a <ul>: nothing
+             # in the page CSS styles a list, and an unstyled <ul> in the main column
+             # picks up browser defaults that match nothing else on the page.
+             {"h3": "The five-minute checklist",
+              "body": ["✓ Thermostat set to Heat, set above room temperature, and set to Auto rather than Fan"
+                       "<br>✓ Thermostat batteries, if it takes them"
+                       "<br>✓ The furnace breaker at the panel, and the switch on the furnace itself, which looks like a light switch and gets flipped by accident"
+                       "<br>✓ The air filter, held up to a light. A filter that blocks light will shut a furnace down on a high-limit trip"
+                       "<br>✓ Supply registers and return grilles open and unblocked by furniture or rugs",
+                       "These are given away on purpose. Someone who fixes their own no-heat "
+                       "call in five minutes tends to call Extreme Heating, Air, Plumbing "
+                       "when the next one is not so simple."]},
+         ]},
+        {"eyebrow": "TRIAGE",
+         "id": "emergency-or-wait",
+         "h2": "Is this a 24/7 emergency or can it wait?",
+         "body": ["Some furnace symptoms are a safety problem and some are a scheduling "
+                  "problem. Gas smell, a sounding carbon monoxide alarm, and no heat with "
+                  "outdoor temperatures below freezing are the three that should never wait "
+                  "for morning.",
+                  'If the house heats with a heat pump rather than a furnace, the symptoms '
+                  'read differently — <a href="/heat-pump-repair">heat pump repair</a> covers '
+                  'what each one usually means.'],
+         "table": {
+             "caption": "Furnace symptoms: what needs a 24/7 call and what can wait",
+             "takeaway": ("Extreme Heating, Air, Plumbing treats a gas smell, a sounding "
+                          "carbon monoxide alarm, and no heat below freezing as 24/7 "
+                          "emergencies across the Dayton and Cincinnati metros."),
+             "columns": ["What you are seeing", "Call 24/7 now",
+                         "Can wait for business hours"],
+             "rows": [
+                 ["Gas smell anywhere in the house",
+                  "Yes. Leave the house first, then call from outside", "No"],
+                 ["Carbon monoxide alarm sounding",
+                  "Yes. Leave the house, call 911, then call for service", "No"],
+                 ["No heat with outdoor temperatures below freezing", "Yes", "No"],
+                 ["Yellow or flickering burner flame",
+                  "Yes. Switch the furnace off first", "No"],
+                 ["Water pooling at the base of a high-efficiency furnace",
+                  "Yes, if the furnace has shut down", "Yes, if the furnace is still running"],
+                 ["Furnace short cycling while the house stays warm", "No",
+                  "Yes, book the next business day"],
+                 ["Burning smell in the first hour of the heating season", "No",
+                  "Yes, if it clears within an hour"],
+                 ["Rattle or squeal with the heat still working", "No", "Yes"],
+                 ["Heating bill climbing with no change in comfort", "No", "Yes"],
+             ],
+         }},
+    ],
     "process": {
         "h2": "A repair visit without surprises.",
         "steps": [
@@ -242,15 +429,71 @@ FURNACE_REPAIR = {
         "linkLabel": "Furnace Installation →",
         "href": "/furnace-installation",
     },
-    "faqEyebrow": "FURNACE QUESTIONS",
-    "faq": [
-        {"q": "Do you repair furnaces nights and weekends?",
-         "a": "Yes — no-heat emergencies don't keep business hours, and neither do we. 24/7 emergency furnace repair across Dayton and Cincinnati."},
-        {"q": "Do you repair all furnace brands?",
-         "a": "Yes — gas, electric, and high-efficiency models from every major manufacturer, regardless of who installed it."},
-        {"q": "Is a yellow pilot flame dangerous?",
-         "a": "It can be. A healthy flame burns blue; yellow or flickering can signal incomplete combustion, which can produce carbon monoxide. Turn the furnace off and have it checked before running it again."},
+    # The decision card asks the repair-or-replace question; the table two blocks below
+    # answers it. Both stay on this page rather than on /furnace-heating — see the
+    # cannibalization note in handoff-build.md.
+    "sectionsTail": [
+        {"h2": "What does a furnace repair visit include?",
+         "body": ("A technician diagnoses the failure, explains what failed in plain terms, "
+                  "and prices the repair before touching it. Every repair ends with a full "
+                  "safety check covering the heat exchanger, the venting, and carbon monoxide "
+                  "readings, whether or not the original complaint was safety-related.")},
+        {"eyebrow": "DECIDING",
+         "id": "repair-or-replace",
+         "h2": "Should I repair or replace my furnace?",
+         "body": ("Two things settle it: how old the furnace is, and what a combustion safety "
+                  "check finds at the heat exchanger. Under 15 years old with an intact heat "
+                  "exchanger, repair usually wins. A cracked heat exchanger is never "
+                  'repaired, and on a furnace of that age the <a href="/furnace-installation">'
+                  "replacement</a> is the whole unit."),
+         "table": {
+             "caption": "Repair or replace a furnace: what decides it",
+             "takeaway": ("Extreme Heating, Air, Plumbing replaces rather than repairs a "
+                          "furnace once it is 15 years or older and the repair quote "
+                          "approaches a third of replacement cost."),
+             "columns": ["Factor", "Repair usually makes sense when",
+                         "Replacement usually makes sense when"],
+             "rows": [
+                 ["System age", "Under 15 years old", "15 years or older"],
+                 ["Heat exchanger", "Intact and passing a combustion safety check",
+                  "Cracked. A cracked heat exchanger is replaced, never repaired"],
+                 ["Repair cost", "Well below a third of replacement cost",
+                  "At or above roughly a third of replacement cost"],
+                 ["Breakdown history", "First failure in several seasons",
+                  "Second or third no-heat call in one winter"],
+                 ["Efficiency", "Furnace is 90% AFUE or higher",
+                  "Furnace is an older 60% to 70% AFUE model"],
+                 ["Parts", "Still available and inside the manufacturer warranty",
+                  "Obsolete, or out of warranty on parts and labor"],
+                 ["Comfort", "One room or one symptom affected",
+                  "Uneven heat throughout the house"],
+             ],
+         }},
+        {"h2": "How do I book furnace repair in Dayton or Cincinnati?",
+         "body": (f'Furnace repair is booked by phone at <a href="{T.PHONE_TEL}">'
+                  f'{T.PHONE_DISPLAY}</a> or online. The emergency line runs 24/7, every day '
+                  "of the year, and no-heat calls are dispatched ahead of routine work. The "
+                  "office is staffed Monday to Friday, 8:00 AM to 5:00 PM.")},
     ],
+    "faqEyebrow": "FURNACE QUESTIONS",
+    "faqH2": "What do homeowners ask before booking furnace repair?",
+    "faq": [
+        {"q": "Do you repair furnaces at night and on weekends?",
+         "a": "Yes. Extreme Heating, Air, Plumbing runs 24/7 emergency service every day of the year across the Dayton and Cincinnati metros. No-heat calls in freezing weather are dispatched ahead of routine work."},
+        {"q": "Do you repair all furnace brands?",
+         "a": "Yes. Gas, electric, and high-efficiency furnaces from every major manufacturer, regardless of who installed the system."},
+        {"q": "Is a yellow pilot flame dangerous?",
+         "a": "It can be. A healthy burner flame burns blue. Yellow or flickering can signal incomplete combustion, which produces carbon monoxide. Switch the furnace off and have it checked before running it again."},
+        {"q": "My furnace turns on and off every few minutes. What causes that?",
+         "a": "Short cycling. The most common causes are a clogged air filter, a blocked return, a failing flame sensor, or a furnace that is oversized for the house. A clogged filter is the one a homeowner can rule out in a minute."},
+        {"q": "Water is pooling under my furnace. Is that normal?",
+         "a": "Not normal, but common on high-efficiency condensing furnaces. Those units produce condensate, and a blocked drain line or a failed condensate pump puts that water on the floor and usually shuts the furnace down on a safety switch."},
+        {"q": "Can I keep running a furnace with a cracked heat exchanger?",
+         "a": "No. A cracked heat exchanger can put combustion gases, including carbon monoxide, into the air the house breathes. A <a href=\"/inspection\">combustion safety check</a> is what confirms a crack, and the furnace should be shut off until it has been done. A cracked exchanger is replaced rather than repaired."},
+    ],
+    # Copy rewritten 2026-08-02. Move this only when the copy moves.
+    "updated": "August 2, 2026",
+    "updatedISO": "2026-08-02",
     "bookingCard": {
         "eyebrow": "BOOK FURNACE REPAIR",
         "title": "No heat? We're on it.",
@@ -264,7 +507,7 @@ FURNACE_REPAIR = {
         # be read. The stock frame it used to carry is replaced by a real job photo.
         "photo": T.PHOTOS["furnaceRepairOpen"],
         "photoPos": "50% 60%",
-        "photoAlt": "An older gas furnace opened up for repair, burner compartment exposed",
+        "photoAlt": "An older gas furnace opened up during a repair call, burner compartment and flame sensor exposed",
     },
     "siblings": {
         "label": "FURNACE & HEATING",

@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -382,10 +458,18 @@ align-items:center;justify-content:center;font-size:12px;font-weight:700;color:v
 .xco-loc-img img{width:100%;height:100%;object-fit:cover;display:block}
 .xco-loc-body{padding:18px}
 .xco-loc-body .t{font-weight:800;font-size:16.5px}
+.xco-loc-body .meta{font-size:12px;font-weight:700;color:var(--body);margin-top:2px}
 .xco-loc-body .addr{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-loc-body .addr.hrs{font-size:12.5px;margin-top:6px}
 .xco-loc-body a{display:inline-block;font-weight:800;font-size:13px;color:var(--purple);
 text-decoration:none;margin-top:10px}
+/* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
+   "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */
+.xco-loc-body a.alt{display:block;margin-top:6px}
 .xco-loc-body a:hover{color:var(--green-dark)}
+/* A card with no exterior photograph (Troy, Waynesville) has no image box at all. It
+   still has to line up with the two that do, so the body carries the shortfall. */
+.xco-loc:not(:has(.xco-loc-img)) .xco-loc-body{padding-top:22px}
 .xco-hours{border:1px solid var(--rule);border-radius:16px;margin-top:20px;overflow:hidden}
 .xco-hours .row{display:flex;justify-content:space-between;gap:16px;padding:14px 20px;
 border-bottom:1px solid var(--rule)}
@@ -579,6 +663,7 @@ line-height:1.65;font-weight:700;color:var(--ink)}
       <div class="xsp-eyebrow" style="color:#8FD481;margin-top:14px">EXTREME REWARDS</div>
       <h1 class="xsp-h1">Give <em>$250</em>. Get $250.</h1>
       <div class="xrf-mirror-line">Whatever they save, you earn.</div>
+      <div class="xsp-answer" id="answer"><p>Extreme Rewards is the customer referral program from Extreme Heating, Air, Plumbing in the Dayton and Cincinnati, Ohio metros. A referred customer saves $250 on a new heating, cooling or plumbing system, or $100 on everything else. The person who referred them earns the same amount on a Visa gift card.</p></div>
       <p class="xsp-intro">Send someone our way and they'll get $250 off a new heating, cooling, or plumbing system, or $100 off everything else. When the job's finished, you earn the same amount on a Visa gift card.</p>
       <div class="xsp-hero-ctas">
         <a class="xsp-cta" href="#xrf-share">Share With a Friend</a>
@@ -598,9 +683,10 @@ line-height:1.65;font-weight:700;color:var(--ink)}
   </div>
 </div></div>
 <div class="xco-body">
-  <div>
+  <div id="xrf-pairs">
   <div class="xsp-eyebrow">THE WHOLE PROGRAM</div>
-  <h2 class="xsp-h2">Two numbers, and they match.</h2>
+  <h2 class="xsp-h2">What is the Extreme Rewards referral program?</h2>
+  <p class="xsp-prose">Extreme Rewards is the referral program run by Extreme Heating, Air, Plumbing. A friend who books a job saves money on that job, and the person who sent them earns the same amount on a Visa gift card. Two numbers, and they match.</p>
   <div class="xrf-pairs"><div class="xrf-pair">
     <div class="head">They're getting a new heating, cooling, or plumbing system</div>
     <div class="cells">
@@ -614,12 +700,13 @@ line-height:1.65;font-weight:700;color:var(--ink)}
       <div class="cell you"><div class="lab">YOU EARN</div><div class="amt">$100</div></div>
     </div>
   </div></div>
-  <div class="xrf-nolimit">If your friend saved $100, you earn $100. There's no limit on how many
-  friends you can refer.</div>
+  <div class="xrf-nolimit">If your friend saved $100, you earn
+  $100. There's no limit on how many friends you can refer.</div>
 </div>
+  <div class="xsp-section" id="amounts"><div class="xsp-eyebrow purple">THE TWO AMOUNTS</div><h2 class="xsp-h2">How much does a referral pay?</h2><p class="xsp-takeaway">Extreme Rewards pays $250 to the person who referred a customer buying a new heating, cooling or plumbing system from Extreme Heating, Air, Plumbing.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Extreme Rewards amounts"><table class="xsp-table"><caption>Extreme Rewards amounts</caption><thead><tr><th scope="col">What the referred customer books</th><th scope="col">What they save</th><th scope="col">What the referrer earns</th></tr></thead><tbody><tr><th scope="row">A new heating, cooling or plumbing system</th><td>$250 off the job</td><td>$250 on a Visa gift card</td></tr><tr><th scope="row">Everything else</th><td>$100 off the job</td><td>$100 on a Visa gift card</td></tr></tbody></table></div></div>
   <div id="xrf-how"><div>
   <div class="xsp-eyebrow">HOW IT WORKS</div>
-  <h2 class="xsp-h2">Three steps, and only one of them is yours.</h2>
+  <h2 class="xsp-h2">How do I earn a referral reward?</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Tell a friend about us</div><div class="d">Give them our name, and yours. They save $250 on a new heating, cooling, or plumbing system, or $100 on everything else.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">They mention your name when they book</div><div class="d">This is the step that counts. We ask every new customer who sent them, and your name in that answer is what earns your card.</div></div></div><div class="xsp-step"><div class="n">03</div>
@@ -635,7 +722,8 @@ line-height:1.65;font-weight:700;color:var(--ink)}
 </div>
   <div id="xrf-share">
   <div class="xsp-eyebrow">SHARE IT</div>
-  <h2 class="xsp-h2">Something to send them.</h2>
+  <h2 class="xsp-h2">How do I tell a friend about Extreme?</h2>
+  <p class="xsp-prose">Give them the company name and yours. A short message works better than a pitch, and the one below is written to be sent as a text rather than read as an ad.</p>
   <div class="xrf-share" data-xrf-share>
     <p style="font-size:14px;line-height:1.6;font-weight:500;color:var(--body);max-width:70ch">
     Copy this and send it to whoever came to mind. It already tells them to name you when they
@@ -649,12 +737,38 @@ line-height:1.65;font-weight:700;color:var(--ink)}
 </div>
   <div id="xrf-terms">
   <div class="xsp-eyebrow">THE FINE PRINT, IN PLAIN ENGLISH</div>
-  <h2 class="xsp-h2">What qualifies.</h2>
+  <h2 class="xsp-h2">Who is eligible to refer someone?</h2>
+  <p class="xsp-prose">Any existing customer of Extreme Heating, Air, Plumbing can refer someone, with no limit on how many friends they refer. The person being referred has to be a new customer, meaning no service at that address in the last 24 months. Self-referrals and Extreme employees are not eligible.</p>
   <div class="xrf-terms">
     <div class="xrf-terms-line">New customers only. Referral must be named when the job is booked. Reward issued within 90 days of job completion. See full terms at <a href="/terms">extremeheating.com/terms</a>.</div>
     <ul class="xrf-plain"><li><span class="b"></span><span><b>New customers only.</b> We can't have serviced that address in the last 24 months.</span></li><li><span class="b"></span><span><b>Your name has to be given when the job is booked.</b> We can't add it to a job after the fact, so tell your friend to have it ready.</span></li><li><span class="b"></span><span><b>Your name stays valid for 90 days after it's given.</b> That covers you if the job gets scheduled or finished later. It is not extra time to get your name added.</span></li><li><span class="b"></span><span><b>We issue cards within 90 days of the job being completed and paid.</b> The work has to be finished and the invoice settled before a card goes out.</span></li><li><span class="b"></span><span><b>No referring yourself, and Extreme employees aren't eligible.</b> The program is for customers sending us someone new.</span></li></ul>
   </div>
 </div>
+  <div>
+  <div class="xsp-eyebrow">REFERRAL QUESTIONS</div>
+  <h2 class="xsp-h2">What do people ask about Extreme Rewards?</h2>
+  <div class="xsp-faq"><div class="xsp-qa open">
+    <button type="button" aria-expanded="true"><span>How does Extreme Rewards work?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">A friend books a job with Extreme Heating, Air, Plumbing and names the person who referred them. The friend saves $250 on a new system or $100 on everything else, and the referrer earns the same amount on a Visa gift card.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Is there a limit on how many people I can refer?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">There is no limit on how many friends someone can refer through Extreme Rewards. Each completed job earns its own Visa gift card.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>When do I get my card?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Extreme Rewards cards are issued within 90 days of the job being completed and paid. The work has to be finished and the invoice settled before a card goes out.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Can my name be added to a job after the visit?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">No. The referral has to be named when the job is booked. Extreme Heating, Air, Plumbing cannot add a name to a job after the fact, so have your friend <a href="/contact">book the job</a> with your name ready.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>How long does my name stay valid?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">A name given to Extreme Heating, Air, Plumbing stays valid for 90 days from the date it is given, which covers a job that gets scheduled or finished later. It is not extra time to get a name added.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Do Extreme employees qualify?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">No. Extreme Rewards is for customers sending Extreme Heating, Air, Plumbing someone new. Self-referrals and employee referrals are not eligible.</div>
+  </div></div>
+</div>
+  <p class="xsp-prose">While you are here: <a href="/maintenance">the X-Plan maintenance membership</a> covers your own system, <a href="/specials">this season's specials</a> apply to the job your friend books, <a href="/financing-options">financing on a new system</a> runs through three lenders, and <a href="/services">heating, cooling and plumbing services</a> are all booked on the same number. Full <a href="/terms#extreme-rewards">Extreme Rewards terms</a> are on the terms page.</p>
+  <p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p>
 </div>
 
   <script>
@@ -787,6 +901,24 @@ line-height:1.65;font-weight:700;color:var(--ink)}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

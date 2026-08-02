@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -366,17 +442,18 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 }
 </style>
 <div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><span class="cur">Air Conditioning</span></div>
-      <h1 class="xsp-h1">Fast, honest <em>AC service</em> in Dayton & Cincinnati.</h1>
-      <p class="xsp-intro">Repairs, replacements, and tune-ups from the locally owned Extreme Team — upfront pricing, clean workmanship, and cool air back fast.</p>
+      <h1 class="xsp-h1">Air conditioning service in <em>Dayton & Cincinnati</em>.</h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing repairs, replaces and tunes up residential air conditioners across the Dayton and Cincinnati, Ohio metros. Central air systems and heat pumps in cooling mode are covered on every major brand, whoever installed them. The company has completed 25,000+ jobs and offers 90% same-day service.</p></div>
+      <p class="xsp-intro">Repairs, replacements and tune-ups from the locally owned Extreme Team. Upfront pricing, clean workmanship, and cool air back fast.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call (844) 584-7399</a>
       </div>
-      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 on Google</div><div class="xsp-chip">90% Same-Day Service</div><div class="xsp-chip">24/7 Emergency</div></div>
+      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 from 1,595 reviews</div><div class="xsp-chip">90% Same-Day Service</div><div class="xsp-chip">24/7 Emergency</div></div>
     </div>
     <div class="xsp-bookcol"><div class="xsp-book">
   <div class="eyebrow">BOOK AC SERVICE</div>
@@ -395,14 +472,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="xsp-pills"><a class="xsp-pill active" href="/air-conditioning" aria-current="page">Overview</a><a class="xsp-pill" href="/ac-installation">Installation</a><a class="xsp-pill" href="/ac-repair">Repair</a></div>
 </div></div>
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/ac-repair-gauges.jpg" alt="Gauges and a meter connected to an open air conditioner control panel" style="object-position:50% 45%" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/ac-repair-gauges.jpg" alt="Refrigerant gauges and a multimeter connected to an open air conditioner control panel during a service call" style="object-position:50% 45%" width="825" height="1100" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">IS YOUR AC ACTING UP?</div>
-  <h2 class="xsp-h2">Signs it's time to call.</h2>
+  <h2 class="xsp-h2">What are the signs an air conditioner is failing?</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Blowing warm or room-temp air</div><div class="xsp-check"><span class="c">✓</span>Weak airflow in some rooms</div><div class="xsp-check"><span class="c">✓</span>Turning on and off every few minutes</div><div class="xsp-check"><span class="c">✓</span>Grinding, squealing, or rattling</div><div class="xsp-check"><span class="c">✓</span>Water or refrigerant leaks</div><div class="xsp-check"><span class="c">✓</span>Energy bills creeping up</div></div>
-  <div class="xsp-callout">Noticing more than one? Small AC problems become compressor problems — call <a href="tel:18445847399">(844) 584-7399</a> before it gets expensive.</div>
+  <div class="xsp-callout">Noticing more than one? Small AC problems become compressor problems. Call <a href="tel:18445847399">(844) 584-7399</a> before it gets expensive, or read what each symptom usually means on our <a href="/ac-repair">AC repair</a> page.</div>
 </div><div>
   <div class="xsp-eyebrow">WHAT WE DO</div>
-  <h2 class="xsp-h2">Repair, replace, or maintain — we handle it all.</h2>
+  <h2 class="xsp-h2">What air conditioning services does Extreme offer in Dayton and Cincinnati?</h2>
   <div class="xsp-cards3"><a class="xsp-card" href="/ac-repair">
       <span class="glyphwrap"><span class="xsp-glyph"><i></i><i></i></span></span>
       <span class="txt"><span class="t">AC Repair</span><br><span class="d">Same-day diagnostics and honest repair options for every make and model — approved by you before we start.</span></span>
@@ -416,35 +493,38 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">AC Tune-Ups & Maintenance</span><br><span class="d">Seasonal tune-ups that catch small issues early — included twice a year with X-Plan.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div>
+</div><div class="xsp-section" id="repair-or-replace"><div class="xsp-eyebrow">DECIDING</div><h2 class="xsp-h2">Should I repair or replace my air conditioner?</h2><p class="xsp-prose">Age and repair cost decide it, not the symptom. A newer system with a failed capacitor or contactor is a repair. An older system facing a compressor or coil replacement is usually the point where a new unit costs less over the years it has left.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing recommends replacement over repair when an air conditioner is past its expected service life and the repair quote approaches a third of replacement cost.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Repair or replace an air conditioner: what Extreme Heating, Air, Plumbing weighs on a Dayton or Cincinnati service call."><table class="xsp-table"><caption>Repair or replace an air conditioner: what Extreme Heating, Air, Plumbing weighs on a Dayton or Cincinnati service call.</caption><thead><tr><th scope="col">Factor</th><th scope="col">Repair usually makes sense when</th><th scope="col">Replacement usually makes sense when</th></tr></thead><tbody><tr><th scope="row">System age</th><td>The air conditioner is under 10 years old</td><td>The air conditioner is past 12 to 15 years</td></tr><tr><th scope="row">Repair cost</th><td>The quote is well under a third of replacement cost</td><td>The quote is at or above roughly a third of replacement cost</td></tr><tr><th scope="row">Breakdown history</th><td>This is the first failure in several cooling seasons</td><td>This is the second or third service call in one season</td></tr><tr><th scope="row">Refrigerant</th><td>The system uses a refrigerant still in production</td><td>The system uses R-22, which has not been produced or imported in the US since 2020</td></tr><tr><th scope="row">Energy bills</th><td>Cooling bills are steady year over year</td><td>Cooling bills climb with no change in how the house is used</td></tr><tr><th scope="row">Comfort</th><td>One room or one symptom is affected</td><td>Temperatures are uneven throughout the house</td></tr><tr><th scope="row">Warranty</th><td>Parts are still under manufacturer warranty</td><td>Parts and labor warranties have both run out</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">How long does a central air conditioner last?</h2><p class="xsp-prose">Twelve to fifteen years is the normal working life for a central air conditioner in this climate, and a maintained system reaches the top of that range more often than a neglected one. Past fifteen, most homeowners spend more on repairs than a replacement would have cost.</p></div><div class="xsp-section"><h2 class="xsp-h2">Which air conditioner brands does Extreme service?</h2><p class="xsp-prose">Every major residential make and model, regardless of who installed them. Our techs train across the systems common in Dayton and Cincinnati housing, so a warranty repair on one brand and a twenty-year-old unit from another brand both get handled.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">Your tech walks you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Fixed right, guaranteed</div><div class="d">Clean workmanship, tested before we leave, and backed by our satisfaction guarantee.</div></div></div></div>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
+</div><div class="xsp-section"><h2 class="xsp-h2">How often should an air conditioner be serviced?</h2><p class="xsp-prose">Once a year, in spring, before the first stretch of ninety-degree weather. A tune-up cleans the coil, checks refrigerant charge and tests the electrical parts that fail first in heat. <a href="/maintenance">X-Plan</a> members get two visits a year, one for cooling and one for heating.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book AC service in Dayton or Cincinnati?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online, and you get an arrival window before the tech leaves the shop. Extreme Heating, Air, Plumbing handles about 90% of service calls the same day, with 24/7 emergency service when a house has no cooling in a heat wave.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">AC QUESTIONS</div>
-  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <h2 class="xsp-h2">What do homeowners ask before booking AC service?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast can you get here?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">In most cases, same day. About 90% of our calls are handled the day you reach out, and 24/7 emergency service is available for no-cool situations in extreme heat.</div>
+    <button type="button" aria-expanded="true"><span>Is it worth replacing an R-22 air conditioner?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">Usually yes. R-22 has not been produced or imported in the United States since 2020, so a system that needs a recharge is paying for a shrinking reclaimed supply. If an R-22 unit needs a compressor or a coil, replacement almost always costs less over the years left in it.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Should I repair or replace my AC?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">If your system is under 10 years old and the repair is minor, repair usually wins. Past 12–15 years with a major failure — like a compressor — replacement often costs less over time. We'll give you both numbers upfront, no pressure.</div>
+    <button type="button" aria-expanded="false"><span>Can the air conditioner be replaced without replacing the furnace?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes, and often it should be. The indoor coil has to be matched to the new outdoor unit, so the furnace gets opened up either way. If the furnace is also near the end of its life, replacing both in one visit costs less than two separate jobs a few years apart.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>How often does my AC need a tune-up?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Once a year, ideally in spring before the cooling season. X-Plan members get two seasonal tune-ups a year — one for cooling, one for heating — plus priority scheduling.</div>
+    <button type="button" aria-expanded="false"><span>Do you offer emergency AC repair?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes. Extreme Heating, Air, Plumbing runs 24/7 emergency service across the Dayton and Cincinnati metros, every day of the year. Office phones are staffed Monday to Friday, 8:00 AM to 5:00 PM, and the emergency line never closes.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Do you service all brands?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Yes — every major make and model, regardless of who installed it. Our techs receive ongoing training across all common residential systems.</div>
+    <button type="button" aria-expanded="false"><span>Does X-Plan cover the air conditioner?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes. X-Plan includes two seasonal safety and performance visits a year, one of them a multi-point air conditioner tune-up with refrigerant charge calibration up to 1 lb included. Members also get 15% off all repairs and priority scheduling.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>How long does an air conditioner replacement take?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Most straight-swap replacements are a one-day job. Adding or reworking ductwork, moving the indoor unit, or changing system type adds time. Sizing and pricing for a replacement live on our <a href="/ac-installation">AC installation</a> page.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/ac-repair-gauges.jpg" alt="Gauges and a meter connected to an open air conditioner control panel" style="object-position:50% 45%" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/ac-repair-gauges.jpg" alt="Refrigerant gauges and a multimeter connected to an open air conditioner control panel during a service call" style="object-position:50% 45%" width="825" height="1100" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
@@ -452,7 +532,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 <div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -601,6 +681,24 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

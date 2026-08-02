@@ -300,7 +300,8 @@ def summary():
   <ul>{lis}</ul>
   <div class="xtm-note"><b>Note:</b> Drain cleaning, snake, and roto services are not warranted
   unless specifically stated in writing. Water-related HVAC issues and resulting property damage
-  are also excluded as outlined below.</div>
+  are also excluded as outlined below. What Extreme collects when you book a visit, and what
+  happens to it, is covered separately in the <a href="/privacy">Privacy Policy</a>.</div>
 </div>'''
 
 

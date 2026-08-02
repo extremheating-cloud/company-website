@@ -64,13 +64,170 @@ PHOTOS = {
 
 GRADIENT_HERO = "linear-gradient(180deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%)"
 
+# ------------------------------------------------------- intrinsic image sizes
+# Every <img> the builder emits carries width/height so the browser reserves the
+# box before the bytes arrive. The numbers below are the REAL pixel dimensions of
+# the files in assets/, read with PIL — not the rendered CSS size, and not a guess.
+# They are a literal table because the builder is stdlib-only and stdlib has no
+# image decoder.
+#
+# REGENERATE after adding, replacing or re-exporting anything under assets/:
+#
+#   python3 - <<'PY'
+#   from PIL import Image; import os
+#   for root, _, files in os.walk("assets"):
+#       if os.path.basename(root) == "print": continue
+#       for f in sorted(files):
+#           if not f.lower().endswith((".jpg",".jpeg",".png",".webp",".avif",".gif")): continue
+#           p = os.path.join(root, f)
+#           with Image.open(p) as im: w, h = im.size
+#           print(f'    "{os.path.relpath(p, "assets")}": ({w}, {h}),')
+#   PY
+#
+# A file missing from this table emits no width/height rather than a wrong one —
+# a wrong aspect ratio is a worse bug than an unsized image.
+ASSET_DIMS = {
+    "brand/apple-touch-icon.png": (180, 180),
+    "brand/logo-white-tight.png": (410, 101),
+    "brand/logo-white.avif": (502, 207),
+    "brand/logo-white.png": (502, 207),
+    "brand/logo.png": (504, 202),
+    "brand/van-mock-up.jpg": (1400, 840),
+    "brand/van.png": (1024, 576),
+    "brand/x-mark.png": (420, 446),
+    "brands/daikin.png": (900, 188),
+    "brands/ruud.png": (648, 398),
+    "brands/trane.png": (288, 96),
+    "cities/beavercreek.jpg": (492, 327),
+    "cities/bellbrook.jpg": (1024, 680),
+    "cities/blue-ash.jpg": (600, 398),
+    "cities/butler-county.jpg": (500, 534),
+    "cities/centerville.jpg": (680, 452),
+    "cities/cincinnati.jpg": (612, 408),
+    "cities/clark-county.jpg": (500, 534),
+    "cities/darke-county.jpg": (500, 534),
+    "cities/dayton.jpg": (557, 370),
+    "cities/englewood.jpg": (800, 531),
+    "cities/fairborn.jpg": (928, 290),
+    "cities/fairfield.jpg": (790, 440),
+    "cities/franklin.jpg": (1024, 683),
+    "cities/greene-county.jpg": (500, 534),
+    "cities/huber.jpg": (689, 459),
+    "cities/kettering.jpg": (469, 310),
+    "cities/lebanon.jpg": (1400, 909),
+    "cities/mason.jpg": (640, 311),
+    "cities/miami-county.jpg": (500, 534),
+    "cities/miamisburg.jpg": (814, 540),
+    "cities/middletown.jpg": (1024, 1011),
+    "cities/montgomery-county.jpg": (500, 534),
+    "cities/moraine.jpg": (600, 400),
+    "cities/northgate.jpg": (831, 711),
+    "cities/oakwood.jpg": (498, 331),
+    "cities/preble-county.jpg": (500, 534),
+    "cities/riverside.jpg": (519, 345),
+    "cities/sharonville.jpg": (319, 147),
+    "cities/springboro.jpg": (1922, 1276),
+    "cities/springfield.jpg": (2558, 1698),
+    "cities/tipp.jpg": (1024, 683),
+    "cities/troy.jpg": (1570, 883),
+    "cities/vandalia.jpg": (510, 339),
+    "cities/warren-county.jpg": (500, 534),
+    "cities/wc.jpg": (708, 400),
+    "cities/west-chester.jpg": (1280, 718),
+    "cities/xenia.jpg": (1087, 801),
+    "equipment/envirocon.jpg": (242, 230),
+    "equipment/eruv1424v.jpg": (480, 450),
+    "equipment/ge-water-heater-install.jpg": (1542, 2048),
+    "equipment/muv-401h.jpg": (480, 450),
+    "equipment/muv-403h.jpg": (480, 450),
+    "equipment/ruud-condenser.jpg": (825, 1100),
+    "equipment/ruud-heat-pump.jpg": (1050, 1400),
+    "equipment/ruud-install.jpg": (625, 1600),
+    "equipment/trane-install-2.jpg": (1512, 2016),
+    "equipment/trane-install.jpg": (1512, 2016),
+    "locations/apple-plumbing-van.jpg": (3537, 2267),
+    "locations/beavercreek-office.jpg": (1400, 934),
+    "locations/cinci.jpg": (680, 453),
+    "locations/dayton-skyline-van.jpg": (1800, 1200),
+    "locations/locations.jpg": (665, 663),
+    "locations/mason-office.jpg": (1800, 1013),
+    "locations/troy-community-event.jpg": (1050, 1400),
+    "locations/vans-leaving.jpg": (1642, 1341),
+    "service/ac-contactor.jpg": (1080, 810),
+    "service/ac-dual.jpg": (1152, 806),
+    "service/ac-install.jpg": (654, 661),
+    "service/ac-maintenance.jpg": (500, 350),
+    "service/ac-repair-gauges.jpg": (825, 1100),
+    "service/ac-repair.jpg": (881, 661),
+    "service/ac-replacement.jpg": (500, 350),
+    "service/ac.jpg": (1152, 806),
+    "service/air-quality.jpg": (600, 531),
+    "service/beavercreek-img1.jpg": (1000, 667),
+    "service/beavercreek-img2.jpg": (1000, 560),
+    "service/beavercreek-img3.jpg": (1000, 560),
+    "service/before-after-ducts.jpg": (600, 533),
+    "service/chemical-air-quality.jpg": (600, 533),
+    "service/common-signs-duct-system.jpg": (900, 675),
+    "service/dirty-duct.jpg": (239, 210),
+    "service/dirty-ducts2.jpg": (249, 152),
+    "service/duct-air-quality.jpg": (600, 533),
+    "service/duct-cleaning-tools.jpg": (940, 627),
+    "service/duct-cleaning-truck.jpg": (600, 533),
+    "service/duct-cleaning.jpg": (900, 724),
+    "service/duct-technicians.jpg": (625, 438),
+    "service/faq.jpg": (600, 531),
+    "service/financing-options.jpg": (900, 724),
+    "service/furnace-install.jpg": (379, 349),
+    "service/furnace-repair-open.jpg": (825, 1100),
+    "service/furnace-repair.jpg": (1100, 917),
+    "service/furnace-replace.jpg": (500, 350),
+    "service/furnace-service.jpg": (825, 1100),
+    "service/furnace.jpg": (500, 350),
+    "service/furnace2.jpg": (500, 350),
+    "service/heatpump.jpg": (890, 623),
+    "service/humidifier.jpg": (618, 432),
+    "service/indoor-air-quality-services.jpg": (898, 629),
+    "service/maintenance.jpg": (364, 255),
+    "service/moisture-air-quality.jpg": (600, 533),
+    "service/professional-duct-cleaning.jpg": (940, 513),
+    "service/sale.jpg": (943, 840),
+    "service/smart-thermostat.jpg": (730, 588),
+    "service/thermostat.jpg": (898, 629),
+    "team/anthony-griffin.jpg": (574, 766),
+    "team/jayvon-kilgore.jpg": (574, 766),
+    "team/joe-richardson.jpg": (496, 662),
+    "team/tyler-hardy.jpg": (574, 766),
+}
+
+def asset_dims(src):
+    """(width, height) of the file behind an assets/ URL, or None if it isn't in
+    ASSET_DIMS. Works on the jsDelivr URLs the site serves today and on the plain
+    /assets/... paths it will serve after cutover — both contain "/assets/"."""
+    if not src:
+        return None
+    rel = src.split("?", 1)[0].split("#", 1)[0]
+    marker = "/assets/"
+    i = rel.find(marker)
+    rel = rel[i + len(marker):] if i != -1 else rel.lstrip("/")
+    d = ASSET_DIMS.get(rel)
+    return d if d else None
+
+def dim_attrs(src):
+    """` width="W" height="H"` for an <img>, or "" when the file is unknown."""
+    d = asset_dims(src)
+    return f' width="{d[0]}" height="{d[1]}"' if d else ""
+
 # ---------------------------------------------------------------- CSS
 CSS = """
 .xhac-svc{--purple:#542770;--purple-light:#5E2C7E;--purple-dark:#3A1A4E;--green:#6BB85C;
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -277,8 +434,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -457,6 +686,24 @@ def script(root_class):
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
         }});
       }});
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {{
+        btn.addEventListener("click", () => {{
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
+        }});
+      }});
       root.querySelectorAll(".xsp-faq").forEach((faq) => {{
         faq.querySelectorAll(".xsp-qa > button").forEach((btn) => {{
           btn.addEventListener("click", () => {{
@@ -513,6 +760,115 @@ def crumbs(items):
 def h1(text, highlight):
     return f'<h1 class="xsp-h1">{text.replace("{X}", f"<em>{highlight}</em>")}</h1>'
 
+# --------------------------------------------------- GEO content model pieces
+# Four optional page-data fields, all rendered by detail_page() and sub_page():
+#
+#   answer    str (or list of str) — the answer-first block. Renders as the FIRST
+#             element after the <h1>, inside the hero copy column. id="answer" is
+#             stable on purpose: speakable schema targets it by selector.
+#   sections  [{h2, body, h3s?, table?, eyebrow?, id?}] — real <h2>/<h3> headings
+#             with paragraphs, so a page can carry 5-7 H2s instead of three.
+#             `sectionsTail` is the same shape, rendered after Process instead of
+#             before it, for the sections that belong at the end of the page.
+#   table     {caption, takeaway, columns, rows, h2?, eyebrow?} — a real <table>.
+#   updated   human date string; `updatedISO` is the machine form. The visible line
+#             and schema dateModified must be the same date.
+#
+# `body` is a string or a list of strings; each becomes one <p>. Copy is authored
+# with HTML entities already in place (see esc), so nothing here escapes.
+
+def paragraphs(body, cls="xsp-prose"):
+    if not body:
+        return ""
+    items = body if isinstance(body, (list, tuple)) else [body]
+    return "".join(f'<p class="{cls}">{p}</p>' for p in items)
+
+def answer_block(d):
+    """The answer-first block. Deliberately unstyled as a box: it is the page's lead
+    paragraph, and a bordered callout reads as an aside instead of as the answer."""
+    a = d.get("answer")
+    if not a:
+        return ""
+    items = a if isinstance(a, (list, tuple)) else [a]
+    return ('<div class="xsp-answer" id="answer">'
+            + "".join(f"<p>{p}</p>" for p in items) + "</div>")
+
+def table_block(t):
+    """A real <table> — <caption>, <thead>, th scope=col, th scope=row — because an
+    engine that cannot parse the table cannot cite it. The takeaway sentence goes
+    immediately BEFORE the table; that is the sentence that gets lifted when the
+    table itself doesn't. The wrapper carries overflow-x inline as well as in CSS so
+    a wide table can never make the page scroll sideways, and it is focusable with a
+    label so it can be scrolled from the keyboard."""
+    cols = list(t["columns"])
+    head = "".join(f'<th scope="col">{c}</th>' for c in cols)
+    rows = []
+    for r in t["rows"]:
+        cells = list(r)
+        first = f'<th scope="row">{cells[0]}</th>'
+        rest = "".join(f"<td>{c}</td>" for c in cells[1:])
+        rows.append(f"<tr>{first}{rest}</tr>")
+    caption = t.get("caption")
+    cap = f"<caption>{caption}</caption>" if caption else ""
+    # tabindex makes the scroll box reachable from the keyboard, which is the whole
+    # point of a scrolling container. role="region" only goes on when there is a
+    # caption to name it — an unnamed region is worse than no region.
+    region = f' role="region" aria-label="{caption}"' if caption else ""
+    takeaway = f'<p class="xsp-takeaway">{t["takeaway"]}</p>' if t.get("takeaway") else ""
+    return (f'{takeaway}<div class="xsp-tablewrap" style="overflow-x:auto" '
+            f'tabindex="0"{region}>'
+            f'<table class="xsp-table">{cap}'
+            f"<thead><tr>{head}</tr></thead><tbody>{''.join(rows)}</tbody>"
+            f"</table></div>")
+
+def table_section(t):
+    """A table standing on its own as a page section, with its own heading."""
+    eyebrow = f'<div class="xsp-eyebrow purple">{t["eyebrow"]}</div>' if t.get("eyebrow") else ""
+    heading = f'<h2 class="xsp-h2">{t["h2"]}</h2>' if t.get("h2") else ""
+    sid = f' id="{t["id"]}"' if t.get("id") else ""
+    return f'<div class="xsp-section"{sid}>{eyebrow}{heading}{table_block(t)}</div>'
+
+def content_section(s):
+    """One body section: an <h2> question, the direct answer under it, then any <h3>
+    sub-questions with their own answers, then an optional table."""
+    parts = []
+    if s.get("eyebrow"):
+        cls = "" if s.get("eyebrowColor", "green") == "green" else " purple"
+        parts.append(f'<div class="xsp-eyebrow{cls}">{s["eyebrow"]}</div>')
+    parts.append(f'<h2 class="xsp-h2">{s["h2"]}</h2>')
+    parts.append(paragraphs(s.get("body")))
+    for sub in s.get("h3s", []):
+        parts.append(f'<h3 class="xsp-h3">{sub["h3"]}</h3>')
+        parts.append(paragraphs(sub.get("body")))
+    if s.get("table"):
+        parts.append(table_block(s["table"]))
+    sid = f' id="{s["id"]}"' if s.get("id") else ""
+    return f'<div class="xsp-section"{sid}>{"".join(parts)}</div>'
+
+def content_sections(items):
+    """List form, so an assembler can splice it straight into its column."""
+    return [content_section(s) for s in (items or [])]
+
+def updated_line(text, iso=None):
+    """Visible "Last updated" line. This date and schema dateModified have to match
+    exactly — engines read the rendered text and compare. Pass `updatedISO` through
+    to shell.py for the schema side; never stamp either from the build clock."""
+    if not text:
+        return ""
+    dt = f' datetime="{iso}"' if iso else ""
+    return f'<p class="xsp-updated">Last updated <time{dt}>{text}</time></p>'
+
+def hero_mark():
+    """The decorative X watermark behind every hero.
+
+    Carries its intrinsic size so it can never shift layout. It is also, today, the
+    measured LCP element on every page type — a 33 KB PNG drawn at 6% opacity that
+    says nothing. Replacing it with an inline SVG moves LCP to real content and drops
+    662 requests sitewide (performance.md §6.2); that swap is blocked only on
+    [NEEDS: an SVG of the X mark], and when it arrives it happens in this function."""
+    return (f'<div class="xsp-hero-mark">'
+            f'<img src="{X_MARK}" alt="" aria-hidden="true"{dim_attrs(X_MARK)}></div>')
+
 # Sub pages carry the same three proof points on every page, so they are a default
 # here rather than repeated in every page's data. A page can still override them by
 # setting heroChips, the same key the detail pages use.
@@ -551,11 +907,12 @@ def booking_card(bc, inflow=False, schedule_label="Schedule Service"):
 
 def hero_detail(d):
     return f'''<div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="{X_MARK}" alt=""></div>
+  {hero_mark()}
   <div class="xsp-hero-grid">
     <div>
       {crumbs(d["breadcrumb"])}
       {h1(d["h1"], d["h1Highlight"])}
+      {answer_block(d)}
       <p class="xsp-intro">{d["intro"]}</p>
       <div class="xsp-hero-ctas xsp-mb">
         {schedule_btn("Schedule Service", "xsp-cta js-schedule")}
@@ -574,11 +931,12 @@ def hero_sub(d):
     in the hero — it lived inline in the rail, so it never overhung anything."""
     label = d.get("scheduleLabel", "Schedule Service")
     return f'''<div class="xsp-hero sub">
-  <div class="xsp-hero-mark"><img src="{X_MARK}" alt=""></div>
+  {hero_mark()}
   <div class="xsp-hero-grid">
     <div>
       {crumbs(d["breadcrumb"])}
       {h1(d["h1"], d["h1Highlight"])}
+      {answer_block(d)}
       <p class="xsp-intro">{d["intro"]}</p>
       <div class="xsp-hero-ctas xsp-mb">
         {schedule_btn(label, "xsp-cta js-schedule")}
@@ -647,7 +1005,13 @@ def decision_card(dc):
   <a href="{dc["href"]}">{dc["linkLabel"]}</a>
 </div>'''
 
-def faq(f, eyebrow, h2="Your questions, answered."):
+# The FAQ heading every page used to carry, verbatim. It is a slogan, it is identical
+# on 311 pages, and it wastes the strongest H2 slot on the page — so pages can now set
+# `faqH2` to a question and get a heading that earns its place. Kept as the default so
+# nothing that has not been rewritten changes. `faqH2: None` drops the heading entirely.
+DEFAULT_FAQ_H2 = "Your questions, answered."
+
+def faq(f, eyebrow, h2=DEFAULT_FAQ_H2):
     rows = []
     for i, qa in enumerate(f):
         open_cls = " open" if i == 0 else ""
@@ -688,21 +1052,29 @@ def promo(key):
   <div class="t">{p["t"]}</div><div class="d">{p["d"]}</div><div class="lm">{p["lm"]}</div>
 </a>'''
 
-def photo_slot(label="PHOTO — TECH AT UNIT", src=None, alt="", pos=None):
+def photo_slot(label="PHOTO — TECH AT UNIT", src=None, alt="", pos=None, eager=False):
     """pos sets object-position for sources whose subject isn't centred. The slot is
     360x220 landscape and the image is object-fit:cover, so a portrait photo shows
-    only a horizontal band of itself — pos is how you choose which band."""
+    only a horizontal band of itself — pos is how you choose which band.
+
+    `eager` is for the copy of this slot that is actually the LCP element. On mobile
+    that is the photo at the top of the body (mobile_photo); lazy-loading the LCP
+    image delays it by a whole round trip. Both copies of the rail photo share one
+    URL, so marking both eager is still one request."""
     if src:
         style = f' style="object-position:{pos}"' if pos else ""
-        return (f'<div class="xsp-photo"><img src="{src}" alt="{alt}"{style} '
-                f'loading="lazy" decoding="async"></div>')
+        load = (' fetchpriority="high" decoding="async"' if eager
+                else ' loading="lazy" decoding="async"')
+        return (f'<div class="xsp-photo"><img src="{src}" alt="{alt}"{style}'
+                f'{dim_attrs(src)}{load}></div>')
     return f'<div class="xsp-photo" data-photo-slot>{label}</div>'
 
 def rail(r, flush=False, extra=""):
     parts = []
     if r.get("photo") or r.get("photoSlot"):
         parts.append(photo_slot(r.get("photoLabel", "PHOTO — TECH AT UNIT"),
-                                r.get("photo"), r.get("photoAlt", ""), r.get("photoPos")))
+                                r.get("photo"), r.get("photoAlt", ""), r.get("photoPos"),
+                                eager=True))
     parts += [promo(k) for k in r["promos"]]
     return f'<aside class="xsp-rail{" flush" if flush else ""}">{extra}{"".join(parts)}</aside>'
 
@@ -720,13 +1092,21 @@ def media_block(m):
     if m.get("photo"):
         pos = m.get("photoPos", "50% 50%")
         shot = (f'<div class="xsp-shot"><img src="{m["photo"]}" alt="{m.get("photoAlt", "")}" '
-                f'style="object-position:{pos}" loading="lazy" decoding="async"></div>')
+                f'style="object-position:{pos}"{dim_attrs(m["photo"])} '
+                f'loading="lazy" decoding="async"></div>')
     else:
-        shot = (f'<div class="xsp-shot"><iframe '
-                f'src="https://www.youtube.com/embed/{m["video"]}?rel=0&amp;modestbranding=1" '
-                f'title="{m["videoTitle"]}" loading="lazy" '
-                f'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" '
-                f'allowfullscreen></iframe></div>')
+        # Click-to-load facade. loading="lazy" does nothing for a YouTube iframe —
+        # measured, it still pulls ~835 KiB of player JavaScript on load. Nothing
+        # third-party is requested until someone presses play, and the button is a
+        # real <button> so it works from the keyboard.
+        shot = (f'<div class="xsp-shot">'
+                f'<button type="button" class="xsp-vplay js-video" '
+                f'data-video="{m["video"]}" data-title="{m["videoTitle"]}" '
+                f'aria-label="Play video: {m["videoTitle"]}">'
+                f'<span class="pl" aria-hidden="true">&#9654;</span>'
+                f'<span class="vt">{m["videoTitle"]}</span>'
+                f'<span class="vh">WATCH ON YOUTUBE</span>'
+                f'</button></div>')
     sub = f'<p class="xsp-mediasub">{m["sub"]}</p>' if m.get("sub") else ""
     cap = f'<p class="xsp-mediacap">{m["caption"]}</p>' if m.get("caption") else ""
     return f'''<div>
@@ -761,7 +1141,8 @@ def mobile_photo(r):
     if not r.get("photo"):
         return ""
     return ('<div class="xsp-mbphoto xsp-mb">'
-            + photo_slot("", r["photo"], r.get("photoAlt", ""), r.get("photoPos"))
+            + photo_slot("", r["photo"], r.get("photoAlt", ""), r.get("photoPos"),
+                         eager=True)
             + "</div>")
 
 # ------------------------------------------------------------ assemblers
@@ -774,15 +1155,30 @@ def page_shell(root_class, body):
 '''
 
 def detail_page(d, root_class):
-    """Tier 2 — detail template (2a/2b). Optional pillNav → 2e combo."""
+    """Tier 2 — detail template (2a/2b). Optional pillNav → 2e combo.
+
+    Optional GEO fields: `answer`, `sections`, `table`, `sectionsTail`, `faqH2`,
+    `updated` / `updatedISO`. Section order in the main column is
+
+      symptoms → whatWeDo → sections → media → process → table → sectionsTail
+      → FAQ → last updated
+
+    so `sections` carries the questions that set up the page and `sectionsTail`
+    the ones that follow from the process. Everything is optional; a page that
+    supplies none of it renders exactly as it did before."""
     left = [mobile_photo(d["rail"]), checklist(d["symptoms"])]
     if d.get("whatWeDo"):
         left.append(what_we_do(d["whatWeDo"]))
+    left += content_sections(d.get("sections"))
     for m in d.get("media", []):
         left.append(media_block(m))
     left.append(process(d["process"]))
+    if d.get("table"):
+        left.append(table_section(d["table"]))
+    left += content_sections(d.get("sectionsTail"))
     left.append(mobile_inline_rail(d))
-    left.append(faq(d["faq"], d["faqEyebrow"]))
+    left.append(faq(d["faq"], d["faqEyebrow"], h2=d.get("faqH2", DEFAULT_FAQ_H2)))
+    left.append(updated_line(d.get("updated"), d.get("updatedISO")))
     body = f'''{hero_detail(d)}
 {pill_nav(d["pillNav"]) if d.get("pillNav") else ""}
 <div class="xsp-bodygrid">
@@ -794,19 +1190,32 @@ def detail_page(d, root_class):
     return page_shell(root_class, body)
 
 def sub_page(d, root_class):
-    """Tier 3 — sub-page template (2d)."""
+    """Tier 3 — sub-page template (2d).
+
+    Same optional GEO fields as detail_page(). Order in the main column is
+
+      symptoms → sections → process → decision → table → sectionsTail
+      → FAQ → last updated
+
+    The table sits after the decision card on purpose: on the repair pages the card
+    asks the repair-or-replace question and the table answers it."""
     left = [mobile_photo(d["rail"]), checklist(d["symptoms"])]
+    left += content_sections(d.get("sections"))
     left.append(process(d["process"]))
     if d.get("decision"):
         left.append(decision_card(d["decision"]))
+    if d.get("table"):
+        left.append(table_section(d["table"]))
+    left += content_sections(d.get("sectionsTail"))
     left.append(mobile_inline_rail(d))
-    left.append(faq(d["faq"], d["faqEyebrow"]))
+    left.append(faq(d["faq"], d["faqEyebrow"], h2=d.get("faqH2", DEFAULT_FAQ_H2)))
+    left.append(updated_line(d.get("updated"), d.get("updatedISO")))
     # The booking card moved into the hero (see hero_sub), so the rail is photo first
     # then the promo and sibling links — the same rail the detail pages carry.
     photo = ""
     if d["rail"].get("photo"):
         photo = photo_slot("", d["rail"]["photo"], d["rail"].get("photoAlt", ""),
-                           d["rail"].get("photoPos"))
+                           d["rail"].get("photoPos"), eager=True)
     rail_html = f'''<aside class="xsp-rail flush">{photo}{promo(d["rail"]["promos"][0])}{sibling_links(d["siblings"])}</aside>'''
     body = f'''{hero_sub(d)}
 {pill_nav(d["pillNav"])}
@@ -901,16 +1310,17 @@ def hub_hero(d):
     # silently centre-crops in a wide box.
     if d.get("photo"):
         pos = f' style="object-position:{d["photoPos"]}"' if d.get("photoPos") else ""
-        hub_photo = (f'<img src="{d["photo"]}" alt="{d.get("photoAlt", "")}"{pos} '
-                     f'loading="lazy" decoding="async">')
+        hub_photo = (f'<img src="{d["photo"]}" alt="{d.get("photoAlt", "")}"{pos}'
+                     f'{dim_attrs(d["photo"])} loading="lazy" decoding="async">')
     else:
         hub_photo = d.get("photoLabel", "PHOTO — TEAM / INSTALL")
     return f'''<div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="{X_MARK}" alt=""></div>
+  {hero_mark()}
   <div class="xsp-hubhero-grid">
     <div>
       <span class="xsp-hub-pill"><span class="dot"></span>{d["eyebrow"]}</span>
       {h1(d["h1"], d["h1Highlight"])}
+      {answer_block(d)}
       <p class="xsp-intro">{d["intro"]}</p>
       <div class="xsp-hero-ctas">
         {schedule_btn("Schedule Service", "xsp-cta js-schedule")}
@@ -992,7 +1402,7 @@ def xplan_panel(detail=False):
     chips = "".join(f'<span class="chip">{c}</span>' for c in XPLAN["chips"])
     return f'''<div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="{CDN}/logo-white.png" alt="">
+    <img class="mark" src="{CDN}/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -1010,7 +1420,7 @@ def xplan_panel(detail=False):
 def specials_panel():
     return f'''<div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <div class="xsp-xplan">
-    <img class="mark" src="{CDN}/logo-white.png" alt="">
+    <img class="mark" src="{CDN}/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">PLUMBING SPECIALS</div>
       <h2>Current offers on repairs and installs.</h2>
@@ -1140,11 +1550,12 @@ def xplan_page(d, root_class):
     """3a — detail anatomy, membership-flavored. No pill nav, no related strip,
     no site-wide X-Plan panel (the whole page is the X-Plan CTA)."""
     hero = f'''<div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="{X_MARK}" alt=""></div>
+  {hero_mark()}
   <div class="xsp-hero-grid">
     <div>
       {crumbs(d["breadcrumb"])}
       {h1(d["h1"], d["h1Highlight"])}
+      {answer_block(d)}
       <p class="xsp-intro">{d["intro"]}</p>
       {chips(d["heroChips"])}
     </div>
@@ -1154,10 +1565,19 @@ def xplan_page(d, root_class):
     left = [
         benefits_grid(d["benefits"]),
         usecase_cards(d["useCases"]),
+    ]
+    left += content_sections(d.get("sections"))
+    left += [
         value_panel(d["value"]),
         process(d["process"], eyebrow="HOW IT WORKS"),
-        faq(d["faq"], d["faqEyebrow"], h2=None),
     ]
+    if d.get("table"):
+        left.append(table_section(d["table"]))
+    left += content_sections(d.get("sectionsTail"))
+    # This page has always suppressed the FAQ heading — the eyebrow carries it — so
+    # its default stays None rather than DEFAULT_FAQ_H2.
+    left.append(faq(d["faq"], d["faqEyebrow"], h2=d.get("faqH2")))
+    left.append(updated_line(d.get("updated"), d.get("updatedISO")))
     rail_html = f'<aside class="xsp-rail">{promo("askJoin")}{promo("tuneUpNow")}</aside>'
     body = f'''{hero}
 <div class="xsp-bodygrid">

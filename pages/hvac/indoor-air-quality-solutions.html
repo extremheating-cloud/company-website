@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -366,12 +442,13 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 }
 </style>
 <div class="xsp-hero sub">
-  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><a href="/indoor-air-quality">Indoor Air Quality</a><span class="sep">›</span><span class="cur">Solutions</span></div>
-      <h1 class="xsp-h1">Air quality solutions <em>that actually work</em>.</h1>
-      <p class="xsp-intro">Filtration, UV purification, ventilation, and humidity control — matched to your home's actual problems, not a package.</p>
+      <h1 class="xsp-h1">Whole-home air quality solutions for <em>Dayton &amp; Cincinnati</em>.</h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs indoor air quality equipment in Dayton and Cincinnati, Ohio homes across five categories. The five categories are media filtration, UV purification, humidification, dehumidification, and fresh-air ventilation. Equipment is matched to a measured problem in the home rather than sold as a package. Results are verified with before-and-after readings.</p></div>
+      <p class="xsp-intro">Filtration, UV purification, ventilation and humidity control, matched to your home's measured problem rather than sold as a package.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call Now</a>
@@ -395,12 +472,12 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="xsp-pills"><a class="xsp-pill" href="/indoor-air-quality">Overview</a><a class="xsp-pill active" href="/indoor-air-quality-solutions" aria-current="page">Solutions</a><a class="xsp-pill" href="/importance-iaq">Importance</a><a class="xsp-pill" href="/iaq-faq">FAQ</a></div>
 </div></div>
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/muv-401h.jpg" alt="A PremierOne MUV-401H UV air purifier with its lamp lit" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/muv-401h.jpg" alt="A PremierOne MUV-401H UV air purifier with its lamp lit" width="480" height="450" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">WHAT WE SOLVE</div>
   <h2 class="xsp-h2">Match the fix to the problem.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Dust & dander — media filtration</div><div class="xsp-check"><span class="c">✓</span>Odors & VOCs — carbon + ventilation</div><div class="xsp-check"><span class="c">✓</span>Microbes & mold — UV purification</div><div class="xsp-check"><span class="c">✓</span>Dry winter air — whole-home humidifier</div><div class="xsp-check"><span class="c">✓</span>Humid summers — dehumidification</div><div class="xsp-check"><span class="c">✓</span>Stale air — fresh-air ventilation</div></div>
   <div class="xsp-callout">Not sure which applies to your home? Call <a href="tel:18445847399">(844) 584-7399</a> — we diagnose before we recommend.</div>
-</div><div>
+</div><div class="xsp-section" id="equipment"><h2 class="xsp-h2">Which air quality equipment fixes which problem?</h2><p class="xsp-prose">Every piece of equipment on this page targets one thing well and most other things badly. A UV lamp is excellent against biological growth on a cold, wet evaporator coil and does nothing for dust. A media filter is the opposite. Matching the equipment to the complaint that prompted the call is most of the work, which is where <a href="/indoor-air-quality">indoor air quality services in Dayton and Cincinnati</a> starts.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing installs indoor air quality equipment in 5 categories across the Dayton and Cincinnati metros, each aimed at a different problem in the home.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Indoor air quality equipment: what each option targets."><table class="xsp-table"><caption>Indoor air quality equipment: what each option targets.</caption><thead><tr><th scope="col">Option</th><th scope="col">What it targets</th><th scope="col">Where it installs</th><th scope="col">Service interval</th></tr></thead><tbody><tr><th scope="row">1-inch pleated filter</th><td>Lint, larger dust, and coarse pollen</td><td>The return grille or the filter slot at the air handler</td><td>Changed every 1 to 3 months</td></tr><tr><th scope="row">4-inch or 5-inch media air cleaner</th><td>Fine dust, dander, and pollen, at a higher MERV without choking airflow</td><td>A cabinet added on the return side of the air handler</td><td>Changed every 6 to 12 months</td></tr><tr><th scope="row">UV lamp</th><td>Biological growth on the evaporator coil and in the drain pan</td><td>Inside the air handler, aimed at the coil</td><td>Lamp replaced about every 12 months</td></tr><tr><th scope="row">Carbon filtration</th><td>Cooking odors, smoke, and some volatile organic compounds</td><td>In the media cabinet or a dedicated section of return duct</td><td>Media replaced on the manufacturer's schedule</td></tr><tr><th scope="row">Whole-home humidifier</th><td>Dry winter air below 30% relative humidity</td><td>Mounted on or bypassed across the furnace, plumbed to a water line</td><td>Pad replaced each heating season</td></tr><tr><th scope="row">Whole-home dehumidifier</th><td>Summer humidity above 50%, and damp basements</td><td>Ducted alongside the air handler, or standalone in the basement</td><td>Filter checked twice a year</td></tr><tr><th scope="row">Fresh-air ventilation</th><td>Stale air and carbon dioxide buildup in tightly built homes</td><td>A dedicated duct from outdoors into the return</td><td>Damper and filter checked twice a year</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Do UV lights in an HVAC system work?</h2><p class="xsp-prose">Against biological growth on the evaporator coil and in the drain pan, yes, when the lamp is sized and aimed correctly. A cooling coil is cold and wet all summer, which is exactly where mold grows in a duct system. UV does not remove dust, dander, or pollen, so a UV lamp sold as an allergy fix is being sold for the wrong job. <a href="/importance-iaq">Why indoor air quality matters</a> covers what indoor air actually carries.</p></div><div class="xsp-section"><h2 class="xsp-h2">What MERV rating can my system handle?</h2><p class="xsp-prose">The highest one the duct system can move air through. A 1-inch slot on a residential furnace generally tops out around MERV 8 to 11. Pushing MERV 13 through a 1-inch filter raises static pressure, drops airflow, and can freeze the coil in summer or trip the high limit in winter. More of this ground is covered in the <a href="/iaq-faq">indoor air quality FAQ</a>.</p><h3 class="xsp-h3">The upgrade that makes higher MERV safe</h3><p class="xsp-prose">A 4-inch or 5-inch media cabinet has far more filter surface area, so it holds a higher MERV at a lower pressure drop. That cabinet, rather than a thicker filter in the same slot, is what makes MERV 13 realistic in a house. A leaky return pulls unfiltered air in past all of it, which is why <a href="/duct-cleaning">air duct cleaning</a> and sealing come first.</p></div><div class="xsp-section"><h2 class="xsp-h2">Do I need a whole-home humidifier or a dehumidifier?</h2><p class="xsp-prose">In the Dayton and Cincinnati metros, most homes need both at different times of year. Winter heating drives indoor relative humidity below 30%, which is what causes static, cracked trim, and dry sinuses. Summer pushes basements above 50%, which is where musty smells and mold start. <a href="/humidifier">Whole-home humidifier services</a> cover the winter half.</p><h3 class="xsp-h3">The number to aim at</h3><p class="xsp-prose">Indoor relative humidity between 30% and 50% is the range that keeps mold, dust mites, and dry air problems all in check at once. Anything held above 60% for long enough feeds mold growth.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
@@ -411,29 +488,35 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="t">Start with an air quality check</div>
   <div class="d">A short assessment tells us whether filtration, purification, or humidity control will move the needle for your home.</div>
   <a href="/indoor-air-quality">IAQ Overview →</a>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/maintenance">
+</div><div class="xsp-section"><h2 class="xsp-h2">How long does an air quality install take?</h2><p class="xsp-prose">Most filtration, UV, and humidifier installs are a single visit, often the same week as the call. A whole-home dehumidifier or a fresh-air ventilation duct is a longer job because it involves cutting into the duct system. Filter and pad changes at the seasonal visits come with the <a href="/maintenance">X-Plan maintenance membership</a>.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book an air quality assessment?</h2><p class="xsp-prose">An assessment is booked by phone at <a href="tel:18445847399">(844) 584-7399</a> or online. The visit measures humidity and airflow, checks the existing filtration and the duct system, and produces a recommendation with upfront pricing before anything is installed.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Plus a 5-year warranty on repairs and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">SOLUTIONS QUESTIONS</div>
-  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <h2 class="xsp-h2">What else do homeowners ask about air quality equipment?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast can solutions be installed?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Most filtration and UV installs happen in a single visit — often the same week you call.</div>
+    <button type="button" aria-expanded="true"><span>Which filter rating should I use at home?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">The highest MERV the system can move air through. A 1-inch filter slot generally tops out around MERV 8 to 11. MERV 13 needs a 4-inch or 5-inch media cabinet, and Extreme Heating, Air, Plumbing measures static pressure before recommending one.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Which filter rating should I use?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">The highest MERV your system can handle without choking airflow — we'll check yours before recommending.</div>
+    <button type="button" aria-expanded="false"><span>Do UV lights in HVAC systems really work?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Against biological growth on the evaporator coil and in the drain pan, yes, when they are sized and aimed correctly. They do not remove dust, dander, or pollen, so a UV lamp is not an allergy fix on its own.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Do I need a whole-home system?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Not always. Sometimes a filter upgrade and duct sealing beat an expensive purifier. We'll tell you honestly.</div>
+    <button type="button" aria-expanded="false"><span>Do I need a whole-home system, or is a better filter enough?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Often a filter upgrade plus sealing the return side of the ducts does more than an expensive purifier. Leaky returns pull dirty air in from basements and crawl spaces, past the filter entirely, which no purifier downstream can undo.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>What humidity should my house hold?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Between 30% and 50% relative humidity year round. Below 30% causes static and dry sinuses in winter. Above 60% for any length of time feeds mold and dust mites.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Can these be installed on my existing furnace?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">In most cases, yes. Media cabinets, UV lamps, humidifiers, and dehumidifiers all retrofit to existing residential systems. The duct layout and the space around the air handler decide what fits.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail flush"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/muv-401h.jpg" alt="A PremierOne MUV-401H UV air purifier with its lamp lit" loading="lazy" decoding="async"></div><a class="xsp-promo mint" href="/maintenance">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail flush"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/muv-401h.jpg" alt="A PremierOne MUV-401H UV air purifier with its lamp lit" width="480" height="450" fetchpriority="high" decoding="async"></div><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Plus a 5-year warranty on repairs and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
 </a><div class="xsp-sibs"><div class="h">INDOOR AIR QUALITY</div><a href="/indoor-air-quality">IAQ Overview<span class="ar">→</span></a><a href="/importance-iaq">Why IAQ Matters<span class="ar">→</span></a><a href="/iaq-faq">IAQ FAQ<span class="ar">→</span></a></div></aside>
 </div>
 <div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -578,6 +661,24 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

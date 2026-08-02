@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -366,17 +442,18 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 }
 </style>
 <div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><span class="cur">Sewer Line Services</span></div>
-      <h1 class="xsp-h1">Sewer problems, <em>solved for good</em>.</h1>
-      <p class="xsp-intro">Camera inspections, repairs, and cleaning for main sewer lines — real diagnosis before anyone digs.</p>
+      <h1 class="xsp-h1">Sewer line inspection, cleaning and repair in <em>Dayton &amp; Cincinnati</em>.</h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing inspects, cleans and repairs residential main sewer lines across the Dayton and Cincinnati, Ohio metros. Every job starts with a camera pass so the condition of the pipe is known before any work is quoted. Sewer work is performed under Ohio plumbing license #13557.</p></div>
+      <p class="xsp-intro">Nobody should pay to dig up a yard on a guess. The camera goes in first, and the quote comes after the footage.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call (844) 584-7399</a>
       </div>
-      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 on Google</div><div class="xsp-chip">Same-Day Service</div><div class="xsp-chip">Licensed Plumbers</div></div>
+      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 from 1,595 reviews</div><div class="xsp-chip">Same-Day Service</div><div class="xsp-chip">Licensed Plumbers</div></div>
     </div>
     <div class="xsp-bookcol"><div class="xsp-book">
   <div class="eyebrow">BOOK SEWER LINE SERVICES</div>
@@ -395,11 +472,11 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="xsp-pills"><a class="xsp-pill active" href="/plumbing/sewer-line/overview" aria-current="page">Overview</a><a class="xsp-pill" href="/plumbing/sewer-line/repair">Repair</a><a class="xsp-pill" href="/plumbing/sewer-line/cleaning">Cleaning</a></div>
 </div></div>
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/510007257/photo/repairing-a-broken-pipe.jpg?s=612x612&w=0&k=20&c=G79pTSQAP2PknUUCcpbXhchQ_vdJ2fLlPMvK1sr5exs=" alt="Gloved hands joining a broken pipe in a muddy trench" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/510007257/photo/repairing-a-broken-pipe.jpg?s=612x612&w=0&k=20&c=G79pTSQAP2PknUUCcpbXhchQ_vdJ2fLlPMvK1sr5exs=" alt="Gloved hands joining a broken pipe in a muddy trench" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">SEWER TROUBLE?</div>
   <h2 class="xsp-h2">Signs your main line is struggling.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Multiple drains backing up</div><div class="xsp-check"><span class="c">✓</span>Sewage smells inside or out</div><div class="xsp-check"><span class="c">✓</span>Gurgling toilets</div><div class="xsp-check"><span class="c">✓</span>Soggy patches in the yard</div><div class="xsp-check"><span class="c">✓</span>Clogs that keep returning</div><div class="xsp-check"><span class="c">✓</span>Older home with clay pipes</div></div>
-  <div class="xsp-callout">Sewage backing up indoors? Stop running water and call <a href="tel:18445847399">(844) 584-7399</a> — that's a main-line emergency.</div>
+  <div class="xsp-callout">Sewage backing up indoors? Stop running water and call <a href="tel:18445847399">(844) 584-7399</a>. <a href="/plumbing/emergency-plumbing">That is an emergency</a> and it is handled around the clock.</div>
 </div><div>
   <div class="xsp-eyebrow">WHAT WE DO</div>
   <h2 class="xsp-h2">Inspect it, clean it, or repair it.</h2>
@@ -416,32 +493,38 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Camera Inspection</span><br><span class="d">See exactly what's wrong before spending a dollar on digging.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">How do I know if my sewer line is broken?</h2><p class="xsp-prose">The signal is repetition, not severity. Backups that return weeks after a cleaning, <a href="/plumbing/clogged-drain">several fixtures slow at once</a>, sewage odor outside near the line, a patch of yard that stays soggy or greener than the rest, or a section of lawn that has sunk. One of those is worth a camera. Two is a broken line until proven otherwise.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing treats sewer backups that return within weeks of a cleaning as evidence of a structural problem in the line rather than a recurring clog.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does a sewer camera inspection show?</h2><p class="xsp-prose">A camera pushed the length of the lateral shows exactly what a plumber is dealing with: root masses at pipe joints, a belly holding standing water, offset joints where the pipe has shifted, cracks, or a full collapse. It also shows the depth and the distance from the house, which is what determines whether a repair can be done trenchless.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing runs a camera the full length of a sewer lateral before quoting any repair, so the recommendation is based on the pipe's actual condition.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Common sewer line findings and what each one calls for."><table class="xsp-table"><caption>Common sewer line findings and what each one calls for.</caption><thead><tr><th scope="col">What the camera shows</th><th scope="col">What caused it</th><th scope="col">What it needs</th></tr></thead><tbody><tr><th scope="row">Root mass at a pipe joint</th><td>Tree roots entering a clay joint</td><td>Hydro jetting, then repair or lining at that joint</td></tr><tr><th scope="row">Standing water in a low section</th><td>A belly from settled soil</td><td>Excavation and re-grading of that section</td></tr><tr><th scope="row">Offset at a joint</th><td>Ground movement or a shifted pipe</td><td>Spot repair, or lining if the offset is small</td></tr><tr><th scope="row">Grease coating the full diameter</th><td>Kitchen waste over years</td><td>Hydro jetting, then a maintenance schedule</td></tr><tr><th scope="row">Cracks along the pipe barrel</th><td>Aged clay or cast iron</td><td>Trenchless lining, or replacement</td></tr><tr><th scope="row">Full collapse, camera cannot pass</th><td>Structural failure</td><td>Excavation and replacement of that run</td></tr><tr><th scope="row">Clean, sound pipe with a soft blockage</th><td>An ordinary clog</td><td>Cleaning, no repair required</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Who is responsible for the sewer lateral, me or the city?</h2><p class="xsp-prose">In most Ohio communities the homeowner owns and maintains the lateral from the house to the connection at the public main, including the portion under the street or the tree lawn. The exact boundary and any city assistance programs vary by municipality, so it is worth confirming with your own before work begins.</p></div><div class="xsp-section"><h2 class="xsp-h2">Do you have to dig up my yard?</h2><p class="xsp-prose">Not always. Where the pipe is structurally sound enough to hold a liner, <a href="/plumbing/sewer-line/repair">trenchless methods</a> repair from access points at each end and leave the lawn between them intact. Where the line has collapsed, dropped, or bellied, the ground has to be opened. The camera tells us which before anyone commits.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Fixed with proof</div><div class="d">Camera-verified before and after — you see exactly what you paid for.</div></div></div></div>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">What causes sewer line failure in older Dayton homes?</h2><p class="xsp-prose">Age of the pipe, mostly. A large share of <a href="/locations/dayton">Dayton's housing</a> predates 1940, and the laterals under those homes are clay tile or cast iron with mortared joints that roots find easily. Newer suburban stock in Beavercreek, Mason and West Chester is usually PVC and fails differently, more often from settling than from roots.</p><p class="xsp-prose">About 38% of Dayton's housing stock was built before 1940, and sewer laterals serving that stock are typically clay tile or cast iron with jointed connections vulnerable to root intrusion.</p></div><div class="xsp-section"><h2 class="xsp-h2">How much does sewer work cost?</h2><p class="xsp-prose">Sewer repair is the largest single plumbing project most homeowners will face, and the range is wide because depth, length and access change everything. Every job is quoted flat after the camera pass, with the footage available so you can see what you are paying to fix. Financing is available on larger sewer work.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book a sewer inspection?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or book online. If sewage is already backing up indoors, stop running water anywhere in the house first, then call. Sewage indoors is an emergency and it gets handled around the clock. Where the pipe is intact and only loaded with grease or roots, <a href="/plumbing/sewer-line/cleaning">hydro jetting</a> is the cheaper answer.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a><a class="xsp-promo mint" href="/specials">
   <div class="t">Plumbing specials</div><div class="d">Check out current offers on repairs, installs, and more.</div><div class="lm">View Specials →</div>
 </a></div><div>
   <div class="xsp-eyebrow">SEWER QUESTIONS</div>
-  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <h2 class="xsp-h2">What else do homeowners ask about sewer lines?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast can you get here?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">In most cases, same day — about 90% of our calls are handled the day you reach out, with 24/7 emergency service when it can't wait.</div>
+    <button type="button" aria-expanded="true"><span>What are the signs of a broken sewer line?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">Backups that return within weeks of a cleaning, multiple fixtures draining slowly at once, sewage odor outdoors near the line, a permanently soggy or unusually green patch of yard, and sunken ground along the line's path. Any two of those together justify a camera inspection.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Do you have to dig up my yard?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Not always — camera inspection tells us first, and trenchless repair handles many failures without excavation.</div>
+    <button type="button" aria-expanded="false"><span>Do I have to dig up the yard to fix a sewer line?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Not necessarily. Trenchless lining and pipe bursting repair many failures from access points at each end, leaving the ground between them undisturbed. A collapsed or bellied line still needs excavation, and the camera inspection determines which case applies before anything is quoted.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Why do my drains keep backing up?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Recurring whole-house backups usually mean roots, bellies, or breaks in the main line — a camera finds which.</div>
+    <button type="button" aria-expanded="false"><span>Am I responsible for the sewer line under the street?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">In most Ohio communities the homeowner owns the lateral all the way to the connection at the public main, including the portion under the tree lawn or the street. The boundary and any city assistance program vary by municipality, so confirm with yours.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>How often should a sewer line be inspected?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Every few years is reasonable for a home with mature trees or clay pipe, and a camera inspection is worth doing before buying an older house. Homes with no history of backups and modern PVC laterals rarely need routine inspection.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>How fast can you get a camera in the line?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Extreme Heating, Air, Plumbing runs 90% same-day service across the Dayton and Cincinnati metros, and an active backup is dispatched ahead of a scheduled inspection.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/510007257/photo/repairing-a-broken-pipe.jpg?s=612x612&w=0&k=20&c=G79pTSQAP2PknUUCcpbXhchQ_vdJ2fLlPMvK1sr5exs=" alt="Gloved hands joining a broken pipe in a muddy trench" loading="lazy" decoding="async"></div><a class="xsp-promo lav js-schedule" href="#">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/510007257/photo/repairing-a-broken-pipe.jpg?s=612x612&w=0&k=20&c=G79pTSQAP2PknUUCcpbXhchQ_vdJ2fLlPMvK1sr5exs=" alt="Gloved hands joining a broken pipe in a muddy trench" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a><a class="xsp-promo mint" href="/specials">
   <div class="t">Plumbing specials</div><div class="d">Check out current offers on repairs, installs, and more.</div><div class="lm">View Specials →</div>
@@ -449,7 +532,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 <div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -598,6 +681,24 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

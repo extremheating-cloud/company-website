@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -382,10 +458,18 @@ align-items:center;justify-content:center;font-size:12px;font-weight:700;color:v
 .xco-loc-img img{width:100%;height:100%;object-fit:cover;display:block}
 .xco-loc-body{padding:18px}
 .xco-loc-body .t{font-weight:800;font-size:16.5px}
+.xco-loc-body .meta{font-size:12px;font-weight:700;color:var(--body);margin-top:2px}
 .xco-loc-body .addr{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-loc-body .addr.hrs{font-size:12.5px;margin-top:6px}
 .xco-loc-body a{display:inline-block;font-weight:800;font-size:13px;color:var(--purple);
 text-decoration:none;margin-top:10px}
+/* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
+   "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */
+.xco-loc-body a.alt{display:block;margin-top:6px}
 .xco-loc-body a:hover{color:var(--green-dark)}
+/* A card with no exterior photograph (Troy, Waynesville) has no image box at all. It
+   still has to line up with the two that do, so the body carries the shortfall. */
+.xco-loc:not(:has(.xco-loc-img)) .xco-loc-body{padding-top:22px}
 .xco-hours{border:1px solid var(--rule);border-radius:16px;margin-top:20px;overflow:hidden}
 .xco-hours .row{display:flex;justify-content:space-between;gap:16px;padding:14px 20px;
 border-bottom:1px solid var(--rule)}
@@ -495,6 +579,14 @@ font-size:10px;font-weight:800;display:grid;place-items:center}
 .xlc-town a{color:var(--body);text-decoration:none}
 .xlc-town a:hover{color:var(--purple)}
 .xlc-note{font-size:13px;font-weight:600;color:var(--muted);margin-top:16px}
+/* Descriptive cross-links out of a city page. Navigation, not a page section, so it
+   takes an eyebrow and no H2 — the indexed hubs already run seven of those. */
+.xlc-rel{margin-top:8px}
+.xlc-rellinks{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:12px}
+.xlc-rellinks a{display:inline-flex;align-items:center;min-height:36px;border:1px solid var(--rule);
+border-radius:999px;padding:8px 15px;font-size:13.5px;font-weight:700;color:var(--body);
+text-decoration:none;background:#fff}
+.xlc-rellinks a:hover{color:var(--purple);border-color:var(--purple)}
 .xlc-revs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
 .xlc-rev{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff}
 .xlc-rev .stars{color:var(--stars);font-size:14px;letter-spacing:2px}
@@ -592,10 +684,11 @@ font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/locations">Locations</a><span class="sep">›</span><a href="/locations/moraine">Moraine</a><span class="sep">›</span><span class="cur">Duct Cleaning</span></div>
       
-      <h1 class="xsp-h1">Cleaner ducts, <em>cleaner air</em></h1>
+      <h1 class="xsp-h1">Cleaner ducts, cleaner air in <em>Moraine</em></h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and dryer vents in Moraine, Ohio, one of 38 communities covered across the Dayton and Cincinnati metros. A camera goes into the ductwork before any cleaning is quoted. Extreme Heating, Air, Plumbing offers 24/7 emergency service and 90% same-day service.</p></div>
       <p class="xsp-intro">Whole-home duct cleaning with negative-pressure equipment — and before/after photos so you can see exactly what you paid for.</p>
       <div class="xsp-hero-ctas xsp-mb">
-        <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
+        <a class="xsp-cta js-schedule" href="#" role="button">Schedule Service</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call (844) 584-7399</a>
       </div>
       <div class="xsp-chiprow"><div class="xsp-chip">Before/After Proof</div><div class="xsp-chip">Negative-Pressure Equipment</div><div class="xsp-chip">Dryer Vents Too</div></div>
@@ -613,20 +706,17 @@ font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin
   </div>
 </div>
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/before-after-ducts.jpg" alt="Before and after photos of cleaned ductwork" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/before-after-ducts.jpg" alt="Before and after photos of cleaned ductwork" width="600" height="533" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">WHAT WE CLEAN</div>
   <h2 class="xsp-h2">The whole system — not just the vents you can see.</h2>
+  
 <div class="xlc-grid3"><div class="xlc-card"><div class="t">Supply &amp; return ducts</div><div class="d">The full run, agitated and vacuumed under negative pressure.</div></div><div class="xlc-card"><div class="t">Registers &amp; grilles</div><div class="d">Removed, washed, and re-seated — not just wiped around.</div></div><div class="xlc-card"><div class="t">Blower compartment</div><div class="d">Where dust cakes up and steals airflow from the whole house.</div></div><div class="xlc-card"><div class="t">Dryer vents</div><div class="d">A top cause of house fires — cleared end to end.</div></div><div class="xlc-card"><div class="t">Sanitizing treatment</div><div class="d">Optional fogging for odor and microbial growth after cleaning.</div></div><div class="xlc-card"><div class="t">Before/after documentation</div><div class="d">Camera photos inside your ducts, before we start and after we finish.</div></div></div>
-</div><div>
-  <div class="xsp-eyebrow">WHEN IT'S TIME</div>
-  <h2 class="xsp-h2">Six signs your ducts are due.</h2>
-<div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Dust puffs when the system kicks on</div><div class="xsp-check"><span class="c">✓</span>Just finished a renovation</div><div class="xsp-check"><span class="c">✓</span>Allergies worse indoors</div><div class="xsp-check"><span class="c">✓</span>Musty smell from the vents</div><div class="xsp-check"><span class="c">✓</span>Past pest or rodent activity</div><div class="xsp-check"><span class="c">✓</span>Never cleaned in 5+ years</div></div><div class="xlc-note">Not sure? We'll put a camera in first and show you — no cleaning you don't need.</div>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/locations/moraine/indoor-air-quality">
+</div><div class="xlc-rel"><div class="xsp-eyebrow purple">MORE FROM EXTREME</div><div class="xlc-rellinks"><a href="/locations/moraine">Moraine HVAC and plumbing services</a><a href="/locations/dayton">Dayton HVAC and plumbing services</a><a href="/locations/kettering">HVAC in Kettering</a></div></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/locations/moraine/indoor-air-quality">
   <div class="t">Pair it with air quality</div><div class="d">Clean ducts plus filtration keeps the dust from coming right back.</div><div class="lm">Moraine Air Quality →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">Never think about tune-ups again</div><div class="d">X-Plan includes two a year, 15% off repairs, and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
 </a></div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/before-after-ducts.jpg" alt="Before and after photos of cleaned ductwork" loading="lazy" decoding="async"></div><a class="xsp-promo mint" href="/locations/moraine/indoor-air-quality">
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/before-after-ducts.jpg" alt="Before and after photos of cleaned ductwork" width="600" height="533" fetchpriority="high" decoding="async"></div><a class="xsp-promo mint" href="/locations/moraine/indoor-air-quality">
   <div class="t">Pair it with air quality</div><div class="d">Clean ducts plus filtration keeps the dust from coming right back.</div><div class="lm">Moraine Air Quality →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">Never think about tune-ups again</div><div class="d">X-Plan includes two a year, 15% off repairs, and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
@@ -634,7 +724,7 @@ font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin
 </div>
 <div class="xsp-band"><div class="xsp-band-in">
   <div><div class="t">Not sure your ducts need it?</div><div class="d">We'll look first with a camera and tell you straight — cleaning or not.</div></div>
-  <div class="btns"><a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a></div>
+  <div class="btns"><a class="xsp-cta js-schedule" href="#" role="button">Schedule Service</a></div>
 </div></div>
 
   <script>
@@ -767,6 +857,24 @@ font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

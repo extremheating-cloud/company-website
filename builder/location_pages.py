@@ -45,6 +45,14 @@ font-size:10px;font-weight:800;display:grid;place-items:center}
 .xlc-town a{color:var(--body);text-decoration:none}
 .xlc-town a:hover{color:var(--purple)}
 .xlc-note{font-size:13px;font-weight:600;color:var(--muted);margin-top:16px}
+/* Descriptive cross-links out of a city page. Navigation, not a page section, so it
+   takes an eyebrow and no H2 — the indexed hubs already run seven of those. */
+.xlc-rel{margin-top:8px}
+.xlc-rellinks{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:12px}
+.xlc-rellinks a{display:inline-flex;align-items:center;min-height:36px;border:1px solid var(--rule);
+border-radius:999px;padding:8px 15px;font-size:13.5px;font-weight:700;color:var(--body);
+text-decoration:none;background:#fff}
+.xlc-rellinks a:hover{color:var(--purple);border-color:var(--purple)}
 .xlc-revs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
 .xlc-rev{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff}
 .xlc-rev .stars{color:var(--stars);font-size:14px;letter-spacing:2px}
@@ -148,21 +156,27 @@ def _stat_panel(stats):
 
 def _band(title, sub, cta="call"):
     """Ink CTA band. `cta` is "call" or "schedule" per the handoff's per-page note."""
-    btn = (T.schedule_btn("Schedule Service", "xsp-cta js-schedule") if cta == "schedule"
+    btn = (T.schedule_btn("Schedule Service", "xsp-cta") if cta == "schedule"
            else f'<a class="xsp-cta" href="{T.PHONE_TEL}">Call {PHONE}</a>')
     return f'''<div class="xsp-band"><div class="xsp-band-in">
   <div><div class="t">{title}</div><div class="d">{sub}</div></div>
   <div class="btns">{btn}</div>
 </div></div>'''
 
-def _hero(city, crumbs, h1, hi, intro, chips, card, pill="", card_class="", ctas=True):
+def _hero(city, crumbs, h1, hi, intro, chips, card, pill="", card_class="", ctas=True,
+          answer=None):
     """ctas=False is for the hub, whose card is a search tool rather than a booking
-    CTA and stays on screen at every width instead of handing off to a button pair."""
+    CTA and stays on screen at every width instead of handing off to a button pair.
+
+    `answer` is the answer-first block. It renders as the first element after the H1,
+    ahead of the intro, because that is the passage an engine lifts and because
+    id="answer" is what speakable schema targets."""
     pill_html = f'<div class="xlc-pill">{pill}</div>' if pill else ""
+    answer_html = T.answer_block({"answer": answer}) if answer else ""
     # The booking card is display:none under 810px, so without this pair a phone gets
     # a hero with no way to book — which is what all 267 location pages used to do.
     cta_html = f'''<div class="xsp-hero-ctas xsp-mb">
-        {T.schedule_btn("Schedule Service", "xsp-cta js-schedule")}
+        {T.schedule_btn("Schedule Service", "xsp-cta")}
         <a class="xsp-cta-outline" href="{T.PHONE_TEL}">Call {T.PHONE_DISPLAY}</a>
       </div>''' if ctas else ""
     return f'''<div class="xsp-hero">
@@ -172,6 +186,7 @@ def _hero(city, crumbs, h1, hi, intro, chips, card, pill="", card_class="", ctas
       {T.crumbs(crumbs)}
       {pill_html}
       {T.h1(h1, hi)}
+      {answer_html}
       <p class="xsp-intro">{intro}</p>
       {cta_html}
       {T.chips(chips)}
@@ -184,8 +199,12 @@ def _book(eyebrow, title, sub, label="Schedule Service", trust2="Local techs"):
     return T.booking_card({"eyebrow": eyebrow, "title": title, "sub": sub, "trust2": trust2},
                           schedule_label=label)
 
-def _cards(eyebrow, h2, items):
-    """Service / capability card grid. items: (title, desc, href|None, pill|None)."""
+def _cards(eyebrow, h2, items, lead=None):
+    """Service / capability card grid. items: (title, desc, href|None, pill|None).
+
+    `lead` is the direct answer to an interrogative H2. Every question heading has to
+    be followed by prose before a grid or a list, or the heading is a label rather than
+    a question anything can quote."""
     out = []
     for t, d, href, pill in items:
         tag = f'<a class="xlc-card" href="{href}">' if href else '<div class="xlc-card">'
@@ -193,7 +212,8 @@ def _cards(eyebrow, h2, items):
         lm = f'<span class="lm">{pill[1]}</span>' if pill and len(pill) > 1 and pill[1] else ""
         new = '<span class="xlc-new">NEW</span>' if pill and pill[0] == "NEW" else ""
         out.append(f'{tag}{new}<div class="t">{t}</div><div class="d">{d}</div>{lm}{end}')
-    return section(eyebrow, h2, f'<div class="xlc-grid3">{"".join(out)}</div>')
+    inner = (T.paragraphs(lead) if lead else "") + f'<div class="xlc-grid3">{"".join(out)}</div>'
+    return section(eyebrow, h2, inner)
 
 def _checklist(eyebrow, h2, items, note=None):
     inner = "".join(f'<div class="xsp-check"><span class="c">✓</span>{i}</div>' for i in items)
@@ -234,12 +254,14 @@ SERVICE_COPY = {
   nav="Cooling", h1="Keep your cool, {X}", hi="{CITY}",
   intro="AC repair, replacement, and ductless systems for humid Ohio summers — fixed right the "
         "first time, at a price you approve before we start.",
-  chips=["Same-Day in Most Cases", "Upfront Pricing", "All Makes &amp; Models"],
+  chips=["90% Same-Day Service", "Upfront Pricing", "All Makes &amp; Models"],
   bookEyebrow="{CITYU} COOLING",
   gridEyebrow="WHAT WE HANDLE", gridH2="Every way a {CITY} home stays cool.",
   cards=[("AC repair","From weak airflow to total shutdowns — diagnosed and quoted upfront."),
          ("AC installation &amp; replacement","High-efficiency systems sized to your square footage and ductwork."),
-         ("Heat pumps","One system for summer and winter — with rebates often available."),
+         # No rebate claim: Extreme is not a registered utility trade ally, so "rebates
+         # often available" is a promise the company cannot keep at the counter.
+         ("Heat pumps","One system for summer and winter — sized for Ohio's swing seasons."),
          ("Ductless mini-splits","Room-by-room comfort for additions, sunrooms, and older homes."),
          ("AC tune-ups","Coils, refrigerant, and airflow checked before the first hot week."),
          ("Smart thermostats","Installed and configured so the schedule actually saves you money.")],
@@ -258,7 +280,7 @@ SERVICE_COPY = {
   nav="Plumbing", h1="Plumbing has come to {X}", hi="{CITY}", pill="NEW IN {CITYU}",
   intro="The same team you trust with your furnace now handles water heaters, drains, leaks, and "
         "sump pumps — with the same upfront pricing.",
-  chips=["Licensed Plumbers", "Upfront Pricing", "Same-Day in Most Cases"],
+  chips=["Licensed Plumbers", "Upfront Pricing", "90% Same-Day Service"],
   bookEyebrow="{CITYU} PLUMBING",
   gridEyebrow="WHAT WE HANDLE", gridH2="From the water heater to the sewer line.",
   cards=[("Water heaters","Repair and replacement, tank and tankless — same-day swaps in most cases."),
@@ -274,10 +296,15 @@ SERVICE_COPY = {
           ("On camera","drain and sewer work you can see for yourself.")],
   promos=["locFinanceTankless","locXplanPlumb"],
   bandT="Water where it shouldn't be?", bandS="Shut off the main, then call — the emergency line is answered 24/7.",
-  photo="equipment/ge-water-heater-install.jpg", photoAlt="A water heater installed by the Extreme Team"),
+  photo="equipment/ge-water-heater-install.jpg",
+  photoAlt="A newly installed water heater connected in a basement"),
 
 "maintenance": dict(
-  nav="Maintenance", h1="Tune-ups that keep {X}", hi="breakdowns away",
+  # The {X} slot is the city token on every other service. Putting a slogan there
+  # ("breakdowns away") gave all 38 maintenance pages the same H1 — with duct-cleaning
+  # below, that was 76 pages sharing two headings. The slogan moves into the sentence
+  # and the city goes back in the highlight.
+  nav="Maintenance", h1="Tune-ups that keep breakdowns out of {X}", hi="{CITY}",
   intro="Seasonal furnace and AC maintenance for {CITY} homes — done right, documented for your "
         "warranty, and automatic if you're on the X-Plan.",
   chips=["Two Seasons, Two Tune-Ups", "Warranty-Valid Reports", "X-Plan Member Perks"],
@@ -298,7 +325,8 @@ SERVICE_COPY = {
   photoAlt="A worn, cobwebbed contactor found inside an air conditioner during service"),
 
 "duct-cleaning": dict(
-  nav="Duct Cleaning", h1="Cleaner ducts, {X}", hi="cleaner air",
+  # Same fix as maintenance above: "cleaner air" was a slogan sitting in the city slot.
+  nav="Duct Cleaning", h1="Cleaner ducts, cleaner air in {X}", hi="{CITY}",
   intro="Whole-home duct cleaning with negative-pressure equipment — and before/after photos so "
         "you can see exactly what you paid for.",
   chips=["Before/After Proof", "Negative-Pressure Equipment", "Dryer Vents Too"],
@@ -329,7 +357,7 @@ SERVICE_COPY = {
   bookEyebrow="{CITYU} AIR QUALITY", bookTitle="Start with an assessment.",
   bookSub="We test first, then recommend — never the other way around.",
   gridEyebrow="SOLUTIONS", gridH2="Matched to your air, not a catalog.",
-  cards=[("Whole-home media filters","Hospital-grade filtration that replaces the flimsy 1-inch filter."),
+  cards=[("Whole-home media filters","Deep-media filtration that replaces the flimsy 1-inch filter."),
          ("Air purifiers &amp; UV lights","Neutralize allergens, odors, and microbial growth at the source."),
          ("Whole-home humidifiers","End static shocks, dry skin, and cracking trim in Ohio winters."),
          ("Dehumidifiers","Tame sticky summers and musty basements before mold moves in."),
@@ -356,6 +384,1826 @@ OVERVIEW_CARDS = [
     ("duct-cleaning", "Duct Cleaning", "Whole-home duct and dryer-vent cleaning, with before/after proof."),
     ("indoor-air-quality", "Indoor Air Quality", "Filtration, purifiers, humidity control, and fresh-air ventilation."),
 ]
+
+# ================================================================ local copy deck
+# copy-locations.md, applied. Everything below is the material that makes the ten
+# featured communities genuinely local rather than find-and-replace, and it is the
+# mechanical test for indexation: a page that cannot fill these slots is not in
+# locations.FEATURED and is not indexed.
+#
+# Sourcing rules that were applied to every string here:
+#   * Nothing is invented. Where the research carried a [NEEDS] the sentence is
+#     omitted, not guessed and not shipped with a bracket in it. Each omission is
+#     recorded as a `# [NEEDS: ...]` comment beside the copy it belongs to.
+#   * No radon mitigation service claim anywhere. The client does not do radon work,
+#     so the Troy and Dayton radon hooks in the research are struck entirely rather
+#     than softened into "context" — a page that mentions radon at all pulls radon
+#     leads. See the summary note.
+#   * No rebate or utility trade-ally claim. The utility paragraphs name who supplies
+#     what and stop there.
+#   * No service-call, dispatch or after-hours rate in any heading, hero or answer
+#     block. The X-Plan member fee line stays where it already is, in the benefit
+#     list rendered by T.xplan_panel(detail=True), which is a card body.
+#   * Street addresses appear only on the three city pages that contain an office.
+#
+# Shared H2s. Slots 2, 3 and 7 of the seven-H2 hub outline; 3 is built per city from
+# locations.OFFICE so the distance is real rather than a promise.
+GEO_COVERED_H2 = "What heating, cooling and plumbing work is covered?"
+GEO_COVERED = ("Furnace and heat pump repair and replacement, air conditioning repair and "
+               "replacement, seasonal tune-ups, duct and dryer-vent cleaning, indoor air "
+               "quality equipment, and residential plumbing from the water heater to the "
+               "sewer line. One company, one number, both trades.")
+GEO_SPEED_H2 = "How fast can a technician get to a no-heat call?"
+GEO_BOOK_H2 = "How do I book a visit?"
+GEO_BOOK = ("Call " + PHONE + " and talk to a person, or book online in about a minute. "
+            "For no heat, no cooling in a heat wave, or water where it should not be, call "
+            "instead of booking online. That routes straight to the 24/7 line.")
+
+# The six service H1 patterns for the indexed pages. The noindexed tail keeps the
+# branded H1s in SERVICE_COPY, which is part of what makes the two sets distinguishable.
+GEO_SERVICE_H1 = {
+    "heating": "Furnace repair and heating service in {X}",
+    "cooling": "AC repair and air conditioning service in {X}",
+    "plumbing": "Plumbers in {X}: repairs, water heaters and drains",
+    "maintenance": "HVAC maintenance and tune-ups in {X}",
+    "duct-cleaning": "Air duct cleaning in {X}",
+    "indoor-air-quality": "Indoor air quality services in {X}",
+}
+
+# The shared scaffold headings on an indexed service page. SERVICE_COPY's own H2s are
+# decks ("Not a once-over. A real inspection.", "Six signs your ducts are due.") and
+# they are identical on all 38 pages of that service. On the ten indexed communities
+# they become questions, which is what a heading has to be to get quoted. The tail
+# keeps the branded decks, which is one more way the two sets read differently.
+GEO_SCAFFOLD_H2 = {
+ "heating":            {"gridH2": "What heating work is covered?",
+                        "decH2": "Should the furnace be repaired or replaced?",
+                        "book": "How do I book heating service in {C}?"},
+ "cooling":            {"gridH2": "What cooling work is covered?",
+                        "chkH2": "What are the signs an air conditioner is failing?",
+                        "book": "How do I book AC repair in {C}?"},
+ "plumbing":           {"gridH2": "What plumbing work is covered?",
+                        "book": "How do I book a plumber in {C}?"},
+ "maintenance":        {"chkH2": "What does a tune-up actually cover?",
+                        "book": "How do I book a tune-up in {C}?"},
+ "duct-cleaning":      {"gridH2": "What does a duct cleaning visit include?",
+                        "chkH2": "How do I know if the ducts need cleaning?",
+                        "book": "How do I book duct cleaning in {C}?"},
+ "indoor-air-quality": {"gridH2": "What indoor air quality equipment is available?",
+                        "stepsH2": "How is the result measured?",
+                        "book": "How do I book an air quality assessment in {C}?"},
+}
+GEO_SERVICE_BOOK = ("Call " + PHONE + " and talk to a person, or book online in about a "
+                    "minute. For no heat, no cooling in a heat wave, or water where it should "
+                    "not be, call instead: that routes straight to the 24/7 line rather than "
+                    "into the next-day queue.")
+
+# Answer-block verbs and scope sentences for the noindexed tail. The city name is the
+# only thing that varies, which is the honest position: there is no local research for
+# 28 more places and inventing it is worse than omitting it.
+TAIL_VERB = {
+    "heating": "repairs and replaces furnaces, heat pumps and boilers",
+    "cooling": "repairs and replaces air conditioners, including ductless systems",
+    "plumbing": "handles water heaters, drains, leaks and sewer lines",
+    "maintenance": "performs seasonal furnace and air conditioner tune-ups",
+    "duct-cleaning": "cleans supply ducts, returns, blower compartments and dryer vents",
+    "indoor-air-quality": "installs filtration, humidity control and ventilation equipment",
+}
+TAIL_SCOPE = {
+    "heating": "Any brand and any age is covered, diagnosed and quoted before work starts.",
+    "cooling": "Repair, replacement and seasonal tune-ups are all covered, quoted upfront.",
+    "plumbing": "Plumbing work is licensed in Ohio under OH LIC #13557.",
+    "maintenance": "Every visit ends with a written report and photos for warranty records.",
+    "duct-cleaning": "A camera goes into the ductwork before any cleaning is quoted.",
+    "indoor-air-quality": "Humidity, particulates and ventilation are measured before anything "
+                          "is recommended.",
+}
+
+LOCAL = {
+
+# ---------------------------------------------------------------- 1. Dayton
+"dayton": dict(
+ alt="A street of pre-war houses in Dayton, Ohio",
+ answer="Extreme Heating, Air, Plumbing serves Dayton, Ohio from the Beavercreek office, "
+        "about eight miles east. Heating, cooling and residential plumbing are covered across "
+        "Montgomery County, with 24/7 emergency service and 90% same-day service. Extreme "
+        "Heating, Air, Plumbing has completed 25,000+ jobs since 2004.",
+ sections=[
+  ("What HVAC problems do pre-1940 Dayton houses have?", [
+   "Dayton has the oldest housing in the whole service area. About 38.2% of it was built "
+   "before 1940 against a national figure of 13.5%, and the median house went up in 1951.",
+   "That shows up on a service call in specific ways. Houses first heated by gravity furnaces "
+   "and radiators, then converted to forced air later, usually got trunk lines squeezed into a "
+   "basement joist bay that were never sized for the job. Plenty of them have one central "
+   "return and nothing upstairs, which is why the second floor never balances no matter what "
+   "the thermostat says. Block and stone foundations bring their own condensate and humidity "
+   "questions with every equipment change."]),
+  ("Which utility supplies water and gas in Dayton?", [
+   "The City of Dayton Department of Water pulls from the Great Miami Buried Valley Aquifer "
+   "and softens with lime at the plant. Electricity and gas come from two different companies "
+   "here, which surprises people who moved from the Cincinnati side: AES Ohio does electric, "
+   "CenterPoint Energy Ohio does gas. Two bills, two shut-off procedures."]),
+  # [NEEDS: delivered hardness in grains per gallon from the City of Dayton Water Quality
+  # Report. Third-party aggregators say 9 to 11 gpg; that range is not published here.]
+  ("Who inspects plumbing permits in Dayton?", [
+   "The city does, not the county. Public Health, Dayton &amp; Montgomery County runs plumbing "
+   "inspection for Montgomery County but explicitly excludes Dayton, Centerville, Oakwood and "
+   "Kettering. So a Dayton plumbing permit is a City of Dayton permit, and a contractor who "
+   "assumes the county has it is going to the wrong counter."]),
+  # [NEEDS: which City of Dayton division issues residential mechanical permits, plus its
+  # address and portal.]
+ ],
+ table=dict(
+  caption="Common problems in Dayton, Ohio homes and what to book",
+  takeaway="Extreme Heating, Air, Plumbing sees the same short list of faults in Dayton's "
+           "pre-1940 housing, and most of them trace back to ductwork that was retrofitted "
+           "into a house built without any.",
+  columns=["Common problem in Dayton homes", "Likely cause", "Service to book", "Urgency"],
+  rows=[
+   ("Upstairs never gets warm or cool", "One central return and no upstairs return path",
+    "Heating or cooling assessment", "Book this week"),
+   ("Furnace runs but registers barely blow",
+    "Undersized trunk line retrofitted into a pre-war house", "Duct evaluation", "Book this week"),
+   ("Basement smells musty after a system change",
+    "Condensate draining into a block or stone foundation", "Plumbing visit", "Book this week"),
+   ("Drain backs up repeatedly on one fixture",
+    "Galvanised or cast-iron branch line common in pre-war stock",
+    "Drain clearing with a camera check", "Book this week"),
+   ("No heat, and the house is dropping", "Ignition, control board or gas valve failure",
+    "Emergency heating call", "Call 24/7 now"),
+   ("Water standing on the floor", "Supply line, water heater or sewer failure",
+    "Emergency plumbing call", "Call 24/7 now"),
+  ]),
+ faq=[
+  ("Does Extreme Heating, Air, Plumbing work in Dayton proper, or only the suburbs?",
+   "Dayton proper. Extreme Heating, Air, Plumbing covers the city from the Beavercreek office "
+   "about eight miles east, and Dayton is one of the 38 communities served across the two metros."),
+  ("Can you put central air in a house that has radiators and no ductwork?",
+   "Yes, though not with a conventional split system. Houses without duct runs take either a "
+   "ductless system with wall or ceiling heads, or high-velocity small-duct equipment that fits "
+   "through existing framing. Which one fits depends on the house, and that gets decided on site "
+   "rather than over the phone."),
+  ("My upstairs is always ten degrees off. Is that fixable without new equipment?",
+   "Often, yes. In Dayton's pre-1940 housing the usual cause is return air, not the furnace. "
+   "Adding a return path upstairs or rebalancing the existing runs fixes a lot of two-storey "
+   "houses that were about to get a new system they did not need."),
+  ("Who do I call for a plumbing permit in the City of Dayton?",
+   "The city, not the county. Public Health, Dayton &amp; Montgomery County runs plumbing "
+   "inspection for Montgomery County but excludes Dayton, Centerville, Oakwood and Kettering. "
+   "Extreme Heating, Air, Plumbing pulls the permit as part of the job."),
+  ("Do you answer the phone at 2am in Dayton?",
+   "Yes. Extreme Heating, Air, Plumbing runs 24/7 emergency service every day of the year on "
+   + PHONE + ", including nights, weekends and holidays."),
+ ],
+ links=[("heating and cooling in Kettering", "/locations/kettering"),
+        ("the Beavercreek office", "/locations/beavercreek"),
+        ("X-Plan maintenance membership", "/maintenance")],
+ svc={
+  "heating": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces furnaces, heat pumps and boilers "
+          "in Dayton, Ohio. Work covers the gravity-furnace conversions and retrofitted duct runs "
+          "common in housing built before 1940. Extreme Heating, Air, Plumbing answers the no-heat "
+          "line 24/7 and handles 90% same-day service.",
+   slots=[("What heating problems come with pre-war Dayton houses?", [
+    "About 38.2% of Dayton's housing predates 1940. Many of those houses started on a gravity "
+    "furnace with radiators and were converted to forced air later, and the conversion usually "
+    "meant squeezing trunk lines into a basement joist bay that was never sized for the job. "
+    "Radiator and boiler systems are still in service across the city, and they need a technician "
+    "who has worked them rather than one who only knows sealed-combustion furnaces."])],
+   faq=("Do you still work on boilers and radiators?",
+        "Yes. Dayton has more of them than anywhere else in the service area because 38.2% of its "
+        "housing was built before 1940, and radiator systems stayed in place through later "
+        "conversions.")),
+  "cooling": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces air conditioners in Dayton, Ohio, "
+          "including ductless systems. Houses built before 1940 often have one central return and "
+          "no upstairs return path, which limits what any air conditioner can do. Extreme Heating, "
+          "Air, Plumbing offers 24/7 emergency service and 90% same-day service in Montgomery County.",
+   slots=[("Why will a bigger unit not fix a hot upstairs here?", [
+    "Because the problem is usually return air rather than capacity. A lot of Dayton's pre-1940 "
+    "stock has a single central return and nothing pulling from the second floor. Oversizing the "
+    "condenser makes the system short cycle, which cools the thermostat's room faster and "
+    "dehumidifies less. Adding a return path, or fitting a ductless head where no duct can reach, "
+    "fixes more of these houses than a larger system does."])],
+   faq=("My Dayton house has radiators and no ducts. Can I get air conditioning?",
+        "Yes, with either a ductless system or high-velocity small-duct equipment routed through "
+        "existing framing. A conventional split system needs duct chases that these houses were "
+        "never built with.")),
+  "plumbing": dict(
+   answer="Extreme Heating, Air, Plumbing handles water heaters, drains, leaks and sewer lines in "
+          "Dayton, Ohio. The City of Dayton runs its own plumbing inspection rather than using the "
+          "Montgomery County programme. Extreme Heating, Air, Plumbing answers the plumbing "
+          "emergency line 24/7, every day of the year.",
+   slots=[("What is in Dayton's water supply?", [
+    "The City of Dayton Department of Water draws from the Great Miami Buried Valley Aquifer and "
+    "softens with lime at the plant. Pre-war houses in the city still have galvanised and "
+    "cast-iron branch lines, which is why a drain that keeps clogging in the same spot usually "
+    "needs a camera rather than another snake."]),
+    # [NEEDS: delivered hardness from the City of Dayton Water Quality Report.]
+    ("Who inspects plumbing work in Dayton?", [
+    "The city. Public Health, Dayton &amp; Montgomery County runs plumbing inspection for the "
+    "county but excludes Dayton, Centerville, Oakwood and Kettering. A Dayton plumbing permit "
+    "comes from the city, and Extreme Heating, Air, Plumbing pulls it as part of the job."])],
+   faq=("The same drain clogs every few months. Why?",
+        "In Dayton's pre-war housing that pattern usually means a galvanised or cast-iron branch "
+        "line that has corroded down to a narrow channel. A camera inspection shows it in a few "
+        "minutes and turns a recurring call into one repair.")),
+  "maintenance": dict(
+   answer="Extreme Heating, Air, Plumbing performs seasonal furnace and air conditioner tune-ups "
+          "for Dayton, Ohio homes. Older equipment in the city's pre-1940 housing benefits most "
+          "from a documented safety and performance check twice a year. X-Plan includes both "
+          "visits and costs $249 per year or $20.75 per month.",
+   slots=[("Why does maintenance matter more in older housing?", [
+    "Because the failure modes are different. Equipment fighting undersized retrofitted ductwork "
+    "runs hotter and longer than equipment in a house built around it, and heat exchangers in "
+    "older gas furnaces are the single component nobody wants to find cracked in January. A "
+    "seasonal safety check catches that during a visit rather than during a cold snap."])],
+   faq=("Is a tune-up worth it on a 20-year-old Dayton furnace?",
+        "Yes, mostly for the safety check. On equipment that old the visit is as much about the "
+        "heat exchanger and the carbon monoxide reading as it is about efficiency, and it gives an "
+        "honest read on how much life is left.")),
+  "duct-cleaning": dict(
+   answer="Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and "
+          "dryer vents in Dayton, Ohio. Duct runs retrofitted into houses built before 1940 collect "
+          "more debris than purpose-built systems, and a camera check confirms it before any "
+          "cleaning. Every job is photographed before the work and after it.",
+   slots=[("What does the camera usually find in a Dayton house?", [
+    "Retrofitted trunk lines threaded through basement joist bays, panned joist returns that were "
+    "never sealed, and decades of construction dust from conversions and renovations. Older houses "
+    "that have been through several owners and several remodels accumulate more than newer ones, "
+    "which is why the camera goes in before the quote rather than after."])],
+   faq=("My house is from the 1920s and has never had the ducts cleaned. Where do you start?",
+        "With the camera. In housing that old the ductwork is usually a later addition, and the "
+        "footage decides whether cleaning is worth doing or whether the runs need repair first.")),
+  "indoor-air-quality": dict(
+   answer="Extreme Heating, Air, Plumbing installs filtration, humidity control and ventilation "
+          "equipment for Dayton, Ohio homes. Pre-1940 housing with a single central return limits "
+          "what a dense filter can do, so airflow gets measured first. Extreme Heating, Air, "
+          "Plumbing measures humidity, particulates and ventilation before recommending equipment.",
+   # The research offered a Montgomery County radon average here. Struck: Extreme does not
+   # perform radon mitigation, and a radon paragraph on an IAQ page produces radon leads.
+   slots=[("What can a pre-war Dayton house actually carry?", [
+    "Less filter than people expect, and more humidity control than they think. A house with one "
+    "central return and retrofitted trunk lines is already running at higher static pressure than "
+    "modern equipment likes, so a dense one-inch filter starves the blower and the symptoms look "
+    "like a failing system. Airflow first, filtration second. Full basements with block or stone "
+    "walls are usually the bigger win, and that is a dehumidification question."])],
+   faq=("My filter made the house feel worse. Why?",
+        "Almost certainly airflow. In Dayton's older housing a dense filter on a single undersized "
+        "return restricts the blower. Measuring static pressure identifies it in one visit and "
+        "decides which filter the house can carry.")),
+ }),
+
+# ---------------------------------------------------------------- 2. Cincinnati
+"cincinnati": dict(
+ alt="Hillside houses above the Ohio River in Cincinnati, Ohio",
+ answer="Extreme Heating, Air, Plumbing serves Cincinnati, Ohio from the Mason office, roughly "
+        "22 miles north of downtown. Heating, cooling and residential plumbing are covered across "
+        "Hamilton County, including homes with radiators and no ductwork. Extreme Heating, Air, "
+        "Plumbing offers 24/7 emergency service and 90% same-day service across the metro.",
+ sections=[
+  ("Why do so many Cincinnati houses have no ductwork?", [
+   "Because they were built for radiators. Roughly 40% of Cincinnati's housing predates 1939, and "
+   "downtown runs older still. Steam and hot-water radiator systems were the standard, and a house "
+   "heated that way has no duct chases at all. Adding cooling to one means either ductless heads or "
+   "high-velocity small-duct equipment, and any contractor who quotes a conventional split system "
+   "for a radiator house without walking it has not looked.",
+   "Cincinnati's basin-and-hillside geography adds the second half of the story: walk-out "
+   "foundations, tuck-under garages, and equipment sitting in a crawl space on the low side, where "
+   "drainage and combustion air are a recurring problem rather than an occasional one."]),
+  ("Does Cincinnati's climate change how a system is sized?", [
+   "Yes, and this is the one place in the service area where it does. Hamilton County sits in IECC "
+   "climate zone 4A, mixed-humid, while everything else Extreme Heating, Air, Plumbing serves is "
+   "zone 5A, cold. Cincinnati averages 5,364 heating degree days on the NOAA 1991 to 2020 normals. "
+   "A heat pump balance point or a furnace size that is right for a house in Mason is not "
+   "automatically right for the same house 20 minutes south."]),
+  # [VERIFY: the 4A designation mirrors the IECC 2012/2009 county table. Confirm against the
+  # edition of the Residential Code of Ohio in force before the next content review.]
+  ("Do I need a permit to replace a furnace in Cincinnati?", [
+   "Yes, and this catches people out. The City of Cincinnati Department of Buildings &amp; "
+   "Inspections requires a permit for new and replacement units, plus furnace add-ons, "
+   "pre-fabricated fireplaces, wood stoves, metal chimney alterations and duct rework. Work has to "
+   "comply with the Cincinnati Zoning Code, the Residential Code of Ohio and the Ohio Mechanical "
+   "Code. The permit centre is at 805 Central Ave, Suite 500. A quote that comes in noticeably low "
+   "is worth a second look for exactly this reason."]),
+ ],
+ table=dict(
+  caption="Common problems in Cincinnati, Ohio homes and what to book",
+  takeaway="Extreme Heating, Air, Plumbing finds that most Cincinnati comfort complaints trace to "
+           "one of three things: a house with no ducts, a hillside foundation, or equipment "
+           "installed without a permit.",
+  columns=["Common problem in Cincinnati homes", "Likely cause", "Service to book", "Urgency"],
+  rows=[
+   ("Radiators heat fine but there is no way to cool", "House built without duct chases",
+    "Ductless or high-velocity assessment", "Plan ahead"),
+   ("One radiator stays cold", "Air or sediment in a hot-water or steam loop",
+    "Heating repair", "Book this week"),
+   ("Furnace in a crawl space keeps shutting down",
+    "Combustion air or condensate drainage on a hillside foundation", "Heating repair",
+    "Book within days"),
+   ("Musty smell in a tuck-under or walk-out level",
+    "Standing water against a partially buried wall", "Plumbing and IAQ visit", "Book this week"),
+   ("Previous install has no permit record",
+    "Work done without a City of Cincinnati mechanical permit", "System inspection", "Plan ahead"),
+   ("No heat overnight", "Ignition, control or gas supply failure", "Emergency heating call",
+    "Call 24/7 now"),
+  ]),
+ faq=[
+  ("Can I get air conditioning in a Cincinnati house with radiators and no ducts?",
+   "Yes. Houses without ductwork take either a ductless system with individual heads or "
+   "high-velocity small-duct equipment routed through existing framing. Both are common in "
+   "Cincinnati's pre-1939 housing, which is roughly 40% of the city's stock."),
+  ("Do I need a permit just to replace my furnace in Cincinnati?",
+   "Yes. The City of Cincinnati Department of Buildings &amp; Inspections requires a mechanical "
+   "permit for replacement units as well as new ones. Extreme Heating, Air, Plumbing pulls the "
+   "permit as part of the job."),
+  ("Is Cincinnati's climate different enough to change equipment sizing?",
+   "Yes. Hamilton County sits in IECC climate zone 4A while the rest of the Dayton and Cincinnati "
+   "service area sits in zone 5A, and Cincinnati averages 5,364 heating degree days. The same house "
+   "plan can want a different furnace size on either side of that line."),
+  ("How hard is Cincinnati water?",
+   "Greater Cincinnati Water Works reports about 125 mg/L at the Richard Miller plant and about "
+   "138 mg/L at the Charles M. Bolton plant, which is roughly 7 to 8 grains per gallon. That is "
+   "moderately hard and noticeably softer than the untreated groundwater north of the city."),
+  ("How far is the nearest office from Cincinnati?",
+   "About 22 miles. Extreme Heating, Air, Plumbing dispatches Cincinnati work from the Mason "
+   "office, north of the city."),
+ ],
+ links=[("the Mason office", "/locations/mason"),
+        ("HVAC in West Chester Township", "/locations/west-chester"),
+        ("heat pump systems", "/heat-pump")],
+ svc={
+  "heating": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces furnaces, boilers and heat pumps in "
+          "Cincinnati, Ohio. Roughly 40% of the city's housing predates 1939, and much of it is "
+          "heated by steam or hot-water radiators. Extreme Heating, Air, Plumbing answers the "
+          "no-heat line 24/7, every day of the year.",
+   slots=[("Does Cincinnati's climate zone change the furnace size?", [
+    "It can. Hamilton County sits in IECC climate zone 4A while the rest of the service area sits "
+    "in 5A, and Cincinnati averages 5,364 heating degree days on the NOAA 1991 to 2020 normals. A "
+    "load calculation done for a house 30 miles north can oversize the equipment here, and an "
+    "oversized furnace short cycles, wears faster and heats less evenly than a correctly sized one."])],
+   faq=("My radiators are original. Is replacing them the only option?",
+        "No. Steam and hot-water systems can be repaired and rebalanced, and in Cincinnati's "
+        "pre-1939 housing they often outlast the boiler feeding them. Replacement becomes the "
+        "conversation when the boiler is finished, not when a radiator is cold.")),
+  "cooling": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and installs air conditioning in Cincinnati, "
+          "Ohio, including ductless and high-velocity systems for houses without ductwork. Coverage "
+          "includes equipment in hillside crawl spaces and walk-out basements. Extreme Heating, "
+          "Air, Plumbing offers 24/7 emergency service and 90% same-day service across Hamilton County.",
+   slots=[("How do you cool a house that has no ducts?", [
+    "Two ways. Ductless systems put an outdoor unit on one or more indoor heads, room by room, "
+    "with no duct runs at all. High-velocity small-duct equipment uses flexible two-inch tubing "
+    "that threads through existing framing, so the plaster mostly stays where it is. Which one fits "
+    "depends on the layout, the ceiling heights and where an air handler can physically go, and "
+    "that gets decided on site."])],
+   faq=("My AC sits in a crawl space on the low side of the hill. Is that a problem?",
+        "It is a common one in Cincinnati. Hillside foundations put equipment below grade where "
+        "condensate drainage and combustion air are harder, and standing water around the unit "
+        "shortens its life. It is fixable, and worth fixing before the equipment is.")),
+  "plumbing": dict(
+   answer="Extreme Heating, Air, Plumbing handles water heaters, drains, leaks and sewer lines in "
+          "Cincinnati, Ohio. Greater Cincinnati Water Works supplies the city at roughly 7 to 8 "
+          "grains per gallon, which is moderately hard. Extreme Heating, Air, Plumbing answers the "
+          "plumbing emergency line 24/7, every day of the year.",
+   slots=[("How hard is Cincinnati's water?", [
+    "Greater Cincinnati Water Works reports about 125 mg/L at the Richard Miller plant and about "
+    "138 mg/L at the Charles M. Bolton plant, roughly 7 to 8 grains per gallon. That is softer than "
+    "the untreated groundwater north of the city and soft enough that many Cincinnati houses run "
+    "fine without a softener. It is not soft enough to ignore, and water heater scale still shows "
+    "up on a ten-year-old tank."]),
+    ("Who issues plumbing permits in Cincinnati?", [
+    "The City of Cincinnati Department of Buildings &amp; Inspections, from the permit centre at "
+    "805 Central Ave, Suite 500. Work has to comply with the Cincinnati Zoning Code and the "
+    "Residential Code of Ohio."])],
+   faq=("My basement is a walk-out and it floods in heavy rain. Is that a plumbing job?",
+        "Sometimes. On Cincinnati's hillside lots the usual causes are a failed or undersized sump "
+        "pump, no battery backup, or drainage running toward a partially buried wall. A sump pump "
+        "assessment answers it, and it is a cheaper visit than a finished basement.")),
+  "maintenance": dict(
+   answer="Extreme Heating, Air, Plumbing performs seasonal furnace and air conditioner tune-ups "
+          "for Cincinnati, Ohio homes. Boilers, radiator systems and equipment installed in "
+          "hillside crawl spaces are all covered. X-Plan includes two visits a year and costs $249 "
+          "per year or $20.75 per month.",
+   slots=[("Do boilers need a different kind of tune-up?", [
+    "Yes. A boiler service checks combustion, pressure, the expansion tank, the circulator and the "
+    "relief valve, none of which exist on a forced-air furnace. In Cincinnati that matters more "
+    "than elsewhere in the service area, because roughly 40% of the housing predates 1939 and a "
+    "large share of it is still hydronic."])],
+   faq=("Does a maintenance visit include the permit paperwork?",
+        "No permit is needed for a tune-up. Permits come in on installation and replacement work, "
+        "and the City of Cincinnati requires one for replacements as well as new units.")),
+  "duct-cleaning": dict(
+   answer="Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and "
+          "dryer vents in Cincinnati, Ohio. Roughly 40% of the city's housing predates 1939 and much "
+          "of it has no ductwork at all. Every duct cleaning is documented with camera photos taken "
+          "before and after.",
+   slots=[("What if my Cincinnati house has no ducts to clean?", [
+    "Then there is nothing to clean and nobody should be selling it. Radiator houses have no duct "
+    "runs, and a house cooled by ductless heads has no trunk lines either. In those houses the air "
+    "quality conversation is about filtration at the head, ventilation and humidity instead. Where "
+    "ducts do exist in older Cincinnati housing they are usually a later retrofit, and the camera "
+    "decides whether cleaning is worth doing."])],
+   faq=("Someone quoted me for duct cleaning and my house has radiators. Should I be suspicious?",
+        "Yes. A radiator house has no ductwork to clean. Ask to see the camera footage before "
+        "agreeing to anything, on any house.")),
+  "indoor-air-quality": dict(
+   answer="Extreme Heating, Air, Plumbing installs filtration, humidity control and ventilation "
+          "equipment in Cincinnati, Ohio. Roughly 40% of the city's housing predates 1939 and is "
+          "heated by radiators with no central duct path, so the equipment options differ. Extreme "
+          "Heating, Air, Plumbing measures humidity, particulates and ventilation before "
+          "recommending anything.",
+   slots=[("How do you filter air in a house with no ductwork?", [
+    "Not with a whole-home media filter, because there is no duct to put it in. In Cincinnati's "
+    "radiator housing the options are filtration built into ductless heads, standalone units sized "
+    "per room, and a ducted energy recovery ventilator run independently of the heating system for "
+    "fresh air. Humidity is usually the bigger win in these houses, because a hillside basement and "
+    "a hot-water system produce very different moisture behaviour from a forced-air ranch."])],
+   faq=("My hillside basement smells musty every summer. What fixes that?",
+        "Usually dehumidification plus drainage, not filtration. Cincinnati's walk-out and partially "
+        "buried foundations hold moisture against the wall, and a whole-home dehumidifier addresses "
+        "the air while the drainage question gets answered separately.")),
+ }),
+
+# ---------------------------------------------------------------- 3. Beavercreek
+"beavercreek": dict(
+ alt="A residential street in Beavercreek, Ohio",
+ # [NEEDS: confirm whether cities/beavercreek.jpg shows the office on N Fairfield Rd. If it
+ # does, the alt becomes "The Extreme Heating, Air, Plumbing office on N Fairfield Rd in
+ # Beavercreek, Ohio". Until confirmed the alt describes what can be verified.]
+ answer="Extreme Heating, Air, Plumbing operates from 712 N Fairfield Rd in Beavercreek, Ohio, "
+        "serving Greene County homes. Heating, cooling, indoor air quality and residential plumbing "
+        "are covered, with 24/7 emergency service and 90% same-day service. Extreme Heating, Air, "
+        "Plumbing averages 4.9 stars from 1,595 customer reviews.",
+ sections=[
+  ("What did the 2025 water change do to my softener?", [
+   "Greene County Sanitary Engineering finished a $46 million expansion of the regional treatment "
+   "plant in Beavercreek Township, adding a membrane and reverse-osmosis softening facility of "
+   "roughly 20,000 square feet. The changeover ran January to March 2025 and took delivered "
+   "hardness from 27 grains per gallon to about 8, for 18,092 accounts.",
+   "If a house has a whole-home softener, it is almost certainly still set for 27 grain water. Left "
+   "alone it over-softens, burns through salt, and pushes very low hardness water through the "
+   "plumbing. Resetting it takes one visit."]),
+  ("Does the softer water reach every address in Greene County?", [
+   "No, and this is where street-by-street matters. Homes on private wells inside the same footprint "
+   "never got the softened water at all, because the change happened at the county plant rather than "
+   "in the ground. The county system covers Beavercreek, Beavercreek Township, Xenia Township, parts "
+   "of Sugarcreek Township, Cedarville, Wilberforce, Shawnee Hills, and small parts of Kettering and "
+   "Centerville. A well household on the same street as a county-supplied household needs different "
+   "advice, and anyone giving the same answer to both is guessing."]),
+  ("Who issues building permits in Beavercreek?", [
+   "Greene County, not the city. The Greene County Department of Building Regulation at 667 "
+   "Dayton-Xenia Rd handles residential and commercial permits for every city and village in the "
+   "county except Fairborn, Xenia, Bowersville, Clifton, Cedarville and Yellow Springs. Inspections "
+   "book through the iWorQ portal up to 3pm the previous working day. So Beavercreek is "
+   "county-permitted while Fairborn and Xenia next door are not, which changes the schedule on a "
+   "replacement job."]),
+ ],
+ table=dict(
+  caption="Common problems in Beavercreek, Ohio homes and what to book",
+  takeaway="Extreme Heating, Air, Plumbing finds that most Beavercreek plumbing calls since early "
+           "2025 come back to one thing: a softener still tuned for 27 grain water that the county "
+           "no longer delivers.",
+  columns=["Common problem in Beavercreek homes", "Likely cause", "Service to book", "Urgency"],
+  rows=[
+   ("Water feels slippery and salt use jumped",
+    "Softener still set for 27 grain water after the 2025 change", "Softener adjustment",
+    "Book this month"),
+   ("Water heater short on hot water", "Scale built up under decades of 27 grain water",
+    "Water heater service", "Book this week"),
+   ("Well household saw no change in hardness",
+    "Private wells were excluded from the county softening project",
+    "Water treatment assessment", "Plan ahead"),
+   ("Fixtures still scaling after the change", "Existing scale does not dissolve on its own",
+    "Plumbing visit", "Plan ahead"),
+   ("Replacement job stalled waiting on inspection",
+    "County inspections book by 3pm the previous working day", "Reschedule through the office",
+    "Same week"),
+   ("No heat or water on the floor", "Equipment or supply failure", "Emergency call",
+    "Call 24/7 now"),
+  ]),
+ faq=[
+  ("Where is the Beavercreek office?",
+   "712 N Fairfield Rd, Beavercreek, OH 45434. Office staff are in Monday to Friday, 8:00 AM to "
+   "5:00 PM, and the emergency line at " + PHONE + " is answered 24/7 every day of the year."),
+  ("My water changed in early 2025. Do I still need a softener?",
+   "Probably not at the same setting. Greene County Sanitary Engineering took delivered hardness "
+   "from 27 grains per gallon to about 8 between January and March 2025. A softener still set for 27 "
+   "grain water over-softens and wastes salt. It usually wants adjusting rather than removing."),
+  ("I am on a well in Greene County. Did my water get softer too?",
+   "No. The softening happened at the county treatment plant, so private wells inside the same area "
+   "still draw untreated groundwater. Well households need their own treatment decision."),
+  ("Does Beavercreek or Greene County issue my permit?",
+   "Greene County. The Greene County Department of Building Regulation covers Beavercreek, along "
+   "with every city and village in the county except Fairborn, Xenia, Bowersville, Clifton, "
+   "Cedarville and Yellow Springs."),
+  ("Do you serve the townships around Beavercreek?",
+   "Yes. Beavercreek Township, Xenia Township and Sugarcreek Township are all inside the normal "
+   "coverage area, dispatched from the same office on N Fairfield Rd."),
+ ],
+ links=[("water treatment and softeners", "/plumbing/water-treatment"),
+        ("HVAC in Xenia", "/locations/xenia"),
+        ("office addresses and hours", "/contact")],
+ svc={
+  "heating": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces furnaces and heat pumps in "
+          "Beavercreek, Ohio, from the office at 712 N Fairfield Rd. Replacement work is permitted "
+          "through the Greene County Department of Building Regulation. Extreme Heating, Air, "
+          "Plumbing answers the no-heat line 24/7, every day of the year.",
+   slots=[("Who permits a furnace replacement in Beavercreek?", [
+    "Greene County, not the city. The Greene County Department of Building Regulation at 667 "
+    "Dayton-Xenia Rd covers every city and village in the county except Fairborn, Xenia, "
+    "Bowersville, Clifton, Cedarville and Yellow Springs. Inspections book through the iWorQ portal "
+    "by 3pm the previous working day, which is worth knowing when a replacement has to happen "
+    "before a cold snap."])],
+   faq=("How close is the nearest technician to my Beavercreek house?",
+        "The office is at 712 N Fairfield Rd in Beavercreek, so trucks covering the city start "
+        "their day inside it.")),
+  "cooling": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces air conditioners in Beavercreek, "
+          "Ohio, from the office at 712 N Fairfield Rd. Coverage extends to Beavercreek Township, "
+          "Xenia Township and parts of Sugarcreek Township. Extreme Heating, Air, Plumbing handles "
+          "90% same-day service in Greene County.",
+   slots=[("How does a Beavercreek replacement schedule around inspections?", [
+    "Greene County inspections book through the iWorQ portal up to 3pm the previous working day. "
+    "That sets the rhythm on a replacement job: the install happens, the inspection is booked the "
+    "afternoon before, and the schedule works backwards from there. Fairborn and Xenia next door "
+    "are outside the county programme and run on their own timing, which is a common source of "
+    "confusion for homeowners comparing quotes across town lines."])],
+   faq=("Do you cover Beavercreek Township as well as the city?",
+        "Yes, along with Xenia Township and parts of Sugarcreek Township, all dispatched from the "
+        "same office on N Fairfield Rd.")),
+  "plumbing": dict(
+   h1="Plumbers in {X}: repairs, water heaters and softeners",
+   answer="Extreme Heating, Air, Plumbing handles water heaters, drains, leaks and water softeners "
+          "in Beavercreek, Ohio, from the office at 712 N Fairfield Rd. Greene County Sanitary "
+          "Engineering cut delivered hardness from 27 grains per gallon to about 8 in early 2025. "
+          "Extreme Heating, Air, Plumbing answers the plumbing emergency line 24/7.",
+   slots=[("What did the 2025 water change do to Beavercreek plumbing?", [
+    "Greene County finished a $46 million plant expansion in Beavercreek Township, adding roughly "
+    "20,000 square feet of membrane and reverse-osmosis softening. The transition ran January to "
+    "March 2025 and took 18,092 accounts from 27 grains per gallon to about 8. A softener installed "
+    "before that is still set for 27 grain water, so it over-softens and burns salt. Water heaters "
+    "and fixtures scaled under decades of the old water are the installed base underneath all of it."]),
+    ("Who issues a plumbing permit in Beavercreek?", [
+    "Greene County, through the Department of Building Regulation at 667 Dayton-Xenia Rd, which "
+    "covers Beavercreek along with most of the county."])],
+   faq=("I am on a well in Greene County. Did my water change in 2025?",
+        "No. The softening happened at the county treatment plant, so private wells still draw "
+        "untreated groundwater. Well households need their own treatment decision and should ignore "
+        "advice written for county-supplied neighbours.")),
+  "maintenance": dict(
+   answer="Extreme Heating, Air, Plumbing performs seasonal furnace and air conditioner tune-ups in "
+          "Beavercreek, Ohio, from the office at 712 N Fairfield Rd. Every visit ends with a written "
+          "report and photos. X-Plan includes two visits a year for $249 per year or $20.75 per month.",
+   slots=[("What does a Beavercreek tune-up check that others might not?", [
+    "The humidifier, if there is one. Greene County's water changed in early 2025, and a whole-home "
+    "humidifier pad and a softener are both calibrated for water that is no longer being delivered. "
+    "A seasonal visit is the natural point to check both, because the technician is already at the "
+    "equipment."])],
+   faq=("Can I book a tune-up at the Beavercreek office in person?",
+        "The office at 712 N Fairfield Rd is staffed Monday to Friday, 8:00 AM to 5:00 PM. Booking "
+        "by phone on " + PHONE + " or online is faster.")),
+  "duct-cleaning": dict(
+   answer="Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and "
+          "dryer vents in Beavercreek, Ohio, from the office at 712 N Fairfield Rd. A camera goes "
+          "into the ductwork before any cleaning is quoted. The work is documented with before and "
+          "after photos.",
+   slots=[("What makes Beavercreek ductwork easier to clean?", [
+    "Age and design. Beavercreek's housing is largely post-war suburban, built around forced-air "
+    "systems rather than converted to them, so the trunk lines are purpose-built and reachable. "
+    "That makes a negative-pressure clean straightforward compared with a pre-war house in Dayton "
+    "where the ducts were threaded into a basement afterwards."])],
+   faq=("Do you clean dryer vents on the same visit?",
+        "Yes, end to end, on the same visit as the ductwork.")),
+  "indoor-air-quality": dict(
+   answer="Extreme Heating, Air, Plumbing installs filtration, humidity control and ventilation "
+          "equipment in Beavercreek, Ohio, from the office at 712 N Fairfield Rd. Humidity, "
+          "particulates and ventilation are measured before anything is recommended. Extreme "
+          "Heating, Air, Plumbing averages 4.9 stars from 1,595 customer reviews.",
+   slots=[("Why is whole-home equipment easy to fit in Beavercreek?", [
+    "Because the ductwork is purpose-built. Beavercreek's post-war suburban housing was designed "
+    "around forced air, so there is a real return plenum and a real supply trunk to mount a "
+    "four-inch media filter, a humidifier or a UV lamp on. That is not true in Cincinnati's radiator "
+    "houses or in Dayton's pre-war conversions, where the same equipment needs a different plan."])],
+   faq=("My humidifier pad clogs constantly. Is that the water?",
+        "Often. Greene County water was 27 grains per gallon until early 2025 and pads fitted for "
+        "that water scale quickly. The change to about 8 grains alters the calculation, and the pad "
+        "and softener are worth checking together.")),
+ }),
+
+# ---------------------------------------------------------------- 4. Mason
+"mason": dict(
+ alt="A residential street in Mason, Ohio",
+ # [NEEDS: confirm whether cities/mason.jpg shows the office on Tylersville Rd.]
+ answer="Extreme Heating, Air, Plumbing operates from 5633 Tylersville Rd in Mason, Ohio, an "
+        "office opened in 2018. Heating, cooling and residential plumbing are covered for Warren "
+        "County homes, with 24/7 emergency service and 90% same-day service. Extreme Heating, Air, "
+        "Plumbing has completed 25,000+ jobs since 2004.",
+ sections=[
+  ("Why is so much Mason equipment failing at once?", [
+   "Because so much of it went in at once. Mason built out through the 1990s and 2000s, which means "
+   "a very large number of houses received their first condensing furnace and their first 10 to 13 "
+   "SEER condenser somewhere between 1995 and 2008. That equipment is now 18 to 30 years old and "
+   "reaching the end of its life on roughly the same schedule.",
+   "The good news for Mason homeowners is the opposite of Dayton's situation: the ductwork in these "
+   "houses is generally sound and correctly sized. It is the equipment that is tired, which usually "
+   "makes for a clean swap rather than a rebuild."]),
+  # [NEEDS: ACS DP04 year-structure-built distribution for Mason, to put a percentage on "a very
+  # large number".]
+  ("Where does Mason's water actually come from?", [
+   "From Cincinnati. Mason's drinking water is supplied by Greater Cincinnati Water Works, not by "
+   "Warren County Water &amp; Sewer and not from city wells, which puts Mason houses on roughly 7 to "
+   "8 grains per gallon. Meanwhile the City of Mason owns and operates its own wastewater collection "
+   "and treatment system. Water in from Cincinnati, sewer handled locally. That split matters when a "
+   "job touches both sides, because the two systems answer to different people."]),
+  ("Does Mason or Warren County issue the permit?", [
+   "Mason. The City of Mason Engineering &amp; Building Department administers permits for work "
+   "inside the city, including separate trade permits for mechanical and HVAC work. Mason is not on "
+   "the Warren County building department, which is a common wrong assumption for contractors "
+   "working across the county line."]),
+  # [NEEDS: the exact mechanical permit application name, fee and typical turnaround, direct from
+  # imaginemason.org.]
+ ],
+ table=dict(
+  caption="Common problems in Mason, Ohio homes and what to book",
+  takeaway="Extreme Heating, Air, Plumbing finds Mason's most common calls come from equipment "
+           "installed between 1995 and 2008 that is now at the end of its service life, sitting on "
+           "ductwork that is still fine.",
+  columns=["Common problem in Mason homes", "Likely cause", "Service to book", "Urgency"],
+  rows=[
+   ("Furnace over 18 years old, repairs stacking up",
+    "First-generation condensing furnace from the 1995 to 2008 build-out",
+    "Repair or replace assessment", "Plan ahead"),
+   ("AC runs constantly and bills climb", "Original 10 to 13 SEER condenser near end of life",
+    "Cooling assessment", "Book this month"),
+   ("Condensate drain backing up", "Blocked trap on a high-efficiency furnace", "Heating repair",
+    "Book this week"),
+   ("Heat pump underperforms on cold nights",
+    "Balance point set for zone 4A rather than Mason's zone 5A", "Heat pump evaluation",
+    "Book this month"),
+   ("Water heater scaling on city water",
+    "Roughly 7 to 8 grain water from Greater Cincinnati Water Works", "Water heater service",
+    "Plan ahead"),
+   ("No cooling during a heat wave", "Compressor, capacitor or refrigerant failure",
+    "Emergency cooling call", "Call 24/7 now"),
+  ]),
+ faq=[
+  ("Where is the Mason office?",
+   "5633 Tylersville Rd, Mason, OH 45040. It opened in 2018. Office staff are in Monday to Friday, "
+   "8:00 AM to 5:00 PM, and the emergency line at " + PHONE + " is answered 24/7."),
+  ("My Mason house was built in the late 1990s. Is the whole system due?",
+   "Often the equipment is and the ductwork is not. Houses from Mason's 1995 to 2008 build-out "
+   "generally have sound, correctly sized duct runs, so a replacement is usually an equipment swap "
+   "rather than a rebuild. That is a cheaper job than the same age of house in Dayton."),
+  ("Is Mason water the same as Cincinnati water?",
+   "Yes. Mason is supplied by Greater Cincinnati Water Works, which reports roughly 7 to 8 grains "
+   "per gallon. Warren County Water &amp; Sewer supplies other parts of the county on a different, "
+   "softened supply."),
+  ("Who issues an HVAC permit in Mason?",
+   "The City of Mason Engineering &amp; Building Department, not Warren County. Mason runs its own "
+   "trade permits for mechanical work."),
+  ("Is Mason in the same climate zone as Cincinnati?",
+   "No. Mason is IECC zone 5A and Cincinnati is zone 4A, about 20 minutes south. That difference can "
+   "change a heat pump balance point or a furnace size on an otherwise identical house."),
+ ],
+ links=[("HVAC in West Chester Township", "/locations/west-chester"),
+        ("HVAC in Cincinnati", "/locations/cincinnati"),
+        ("heat pump systems", "/heat-pump")],
+ svc={
+  "heating": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces furnaces and heat pumps in Mason, "
+          "Ohio, from the office at 5633 Tylersville Rd. Much of the city's equipment was installed "
+          "between 1995 and 2008 and is now at end of life. Extreme Heating, Air, Plumbing answers "
+          "the no-heat line 24/7.",
+   slots=[("Why is Mason equipment failing on a schedule?", [
+    "Mason built out through the 1990s and 2000s, so a very large number of houses received their "
+    "first condensing furnace inside a narrow window. That equipment is now 18 to 30 years old and "
+    "reaching the end of its life together. The upside is the ductwork: houses from that era "
+    "generally have sound, correctly sized duct runs, so a replacement is usually a clean equipment "
+    "swap rather than a rebuild. Mason also sits in IECC climate zone 5A while Cincinnati, 20 "
+    "minutes south, sits in 4A, so a load calculation borrowed from a Cincinnati job can size the "
+    "furnace wrong."])],
+   faq=("My Mason furnace is 22 years old but still running. Should I wait?",
+        "That is a judgement call, and the repair-or-replace guidance on this page is the honest "
+        "framing. On equipment that age the risk is a failure during the coldest week rather than a "
+        "gradual decline, and a replacement planned in autumn costs less stress than one arranged "
+        "in January.")),
+  "cooling": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces air conditioners in Mason, Ohio, "
+          "from the office at 5633 Tylersville Rd. Many Mason houses still run the original 10 to 13 "
+          "SEER condenser installed during the 1995 to 2008 build-out. Extreme Heating, Air, "
+          "Plumbing handles 90% same-day service.",
+   slots=[("Is it worth replacing a working 10 SEER condenser?", [
+    "Sometimes, and the honest answer depends on the repair history rather than the rating alone. A "
+    "10 to 13 SEER unit from Mason's build-out is at or past its service life, and the efficiency "
+    "gap against current equipment is real. What tips the decision is a second repair in one season, "
+    "a compressor fault, or R-22 refrigerant, which is no longer produced. A unit that has never "
+    "failed and holds charge is not an emergency."])],
+   faq=("Do you install ductless in Mason houses?",
+        "Yes, though it comes up less here than in Cincinnati. Mason's build-out housing has real "
+        "ductwork, so ductless is usually for an addition, a sunroom or a bonus room over the garage "
+        "rather than for the whole house.")),
+  "plumbing": dict(
+   answer="Extreme Heating, Air, Plumbing handles water heaters, drains, leaks and sewer lines in "
+          "Mason, Ohio, from the office at 5633 Tylersville Rd. Mason's drinking water comes from "
+          "Greater Cincinnati Water Works at roughly 7 to 8 grains per gallon. Extreme Heating, Air, "
+          "Plumbing answers the line 24/7.",
+   slots=[("Where does Mason's water and sewer actually come from?", [
+    "Water comes in from Greater Cincinnati Water Works, not from Warren County Water &amp; Sewer "
+    "and not from city wells, at roughly 7 to 8 grains per gallon. Wastewater is a different story: "
+    "the City of Mason owns and operates its own collection and treatment system. Two different "
+    "authorities on the two ends of the same house."]),
+    ("Who issues a plumbing permit in Mason?", [
+    "The City of Mason Engineering &amp; Building Department, which administers permits for work "
+    "inside the city including separate trade permits. Mason is not on the Warren County building "
+    "department."])],
+   faq=("Do I need a water softener in Mason?",
+        "Often not. Greater Cincinnati Water Works delivers roughly 7 to 8 grains per gallon, which "
+        "is moderately hard rather than the untreated groundwater figures further north. Scale still "
+        "builds on a water heater over ten years, so it is a preference question rather than a "
+        "necessity.")),
+  "maintenance": dict(
+   answer="Extreme Heating, Air, Plumbing performs seasonal furnace and air conditioner tune-ups in "
+          "Mason, Ohio, from the office at 5633 Tylersville Rd. Maintenance matters most on the 1995 "
+          "to 2008 equipment cohort still running across the city. X-Plan includes two visits a year "
+          "for $249 per year.",
+   slots=[("Does maintenance buy time on end-of-life equipment?", [
+    "It buys some, and more importantly it buys warning. On the condensing furnaces and condensers "
+    "Mason installed between 1995 and 2008, a seasonal visit measures the things that predict "
+    "failure: capacitor values, refrigerant charge, blower amp draw and combustion. That turns a "
+    "January no-heat call into an autumn replacement conversation, which is a cheaper, calmer "
+    "version of the same event."])],
+   faq=("Is X-Plan worth it on equipment that is nearly done?",
+        "The accrual is the part that matters here. Members accrue 100% of their membership "
+        "investment in consecutive years toward end-of-life equipment replacement, up to $2,500 or "
+        "10 years, whichever comes first. It follows the member rather than the property.")),
+  "duct-cleaning": dict(
+   answer="Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and "
+          "dryer vents in Mason, Ohio, from the office at 5633 Tylersville Rd. A camera goes into the "
+          "ductwork before any cleaning is quoted. The work is documented with before and after photos.",
+   slots=[("What is usually in Mason ductwork?", [
+    "Construction dust from the original build, then whatever twenty-five years of living added. "
+    "Houses from the 1990s and 2000s have purpose-built duct runs with proper returns, so a "
+    "negative-pressure clean reaches the whole system. The most common finding is a blower "
+    "compartment that has never been opened, which quietly costs airflow across the entire house."])],
+   faq=("My house is only 25 years old. Do the ducts need cleaning?",
+        "Maybe not. The camera goes in first and the footage decides. Renovation work, pets and a "
+        "system that has never had the blower compartment cleaned are the usual reasons a house that "
+        "age is worth doing.")),
+  "indoor-air-quality": dict(
+   answer="Extreme Heating, Air, Plumbing installs filtration, humidity control and ventilation "
+          "equipment in Mason, Ohio, from the office at 5633 Tylersville Rd. Humidity, particulates "
+          "and ventilation are measured before anything is recommended. Extreme Heating, Air, "
+          "Plumbing averages 4.9 stars from 1,595 customer reviews.",
+   slots=[("What fits a 1990s or 2000s Mason house?", [
+    "Almost anything, which is the advantage of this housing stock. There is a real return plenum "
+    "and a real supply trunk, so a four-inch media filter, a whole-home humidifier, a UV lamp or a "
+    "ducted dehumidifier all mount without modification. The constraint here is rarely the ductwork. "
+    "It is deciding which problem is actually being solved, which is why the measurement happens "
+    "first."])],
+   faq=("Should I upgrade the one-inch filter to a four-inch?",
+        "In most Mason houses yes, because the ductwork can carry it. A thicker media filter catches "
+        "more, lasts longer and puts less strain on the blower than a high-MERV one-inch does. The "
+        "airflow gets checked before and after.")),
+ }),
+
+# ---------------------------------------------------------------- 5. Kettering
+"kettering": dict(
+ alt="A post-war ranch house on a residential street in Kettering, Ohio",
+ answer="Extreme Heating, Air, Plumbing serves Kettering, Ohio from the Beavercreek office, about "
+        "seven miles east. Heating, cooling and residential plumbing are covered for Kettering's "
+        "post-war ranches and split-levels, with 24/7 emergency service. Extreme Heating, Air, "
+        "Plumbing handles 90% same-day service and has completed 25,000+ jobs.",
+ sections=[
+  ("What goes wrong in a 1950s ranch?", [
+   "Kettering is the archetypal post-war Dayton suburb and its housing is dominated by 1950s and "
+   "1960s ranches and split-levels. Sixty to seventy-five year old ductwork was sized for low-static "
+   "equipment that no longer exists, so a modern blower pushing through it runs into resistance the "
+   "original installer never planned for.",
+   "Returns are the recurring problem: one or two of them for a whole house, which limits what a "
+   "high-MERV filter can do without starving the system. Mechanical closets are small, equipment "
+   "often sits in a crawl space or a half basement, and there is rarely room to grow."]),
+  # [NEEDS: Kettering incorporation year and ACS median year structure built. Both belong on this
+  # page as numbers.]
+  ("Which water utility covers my street?", [
+   "It depends which side of the line the house is on, and that is not a figure of speech. Most of "
+   "Kettering runs on the Montgomery County and Dayton regional supply, but small parts of Kettering "
+   "are Greene County Sanitary Engineering customers and went through the county's softening "
+   "changeover in early 2025, when delivered hardness dropped from 27 grains per gallon to about 8. "
+   "Two houses a few streets apart can need different softener advice for that reason alone."]),
+  # [NEEDS: confirmed delivered hardness for the Montgomery County and Dayton regional supply.]
+  ("Do plumbers have to register with the City of Kettering?", [
+   "Yes, on top of the state licence. Sub-trades are regulated by the Ohio Construction Industry "
+   "Licensing Board, and Kettering additionally requires plumbers to register with the city. "
+   "Kettering is also one of only four Montgomery County cities that runs its own plumbing "
+   "inspection rather than using the county programme.",
+   "Building and mechanical permits go through the Access Kettering portal, and a permit is required "
+   "to erect, install, enlarge, alter, repair, remove, convert or replace mechanical, gas, electrical "
+   "or plumbing systems. Work done without one is subject to a stop-work order, a notice of "
+   "violation, double permit fees, and removal of the work. That last part is worth knowing before "
+   "accepting a quote that comes in suspiciously low."]),
+ ],
+ table=dict(
+  caption="Common problems in Kettering, Ohio homes and what to book",
+  takeaway="Extreme Heating, Air, Plumbing finds most Kettering comfort complaints come back to "
+           "return air, not to the furnace, because 1950s ranch ductwork was sized for equipment "
+           "that is two generations gone.",
+  columns=["Common problem in Kettering homes", "Likely cause", "Service to book", "Urgency"],
+  rows=[
+   ("New high-MERV filter made airflow worse", "One or two returns for the whole house",
+    "Duct and return evaluation", "Book this month"),
+   ("Bedrooms at the end of the run stay cold",
+    "60 to 75 year old ductwork sized for low-static equipment", "Heating assessment",
+    "Book this month"),
+   ("No space for a bigger air handler", "Original post-war mechanical closet",
+    "Replacement planning visit", "Plan ahead"),
+   ("Softener behaving oddly since early 2025",
+    "Address is on the Greene County supply, which dropped to about 8 grains",
+    "Softener adjustment", "Book this month"),
+   ("Contractor quote with no permit mentioned",
+    "Kettering requires a permit and charges double fees for skipping it", "Second opinion visit",
+    "Before you sign"),
+   ("No heat in a cold snap", "Ignition, control board or gas valve failure",
+    "Emergency heating call", "Call 24/7 now"),
+  ]),
+ faq=[
+  ("Why does my Kettering ranch have hot and cold rooms?",
+   "Usually the returns. Kettering's 1950s and 1960s housing typically has one or two return paths "
+   "for the whole house, and rooms at the end of a long supply run never catch up. Adding return "
+   "capacity fixes more of these houses than replacing the furnace does."),
+  ("Can I put a high-MERV filter in a 1950s house?",
+   "Sometimes, but not always at the thickness people want. A four-inch media filter on a system "
+   "with one undersized return can starve the blower. The filter decision follows the return-air "
+   "decision, not the other way round."),
+  ("Does Kettering require its own plumbing permit?",
+   "Yes. Kettering is one of four Montgomery County cities that runs its own plumbing inspection "
+   "rather than the county programme, and plumbers must register with the city as well as holding a "
+   "state licence."),
+  ("What happens if work is done in Kettering without a permit?",
+   "The city can issue a stop-work order and a notice of violation, charge double permit fees, and "
+   "require the work to be removed. Extreme Heating, Air, Plumbing pulls permits as part of the job."),
+  ("Is Kettering water the same as Dayton water?",
+   "For most addresses, yes. Small parts of Kettering are supplied by Greene County Sanitary "
+   "Engineering instead, and those houses went from 27 grains per gallon to about 8 during the "
+   "county's early 2025 changeover."),
+ ],
+ links=[("HVAC in Centerville", "/locations/centerville"),
+        ("HVAC in Dayton", "/locations/dayton"),
+        ("indoor air quality equipment", "/indoor-air-quality")],
+ svc={
+  "heating": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces furnaces and heat pumps in "
+          "Kettering, Ohio, about seven miles from the Beavercreek office. Coverage includes the "
+          "1950s and 1960s ranches and split-levels that dominate the city. Extreme Heating, Air, "
+          "Plumbing answers the no-heat line 24/7, every day.",
+   slots=[("What limits a new furnace in a 1950s Kettering ranch?", [
+    "The ductwork it has to breathe through. Duct systems that old were sized for low-static "
+    "equipment, and a modern high-efficiency blower meets resistance the original installer never "
+    "planned for. There is usually one or two returns for the whole house, and the mechanical closet "
+    "was built to hold a furnace two sizes smaller than what gets sold today. A load calculation and "
+    "a static pressure reading before the quote saves an expensive mistake."])],
+   faq=("Will a new furnace fix my cold back bedroom?",
+        "Usually not on its own. In Kettering's post-war housing the cold room is normally a supply "
+        "and return problem, and a new furnace pushing through the same undersized duct produces the "
+        "same result at a higher price.")),
+  "cooling": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces air conditioners in Kettering, Ohio, "
+          "about seven miles from the Beavercreek office. Cooling in 1950s and 1960s ranches is "
+          "usually limited by duct capacity rather than equipment size. Extreme Heating, Air, "
+          "Plumbing handles 90% same-day service in Montgomery County.",
+   slots=[("Why does a bigger condenser not fix a Kettering ranch?", [
+    "Because the air cannot get there. Post-war duct systems in Kettering were sized for the "
+    "equipment of the day, and adding capacity upstream does nothing about a return that cannot pull "
+    "enough air back. An oversized system short cycles, removes less humidity, and leaves the house "
+    "feeling clammy at the right temperature. Where a room genuinely cannot be reached, a single "
+    "ductless head is often cheaper and better than rebuilding a duct run."])],
+   faq=("Can I add air conditioning to a half-basement furnace setup?",
+        "Usually yes. Kettering equipment often sits in a crawl space or half basement with limited "
+        "room around it, so the coil and lineset routing get surveyed on site before a price is given.")),
+  "plumbing": dict(
+   answer="Extreme Heating, Air, Plumbing handles water heaters, drains, leaks and sewer lines in "
+          "Kettering, Ohio. Kettering is one of only four Montgomery County cities that runs its own "
+          "plumbing inspection rather than the county programme. Extreme Heating, Air, Plumbing "
+          "answers the plumbing emergency line 24/7.",
+   slots=[("Which water supply covers a Kettering address?", [
+    "Most of the city runs on the Montgomery County and Dayton regional supply, but small parts of "
+    "Kettering are Greene County Sanitary Engineering customers and went through the January to "
+    "March 2025 softening changeover, from 27 grains per gallon to about 8. Softener advice that is "
+    "right on one side of that line is wrong on the other."]),
+    ("Do plumbers need to be registered with the City of Kettering?", [
+    "Yes. Sub-trades are regulated by the Ohio Construction Industry Licensing Board, and Kettering "
+    "requires plumbers to register with the city on top of that. Permits go through the Access "
+    "Kettering portal, and work done without one is subject to a stop-work order, a notice of "
+    "violation, double permit fees and removal of the work."])],
+   faq=("A contractor told me my Kettering job does not need a permit. Is that right?",
+        "Kettering requires a permit to erect, install, enlarge, alter, repair, remove, convert or "
+        "replace mechanical, gas, electrical or plumbing systems. Unpermitted work carries double "
+        "permit fees and can be ordered removed, so it is worth a second opinion.")),
+  "maintenance": dict(
+   answer="Extreme Heating, Air, Plumbing performs seasonal furnace and air conditioner tune-ups in "
+          "Kettering, Ohio, about seven miles from the Beavercreek office. Every visit ends with a "
+          "written report and photos. X-Plan includes two visits a year for $249 per year or $20.75 "
+          "per month.",
+   slots=[("What does a tune-up measure in an older Kettering house?", [
+    "Static pressure, more than anywhere else. Equipment working against 60 to 75 year old ductwork "
+    "runs at higher static than it was designed for, and that shows up as a hot blower motor, a "
+    "short filter life and a system that never quite keeps up. A tune-up that measures it gives an "
+    "honest read on whether the next spend belongs on equipment or on ducts."])],
+   faq=("Does a tune-up need a Kettering permit?",
+        "No. Permits apply to installation, alteration and replacement work, not to maintenance.")),
+  "duct-cleaning": dict(
+   answer="Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and "
+          "dryer vents in Kettering, Ohio. Duct systems in the city's 1950s and 1960s housing are "
+          "commonly 60 to 75 years old and have never been opened. The work is documented with "
+          "before and after photos.",
+   slots=[("What does the camera find in a post-war Kettering house?", [
+    "Panned joist bays used as returns, unsealed and open to the framing cavity, which is the most "
+    "common finding in this housing type. Add sixty-plus years of dust and whatever a remodel left "
+    "behind. The footage also answers a second question worth more than the cleaning: whether the "
+    "return path is worth rebuilding, which is the fix behind most Kettering comfort complaints."])],
+   faq=("My returns are just the space between the floor joists. Is that normal?",
+        "It is normal for Kettering's post-war housing and it is not ideal. Panned joist bays pull "
+        "air from the framing cavity as well as the room. The camera shows the condition, and "
+        "sealing them is often a bigger improvement than the cleaning itself.")),
+  "indoor-air-quality": dict(
+   answer="Extreme Heating, Air, Plumbing installs filtration, humidity control and ventilation "
+          "equipment in Kettering, Ohio, about seven miles from the Beavercreek office. Filter "
+          "choices in 1950s housing are limited by return capacity rather than by preference. "
+          "Extreme Heating, Air, Plumbing measures airflow before recommending equipment.",
+   slots=[("Can a 1950s Kettering house take a high-MERV filter?", [
+    "Sometimes, and sometimes only at a lower rating. A house with one or two returns and 60 to 75 "
+    "year old ductwork is already running at higher static pressure than modern equipment likes. "
+    "Dropping a dense filter into that starves the blower, which costs more comfort than the filter "
+    "gains. The order of operations here is airflow first, filtration second, and a static pressure "
+    "reading decides which filter the house can actually carry."])],
+   faq=("My new filter made the house worse. Why?",
+        "Almost certainly airflow. In Kettering's post-war housing a dense filter on a single "
+        "undersized return restricts the blower, and the symptoms look like a failing system. "
+        "Measuring static pressure identifies it in one visit.")),
+ }),
+
+# ---------------------------------------------------------------- 6. Centerville
+"centerville": dict(
+ alt="A residential street in Centerville, Ohio",
+ # [NEEDS: confirm whether cities/centerville.jpg shows the Uptown stone district. If it does,
+ # the alt becomes "Early limestone buildings in Uptown Centerville, Ohio".]
+ answer="Extreme Heating, Air, Plumbing serves Centerville, Ohio from the Beavercreek office, "
+        "about nine miles northeast. Heating, cooling and residential plumbing are covered for "
+        "Montgomery County homes, with 24/7 emergency service and 90% same-day service. Extreme "
+        "Heating, Air, Plumbing has been locally owned since 2004 and has completed 25,000+ jobs.",
+ sections=[
+  ("Why does one town need two different approaches?", [
+   "Because Centerville is two towns in one. It was founded in 1796, and its Uptown district holds "
+   "Ohio's largest collection of early stone buildings, put up from locally quarried limestone, many "
+   "of them on the National Register. Around that core sits a large late-twentieth-century suburban "
+   "ring.",
+   "Those are genuinely different jobs. In a limestone or timber structure, equipment placement, "
+   "venting routes and duct runs are constrained by the building itself, and a lot of what would be "
+   "routine elsewhere is not available. In the 1970s to 1990s subdivisions the systems are "
+   "conventional forced air, now on their second or third replacement, where the constraint is the "
+   "original equipment closet rather than the walls."]),
+  ("Did the 2025 Greene County water change affect Centerville?", [
+   "Parts of it. Most of Centerville is on the Montgomery County and Dayton regional supply, but "
+   "small parts of the city are Greene County Sanitary Engineering customers and were inside the "
+   "January to March 2025 softening changeover, when delivered hardness went from 27 grains per "
+   "gallon to about 8. Those households have a softener still set for the old water. The rest of "
+   "Centerville does not."]),
+  ("Who inspects plumbing work in Centerville?", [
+   "The city does. Centerville is one of only four Montgomery County cities excluded from the Public "
+   "Health, Dayton &amp; Montgomery County plumbing programme, alongside Dayton, Oakwood and "
+   "Kettering. So a Centerville plumbing permit is a city permit."]),
+  # [NEEDS: which authority issues residential building and mechanical permits in Centerville. The
+  # health department exclusion only tells us about plumbing; do not assume the city handles both.]
+ ],
+ table=dict(
+  caption="Common problems in Centerville, Ohio homes and what to book",
+  takeaway="Extreme Heating, Air, Plumbing works two very different housing types in Centerville, "
+           "and the right answer in a limestone building from the 1800s is rarely the right answer "
+           "in a 1980s subdivision.",
+  columns=["Common problem in Centerville homes", "Likely cause", "Service to book", "Urgency"],
+  rows=[
+   ("Nowhere obvious to run a new flue or lineset",
+    "Masonry walls in an early stone or timber structure", "On-site replacement survey",
+    "Plan ahead"),
+   ("Second or third system replacement due",
+    "1970s to 1990s subdivision equipment at end of life", "Repair or replace assessment",
+    "Plan ahead"),
+   ("Softener acting up since early 2025",
+    "Address is on the Greene County supply, now about 8 grains", "Softener adjustment",
+    "Book this month"),
+   ("Water heater underperforming", "Scale from years of harder water", "Water heater service",
+    "Book this month"),
+   ("Uneven temperatures upstairs", "Duct runs constrained by an older structure",
+    "Duct evaluation", "Book this month"),
+   ("No heat or water on the floor", "Equipment or supply failure", "Emergency call",
+    "Call 24/7 now"),
+  ]),
+ faq=[
+  ("Can you work on a historic stone house in Uptown Centerville?",
+   "Yes. Centerville has Ohio's largest collection of early stone buildings and they need a survey "
+   "before a quote, because venting routes, equipment placement and duct runs are limited by the "
+   "structure. That visit happens before any number gets put on paper."),
+  ("Does Centerville issue its own plumbing permit?",
+   "Yes. Centerville is one of four Montgomery County cities excluded from the county's plumbing "
+   "inspection programme, so plumbing permits come from the city."),
+  ("Did Centerville water get softer in 2025?",
+   "Only for the parts of the city supplied by Greene County Sanitary Engineering. Those addresses "
+   "went from 27 grains per gallon to about 8 between January and March 2025. The rest of "
+   "Centerville is on the Montgomery County and Dayton regional supply and did not change."),
+  ("How far away is the nearest technician?",
+   "About nine miles. Centerville work is dispatched from the Extreme Heating, Air, Plumbing office "
+   "in Beavercreek."),
+  ("Do you replace systems in 1980s subdivisions, or only repair them?",
+   "Both. Houses from Centerville's 1970s to 1990s ring are typically on their second or third "
+   "system, and the ductwork is usually reusable, which keeps a replacement to an equipment swap."),
+ ],
+ links=[("HVAC in Kettering", "/locations/kettering"),
+        ("HVAC in Springboro", "/locations/springboro"),
+        ("water treatment and softeners", "/plumbing/water-treatment")],
+ svc={
+  "heating": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces furnaces and heat pumps in "
+          "Centerville, Ohio, about nine miles from the Beavercreek office. Coverage runs across a "
+          "town founded in 1796 and its late-twentieth-century suburban ring. Extreme Heating, Air, "
+          "Plumbing answers the no-heat line 24/7, every day.",
+   slots=[("How does the housing era change the heating job?", [
+    "Substantially. In Centerville's early limestone and timber structures, venting routes, "
+    "equipment placement and duct runs are set by the building, and a lot of what is routine "
+    "elsewhere is simply not possible. In the 1970s to 1990s subdivisions around the historic core "
+    "the systems are conventional forced air on their second or third replacement, where the "
+    "constraint is the original equipment closet. Same city, two different surveys."])],
+   faq=("Can you vent a modern high-efficiency furnace in an old stone house?",
+        "It depends on the wall and the route, which is why these jobs get a survey before a price. "
+        "Condensing furnaces need a sidewall or roof termination with specific clearances, and in a "
+        "masonry structure that is the part that decides the job.")),
+  "cooling": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces air conditioners in Centerville, "
+          "Ohio, about nine miles from the Beavercreek office. Coverage includes both the historic "
+          "district and the surrounding 1970s to 1990s subdivisions. Extreme Heating, Air, Plumbing "
+          "handles 90% same-day service in Montgomery County.",
+   slots=[("Where does the condenser go on a historic property?", [
+    "That is the first question on a Centerville job in the Uptown area, and it is answered on site. "
+    "Masonry walls limit where a lineset can pass, clearances around the outdoor unit are tighter on "
+    "older lots, and appearance matters on a property that may be on the National Register. In the "
+    "subdivisions around the core none of that applies and the job is a standard replacement."])],
+   faq=("Is a ductless system a good fit for an older Centerville house?",
+        "Often, yes. Where duct runs cannot be routed through masonry, ductless heads cool room by "
+        "room with only a small penetration for the lineset, which is usually the least invasive "
+        "option available.")),
+  "plumbing": dict(
+   answer="Extreme Heating, Air, Plumbing handles water heaters, drains, leaks and sewer lines in "
+          "Centerville, Ohio. Centerville is one of four Montgomery County cities that runs its own "
+          "plumbing inspection rather than the county programme. Extreme Heating, Air, Plumbing "
+          "answers the plumbing emergency line 24/7.",
+   slots=[("Did Centerville's water change in 2025?", [
+    "For part of the city. Most of Centerville is on the Montgomery County and Dayton regional "
+    "supply, but small parts are Greene County Sanitary Engineering customers and were inside the "
+    "January to March 2025 softening changeover, when hardness went from 27 grains per gallon to "
+    "about 8. Those households have a softener still set for the old water. The rest of the city "
+    "does not."]),
+    ("Who inspects plumbing in Centerville?", [
+    "The city. Public Health, Dayton &amp; Montgomery County excludes Centerville, Dayton, Oakwood "
+    "and Kettering from its county plumbing programme, so a Centerville plumbing permit is a city "
+    "permit."])],
+   faq=("How do I find out which water utility serves my Centerville address?",
+        "The bill answers it fastest. Greene County Sanitary Engineering customers saw hardness drop "
+        "to about 8 grains per gallon in early 2025; Montgomery County and Dayton regional customers "
+        "did not.")),
+  "maintenance": dict(
+   answer="Extreme Heating, Air, Plumbing performs seasonal furnace and air conditioner tune-ups in "
+          "Centerville, Ohio, about nine miles from the Beavercreek office. Historic properties and "
+          "1980s subdivisions are both covered. X-Plan includes two visits a year and costs $249 per "
+          "year or $20.75 per month.",
+   slots=[("Why does maintenance matter on an older Centerville property?", [
+    "Because replacement is harder here. When the equipment in a historic structure fails, the "
+    "options are constrained by the building, and the survey takes longer than a subdivision swap. "
+    "Keeping the current system healthy is worth more when the alternative is a complicated project "
+    "rather than a same-week changeout."])],
+   faq=("Do you service equipment in a house on the National Register?",
+        "Yes. The work is the same; the planning is not. Anything that touches the structure gets "
+        "discussed before it happens.")),
+  "duct-cleaning": dict(
+   answer="Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and "
+          "dryer vents in Centerville, Ohio, about nine miles from the Beavercreek office. Duct "
+          "layouts in the older parts of a town founded in 1796 are constrained by the structure and "
+          "vary house to house. Every job is photographed before the work and after it.",
+   slots=[("Why does a Centerville quote start with a camera?", [
+    "Because the duct layout is not predictable here. In a 1980s subdivision the runs are where you "
+    "expect them. In an early stone or timber structure they were fitted around whatever the "
+    "building allowed, so the camera maps the system before anyone quotes a price for cleaning it."])],
+   faq=("Are the ducts in an old house even cleanable?",
+        "Usually, though not always along the whole run. The footage shows where access exists and "
+        "where it does not, and the quote covers what can actually be reached.")),
+  "indoor-air-quality": dict(
+   answer="Extreme Heating, Air, Plumbing installs filtration, humidity control and ventilation "
+          "equipment in Centerville, Ohio, about nine miles from the Beavercreek office. Equipment "
+          "options differ between a historic district founded in 1796 and the surrounding "
+          "late-twentieth-century subdivisions. Humidity and particulates are measured before "
+          "anything is recommended.",
+   slots=[("What works in an old house that does not work in a new one?", [
+    "Humidity control, mostly. Older Centerville structures leak more air, so they run dry in winter "
+    "and the fix is a whole-home humidifier rather than a purifier. Newer subdivision housing holds "
+    "moisture and stale air instead, which points toward dehumidification and ventilation. Same "
+    "city, opposite problems, which is why the measurement comes before the recommendation."])],
+   faq=("My old house has static shocks all winter. Is that fixable?",
+        "Yes, and it is a humidity problem rather than an electrical one. A whole-home humidifier on "
+        "the supply duct addresses it, and the target level gets set from a measurement rather than "
+        "a guess.")),
+        # [NEEDS: the winter humidity target range Extreme's technicians recommend.]
+ }),
+
+# ---------------------------------------------------------------- 7. West Chester
+"west-chester": dict(
+ alt="A subdivision street in West Chester Township, Ohio",
+ answer="Extreme Heating, Air, Plumbing serves West Chester Township, Ohio from the Mason office, "
+        "about seven miles east. Heating, cooling and residential plumbing are covered for Ohio's "
+        "most populous township, which had 65,242 residents in 2020. Extreme Heating, Air, Plumbing "
+        "offers 24/7 emergency service and 90% same-day service across the Cincinnati metro.",
+ sections=[
+  ("Why is so much West Chester equipment failing together?", [
+   "The growth curve explains it. West Chester went from 6,236 residents in 1960 to 12,795 in 1970, "
+   "23,553 in 1980, 54,895 in 2000 and 65,242 in 2020. The build-out landed between 1980 and 2000, "
+   "which produced a very large and very uniform cohort of houses whose equipment was installed or "
+   "first replaced in the late 1990s and 2000s. That cohort is reaching end of life more or less "
+   "together.",
+   "Beckett Ridge, Olde West Chester, Wetherington, Maud, Port Union, Pisgah and Tylersville are all "
+   "inside the same pattern, so a technician who has worked one subdivision recognises the next one."]),
+  ("Which utility supplies water in West Chester?", [
+   "Butler County Water &amp; Sewer, not Greater Cincinnati Water Works and not the City of Mason. "
+   "Butler County reports total hardness of 131 mg/L, about 7.7 grains per gallon, across a system "
+   "that also covers Liberty, Fairfield, Hanover and Ross townships, Monroe and New Miami. Mason is "
+   "seven miles away and on a different utility entirely, which is worth knowing before applying "
+   "advice from one town to the other. Duke Energy Ohio supplies both gas and electricity here, so "
+   "there is one bill and one shut-off rather than two."]),
+  ("How long does a Butler County HVAC permit take?", [
+   "Typically five to seven business days. West Chester is a township and does not run its own "
+   "building department, so permits go to the Butler County Department of Development, Building "
+   "&amp; Zoning at 130 High Street in Hamilton, through the Accela Citizen Portal. Butler County "
+   "has a dedicated application and addendum specifically for HVAC replacement, which is unusual and "
+   "genuinely useful: the paperwork for a straight equipment swap is its own form rather than a "
+   "general construction permit."]),
+ ],
+ table=dict(
+  caption="Common problems in West Chester Township, Ohio homes and what to book",
+  takeaway="Extreme Heating, Air, Plumbing sees West Chester's 1980 to 2000 housing reaching first "
+           "or second equipment replacement on a common schedule, on ductwork that is generally "
+           "still fit for reuse.",
+  columns=["Common problem in West Chester homes", "Likely cause", "Service to book", "Urgency"],
+  rows=[
+   ("Second repair on the same system this season",
+    "Late 1990s or 2000s equipment at end of life", "Repair or replace assessment", "Plan ahead"),
+   ("Neighbours all replacing systems the same year",
+    "Subdivision built out 1980 to 2000 with equipment installed together",
+    "Replacement planning visit", "Plan ahead"),
+   ("Replacement job waiting on paperwork",
+    "Butler County permits typically run five to seven business days",
+    "Schedule around the permit window", "Same month"),
+   ("Water heater scaling", "About 7.7 grain water from Butler County Water &amp; Sewer",
+    "Water heater service", "Book this month"),
+   ("Gas and electric both out", "Duke Energy Ohio supplies both fuels in this township",
+    "Utility first, then service call", "Same day"),
+   ("No cooling in a heat wave", "Compressor, capacitor or refrigerant failure",
+    "Emergency cooling call", "Call 24/7 now"),
+  ]),
+ faq=[
+  ("Is West Chester a city or a township, and does that change anything?",
+   "It is a township, and it changes who issues the permit. West Chester does not run its own "
+   "building department, so permits go to the Butler County Department of Development, Building "
+   "&amp; Zoning at 130 High Street in Hamilton."),
+  ("How long does a permit take for a system replacement in West Chester?",
+   "Butler County typically turns permits around in five to seven business days, and it has a "
+   "dedicated application and addendum for HVAC replacement. Extreme Heating, Air, Plumbing handles "
+   "the filing."),
+  ("Is West Chester water the same as Mason water?",
+   "No. West Chester is on Butler County Water &amp; Sewer at about 7.7 grains per gallon, while "
+   "Mason seven miles away is supplied by Greater Cincinnati Water Works. Different utility, "
+   "different water quality report."),
+  ("Do you serve Beckett Ridge and Wetherington?",
+   "Yes. Beckett Ridge, Olde West Chester, Wetherington, Maud, Port Union, Pisgah and Tylersville "
+   "are all inside West Chester Township and inside the normal coverage area from the Mason office."),
+  ("Why do so many West Chester houses need a system at the same time?",
+   "Because they were built at the same time. The township went from 23,553 residents in 1980 to "
+   "54,895 in 2000, so a very large group of houses received equipment inside a narrow window and is "
+   "reaching end of life together."),
+ ],
+ links=[("HVAC in Mason", "/locations/mason"),
+        ("HVAC in Cincinnati", "/locations/cincinnati"),
+        ("financing a replacement system", "/financing-options")],
+ svc={
+  "heating": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces furnaces and heat pumps in West "
+          "Chester Township, Ohio, about seven miles from the Mason office. Much of the township's "
+          "equipment was installed or first replaced in the late 1990s and 2000s. Extreme Heating, "
+          "Air, Plumbing answers the no-heat line 24/7.",
+   slots=[("How long does a Butler County replacement permit take?", [
+    "Typically five to seven business days. West Chester is a township without its own building "
+    "department, so permits go to the Butler County Department of Development, Building &amp; Zoning "
+    "at 130 High Street in Hamilton, filed through the Accela Citizen Portal. Butler County has a "
+    "dedicated application and addendum for HVAC replacement, which keeps a straight equipment swap "
+    "out of the general construction queue. Planning a replacement before the first cold week rather "
+    "than during it is the practical consequence."])],
+   faq=("Why do my neighbours all seem to need a furnace at the same time?",
+        "Because the houses were built at the same time. West Chester grew from 23,553 residents in "
+        "1980 to 54,895 in 2000, so a large group of houses received equipment inside a narrow "
+        "window and is reaching end of life together.")),
+  "cooling": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces air conditioners in West Chester "
+          "Township, Ohio, about seven miles from the Mason office. Coverage includes Beckett Ridge, "
+          "Olde West Chester, Wetherington, Maud, Port Union, Pisgah and Tylersville. Extreme "
+          "Heating, Air, Plumbing handles 90% same-day service.",
+   slots=[("What is the advantage of a uniform housing stock?", [
+    "Predictability. West Chester's build-out ran 1980 to 2000, so subdivisions share plans, "
+    "equipment locations and duct layouts. A technician who has worked one house in Beckett Ridge "
+    "has a good idea what is in the next one, which shortens diagnosis and makes a replacement quote "
+    "more accurate before anyone opens a wall."])],
+   faq=("Do you cover Beckett Ridge and Wetherington?",
+        "Yes. Beckett Ridge, Olde West Chester, Wetherington, Maud, Port Union, Pisgah and "
+        "Tylersville are all inside West Chester Township and inside the normal coverage area from "
+        "the Mason office.")),
+  "plumbing": dict(
+   answer="Extreme Heating, Air, Plumbing handles water heaters, drains, leaks and sewer lines in "
+          "West Chester Township, Ohio. Butler County Water &amp; Sewer supplies the township at "
+          "total hardness of 131 mg/L, about 7.7 grains per gallon. Extreme Heating, Air, Plumbing "
+          "answers the plumbing emergency line 24/7, every day.",
+   slots=[("Which utility supplies West Chester water?", [
+    "Butler County Water &amp; Sewer, which also covers Liberty, Fairfield, Hanover and Ross "
+    "townships, Monroe and New Miami. Total hardness is 131 mg/L, about 7.7 grains per gallon. Mason "
+    "seven miles east is on Greater Cincinnati Water Works instead, so water advice does not "
+    "transfer between the two towns even though the drive is ten minutes."]),
+    ("Who issues a plumbing permit in West Chester?", [
+    "Butler County. The township does not run its own building department, so permits go to the "
+    "Butler County Department of Development, Building &amp; Zoning at 130 High Street in Hamilton, "
+    "through the Accela Citizen Portal."])],
+   faq=("Is West Chester water hard enough to need a softener?",
+        "At about 7.7 grains per gallon it is moderately hard. That is enough to scale a water "
+        "heater over a decade and enough that many households choose to soften, and not so hard that "
+        "it is a necessity. It is a preference call rather than a repair.")),
+  "maintenance": dict(
+   answer="Extreme Heating, Air, Plumbing performs seasonal furnace and air conditioner tune-ups in "
+          "West Chester Township, Ohio, about seven miles from the Mason office. Maintenance matters "
+          "most on the township's late 1990s and 2000s equipment. X-Plan includes two visits a year "
+          "for $249 per year.",
+   slots=[("Why does timing matter in a subdivision that ages together?", [
+    "Because demand spikes together too. When a whole street's equipment reaches end of life in the "
+    "same few years, the busiest weeks are the worst time to discover it. A seasonal visit measures "
+    "the values that predict failure and turns an emergency into a planned replacement, which also "
+    "means the Butler County permit window of five to seven business days is not sitting between a "
+    "household and heat."])],
+   faq=("Does a tune-up need a Butler County permit?",
+        "No. Permits apply to installation and replacement work, not maintenance.")),
+  "duct-cleaning": dict(
+   answer="Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and "
+          "dryer vents in West Chester Township, Ohio. Housing built between 1980 and 2000 has "
+          "purpose-built duct runs that a negative-pressure clean can reach end to end. Every job is "
+          "photographed before the work and after it.",
+   slots=[("What is typical in West Chester ductwork?", [
+    "Original construction dust, then whatever twenty to forty years added. Because the subdivisions "
+    "share layouts, the findings repeat: the same trunk runs, the same return locations, and blower "
+    "compartments that have never been opened. The camera still goes in first, because a house that "
+    "had the work done five years ago does not need it again."])],
+   faq=("How long does duct cleaning take in a typical West Chester house?",
+        "Most are a single visit, including the dryer vent.")),
+  "indoor-air-quality": dict(
+   answer="Extreme Heating, Air, Plumbing installs filtration, humidity control and ventilation "
+          "equipment in West Chester Township, Ohio, about seven miles from the Mason office. "
+          "Humidity, particulates and ventilation are measured before anything is recommended. "
+          "Extreme Heating, Air, Plumbing averages 4.9 stars from 1,595 customer reviews.",
+   slots=[("What does 1980s and 1990s construction need?", [
+    "Filtration more often than ventilation. Houses from West Chester's build-out sit between the "
+    "leaky older stock further north and the very tight construction going up now, so they are "
+    "usually not sealed enough to trap stale air but are running one-inch filters that catch very "
+    "little. A four-inch media filter on a real return plenum is the common upgrade, and the "
+    "ductwork here can carry it."])],
+   faq=("Should I add a UV light or a better filter first?",
+        "The filter, in most West Chester houses. A media filter handles the particulates people "
+        "actually notice. UV targets microbial growth on the coil, which is a different problem and "
+        "a smaller one unless the coil shows it.")),
+ }),
+
+# ---------------------------------------------------------------- 8. Huber Heights
+"huber": dict(
+ alt="Brick homes on a residential street in Huber Heights, Ohio",
+ answer="Extreme Heating, Air, Plumbing serves Huber Heights, Ohio from the Beavercreek office, "
+        "about twelve miles southeast. Coverage includes the brick homes Huber Homes built between "
+        "1956 and 1992, along with newer construction. Extreme Heating, Air, Plumbing offers 24/7 "
+        "emergency service and 90% same-day service in Montgomery County.",
+ sections=[
+  ("Why does one contractor already know your floor plan?", [
+   "Because most of Huber Heights came from one builder. Charles H. Huber started building in 1956, "
+   "and Huber Homes put up 10,707 single-family houses and 2,258 multi-family units in the community "
+   "between 1956 and 1992. The city's own motto is America's largest community of brick homes.",
+   "The practical consequence is that a narrow set of plans repeats across thousands of houses: the "
+   "same equipment locations, the same duct layouts, the same chase and closet dimensions. A "
+   "technician who has worked a few hundred of them knows what is behind the wall before opening it, "
+   "which shortens the diagnosis and takes most of the guesswork out of a replacement quote."]),
+  # [NEEDS: three or four specifics from Extreme's own technicians about an original Huber home.
+  # Original heating type, typical furnace or air handler location, duct material and sizing,
+  # whether returns are ducted or panned joist bays, typical service panel capacity, whether the
+  # original system was sized for a later A/C add-on. This is the highest-value page in the tree
+  # and it is currently running on public history rather than field experience.]
+  ("What did the Rip Rap Road softening project change?", [
+   "Huber Heights runs its own municipal water system, drawing from the Great Miami Buried Valley "
+   "Aquifer and treating at the Rip Rap Road Water Treatment Plant. An $11 million softening project "
+   "cut total hardness from about 310 mg/L to about 120 mg/L, roughly 18 grains per gallon down to "
+   "about 7. Any house with a softener installed before that project is still set for the old water, "
+   "and it will be over-softening and burning salt until someone adjusts it."]),
+  # [NEEDS: completion year of the Rip Rap Road softening project.]
+  ("What does a plumbing permit cost in Huber Heights?", [
+   "Huber Heights uses the county programme rather than running its own inspection, so plumbing "
+   "permits go to Public Health, Dayton &amp; Montgomery County at the Reibold Building, 117 S Main "
+   "Street, Dayton. Its published fees are $45 for a new installation permit, $30 for a replacement "
+   "installation permit, $14 per fixture or device, and $50 for sewer and water.",
+   "A permit is required for installation, alteration or repair of plumbing, drainage or water "
+   "supply systems, including replacement fixtures. There is a homeowner appliance application with "
+   "affidavit for residential water heaters. Counter hours are Monday to Friday, 8:00 to 11:30 and "
+   "12:30 to 4:00."]),
+  # [NEEDS: whether the City of Huber Heights or Montgomery County Building Regulations issues
+  # residential mechanical permits. The county covers townships; Huber Heights is a city.]
+ ],
+ table=dict(
+  caption="Common problems in Huber Heights, Ohio homes and what to book",
+  takeaway="Extreme Heating, Air, Plumbing sees the same faults repeat across Huber Heights because "
+           "thousands of the houses share a builder, a date range and a floor plan.",
+  columns=["Common problem in Huber Heights homes", "Likely cause", "Service to book", "Urgency"],
+  rows=[
+   ("Same fault the neighbour had last winter",
+    "Shared floor plan and equipment layout across Huber Homes stock", "Heating assessment",
+    "Book this week"),
+   ("Original equipment closet too small for a swap",
+    "Chase and closet dimensions repeated across the 1956 to 1992 build", "Replacement survey",
+    "Plan ahead"),
+   ("Softener over-softening since the plant upgrade",
+    "Set for about 18 grain water, now receiving about 7", "Softener adjustment", "Book this month"),
+   ("Water heater scaled and slow", "Years of pre-project hardness at about 310 mg/L",
+    "Water heater service", "Book this month"),
+   ("Replacing a water heater yourself",
+    "County permit required, including for replacement fixtures", "Plumbing visit with permit",
+    "Before the work"),
+   ("No heat overnight", "Ignition, control or gas valve failure", "Emergency heating call",
+    "Call 24/7 now"),
+  ]),
+ faq=[
+  ("Have you worked on a house like mine in Huber Heights?",
+   "Very likely the exact plan. Huber Homes built 10,707 single-family houses in the community "
+   "between 1956 and 1992 from a narrow set of designs, so equipment locations and duct layouts "
+   "repeat across thousands of addresses."),
+  ("Do I need a permit to replace a water heater in Huber Heights?",
+   "Yes. Public Health, Dayton &amp; Montgomery County requires a permit for installation, "
+   "alteration or repair of plumbing systems, including replacement fixtures, and publishes a $30 "
+   "replacement installation fee. There is also a homeowner appliance application with affidavit for "
+   "residential water heaters."),
+  ("Why is my softener suddenly using more salt?",
+   "Because the water got softer and the softener did not. Huber Heights cut hardness from about 310 "
+   "mg/L to about 120 mg/L with the Rip Rap Road softening project, and a unit still set for the old "
+   "figure will over-soften."),
+  ("Where does Huber Heights water come from?",
+   "The city runs its own municipal system, drawing from the Great Miami Buried Valley Aquifer and "
+   "treating at the Rip Rap Road Water Treatment Plant."),
+  ("How far is the nearest technician from Huber Heights?",
+   "About twelve miles. Huber Heights work is dispatched from the Extreme Heating, Air, Plumbing "
+   "office in Beavercreek."),
+ ],
+ links=[("water heater repair", "/plumbing/water-heater/repair"),
+        ("HVAC in Dayton", "/locations/dayton"),
+        ("HVAC in Vandalia", "/locations/vandalia")],
+ svc={
+  "heating": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces furnaces and heat pumps in Huber "
+          "Heights, Ohio, about twelve miles from the Beavercreek office. Coverage includes the "
+          "10,707 single-family homes Huber Homes built in the community between 1956 and 1992. "
+          "Extreme Heating, Air, Plumbing answers the no-heat line 24/7.",
+   slots=[("Why does a Huber Heights diagnosis go faster?", [
+    "Because the houses repeat. Huber Homes built 10,707 single-family houses and 2,258 multi-family "
+    "units here between 1956 and 1992, from a narrow set of plans, which means the same equipment "
+    "locations, chase dimensions and duct layouts recur across thousands of addresses. A technician "
+    "who has worked several hundred of them knows the layout before opening anything."])],
+   faq=("Have you worked on a house like mine?",
+        "In Huber Heights, very likely the exact plan. 10,707 single-family houses here came from "
+        "one builder between 1956 and 1992, so the floor plans repeat across whole neighbourhoods.")),
+  "cooling": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces air conditioners in Huber Heights, "
+          "Ohio, about twelve miles from the Beavercreek office. Coverage includes the brick homes "
+          "built between 1956 and 1992 and the newer construction around them. Extreme Heating, Air, "
+          "Plumbing handles 90% same-day service.",
+   slots=[("Do original Huber homes have room for modern cooling?", [
+    "The equipment closets and chases repeat across the stock, which makes the answer consistent "
+    "rather than a surprise on the day. Where a coil or an air handler will physically fit is known "
+    "before the survey rather than discovered during it, and that is the difference between an "
+    "accurate quote and a revised one."])],
+   # [NEEDS: tech confirmation on whether original Huber systems were sized for a later A/C add-on.
+   # The paragraph above is deliberately general because that answer is missing.]
+   faq=("My neighbour had the same fault last summer. Is that a coincidence?",
+        "Probably not. Huber Heights houses share builder, date range and floor plan, so equipment "
+        "ages and fails in patterns across a street rather than at random.")),
+  "plumbing": dict(
+   h1="Plumbers in {X}: repairs, water heaters and softeners",
+   answer="Extreme Heating, Air, Plumbing handles water heaters, drains, leaks and water softeners "
+          "in Huber Heights, Ohio. The city runs its own municipal water system and softened it with "
+          "an $11 million plant project. Total hardness fell from about 310 mg/L to about 120 mg/L. "
+          "Extreme Heating, Air, Plumbing answers the plumbing line 24/7.",
+   slots=[("What did the Rip Rap Road project change?", [
+    "Huber Heights treats its own water at the Rip Rap Road plant, drawing from the Great Miami "
+    "Buried Valley Aquifer. The $11 million softening project took total hardness from about 310 "
+    "mg/L to about 120 mg/L, roughly 18 grains per gallon down to about 7. A softener installed "
+    "before that is still set for 18 grain water and is over-softening and wasting salt until it is "
+    "adjusted."]),
+    ("What does a Huber Heights plumbing permit cost?", [
+    "Plumbing here goes to Public Health, Dayton &amp; Montgomery County, at the Reibold Building, "
+    "117 S Main Street, Dayton. Its published fees are $45 for a new installation permit, $30 for a "
+    "replacement, $14 per fixture or device, and $50 for sewer and water. A permit is required for "
+    "installation, alteration or repair of plumbing systems, including replacement fixtures. There "
+    "is a homeowner appliance application with affidavit for residential water heaters."])],
+   faq=("Do I need a permit to swap a water heater myself in Huber Heights?",
+        "Yes. Public Health, Dayton &amp; Montgomery County requires a permit for plumbing work "
+        "including replacement fixtures, and publishes a homeowner appliance application with "
+        "affidavit for residential water heaters.")),
+  "maintenance": dict(
+   answer="Extreme Heating, Air, Plumbing performs seasonal furnace and air conditioner tune-ups in "
+          "Huber Heights, Ohio, about twelve miles from the Beavercreek office. Every visit ends "
+          "with a written report and photos. X-Plan includes two visits a year for $249 per year or "
+          "$20.75 per month.",
+   slots=[("What does a tune-up check in a Huber home?", [
+    "The same short list, in the same places, which is the advantage of a repeating floor plan. The "
+    "visit also catches the softener and humidifier question that came with the city's water change, "
+    "because both are calibrated for water Huber Heights no longer delivers and both are within "
+    "reach while the technician is already at the equipment."])],
+   faq=("Is a tune-up worth it if the system is original to the house?",
+        "On equipment that old the value is the safety check and an honest read on remaining life, "
+        "more than efficiency. That is worth having before a cold snap rather than during one.")),
+  "duct-cleaning": dict(
+   answer="Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and "
+          "dryer vents in Huber Heights, Ohio. Duct layouts repeat across the 10,707 homes Huber "
+          "Homes built between 1956 and 1992, so access points are predictable. Every job is "
+          "photographed before the work and after it.",
+   slots=[("Why is a Huber Heights duct clean predictable?", [
+    "Because the duct layout came off the same set of plans. Access points, trunk routing and "
+    "register locations repeat across thousands of houses, so a negative-pressure clean can be "
+    "planned rather than improvised. The camera still goes in first, and the footage still decides "
+    "whether the job is worth doing on that specific house."])],
+   faq=("Do you clean the dryer vent on the same visit?",
+        "Yes, end to end, on the same visit.")),
+  "indoor-air-quality": dict(
+   answer="Extreme Heating, Air, Plumbing installs filtration, humidity control and ventilation "
+          "equipment in Huber Heights, Ohio, about twelve miles from the Beavercreek office. "
+          "Humidity, particulates and ventilation are measured before anything is recommended. "
+          "Extreme Heating, Air, Plumbing averages 4.9 stars from 1,595 customer reviews.",
+   slots=[("Will a whole-home filter fit in a Huber home?", [
+    "The closet and chase dimensions repeat across the stock, so what fits in one house fits in the "
+    "next. That means the answer is known before the visit rather than after it, including when the "
+    "honest answer is that a four-inch media cabinet will not fit and a different filtration "
+    "approach is needed."])],
+   faq=("My humidifier pad keeps scaling. Will the water change help?",
+        "It should. Huber Heights cut hardness from about 310 mg/L to about 120 mg/L, so a pad "
+        "fitted before the project was sized for much harder water. Checking the humidifier and the "
+        "softener together is the sensible order.")),
+ }),
+
+# ---------------------------------------------------------------- 9. Springboro
+"springboro": dict(
+ alt="A newer two-storey neighbourhood in Springboro, Ohio",
+ answer="Extreme Heating, Air, Plumbing serves Springboro, Ohio from the Waynesville office, about "
+        "eleven miles southeast. Heating, cooling and residential plumbing are covered for a city "
+        "that sits in two counties, Warren and Montgomery. Extreme Heating, Air, Plumbing offers "
+        "24/7 emergency service and 90% same-day service between the two metros.",
+ sections=[
+  ("Why does the answer change depending on the address?", [
+   "Springboro straddles the Warren and Montgomery county line, and that is not trivia. It changes "
+   "who inspects the work and who supplies the water, on the same city map. The City of Springboro "
+   "runs its own state-certified Building Department at 320 W. Central Ave, and that covers building "
+   "permits citywide. Plumbing is the split: the county plumbing departments handle it, and which "
+   "county depends on which side of the line the house sits on."]),
+  # [NEEDS: written confirmation from the Springboro Building Department, (937) 748-9791, covering
+  # (a) the plumbing split as described and (b) whether a mechanical permit is required for a
+  # like-for-like HVAC replacement. One aggregator claims a straight swap needs no permit there.
+  # That contradicts Cincinnati and Kettering and is not published here.]
+  ("Which water supply covers my side of the line?", [
+   "On the Warren County side, Warren County Water &amp; Sewer, which finished nanofiltration "
+   "membrane softening in 2022 and cut hardness by roughly 55%, down to about 8 grains per gallon "
+   "across 30,000-plus customers. That means a softener installed before 2022 on that side of the "
+   "city is still set for water that is no longer being delivered."]),
+  # [NEEDS: the supplier and delivered hardness for the Montgomery County portion of Springboro.]
+  ("What is different about newer Springboro housing?", [
+   "Springboro's growth is concentrated in the 1990s through the 2010s, so the stock is newer, "
+   "larger and more often two storeys than anything else in the Dayton service area. Bigger "
+   "two-storey houses have a stack effect that a single system fights all year, which is why zoning "
+   "and second-system conversations come up here far more than they do in Kettering or Dayton.",
+   "Tighter modern construction also changes the ventilation question: these houses hold humidity "
+   "and indoor air pollutants better than a 1950s ranch does, which is an argument for mechanical "
+   "fresh air rather than for opening a window."]),
+  # [NEEDS: ACS median household income, median home value and year-structure-built distribution.]
+ ],
+ table=dict(
+  caption="Common problems in Springboro, Ohio homes and what to book",
+  takeaway="Extreme Heating, Air, Plumbing finds Springboro's recurring problems come from newer "
+           "two-storey houses and from a county line that runs through the middle of the city.",
+  columns=["Common problem in Springboro homes", "Likely cause", "Service to book", "Urgency"],
+  rows=[
+   ("Upstairs runs hot while downstairs runs cold",
+    "Stack effect in a larger two-storey house on one system",
+    "Zoning or second-system assessment", "Plan ahead"),
+   ("Humidity stays high indoors in summer", "Tighter modern construction holding moisture",
+    "Dehumidification assessment", "Book this month"),
+   ("Stuffy air with no obvious cause", "Newer house with limited mechanical fresh air",
+    "Ventilation assessment", "Book this month"),
+   ("Softener behaving oddly on the Warren County side",
+    "Set for pre-2022 hardness, now receiving about 8 grains", "Softener adjustment",
+    "Book this month"),
+   ("Confusion over which county inspects the work",
+    "The city sits across the Warren and Montgomery line", "Ask the office before the job",
+    "Before the work"),
+   ("No heat or water on the floor", "Equipment or supply failure", "Emergency call",
+    "Call 24/7 now"),
+  ]),
+ faq=[
+  ("Which county am I in for permit purposes?",
+   "It depends on the address. Springboro sits across the Warren and Montgomery county line, and "
+   "plumbing is handled by the county departments while the City of Springboro runs its own building "
+   "department at 320 W. Central Ave. Extreme Heating, Air, Plumbing checks the address before filing."),
+  ("Did Springboro water get softer?",
+   "On the Warren County side, yes. Warren County Water &amp; Sewer finished nanofiltration "
+   "softening in 2022 and cut hardness by roughly 55%, to about 8 grains per gallon."),
+  ("My two-storey house never balances. Do I need two systems?",
+   "Not always. Springboro's larger 1990s through 2010s houses often respond to zoning an existing "
+   "system rather than adding a second one. Which one makes sense depends on the ductwork, and that "
+   "is a survey, not a phone call."),
+  ("Why is my newer house stuffier than my old one was?",
+   "Tighter construction. Newer Springboro houses lose far less air through the shell, which is good "
+   "for bills and bad for stale air and humidity. The fix is usually mechanical ventilation rather "
+   "than a bigger system."),
+  ("How far is the nearest office from Springboro?",
+   "About eleven miles. Springboro work is dispatched from the Extreme Heating, Air, Plumbing office "
+   "in Waynesville."),
+ ],
+ links=[("HVAC in Centerville", "/locations/centerville"),
+        ("HVAC in Franklin", "/locations/franklin"),
+        ("indoor air quality equipment", "/indoor-air-quality")],
+ svc={
+  "heating": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces furnaces and heat pumps in "
+          "Springboro, Ohio, about eleven miles from the Waynesville office. Coverage includes the "
+          "larger two-storey houses built across the city from the 1990s onward. Extreme Heating, "
+          "Air, Plumbing answers the no-heat line 24/7, every day.",
+   slots=[("Why does a two-storey Springboro house never balance?", [
+    "Stack effect. Warm air rises through a taller building envelope, so a single system fighting it "
+    "heats the upper floor while the lower floor calls for more. Springboro's growth is concentrated "
+    "in the 1990s through the 2010s, which produced more two-storey houses than anywhere else on the "
+    "Dayton side. Zoning an existing system usually costs less than a second system and solves the "
+    "same complaint, and which one applies depends on the ductwork."])],
+   faq=("Do I need two furnaces for a two-storey house?",
+        "Not usually. Zoning dampers on an existing system solve most Springboro balance complaints. "
+        "A second system makes sense when the duct layout cannot be zoned or when a large addition "
+        "changed the load.")),
+  "cooling": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces air conditioners in Springboro, Ohio, "
+          "about eleven miles from the Waynesville office. Larger two-storey houses commonly run hot "
+          "upstairs and cold downstairs on a single system. Extreme Heating, Air, Plumbing handles "
+          "90% same-day service between the metros.",
+   slots=[("What fixes hot upstairs and cold downstairs?", [
+    "Rarely a bigger condenser. In Springboro's larger two-storey housing the complaint comes from "
+    "stack effect and duct balance rather than capacity, and oversizing makes it worse by short "
+    "cycling and removing less humidity. Zoning, damper adjustment and return placement address it "
+    "directly, and a survey of the existing ductwork decides which combination applies."])],
+   faq=("My upstairs is unusable in August. Is a second system the only answer?",
+        "No. Zoning an existing system, adjusting dampers and adding return capacity fix most "
+        "Springboro houses. A second system is the answer when the duct layout genuinely cannot be "
+        "zoned.")),
+  "plumbing": dict(
+   answer="Extreme Heating, Air, Plumbing handles water heaters, drains, leaks and sewer lines in "
+          "Springboro, Ohio. The city sits across the Warren and Montgomery county line, so plumbing "
+          "permits are handled by two different county departments. Extreme Heating, Air, Plumbing "
+          "answers the plumbing emergency line 24/7.",
+   slots=[("Which water supply covers a Springboro address?", [
+    "On the Warren County side, Warren County Water &amp; Sewer, which completed nanofiltration "
+    "membrane softening in 2022 and cut hardness by roughly 55% to about 8 grains per gallon for "
+    "more than 30,000 customers. A softener installed before 2022 on that side is set for water that "
+    "is no longer being delivered."]),
+    ("Who inspects plumbing work in Springboro?", [
+    "The county, and which county depends on the address. The City of Springboro runs its own "
+    "state-certified Building Department at 320 W. Central Ave for building permits, while plumbing "
+    "goes to the Warren or Montgomery County department."])],
+   faq=("Which county handles my Springboro permit?",
+        "It depends which side of the county line the address sits on. Springboro straddles the "
+        "Warren and Montgomery line, and the address gets checked before anything is filed.")),
+  "maintenance": dict(
+   answer="Extreme Heating, Air, Plumbing performs seasonal furnace and air conditioner tune-ups in "
+          "Springboro, Ohio, about eleven miles from the Waynesville office. Newer equipment still "
+          "needs documented annual maintenance to keep a manufacturer warranty valid. X-Plan "
+          "includes two visits a year for $249 per year.",
+   slots=[("Does newer equipment still need a tune-up?", [
+    "Yes, and the warranty is the blunt reason. Most manufacturers require documented annual "
+    "maintenance, and a claim on a system installed in the 2000s or 2010s can turn on whether there "
+    "is a record. Every visit ends with a written report and photos for that purpose. Springboro's "
+    "housing is newer than most of the service area, which makes this the page where warranty "
+    "documentation matters most."])],
+   faq=("My system is under warranty. Do I still need maintenance?",
+        "Usually yes, to keep it valid. Manufacturers generally require documented annual service, "
+        "and a written report with photos is what satisfies that requirement.")),
+  "duct-cleaning": dict(
+   answer="Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and "
+          "dryer vents in Springboro, Ohio. Most of the city was built from the 1990s onward, so a "
+          "camera check often shows the ductwork does not need cleaning. Every job is photographed "
+          "before the work and after it.",
+   slots=[("Does a newer Springboro house need duct cleaning?", [
+    "Often not, and that is a real answer rather than a modest one. Ductwork installed in the 1990s "
+    "or later, in a house that has not been renovated and has no pets, frequently comes back clean "
+    "on camera. What does show up is construction debris left in the runs on newer builds and dryer "
+    "vents that have never been cleared. The camera separates the two."])],
+   faq=("My builder finished the house two years ago. Are the ducts dirty?",
+        "Sometimes, and it is usually construction debris rather than accumulated dust. Drywall dust "
+        "and offcuts left in the runs are common on new builds, and the camera finds them quickly.")),
+  "indoor-air-quality": dict(
+   answer="Extreme Heating, Air, Plumbing installs filtration, humidity control and ventilation "
+          "equipment in Springboro, Ohio, about eleven miles from the Waynesville office. "
+          "Construction from the 1990s onward is tighter than older housing and holds humidity and "
+          "stale air. Humidity and particulates are measured before anything is recommended.",
+   slots=[("Why is a newer house stuffier than an old one?", [
+    "Because it leaks less. Springboro's 1990s through 2010s construction has a tight envelope, "
+    "which is good for energy bills and bad for stale air and summer humidity. An older house "
+    "exchanges air through its shell whether anyone wants it to or not. In a tighter house that "
+    "exchange has to be built in, which is what an energy recovery ventilator does, and "
+    "dehumidification handles the moisture side."])],
+   faq=("Is opening a window enough?",
+        "Not reliably, and not in July or January. In tighter Springboro construction a ducted "
+        "energy recovery ventilator brings filtered outdoor air in without throwing away the heating "
+        "or cooling, which a window does not.")),
+ }),
+
+# ---------------------------------------------------------------- 10. Troy
+"troy": dict(
+ alt="A residential street in Troy, Ohio",
+ # [NEEDS: confirm what cities/troy.jpg shows. If it is the downtown public square the alt
+ # becomes "The public square in downtown Troy, Ohio".]
+ answer="Extreme Heating, Air, Plumbing operates from 2950 Stone Cir Dr in Troy, Ohio, serving "
+        "Miami County. Heating, cooling and residential plumbing are covered, with 24/7 emergency "
+        "service and 90% same-day service. Extreme Heating, Air, Plumbing has been locally owned "
+        "since 2004 and has completed 25,000+ jobs.",
+ sections=[
+  ("Why does a Troy job need two permits?", [
+   "Because two agencies split the work. The City of Troy contracts building permits out to the "
+   "Miami County Building Department. A zoning permit comes from the City of Troy Planning "
+   "Department at 100 S. Market Street and confirms the work complies with city zoning. The building "
+   "permit, which covers construction, plumbing, electrical and mechanical, comes from Miami County. "
+   "Two counters, one job. Nothing else in the service area works this way, and a contractor who has "
+   "only worked Montgomery County will file in the wrong place."]),
+  ("Where does Troy's water come from?", [
+   "The city's own system. Troy pumps up to 4 million gallons a day from the Great Miami Buried "
+   "Valley Aquifer through 116 miles of water main, 1,030 hydrants and three elevated storage tanks, "
+   "Herrlinger, Stanfield and Barnhart, holding 3.5 million gallons between them."]),
+  # [NEEDS: Troy's delivered hardness from the city's Consumer Confidence Report, and whether Troy
+  # softens at the plant. Aquifer-sourced water is hard raw; the finished figure is not guessed.]
+  ("Who supplies electricity to a Troy house?", [
+   "AES Ohio. Troy does not run a municipal electric utility, even though several nearby Miami "
+   "County communities do. It is worth checking whose grid a house is actually on before applying "
+   "anything a neighbouring town's homeowner was told about their own utility."]),
+  # [NEEDS: confirm CenterPoint Energy Ohio supplies natural gas to Troy.]
+  # The research also carried a Troy radon figure. Struck in full: Extreme does not perform radon
+  # mitigation, and publishing the number invites work the company does not do.
+ ],
+ table=dict(
+  caption="Common problems in Troy, Ohio homes and what to book",
+  takeaway="Extreme Heating, Air, Plumbing works Troy against a permit process no other city in the "
+           "service area uses, and against water drawn straight from the buried valley aquifer.",
+  columns=["Common problem in Troy homes", "Likely cause", "Service to book", "Urgency"],
+  rows=[
+   ("Permit filed with the wrong office",
+    "City handles zoning, Miami County handles the building permit",
+    "Ask the office before the job", "Before the work"),
+   ("Older downtown house has no duct space", "Pre-war structure with no chases",
+    "Ductless or high-velocity survey", "Plan ahead"),
+   ("Water heater scaling early", "Untreated aquifer water is hard", "Water heater service",
+    "Book this month"),
+   ("Basement feels damp through the summer", "Limited ventilation below grade",
+    "Dehumidification assessment", "Book this month"),
+   ("Advice from a nearby town does not apply here",
+    "Troy is on AES Ohio while some Miami County communities run municipal electric",
+    "Ask the office before you sign", "Before the work"),
+   ("No heat overnight", "Ignition, control or gas valve failure", "Emergency heating call",
+    "Call 24/7 now"),
+  ]),
+ faq=[
+  ("Where is the Troy office?",
+   "2950 Stone Cir Dr, Troy, OH 45373. Office staff are in Monday to Friday, 8:00 AM to 5:00 PM, and "
+   "the emergency line at " + PHONE + " is answered 24/7 every day of the year."),
+  ("Do I need one permit or two in Troy?",
+   "Two. The City of Troy issues the zoning permit from the Planning Department at 100 S. Market "
+   "Street, and the Miami County Building Department issues the building permit covering "
+   "construction, plumbing, electrical and mechanical work."),
+  ("Who supplies electricity in Troy?",
+   "AES Ohio. Troy does not have a municipal electric utility, unlike several nearby Miami County "
+   "communities, which matters when checking what a utility programme actually covers."),
+  ("Where does Troy's drinking water come from?",
+   "The City of Troy runs its own municipal system, pumping up to 4 million gallons a day from the "
+   "Great Miami Buried Valley Aquifer through 116 miles of water main."),
+  ("Do you cover the rest of Miami County from the Troy office?",
+   "Yes. The Troy office at 2950 Stone Cir Dr covers Miami County and the I-75 corridor north, and "
+   "the emergency line at " + PHONE + " is answered 24/7."),
+ ],
+ links=[("HVAC in Tipp City", "/locations/tipp"),
+        ("HVAC in Vandalia", "/locations/vandalia"),
+        ("office addresses and hours", "/contact")],
+ svc={
+  "heating": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces furnaces and heat pumps in Troy, "
+          "Ohio, from the office at 2950 Stone Cir Dr. Replacement work in Troy needs a city zoning "
+          "permit and a Miami County building permit. Extreme Heating, Air, Plumbing answers the "
+          "no-heat line 24/7.",
+   slots=[("Why does a Troy replacement need two permits?", [
+    "Because the City of Troy contracts building permits out to Miami County. The zoning permit "
+    "comes from the City of Troy Planning Department at 100 S. Market Street and confirms the work "
+    "complies with city zoning. The building permit, covering construction, plumbing, electrical and "
+    "mechanical, comes from the Miami County Building Department. Nothing else in the service area "
+    "splits it this way, and a contractor who has only worked Montgomery County will file in the "
+    "wrong place."])],
+   faq=("How close is the nearest technician to Troy?",
+        "The office is at 2950 Stone Cir Dr in Troy, so trucks covering the city and the rest of "
+        "Miami County start their day inside it.")),
+  "cooling": dict(
+   answer="Extreme Heating, Air, Plumbing repairs and replaces air conditioners in Troy, Ohio, from "
+          "the office at 2950 Stone Cir Dr. Coverage runs across Miami County and the I-75 corridor "
+          "north. Extreme Heating, Air, Plumbing handles 90% same-day service and answers the line "
+          "24/7.",
+   slots=[("Who supplies electricity in Troy, and why does it matter?", [
+    "AES Ohio. Troy does not run a municipal electric utility, even though several nearby Miami "
+    "County communities do, and what a utility offers its own customers differs between them. "
+    "Anyone comparing something a neighbouring town's homeowner was told should check whose grid the "
+    "house is actually on first."])],
+   # [NEEDS: current AES Ohio residential HVAC programme details. No figure is published here, and
+   # no trade-ally status is claimed.]
+   faq=("Does the electric utility change anything about a new system in Troy?",
+        "Only in what the utility itself offers. Troy is on AES Ohio, and several nearby Miami "
+        "County towns run their own municipal electric utilities, so what applies a few miles away "
+        "does not automatically apply here.")),
+  "plumbing": dict(
+   answer="Extreme Heating, Air, Plumbing handles water heaters, drains, leaks and sewer lines in "
+          "Troy, Ohio, from the office at 2950 Stone Cir Dr. The City of Troy pumps up to 4 million "
+          "gallons a day from the Great Miami Buried Valley Aquifer. Extreme Heating, Air, Plumbing "
+          "answers the line 24/7.",
+   slots=[("Where does Troy's water come from?", [
+    "The city's own system. Troy pumps up to 4 million gallons a day from the Great Miami Buried "
+    "Valley Aquifer through 116 miles of water main and 1,030 hydrants, into three elevated storage "
+    "tanks called Herrlinger, Stanfield and Barnhart, holding 3.5 million gallons between them."]),
+    ("Who issues a plumbing permit in Troy?", [
+    "Miami County. The City of Troy contracts building permits, which cover plumbing, out to the "
+    "Miami County Building Department, while zoning permits come from the City of Troy Planning "
+    "Department at 100 S. Market Street."])],
+   faq=("Do I need a softener in Troy?",
+        "That is a measurement rather than a rule of thumb. Troy runs its own municipal system off "
+        "the Great Miami Buried Valley Aquifer, and a water test at the tap answers it for a "
+        "specific address.")),
+  "maintenance": dict(
+   answer="Extreme Heating, Air, Plumbing performs seasonal furnace and air conditioner tune-ups in "
+          "Troy, Ohio, from the office at 2950 Stone Cir Dr. Every visit ends with a written report "
+          "and photos. X-Plan includes two visits a year for $249 per year or $20.75 per month.",
+   slots=[("Does a Troy tune-up need a permit?", [
+    "No. The two-permit process in Troy applies to installation and replacement work, not to "
+    "maintenance. A tune-up is a visit, not a construction job, and nothing goes to the City of Troy "
+    "Planning Department or the Miami County Building Department for it."])],
+   faq=("How far ahead should I book a tune-up in Troy?",
+        "Spring for cooling and autumn for heating, before the first hot or cold week rather than "
+        "during it. Those two windows fill fastest.")),
+  "duct-cleaning": dict(
+   answer="Extreme Heating, Air, Plumbing cleans supply ducts, returns, blower compartments and "
+          "dryer vents in Troy, Ohio, from the office at 2950 Stone Cir Dr. A camera goes into the "
+          "ductwork before any cleaning is quoted. Every job is photographed before the work and "
+          "after it.",
+   slots=[("Does Troy's older housing change the job?", [
+    "It changes what the camera finds. Troy has a substantial pre-war downtown and historic "
+    "residential core alongside post-war and recent subdivision growth on the edges, so a job "
+    "downtown and a job on the edge of town are different systems with different access. The footage "
+    "decides the quote either way."])],
+   # [NEEDS: ACS median year structure built and pre-1940 share for Troy.]
+   faq=("Do you clean dryer vents in Troy?",
+        "Yes, end to end, usually on the same visit as the ductwork.")),
+  "indoor-air-quality": dict(
+   answer="Extreme Heating, Air, Plumbing installs filtration, humidity control and ventilation "
+          "equipment in Troy, Ohio, from the office at 2950 Stone Cir Dr. Humidity, particulates and "
+          "ventilation are measured before anything is recommended. Extreme Heating, Air, Plumbing "
+          "averages 4.9 stars from 1,595 customer reviews.",
+   # The research proposed a radon-average section here. Struck: Extreme does not do radon work.
+   slots=[("What does a Miami County basement usually need?", [
+    "Moisture control before anything else. Troy's older housing has full basements below grade and "
+    "the newer subdivisions on the edge of town are tighter than the stock downtown, so the same "
+    "complaint has two different causes. A whole-home dehumidifier handles standing summer humidity, "
+    "and a ducted energy recovery ventilator handles stale air in a tight house. Which one applies "
+    "comes from the measurement, not from the age of the house alone."])],
+   faq=("Do you test the air before recommending equipment?",
+        "Yes. Humidity, particulates and ventilation get measured first and measured again after "
+        "installation, so the difference is visible rather than asserted.")),
+ }),
+}
+
+# Sanity: the copy deck and the indexed set are the same ten, and every one of them
+# fills all six service slots. A page that cannot fill its local slots is not indexed,
+# and this assert is what keeps that rule from drifting.
+assert set(LOCAL) == L.FEATURED, (
+    f"LOCAL and locations.FEATURED disagree: {set(LOCAL) ^ L.FEATURED}")
+for _s, _d in LOCAL.items():
+    assert set(_d["svc"]) == set(SERVICE_ORDER), f"{_s} is missing service copy"
+    assert len(_d["sections"]) == 3, f"{_s} needs three local hub sections"
+del _s, _d
+
 
 # The homepage's real curated Google reviews, not invented placeholders. Each city
 # shows three, rotated deterministically by its position in the list so 38 pages
@@ -405,10 +2253,59 @@ def _cross(city_slug, city, kind):
 # ---------------------------------------------------------------- per-city data
 def neighbours(slug, group, n=10):
     """The other towns in the same metro. This is the one genuinely per-city block on
-    the page, and the handoff names it as what keeps these from being find-replace."""
+    the page, and the handoff names it as what keeps these from being find-replace.
+
+    Indexed communities sort first. That is the whole point of keeping the tail: link
+    equity and topical signal flow toward the ten rather than around them in a circle.
+    Order within each half is list order, which is the live Framer page-tree order.
+
+    [NEEDS: lat/long or an adjacency table in builder/locations.py so this can be
+    genuinely nearest-first rather than featured-first. The file already carries a TODO
+    about adding ZIPs and it is the same missing data.]"""
     pool = {"Dayton": L.DAYTON, "Cincinnati": L.CINCINNATI, "Counties": L.COUNTIES}[group]
     others = [(s, nm) for s, nm in pool if s != slug]
-    return others[:n]
+    return sorted(others, key=lambda x: x[0] not in L.FEATURED)[:n]
+
+
+def office_line(slug):
+    """(office town, street or None, distance phrase or None) for an indexed city."""
+    return L.OFFICE[slug]
+
+
+def geo_speed(slug, long):
+    """H2 3 on an indexed hub. Built from locations.OFFICE so the distance is the
+    researched mileage rather than a response-time promise."""
+    town, street, dist = office_line(slug)
+    where = (f"start their day at the office on {street}, inside the city" if street
+             else f"start their day at the {town} office, {dist}")
+    return ("Extreme Heating, Air, Plumbing handles 90% same-day service and answers the "
+            f"emergency line 24/7, every day of the year. Trucks covering {long} {where}.")
+
+
+def geo_serve(slug, long):
+    """H2 1 on an indexed hub."""
+    town, street, dist = office_line(slug)
+    where = (f"operates from {street} in {long}, Ohio" if street
+             else f"covers {long} from the {town} office, {dist}")
+    return (f"Yes. Extreme Heating, Air, Plumbing {where}, and {long} is one of "
+            f"{len(L.ALL)} communities served across the Dayton and Cincinnati metros. "
+            "Heating and plumbing book through the same number, and the emergency line "
+            "runs 24/7 every day of the year.")
+
+
+def _qa_section(h2, body):
+    """One H2 question with its direct answer under it, no eyebrow. The location pages
+    use the eyebrow for marketing labels; a question heading does not want one."""
+    return T.content_section({"h2": h2, "body": body})
+
+
+def _local_links(items):
+    """Descriptive cross-links out of a city page. No eyebrow-plus-H2 wrapper, because
+    these are navigation rather than a section of the page, and the hub already runs
+    seven H2s. Anchor text always names the destination."""
+    links = "".join(f'<a href="{href}">{anchor}</a>' for anchor, href in items)
+    return ('<div class="xlc-rel"><div class="xsp-eyebrow purple">MORE FROM EXTREME</div>'
+            f'<div class="xlc-rellinks">{links}</div></div>')
 
 def metro_adj(group):
     return {"Dayton": "Miami Valley", "Cincinnati": "Cincinnati-area",
@@ -422,7 +2319,61 @@ NO_TOWN_NOTE = ('<div class="xlc-note">Don&#39;t see your town? If you&#39;re cl
                 'that&#39;s listed, call — if we can reach you, we will.</div>')
 
 # ---------------------------------------------------------------- renderers
+def _county_answer(slug, name):
+    """The nine county overviews. Deliberately the thinnest page type on the site and
+    noindexed by shell.noindex(): a county page is always a superset of its city pages,
+    so it does one job, which is listing them. No county housing-stock copy — it would
+    contradict the city pages underneath it."""
+    kids = [nm for s, nm in L.ALL if s in L.COUNTY_CITIES.get(slug, [])]
+    # Preble and Darke have no covered community with a page of its own, so they get a
+    # coverage sentence instead of an invented town list.
+    covered = (f" Coverage includes {', '.join(kids[:-1])} and {kids[-1]}."
+               if len(kids) > 1 else (f" Coverage includes {kids[0]}." if kids else
+                                      " Heating and plumbing book through the same number, and "
+                                      "the emergency line runs 24/7 every day of the year."))
+    return (f"Extreme Heating, Air, Plumbing serves {name}, Ohio for heating, cooling, indoor "
+            f"air quality and residential plumbing.{covered} Extreme Heating, Air, Plumbing "
+            "offers 24/7 emergency service and 90% same-day service, and has completed "
+            "25,000+ jobs since 2004.")
+
+
+def _tail_answer(slug, city, group):
+    """Answer block for a community with no local research behind it. The city name is
+    the only thing that varies, and that is the honest position: there is no fact base
+    for 28 more places and inventing one is worse than omitting it.
+
+    [NEEDS: nearest office and approximate mileage for each of the 19 remaining cities.
+    Until those are supplied this block names no office and claims no distance, because
+    a wrong drive time is a broken promise rather than a thin page.]"""
+    if group == "Counties":
+        return _county_answer(slug, city)
+    return (f"Extreme Heating, Air, Plumbing serves {city}, Ohio, one of {len(L.ALL)} "
+            "communities covered across the Dayton and Cincinnati metros. Heating, cooling, "
+            "indoor air quality and residential plumbing are all covered, with 24/7 emergency "
+            "service and 90% same-day service. Extreme Heating, Air, Plumbing has completed "
+            "25,000+ jobs since 2004.")
+
+
+def _tail_routes(slug, group):
+    """Upward and sideways links out of a noindexed page: the indexed metro parent plus
+    one or two indexed neighbours. This is the reason these pages are kept at all."""
+    metro = ("dayton" if group == "Dayton" else
+             "cincinnati" if group == "Cincinnati" else None)
+    names = dict(L.ALL)
+    out = []
+    if metro:
+        out.append((f"{names[metro]} HVAC and plumbing services", f"/locations/{metro}"))
+    for s in L.TAIL_LINKS.get(slug, []):
+        out.append((f"HVAC in {L.long_name(s, names[s])}", f"/locations/{s}"))
+    if group == "Counties":
+        for s in L.COUNTY_CITIES.get(slug, [])[:3]:
+            out.append((f"HVAC and plumbing in {L.long_name(s, names[s])}", f"/locations/{s}"))
+    return out
+
+
 def city_overview(city, slug, group):
+    featured = slug in L.FEATURED
+    long = L.long_name(slug, city)
     f = lambda t: fill(t, city, group)
     cards = []
     for s, label, desc in OVERVIEW_CARDS:
@@ -431,29 +2382,86 @@ def city_overview(city, slug, group):
     towns = "".join(
         f'<div class="xlc-town"><span class="c">✓</span>'
         f'<a href="/locations/{ns}">{nn}</a></div>' for ns, nn in neighbours(slug, group))
-    revs = "".join(
-        f'<div class="xlc-rev"><div class="stars">★★★★★</div><div class="q">“{q}”</div>'
-        f'<div class="who">{who}{f" <span>· {rc}</span>" if rc else ""}</div></div>'
-        for q, who, rc in city_reviews(slug))
     hero_img = T.cdn_asset(L.hero(slug))
+
+    if featured:
+        d = LOCAL[slug]
+        # The seven-H2 outline. Slots 4, 5 and 6 are the local ones and are required
+        # fields, which is what makes these ten non-duplicate by construction rather
+        # than by good intentions.
+        h1, hi = "HVAC and plumbing services in {X}", f"{long}, Ohio"
+        answer = d["answer"]
+        photo_alt = d["alt"]
+        intro = ("Local technicians who know " + metro_adj(group) + " homes, one phone "
+                 "number for both trades, and 90% same-day service.")
+        chips = [f"{city}-Based Techs", "90% Same-Day Service", "24/7 Emergency Line"]
+        sections = [
+            # H2 1 doubles as the heading over the service card grid, so the grid stops
+            # being an unlabelled block under a slogan. The slogan the grid used to
+            # carry ("Everything your house throws at you.") was identical on 38 pages.
+            _cards(f"SERVICES IN {city.upper()}",
+                   f"Does Extreme Heating, Air, Plumbing serve {long}, Ohio?", cards,
+                   lead=geo_serve(slug, long)),
+            _qa_section(GEO_COVERED_H2, GEO_COVERED),
+            _qa_section(GEO_SPEED_H2, geo_speed(slug, long)),
+        ]
+        for h2, body in d["sections"]:
+            sections.append(_qa_section(h2, body))
+        sections.append(T.table_section(dict(d["table"], eyebrow="WHAT WE SEE MOST",
+                                             h2="Which problems come up most here?")))
+        sections.append(_qa_section(GEO_BOOK_H2, GEO_BOOK))
+        # Deliberately not "communities near {City}": the deck's own three local H2s
+        # already name the city, and the contract caps that at two. The headings this
+        # module owns give the budget back to the researched ones.
+        sections.append(section("SERVICE AREA", "Which nearby communities are covered?",
+            f'<div class="xlc-towns">{towns}</div>'
+            f'<div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div>'
+            f'<div style="margin-top:20px">{T.photo_slot("", hero_img, photo_alt)}</div>'))
+        sections.append(T.faq([{"q": q, "a": a} for q, a in d["faq"]], "COMMON QUESTIONS",
+                              h2="Your questions, answered."))
+        # The review pool carries no city attribution, so the heading makes no city
+        # claim. [NEEDS: review excerpts tagged with the customer's city — tagging even
+        # five per indexed metro turns the weakest block on the page into the strongest.]
+        revs = "".join(
+            f'<div class="xlc-rev"><div class="stars">★★★★★</div><div class="q">“{q}”</div>'
+            f'<div class="who">{who}{f" <span>· {rc}</span>" if rc else ""}</div></div>'
+            for q, who, rc in city_reviews(slug))
+        sections.append(section("WHAT CUSTOMERS SAY", "What do customers say about the work?",
+                                f'<div class="xlc-revs">{revs}</div>'))
+        sections.append(_local_links(d["links"]))
+    else:
+        # The noindexed tail. It keeps serving users — the service children, the
+        # neighbour list, the booking path — and is deliberately, visibly thinner:
+        # a real answer block, then it routes into the indexed ten. No local facts,
+        # because the research does not exist for these places.
+        h1, hi = "Heating, air &amp; plumbing — {X}", f"right here in {city}"
+        answer = _tail_answer(slug, city, group)
+        photo_alt = f"A residential street in {city}, Ohio"
+        intro = (f"Local techs who know {metro_adj(group)} homes. One number, "
+                 "90% same-day service.")
+        chips = [f"{city}-Based Techs", "90% Same-Day Service", "24/7 Emergency Line"]
+        sections = [
+            _cards(f"SERVICES IN {city.upper()}", f"What work is covered in {city}?", cards,
+                   lead=GEO_COVERED),
+            section("SERVICE AREA", "Which nearby communities are covered?",
+                f'<div class="xlc-towns">{towns}</div>'
+                f'<div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div>'
+                f'<div style="margin-top:20px">{T.photo_slot("", hero_img, photo_alt)}</div>'),
+            _qa_section(GEO_BOOK_H2, GEO_BOOK),
+            _local_links(_tail_routes(slug, group)),
+        ]
+
     body = f'''{_hero(city,
         [("Home", "/"), ("Locations", "/locations"), (city, "")],
-        "Heating, air &amp; plumbing — {X}", f"right here in {city}",
-        f"Local techs who know {metro_adj(group)} homes. One number, same-day in most cases.",
-        [f"{city}-Based Techs", "Same-Day in Most Cases", "24/7 Emergency Line"],
-        _book(f"SERVING {city.upper()}", "Same-day in most cases.",
+        h1, hi, intro, chips,
+        _book(f"SERVING {city.upper()}", "90% same-day service.",
               f"Techs dispatched across {METRO_BLURB[group]} — book online in about a "
-              f"minute, or call and talk to a real person.", trust2=f"{city}-based techs"))}
+              f"minute, or call and talk to a real person.", trust2=f"{city}-based techs"),
+        answer=answer)}
 <div class="xco-body">
-  {_cards(f"SERVICES IN {city.upper()}", "Everything your house throws at you.", cards)}
-  {_stat_panel([("20+", f"years serving {METRO_BLURB[group]}"), ("4.9", "average Google rating"),
-                ("90%", "of calls handled same-day"), ("24/7", "emergency service line")])}
-  {section("SERVICE AREA", f"If you're near {city}, you're covered.",
-    f'<div class="xlc-towns">{towns}</div>'
-    f'<div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div>'
-    f'<div style="margin-top:20px">{T.photo_slot("", hero_img, f"{city}, Ohio")}</div>')}
-  {section("WHAT NEIGHBORS SAY", "Neighbors put it better than we can.",
-    f'<div class="xlc-revs">{revs}</div>')}
+  {"".join(sections)}
+  {_stat_panel([("20+", f"years serving {METRO_BLURB[group]}"), ("4.9", "average customer rating"),
+                ("90%", "same-day service"), ("24/7", "emergency service line")])}
 </div>
 {_band("No heat, no AC, or water where it shouldn't be?",
        f"The {city} line is answered 24/7 — nights, weekends, holidays.")}'''
@@ -461,36 +2469,96 @@ def city_overview(city, slug, group):
 
 def city_service(city, slug, group, service):
     c = SERVICE_COPY[service]
+    featured = slug in L.FEATURED
+    long = L.long_name(slug, city)
     f = lambda t: fill(t, city, group)
+    d = LOCAL[slug]["svc"][service] if featured else None
+
+    if featured:
+        # The indexed pages take the keyword H1 and the local slots. The tail keeps the
+        # branded H1 from SERVICE_COPY, which is part of what makes the two sets tell
+        # themselves apart at a glance.
+        h1 = d.get("h1", GEO_SERVICE_H1[service])
+        hi = f"{long}, Ohio"
+        answer = d["answer"]
+    else:
+        h1, hi = f(c["h1"]), f(c["hi"])
+        answer = (f"Extreme Heating, Air, Plumbing {TAIL_VERB[service]} in {city}, Ohio, one "
+                  f"of {len(L.ALL)} communities covered across the Dayton and Cincinnati "
+                  f"metros. {TAIL_SCOPE[service]} Extreme Heating, Air, Plumbing offers 24/7 "
+                  "emergency service and 90% same-day service.")
+
+    # Heading picker: the interrogative form on the indexed ten, the branded deck on
+    # the tail. `f` still runs over both so {CITY} substitution is unaffected.
+    def hh(key):
+        alt = GEO_SCAFFOLD_H2.get(service, {}).get(key) if featured else None
+        return f(alt.replace("{C}", long)) if alt else f(c[key])
+
     left = []
     if c.get("sec1") == "checks" or (c.get("checks") and "cards" not in c):
-        left.append(_checklist(f(c["chkEyebrow"]), f(c["chkH2"]), c["checks"], c.get("chkNote")))
+        left.append(_checklist(f(c["chkEyebrow"]), hh("chkH2"), c["checks"], c.get("chkNote")))
     if "cards" in c:
-        left.append(_cards(f(c["gridEyebrow"]), f(c["gridH2"]),
-                           [(t, f(d), None, None) for t, d in c["cards"]]))
-    sec2 = c.get("sec2")
+        left.append(_cards(f(c["gridEyebrow"]), hh("gridH2"),
+                           [(t, f(d2), None, None) for t, d2 in c["cards"]],
+                           lead=(TAIL_SCOPE[service] if featured else None)))
+    # The city slots. On heating/cooling/maintenance/duct-cleaning/IAQ that is one H2;
+    # on plumbing it is two, water supply and permit authority. They go directly after
+    # the shared "what we handle" grid so the local material is above the fold-ish
+    # rather than buried under the promos.
+    if featured:
+        for h2, body in d["slots"]:
+            left.append(_qa_section(h2, body))
+    sec2 = c.get("sec2") if featured else None
+    # The noindexed tail drops sec2 entirely. Every one of those blocks is shared copy
+    # rendered identically on 38 pages, so cutting it from the suppressed set raises the
+    # unique-to-boilerplate ratio on exactly the pages that need it and makes the tail
+    # measurably thinner, which is the point of suppressing it.
     if sec2 == "decision":
         inner = "".join(f'<div class="xco-ccard"><span class="c">✓</span>'
-                        f'<div class="t">{t}</div><div class="d">{d}</div></div>' for t, d in c["dec"])
-        left.append(section(f(c["decEyebrow"]), f(c["decH2"]),
+                        f'<div class="t">{t}</div><div class="d">{d2}</div></div>'
+                        for t, d2 in c["dec"])
+        left.append(section(f(c["decEyebrow"]), hh("decH2"),
                             f'<div class="xco-2col">{inner}</div>'
                             f'<div class="xlc-note">{c["decNote"]}</div>'))
     elif sec2 == "checks" and "cards" in c:
-        left.append(_checklist(f(c["chkEyebrow"]), f(c["chkH2"]), c["checks"], c.get("chkNote")))
+        left.append(_checklist(f(c["chkEyebrow"]), hh("chkH2"), c["checks"], c.get("chkNote")))
     elif sec2 == "purple":
-        items = "".join(f'<li><span class="c">✓</span><span><b>{t}</b> {d}</span></li>'
-                        for t, d in c["purple"])
+        items = "".join(f'<li><span class="c">✓</span><span><b>{t}</b> {d2}</span></li>'
+                        for t, d2 in c["purple"])
         left.append(f'<div class="xlc-xp"><div class="eyebrow">{f(c["purpleEyebrow"])}</div>'
                     f'<h3>{f(c["purpleH2"])}</h3><ul>{items}</ul></div>')
     elif sec2 == "steps":
-        left.append(T.process({"h2": f(c["stepsH2"]),
-                               "steps": [{"title": t, "desc": d} for t, d in c["steps"]]},
+        left.append(T.process({"h2": hh("stepsH2"),
+                               "steps": [{"title": t, "desc": d2} for t, d2 in c["steps"]]},
                               eyebrow=f(c["stepsEyebrow"])))
     elif sec2 == "xplan":
         # The shared panel, not a copy of it. X-Plan pricing and member rates live in
         # T.XPLAN, so a change there updates the hub, /maintenance and all 38 location
-        # maintenance pages together.
+        # maintenance pages together. The member service-fee line inside XPLAN["detail"]
+        # is a card body, which is where client decision 2026-08-02 allows it.
         left.append(T.xplan_panel(detail=True))
+
+    # One city-specific FAQ per indexed service page, on top of everything the shared
+    # scaffold already answers. The tail gets no FAQ block at all.
+    if featured:
+        # The contract caps the city name at two H2s per page. Plumbing is the only
+        # service with two city slots, so on those pages naming the city a third time
+        # in the booking heading would break it. Counted rather than hardcoded, because
+        # not every city slot happens to name its city.
+        book = GEO_SCAFFOLD_H2[service]["book"]
+        named = sum(1 for h2, _ in d["slots"] if long in h2)
+        left.append(_qa_section(
+            book.replace(" in {C}", "").replace("{C}", long) if named >= 2
+            else book.replace("{C}", long), GEO_SERVICE_BOOK))
+        left.append(T.faq([{"q": d["faq"][0], "a": d["faq"][1]}], "COMMON QUESTIONS",
+                          h2="Your questions, answered."))
+        left.append(_local_links([
+            (f"{long} HVAC and plumbing services", f"/locations/{slug}"),
+            ("X-Plan maintenance membership", "/maintenance")]))
+    else:
+        left.append(_local_links(
+            [(f"{city} HVAC and plumbing services", f"/locations/{slug}")]
+            + _tail_routes(slug, group)))
 
     promos = []
     for p in c["promos"]:
@@ -508,11 +2576,11 @@ def city_service(city, slug, group, service):
 
     body = f'''{_hero(city,
         [("Home", "/"), ("Locations", "/locations"), (city, f"/locations/{slug}"), (c["nav"], "")],
-        f(c["h1"]), f(c["hi"]), f(c["intro"]), c["chips"],
-        _book(f(c["bookEyebrow"]), c.get("bookTitle", "Same-day in most cases."),
+        h1, hi, f(c["intro"]), c["chips"],
+        _book(f(c["bookEyebrow"]), c.get("bookTitle", "90% same-day service."),
               c.get("bookSub", "Book online in about a minute, or call and talk to a real person."),
               label=c.get("bookLabel", "Schedule Service"), trust2=f"{city}-based techs"),
-        pill=f(c["pill"]) if c.get("pill") else "")}
+        pill=f(c["pill"]) if c.get("pill") else "", answer=answer)}
 <div class="xsp-bodygrid">
   <div class="xsp-main">{"".join(left)}</div>
   {T.rail(rail)}
@@ -569,20 +2637,42 @@ def hub():
     <a class="xsp-btn-green" href="#" id="xlc-zipgo" role="button">Check My Area</a>
   </div>
   <div class="xlc-zipmsg" id="xlc-zipmsg" role="status" aria-live="polite"></div>
-  <div class="trust"><span><span class="st">★</span> 4.9 on Google</span><span class="bar">|</span><span>24/7 emergency line</span></div>
+  <div class="trust"><span><span class="st">★</span> 4.9 average rating</span><span class="bar">|</span><span>24/7 emergency line</span></div>
 </div>'''
+    # The hub answer block and its H2 outline are copy-locations.md §1. Four offices,
+    # one phone number, and the towns list underneath.
+    hub_answer = (f"Extreme Heating, Air, Plumbing serves {len(L.ALL)} communities across the "
+                  "Dayton and Cincinnati, Ohio metros. Offices in Beavercreek, Mason, Troy and "
+                  "Waynesville dispatch technicians for heating, cooling, indoor air quality and "
+                  "residential plumbing. Extreme Heating, Air, Plumbing offers 24/7 emergency "
+                  "service and 90% same-day service, and one phone number covers every community.")
     body = f'''{_hero("", [("Home", "/"), ("Locations", "")],
-        "One Extreme Team, {X}", "all over southwest Ohio",
-        "Heating, cooling, and plumbing across the Dayton and Cincinnati metros. Find your "
-        "community below — one phone number covers them all.",
-        ["2 Metro Areas", f"{len(L.ALL)}+ Communities", "Same-Day in Most Cases"], zip_card,
-        card_class="zip", ctas=False)}
+        "HVAC and plumbing service areas across {X}", "the Dayton and Cincinnati metros",
+        "Find your community below. One phone number covers them all.",
+        ["2 Metro Areas", f"{len(L.ALL)}+ Communities", "90% Same-Day Service"], zip_card,
+        card_class="zip", ctas=False, answer=hub_answer)}
 <div class="xco-body">
-  {section("SERVICE AREAS", "Two metros, one team.", "".join(metros))}
-  {section("ALL COMMUNITIES", "Every place we serve.",
-    f'<div class="xlc-dir">{"".join(cols)}</div>' + NO_TOWN_NOTE)}
-  {_stat_panel([(f"{len(L.ALL)}+", "communities served"), ("4.9", "average Google rating"),
-                ("90%", "of calls handled same-day"), ("24/7", "emergency service line")])}
+  {section("SERVICE AREAS", "Which Ohio metros does Extreme Heating, Air, Plumbing cover?",
+    T.paragraphs("Twenty communities in the Dayton metro, nine in the Cincinnati metro, and nine "
+                 "surrounding counties. Every town on the list below has its own page. If a town "
+                 "is not listed but sits next to one that is, the answer is usually yes, and a "
+                 "phone call settles it faster than a map.") + "".join(metros))}
+  {T.content_section({"h2": "Where are the four offices?", "body":
+    "Beavercreek at 712 N Fairfield Rd covers the Dayton side. Mason at 5633 Tylersville Rd "
+    "covers the Cincinnati side. Troy at 2950 Stone Cir Dr covers Miami County and the I-75 "
+    "corridor north. Waynesville at 141 North St sits between the two metros."})}
+  {T.content_section({"h2": "Does one phone number reach all four offices?", "body":
+    f"Yes. {PHONE} reaches dispatch for every community, at any hour. There is no separate local "
+    "number to look up and no office-hours cutoff on the emergency line. Office staff are in "
+    "Monday to Friday, 8:00 AM to 5:00 PM."})}
+  {section("ALL COMMUNITIES", "Which communities have their own page?",
+    T.paragraphs("Every community below links to its own page, and each of those carries the six "
+                 "service pages underneath it. A Kettering plumbing question lands on the "
+                 "Kettering plumbing page rather than on a generic one.")
+    + f'<div class="xlc-dir">{"".join(cols)}</div>' + NO_TOWN_NOTE)}
+  {T.content_section({"h2": GEO_BOOK_H2, "body": GEO_BOOK})}
+  {_stat_panel([(f"{len(L.ALL)}+", "communities served"), ("4.9", "average customer rating"),
+                ("90%", "same-day service"), ("24/7", "emergency service line")])}
 </div>
 {_band("Not sure if we cover you?",
        "One call settles it — and if we can't help, we'll point you to someone who can.")}'''

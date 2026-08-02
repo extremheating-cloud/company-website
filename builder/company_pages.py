@@ -1,13 +1,34 @@
 """Company pages — design_handoff_company_pages (screens 4a-4d).
 
 /about · /contact · /financing-options · /specials, emitted to "pages/company/"
-with the same embed conventions as the service pages. Copy is verbatim from
-the mockups; placeholders carry TODO markers per the handoff README.
+with the same embed conventions as the service pages.
+
+Rewritten 2026-08-02 against scratchpad/seo/copy-company.md and local-seo.md §4:
+
+  - Every page opens with an answer-first block (T.answer_block) as the first
+    element after the <h1>, and closes with a visible "Last updated" line.
+  - H2s are the questions a homeowner actually types, not slogans.
+  - Each page carries one real <table> (T.table_section) so an engine that
+    cannot parse a card grid can still cite the page.
+  - /contact renders ALL FOUR offices from site_data.OFFICES. It used to
+    hard-code two addresses, headed by metro ("Dayton") with a different city
+    in the address beneath ("Beavercreek"). That mismatch is the NAP defect
+    citation matchers trip over, and it is most of why Local SEO scored below
+    the Framer site this replaces. Addresses live in ONE place now: site_data.
+
+Facts come from site_data.py, which is the source of truth. Do not type an
+address, a phone number, a licence number or a price into this file.
 """
 import os
 import template as T
+import site_data as D
 
 PHOTOS = T.PHOTOS  # real Extreme photography, commit-pinned — defined in template.py
+
+# Visible "Last updated" stamp. Must match the schema dateModified for these
+# routes; never stamp it from the build clock (geo-contract §8.2).
+UPDATED = "August 2, 2026"
+UPDATED_ISO = "2026-08-02"
 
 # ---------------------------------------------------------------- CSS
 COMPANY_CSS = """
@@ -28,10 +49,18 @@ align-items:center;justify-content:center;font-size:12px;font-weight:700;color:v
 .xco-loc-img img{width:100%;height:100%;object-fit:cover;display:block}
 .xco-loc-body{padding:18px}
 .xco-loc-body .t{font-weight:800;font-size:16.5px}
+.xco-loc-body .meta{font-size:12px;font-weight:700;color:var(--body);margin-top:2px}
 .xco-loc-body .addr{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-loc-body .addr.hrs{font-size:12.5px;margin-top:6px}
 .xco-loc-body a{display:inline-block;font-weight:800;font-size:13px;color:var(--purple);
 text-decoration:none;margin-top:10px}
+/* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
+   "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */
+.xco-loc-body a.alt{display:block;margin-top:6px}
 .xco-loc-body a:hover{color:var(--green-dark)}
+/* A card with no exterior photograph (Troy, Waynesville) has no image box at all. It
+   still has to line up with the two that do, so the body carries the shortfall. */
+.xco-loc:not(:has(.xco-loc-img)) .xco-loc-body{padding-top:22px}
 .xco-hours{border:1px solid var(--rule);border-radius:16px;margin-top:20px;overflow:hidden}
 .xco-hours .row{display:flex;justify-content:space-between;gap:16px;padding:14px 20px;
 border-bottom:1px solid var(--rule)}
@@ -138,25 +167,41 @@ def shell(root_class, body, extra_css=""):
 # ------------------------------------------------------- shared renderers
 # Per client decision the page-specific ink CTA bands from mockups 4a-4d are
 # omitted on all four company pages (the Footer component's CTA band covers it).
-def section(eyebrow, h2, inner):
-    return f'''<div>
+def section(eyebrow, h2, inner, lead=None, sid=None):
+    """One page section. `lead` is the direct answer to the H2 question and goes
+    between the heading and whatever the section renders — a question heading with
+    a card grid under it and no sentence in between answers nothing."""
+    anchor = f' id="{sid}"' if sid else ""
+    return f'''<div{anchor}>
   <div class="xsp-eyebrow">{eyebrow}</div>
   <h2 class="xsp-h2">{h2}</h2>
+  {T.paragraphs(lead)}
 {inner}
 </div>'''
+
+def prose_section(eyebrow, h2, body, sid=None):
+    """A section that is only a question and its answer."""
+    return section(eyebrow, h2, "", lead=body, sid=sid)
 
 # ================================================================
 # /contact — mockup 4b (rail tier), copy verbatim
 # ================================================================
+# "same-day in most cases" was a response-time promise, and it is not one of the
+# approved proof tokens. The approved wording is "90% same-day service"; anything
+# looser reads as a guarantee the dispatcher cannot keep.
 T.PROMOS["contactCall"] = dict(cls="lav", t="Need help right now?",
-    d="Skip the form — call and we'll dispatch a tech, same-day in most cases.",
+    d="Skip the form and call. A real person answers, day or night.",
     lm=f"Call {T.PHONE_DISPLAY} →", href=T.PHONE_TEL)
 T.PROMOS["contactXplan"] = dict(cls="mint", t="X-Plan members skip the line",
     d="Priority scheduling, two tune-ups a year, and 15% off repairs.",
     lm="Explore X-Plan →", href="/maintenance")
 
 def contact_card():
-    # TODO: confirm real office hours (handoff: "Office hours Mon-Fri · emergencies 24/7." is placeholder wording)
+    # The 4.9 average is a Birdeye aggregate across the platforms customers post on,
+    # not a Google-only figure. The trust row used to call it a Google rating, which a
+    # competitor or a rater can check in thirty seconds. D.REVIEW_SOURCE is the
+    # approved wording, and the count is the half that was missing: a rating with no
+    # denominator is the shape of a claim rather than a claim.
     return f'''<div class="xsp-book">
   <div class="eyebrow">CONTACT US</div>
   <div class="xco-phone"><a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a></div>
@@ -165,7 +210,7 @@ def contact_card():
     {T.schedule_btn("Schedule Service")}
     {T.call_btn(f"Call {T.PHONE_DISPLAY}")}
   </div>
-  <div class="trust"><span><span class="st">★</span> 4.9 on Google</span><span class="bar">|</span><span>20+ years local</span></div>
+  <div class="trust"><span><span class="st">★</span> {D.GOOGLE_RATING} from {D.REVIEW_COUNT} reviews</span><span class="bar">|</span><span>{D.YEARS_LOCAL} years local</span></div>
 </div>'''
 
 def contact_hero(d):
@@ -175,6 +220,7 @@ def contact_hero(d):
     <div>
       {T.crumbs(d["breadcrumb"])}
       {T.h1(d["h1"], d["h1Highlight"])}
+      {T.answer_block(d)}
       <p class="xsp-intro">{d["intro"]}</p>
       <div class="xsp-hero-ctas xsp-mb">
         {T.schedule_btn("Schedule Service", "xsp-cta")}
@@ -191,25 +237,22 @@ def book_cards(d):
   <div class="xco-bcard">
     <span class="xsp-glyph"><i></i><i></i></span>
     <div class="t">Schedule online</div>
-    <div class="d">Hit Schedule Service and pick a time that works — it takes about a minute, day or night.</div>
-    <a class="xsp-cta js-schedule" href="#" role="button">Schedule Service</a>
+    <div class="d">Hit Schedule Service and pick a time that works. It takes about a minute, and it stays open when the office is closed.</div>
+    <a class="xsp-cta js-schedule" href="#" role="button">Schedule Online</a>
   </div>
   <div class="xco-bcard">
     <span class="xsp-glyph"><i></i><i></i></span>
     <div class="t">Call the office</div>
-    <div class="d">Talk to a real person — same-day dispatch in most cases, and 24/7 help in emergencies.</div>
+    <div class="d">Talk to a real person. The emergency line is answered 24/7, including nights, weekends and holidays.</div>
     <a class="plink" href="{T.PHONE_TEL}">{T.PHONE_DISPLAY} →</a>
   </div>
 </div>'''
-    return section("BOOK A VISIT", "Two ways to get on the schedule.", cards)
-
-def maps_dir(address):
-    """A Google Maps directions link for a street address. The link text says "Get
-    directions", so this uses the dir endpoint rather than a name search — a search
-    for the company name can land on the wrong pin or a disambiguation list."""
-    from urllib.parse import quote
-    # & is escaped because this goes straight into an href in the HTML.
-    return f"https://www.google.com/maps/dir/?api=1&amp;destination={quote(address)}"
+    return section("BOOK A VISIT", "How do I book a service visit?", cards, sid="book",
+                   lead=[f"Service is booked two ways at {D.COMPANY}: by phone at "
+                         f'<a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>, or through the online '
+                         "scheduler. Both reach the same dispatch, and a real person answers the "
+                         "phone, including after hours and on weekends. "
+                         '<a href="/maintenance">X-Plan members get priority scheduling</a>.'])
 
 def slot_img(cls, photo, label, style=""):
     """A fixed-height photo box that renders either a placeholder or a real image.
@@ -222,80 +265,190 @@ def slot_img(cls, photo, label, style=""):
     return (f'<div class="{cls}"{st}><img src="{photo["src"]}" alt="{photo.get("alt","")}"{p} '
             f'loading="lazy" decoding="async"></div>')
 
-def location_card(loc):
-    img = slot_img("xco-loc-img", loc.get("photo"), loc.get("photoLabel", ""))
+# Per-office presentation only. The addresses themselves live in site_data.OFFICES
+# and are read from there — two copies of an address in one repo is the NAP problem
+# starting at home.
+#
+# Troy and Waynesville have no exterior photograph yet. Those two cards ship
+# text-only rather than with an empty photo slot: a grey placeholder box on a
+# location card signals the premises may not exist, which is worse than a smaller
+# card. [NEEDS: exterior photographs of the Troy and Waynesville offices.]
+OFFICE_PHOTOS = {
+    # 65% pushes the crop down onto the sign so the 712 street number stays in
+    # frame — it is the thing that makes this read as a location card.
+    "beavercreek": {"src": PHOTOS["beavercreek"], "pos": "50% 65%",
+                    "alt": f"An {D.COMPANY} service van at the Beavercreek office sign on North Fairfield Road"},
+    "mason": {"src": PHOTOS["mason"],
+              "alt": f"The {D.COMPANY} office building on Tylersville Road in Mason, Ohio"},
+}
+
+def location_card(o):
+    """One office card. Headed by `locality`, which is the city in the postal address
+    directly beneath it. The cards used to be headed by metro — a card headed "Dayton"
+    over a Beavercreek address is a NAP inconsistency, and it is exactly the pattern
+    citation-matching services flag."""
+    photo = OFFICE_PHOTOS.get(o["slug"])
+    img = slot_img("xco-loc-img", photo, "") if photo else ""
+    # metro is None for Waynesville on purpose — the client has not said whether it is
+    # presented as Dayton, Cincinnati or Warren County, so nothing is guessed.
+    metro = f'<div class="meta">Our {o["metro"]}-area shop</div>' if o.get("metro") else ""
+    page = (f'<a href="{o["page"]}" class="alt">{o["locality"]} service area →</a>'
+            if o.get("page") else "")
     return f'''<div class="xco-loc">
   {img}
   <div class="xco-loc-body">
-    <div class="t">{loc["city"]}</div>
-    <div class="addr">{loc["address"]}</div>
-    <a href="{loc["directions"]}">Get directions →</a>
+    <div class="t">{o["locality"]}</div>
+    {metro}
+    <div class="addr">{o["street"]}<br>{o["citystate"]}</div>
+    <div class="addr hrs">{o["hours"]}</div>
+    <a href="{o["directions"]}">Get directions →</a>
+    {page}
   </div>
 </div>'''
 
 def location_cards(d):
-    cards = f'<div class="xco-2col">{"".join(location_card(l) for l in d["locations"])}</div>'
-    return section("VISIT US", "Two locations, one phone number.", cards)
+    cards = f'<div class="xco-2col">{"".join(location_card(o) for o in D.OFFICES)}</div>'
+    lead = [
+        f'{D.COMPANY} operates four offices in Ohio. The Beavercreek office at '
+        f'{D.OFFICE_BY_SLUG["beavercreek"]["street"]} is the Dayton-side base, and the Mason '
+        f'office at {D.OFFICE_BY_SLUG["mason"]["street"]} is the Cincinnati-side base. Troy sits '
+        'in Miami County and Waynesville in Warren County.',
+        f'Every office is reached at <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>. There are no '
+        'separate local numbers.',
+    ]
+    return section("VISIT US", "Where are the Beavercreek and Mason offices?", cards,
+                   lead=lead, sid="offices")
+
+def offices_table():
+    """The parseable copy of the office list. The cards carry the photos and the
+    directions links; this carries the same four addresses in a shape an engine can
+    lift whole. County comes from site_data, not from a coverage guess — dispatch
+    boundaries per office are still unconfirmed and are not published here."""
+    return T.table_section({
+        "eyebrow": "OFFICES AT A GLANCE",
+        "h2": "Which Extreme office is nearest me?",
+        "id": "offices-table",
+        "takeaway": f"{D.COMPANY} operates four Ohio offices and routes every one of them to "
+                    f"{D.PHONE_DISPLAY}.",
+        "caption": f"{D.COMPANY} office addresses",
+        "columns": ["Office", "Street address", "County", "Office hours"],
+        "rows": [[o["locality"], o["oneline"], f'{o["county"]} County', o["hours"]]
+                 for o in D.OFFICES],
+    })
 
 def hours_table(d):
     rows = []
     for row in d["hours"]:
         em = ' em' if row.get("em") else ""
         rows.append(f'<div class="row{em}"><span>{row["label"]}</span><span>{row["value"]}</span></div>')
-    return section("HOURS", "When to reach us.", f'<div class="xco-hours">{"".join(rows)}</div>')
+    return section("HOURS", f"What are {D.COMPANY}'s hours?",
+                   f'<div class="xco-hours">{"".join(rows)}</div>',
+                   sid="hours",
+                   lead=[f"The office at {D.COMPANY} is staffed {D.HOURS_STAFFED}. Emergency "
+                         "service runs 24/7, every day of the year, including holidays. Those "
+                         "are two separate things: the office closes, the emergency line does "
+                         "not."])
 
 CONTACT = {
     "breadcrumb": [("Home", "/"), ("Contact", "")],
-    "h1": "Get in touch with the {X}.",
-    "h1Highlight": "Extreme Team",
-    "intro": "Call or book online in a couple of clicks — a real person answers, and most visits happen the same day you reach out.",
-    "heroChips": ["Same-Day in Most Cases", "24/7 Emergency Line", "Dayton &amp; Cincinnati"],
-    # Addresses confirmed by the client 2026-08-01. The cards are headed by metro
-    # ("Dayton" / "Cincinnati") because that is how people search, with the actual
-    # suburb in the address line beneath. Directions links point at the address
-    # itself rather than a name search, so they resolve to one pin every time.
-    "locations": [
-        {"city": "Dayton",
-         # 65% pushes the crop down onto the sign so the 712 street number stays in
-         # frame — it is the thing that makes this read as a location card.
-         "photo": {"src": PHOTOS["beavercreek"], "pos": "50% 65%",
-                   "alt": "Extreme service van at the Beavercreek office sign on North Fairfield Road"},
-         "address": "712 N Fairfield Rd<br>Beavercreek, OH 45434",
-         "directions": maps_dir("712 N Fairfield Rd, Beavercreek, OH 45434")},
-        {"city": "Cincinnati",
-         "photo": {"src": PHOTOS["mason"],
-                   "alt": "The Extreme office building in the Cincinnati metro"},
-         "address": "5633 Tylersville Rd<br>Mason, OH 45040",
-         "directions": maps_dir("5633 Tylersville Rd, Mason, OH 45040")},
-    ],
-    # Hours confirmed by the client 2026-08-01. The earlier 24/7-vs-hours conflict is
-    # resolved: 8-5 weekdays is when the OFFICE is staffed, and emergency service
-    # really does run around the clock. The two rows are labelled so they can't be
-    # read as competing — the site's 24/7 claims on 34 other pages all stand.
+    "h1": "Contact {X} Heating, Air, Plumbing",
+    "h1Highlight": "Extreme",
+    # The answer-first block. No phone number in it, per geo-contract §2.2 — which is
+    # a genuinely odd rule on a contact page. The number sits immediately below it in
+    # the booking card, in the first H2 answer, and in the FAQ.
+    "answer": (f"{D.COMPANY} books heating, cooling and plumbing service across the Dayton and "
+               "Cincinnati, Ohio metros. Offices sit in Beavercreek, Mason, Troy and "
+               "Waynesville, and all four route to one main line. The office is staffed weekdays "
+               "from 8:00 AM to 5:00 PM, and emergency service runs 24/7."),
+    # The old H1, demoted to the deck line.
+    "intro": "Get in touch with the Extreme Team.",
+    # "Same-Day in Most Cases" was a response-time promise. 90% same-day service is the
+    # approved proof token and it is a number, which is the point.
+    "heroChips": [f"{D.SAME_DAY} Same-Day Service", "24/7 Emergency Line", "Dayton &amp; Cincinnati"],
+    # Addresses are NOT stored here. All four offices come from site_data.OFFICES, which
+    # is client-confirmed 2026-08-02 and is also what the footer, the location pages and
+    # the JSON-LD read. One written form, byte for byte, everywhere — a NAP audit compares
+    # the visible block against the schema on the same page and a mismatch is
+    # machine-detectable. See OFFICE_PHOTOS above for the per-card presentation.
     #
-    # Keep these two facts distinct if this table is ever edited. Collapsing them
-    # into one "hours" figure is what produced the contradiction in the first place.
+    # Hours confirmed by the client 2026-08-01, and now read from site_data. 8-5 weekdays
+    # is when the OFFICE is staffed; emergency service really does run around the clock.
+    # Keep these two rows distinct if this table is ever edited — collapsing them is what
+    # produced the contradiction with the 24/7 claims on the other 34 pages.
     "hours": [
-        {"label": "Staffed office", "value": "Monday – Friday, 8:00 AM – 5:00 PM"},
-        {"label": "Emergency service", "value": "24/7 — every day of the year", "em": True},
+        {"label": "Staffed office", "value": D.HOURS_STAFFED},
+        {"label": "Emergency service", "value": D.HOURS_EMERGENCY, "em": True},
+    ],
+    "faqEyebrow": "CONTACT QUESTIONS",
+    "faqH2": "What else do people ask before calling?",
+    "faq": [
+        {"q": f"What is {D.COMPANY}'s phone number?",
+         "a": f'{D.COMPANY} is reached at <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>. The same '
+              "number covers heating, cooling and plumbing, and reaches all four Ohio offices."},
+        {"q": "Where is the Beavercreek office?",
+         "a": f'The Beavercreek office of {D.COMPANY} is at {D.OFFICE_BY_SLUG["beavercreek"]["oneline"]}, '
+              "in Greene County."},
+        {"q": "Where is the Mason office?",
+         "a": f'The Mason office of {D.COMPANY} is at {D.OFFICE_BY_SLUG["mason"]["oneline"]}, '
+              "in Warren County."},
+        {"q": "Can I book online instead of calling?",
+         "a": "Yes. The online scheduler books the same appointment slots the office books by "
+              "phone, and it stays open when the office is closed."},
+        {"q": "Do you serve my town?",
+         "a": f'{D.COMPANY} serves communities across nine Ohio counties in the Dayton and '
+              'Cincinnati metros. The <a href="/locations">service area page lists every community '
+              'we cover</a>.'},
+        {"q": "Is there an email address?",
+         "a": f'{D.COMPANY} takes non-urgent questions at '
+              f'<a href="mailto:{D.EMAIL}">{D.EMAIL}</a>. Anything urgent should go to the phone '
+              "line, which is answered 24/7."},
     ],
     "rail": {
         # PLACEHOLDER at the client's direction until dispatcher photos are shot —
         # this is a van shot standing in for an office/dispatch image. Swap it for
-        # shot B3 (dispatcher at the desk) when the session delivers.
+        # shot B3 (dispatcher at the desk) when the session delivers. The alt text
+        # describes what is actually in the frame, not what the slot wants.
         "photo": PHOTOS["vans"],
-        "photoAlt": "Extreme service vans heading out on calls",
+        "photoAlt": f"{D.COMPANY} service vans heading out on calls",
         "promos": ["contactCall", "contactXplan"],
     },
 }
+
+def contact_wait():
+    return prose_section(
+        "BEFORE WE ARRIVE", "What should I do while I wait for a technician?",
+        ["Shut the system off at the thermostat if it is short-cycling, tripping a breaker, or "
+         "smells of burning. For a water leak, close the valve at the fixture, or the main "
+         "shutoff if the fixture valve will not hold.",
+         "If the smell is gas, leave the building first and call the gas utility from outside "
+         "before calling anyone else."],
+        sid="while-you-wait")
+
+def contact_emergency():
+    return prose_section(
+        "AFTER HOURS", "Is emergency service available at night and on weekends?",
+        [f"Yes. {D.COMPANY} offers 24/7 emergency service, every day of the year, for no heat, "
+         "no cooling, no hot water, burst pipes and suspected gas leaks. The company also "
+         f"offers {D.SAME_DAY} same-day service.",
+         'Planning a replacement rather than reacting to a breakdown? '
+         '<a href="/financing-options">Financing on a replacement</a> is handled through three '
+         'lenders, and <a href="/locations/dayton">Dayton</a> and '
+         '<a href="/locations/cincinnati">Cincinnati HVAC and plumbing services</a> each have '
+         'their own page.'],
+        sid="emergency")
 
 def contact_page(d, root_class):
     left = [
         T.mobile_photo(d["rail"]),
         book_cards(d),
-        location_cards(d),
         hours_table(d),
+        location_cards(d),
+        offices_table(),
+        contact_wait(),
+        contact_emergency(),
         T.mobile_inline_rail(d),
+        T.faq(d["faq"], d["faqEyebrow"], h2=d["faqH2"]),
+        T.updated_line(UPDATED, UPDATED_ISO),
     ]
     body = f'''{contact_hero(d)}
 <div class="xsp-bodygrid">
@@ -406,6 +559,7 @@ def financing_hero(d):
     <div>
       {T.crumbs(d["breadcrumb"])}
       {T.h1(d["h1"], d["h1Highlight"])}
+      {T.answer_block(d)}
       <p class="xsp-intro">{d["intro"]}</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta" {APPLY_ATTRS}>Apply Online</a>
@@ -417,15 +571,15 @@ def financing_hero(d):
   </div>
 </div>'''
 
-def check_cards(eyebrow, h2, cards):
+def check_cards(eyebrow, h2, cards, lead=None, sid=None):
     inner = "".join(
         f'''<div class="xco-ccard"><span class="c">✓</span>
   <div class="t">{c["t"]}</div><div class="d">{c["d"]}</div></div>''' for c in cards)
-    return section(eyebrow, h2, f'<div class="xco-2col">{inner}</div>')
+    return section(eyebrow, h2, f'<div class="xco-2col">{inner}</div>', lead=lead, sid=sid)
 
-def checks_only(eyebrow, h2, items):
+def checks_only(eyebrow, h2, items, lead=None, sid=None):
     inner = "".join(f'<div class="xsp-check"><span class="c">✓</span>{i}</div>' for i in items)
-    return section(eyebrow, h2, f'<div class="xsp-checks">{inner}</div>')
+    return section(eyebrow, h2, f'<div class="xsp-checks">{inner}</div>', lead=lead, sid=sid)
 
 def lender_chip(name):
     """The lender that has a live application link gets a clickable chip; the
@@ -468,17 +622,24 @@ def lenders_panel(v):
 
 FINANCING = {
     "breadcrumb": [("Home", "/"), ("Financing", "")],
-    "h1": "A new system now. {X} that fit.",
-    "h1Highlight": "Payments",
-    "intro": "Don't put off a failing furnace or AC because of one big bill. Flexible monthly payment plans through our lenders — GoodLeap, Synchrony, and Wright-Patt Credit Union — make the right fix affordable.",
-    # "$0 Down Options" and the "$0 down" stat below state a downpayment amount.
-    # Under Reg Z (12 CFR 1026.24(d)) that is a "triggering term" for closed-end
-    # credit — an ad that states it must also disclose the terms of repayment and
-    # the APR. Since Extreme is not permitted to advertise rates, those two claims
-    # may need rewording to something non-triggering ("financing available",
-    # "low monthly payments"). Flagged for the client and their lender 2026-08-01;
-    # NOT changed unilaterally, because it is approved marketing copy.
-    "heroChips": ["Apply in Minutes", "$0 Down Options", "Options for Most Credit"],
+    "h1": "HVAC and plumbing {X} in Dayton and Cincinnati",
+    "h1Highlight": "financing",
+    "answer": (f"{D.COMPANY} offers financing on heating, cooling and plumbing work across the "
+               "Dayton and Cincinnati, Ohio metros. Three lenders handle the applications: "
+               f'{", ".join(D.LENDERS[:-1])} and {D.LENDERS[-1]}. Applying is a request for '
+               "pre-approval, not an agreement to buy, and the lender sets every rate and term."),
+    # The old H1, demoted to the deck line.
+    "intro": "A new system now. Payments that fit.",
+    # REG Z. "$0 Down Options" and the "$0 down" stat below state an amount of down
+    # payment. Under 12 CFR 1026.24(d)(1) that is a triggering term for closed-end
+    # credit: an ad that states it must ALSO disclose the terms of repayment and the
+    # APR, and Extreme is not permitted to publish either. Both were replaced with
+    # non-triggering wording on 2026-08-02 per scratchpad/seo/copy-company.md §0a.5.
+    #
+    # MARKETING + LENDER SIGN-OFF STILL REQUIRED. This is a change to approved
+    # marketing copy made on a legal-risk basis, not a copy preference. If the lender
+    # confirms the claim can carry its required disclosures, it can come back.
+    "heroChips": ["Apply in Minutes", "No Prepayment Penalty", "Options for Most Credit"],
     "why": [
         {"t": "One bill becomes a monthly payment",
          "d": "Spread the cost of a new system over time instead of paying it all at once."},
@@ -498,7 +659,7 @@ FINANCING = {
         "Sewer line &amp; repiping projects",
     ],
     "process": {
-        "h2": "Three steps to yes.",
+        "h2": "How do I apply for financing?",
         "steps": [
             {"title": "Get your upfront quote",
              "desc": "Your tech or comfort advisor prices the work first — so you know exactly what you're financing."},
@@ -512,36 +673,72 @@ FINANCING = {
         "h2": "Financing that works like you'd hope.",
         "stats": [
             {"n": "Minutes", "cap": "to apply and get a decision — right from your kitchen table."},
-            {"n": "$0 down", "cap": "options available on qualifying plans."},
+            # Was "$0 down" — see the REG Z note on heroChips above. "Three lenders" is a
+            # count of who reviews the application, not a term of credit, so it triggers
+            # no disclosure obligation.
+            {"n": "Three", "cap": "lenders reviewing your application, not one."},
             {"n": "No penalty", "cap": "for paying your plan off early."},
         ],
-        "lenders": ["GoodLeap", "Synchrony", "Wright-Patt Credit Union"],
+        "lenders": D.LENDERS,
         # Sits directly under the Apply button, which is where a customer decides.
         # Says the one thing that most often gets misunderstood — that applying is
         # a pre-approval, not a commitment — and links the full financing terms.
         "fine": ('Financing subject to credit approval. Applying is a request for pre-approval, '
-                 'not an agreement to buy or to lend — rates and terms are set by the lender. '
-                 'See <a href="/terms#financing">financing terms</a>.'),
+                 'not an agreement to buy or to lend, and rates and terms are set by the lender. '
+                 'See <a href="/terms#financing">full financing terms</a>.'),
     },
     "faqEyebrow": "FINANCING QUESTIONS",
-    # First Q&A is verbatim from mockup 4c; the other three answers are authored
-    # from approved claims (soft pull, no early-payoff penalty, stacks with
-    # specials, plural lenders) — marketing to review in staging.
+    "faqH2": "What do people ask before applying?",
+    # First Q&A is verbatim from mockup 4c; the others are authored from approved
+    # claims (soft pull, no early-payoff penalty, stacks with specials, plural
+    # lenders, lender sets the rate).
+    #
+    # [VERIFY] The soft-inquiry and no-early-payoff-penalty answers are asserted for
+    # all three lenders. Confirm each one individually — if one runs a hard pull at
+    # the options stage, the first answer has to be narrowed to the lenders it is
+    # true for.
     "faq": [
         {"q": "Does applying affect my credit score?",
          "a": "Checking your options starts with a soft inquiry that doesn't affect your score. A full application follows only if you decide to move forward."},
         {"q": "What if my credit isn't perfect?",
-         "a": "That's why we work with more than one lender. GoodLeap, Synchrony, and Wright-Patt Credit Union each cover a range of credit situations — and checking your options costs nothing."},
+         "a": "That's why we work with more than one lender. GoodLeap, Synchrony, and Wright-Patt Credit Union each cover a range of credit situations, and checking your options costs nothing."},
         {"q": "Can I pay it off early?",
-         "a": "Yes — there's no penalty for paying your plan off early."},
+         "a": "Yes. There's no penalty for paying your plan off early."},
+        {"q": "Who sets the interest rate?",
+         "a": f"The lender sets the rate and the term, not {D.COMPANY}. Both are disclosed by the lender in the application, before anything is signed."},
         {"q": "Can I combine financing with specials?",
-         "a": "Yes — financing stacks with seasonal specials and utility rebates for the best total price on the work."},
+         "a": 'Yes. Financing stacks with <a href="/specials">this season\'s specials on installations</a> and utility rebates for the best total price on the work.'},
     ],
+    # The kitchen-table framing, with no dollar figure, no APR and no monthly amount,
+    # so nothing in it triggers a Reg Z disclosure obligation.
+    "table": {
+        "eyebrow": "FINANCE OR PAY UPFRONT",
+        "h2": "Is financing worth it compared with paying upfront?",
+        "id": "compare",
+        "takeaway": f"{D.COMPANY} offers financing so that an unplanned replacement does not "
+                    "force a smaller system or an empty savings account.",
+        "caption": "Financing versus paying in full for a system replacement",
+        "columns": ["Factor", "Financing usually fits when", "Paying in full usually fits when"],
+        "rows": [
+            ["Timing", "The system already failed and replacement cannot wait",
+             "The replacement is planned months ahead"],
+            ["Cash on hand", "Paying in full would empty the emergency fund",
+             "Cash is available without touching reserves"],
+            ["System choice", "Budget alone would force a smaller or lower-efficiency system",
+             "The preferred system is affordable outright"],
+            ["Total cost", "A monthly payment is worth the finance charge",
+             "Avoiding any finance charge is the priority"],
+            ["Credit", "Credit is in reasonable shape and pre-approval is likely",
+             "Credit is being repaired and a new account would set it back"],
+        ],
+    },
     "rail": {
         # The cropped file — the uncropped original frames a competitor's service
         # sticker, phone number and all. Do not swap this back.
         "photo": T.PHOTOS["ruudInstall"],
-        "photoAlt": "Ruud air handler installed in a Dayton-area home",
+        # Was "in a Dayton-area home", which nothing in the repo establishes about this
+        # frame. The alt describes what is in the photograph.
+        "photoAlt": f"A Ruud air handler installed by {D.COMPANY}",
         # 625x1600 portrait in a 360x220 landscape slot: object-fit:cover fits the
         # width exactly and crops the height, so only the vertical axis does anything
         # here. 55% lands the visible band on the Ruud badge and spec plate — measured
@@ -554,12 +751,32 @@ FINANCING = {
 def financing_page(d, root_class):
     left = [
         T.mobile_photo(d["rail"]),
-        check_cards("WHY FINANCE", "The right fix, without draining savings.", d["why"]),
-        checks_only("WHAT QUALIFIES", "Finance more than just new systems.", d["qualifies"]),
+        check_cards("WHY FINANCE", "Can I finance a new furnace or AC in Dayton?", d["why"],
+                    sid="why",
+                    lead=[f"Yes. {D.COMPANY} finances new furnaces, air conditioners, heat "
+                          "pumps, water heaters and larger repairs across the Dayton and "
+                          "Cincinnati metros. The financing runs through the lender rather than "
+                          "through Extreme, so approval, rate and term all come from them."]),
+        checks_only("WHAT QUALIFIES", "What kind of work qualifies for financing?",
+                    d["qualifies"], sid="qualifies",
+                    lead=[f"Financing at {D.COMPANY} applies to "
+                          '<a href="/ac-installation">AC installation</a>, '
+                          '<a href="/furnace-installation">furnace installation</a>, heat pumps '
+                          'and ductless systems, tank and tankless '
+                          '<a href="/plumbing/water-heater/installation">water heater '
+                          'installation</a>, major HVAC and plumbing repairs, indoor air quality '
+                          'equipment, and sewer line and repiping projects.']),
         T.process(d["process"], eyebrow="HOW IT WORKS"),
-        lenders_panel(d["lenders"]),
+        section("OUR LENDERS", f"Which lenders does {D.COMPANY} work with?",
+                lenders_panel(d["lenders"]), sid="lenders",
+                lead=[f'{D.COMPANY} works with three lenders rather than one: '
+                      f'{", ".join(D.LENDERS[:-1])} and {D.LENDERS[-1]}. Using more than one '
+                      "lender is what makes an approval possible across a wider range of credit "
+                      "situations, and checking options costs nothing."]),
+        T.table_section(d["table"]),
         T.mobile_inline_rail(d),
-        T.faq(d["faq"], d["faqEyebrow"], h2=None),
+        T.faq(d["faq"], d["faqEyebrow"], h2=d["faqH2"]),
+        T.updated_line(UPDATED, UPDATED_ISO),
     ]
     body = f'''{financing_hero(d)}
 <div class="xsp-bodygrid">
@@ -587,8 +804,8 @@ OFFERS = [
     # Extreme Rewards numbers only — no invented promotional amount. If marketing wants a real
     # new-system special back here, it needs a confirmed figure and a deliberate position
     # against the $250 referral.
-    {"pill": "REFERRALS", "value": "$250 off", "title": "When a Friend Refers You",
-     "desc": "New customers save $250 on a new heating, cooling, or plumbing system, or $100 on everything else. Just name whoever sent you when you book.",
+    {"pill": "REFERRALS", "value": f'{D.REWARDS["newSystem"]} off', "title": "When a Friend Refers You",
+     "desc": f'New customers save {D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or {D.REWARDS["everythingElse"]} on everything else. Name whoever sent you when you book.',
      "foot": "Always available", "cta": "/referral", "ctaLabel": "See Extreme Rewards"},
     {"pill": "PLUMBING", "value": "$99", "title": "Drain Clearing Special",
      "desc": "Single accessible drain cleared, with a camera check if the clog keeps coming back.",
@@ -596,8 +813,10 @@ OFFERS = [
     {"pill": "NEW SYSTEMS", "value": "Free", "title": "Second Opinion on Replacement",
      "desc": "Told you need a whole new system? Get a no-pressure second look before you commit.",
      "foot": "Limited time", "cta": "schedule"},
-    {"pill": "MEMBERSHIP", "value": "$249", "valueSuffix": "/yr", "title": "Join X-Plan Maintenance",
-     "desc": "Two tune-ups a year, 15% off repairs, priority scheduling, and discounted service calls.",
+    # "discounted service calls" implied a published rate this card cannot state.
+    # "a reduced member service fee" is the same fact without the implication.
+    {"pill": "MEMBERSHIP", "value": D.XPLAN["annual"], "valueSuffix": "/yr", "title": "Join X-Plan Maintenance",
+     "desc": "Two tune-ups a year, 15% off repairs, priority scheduling, and a reduced member service fee.",
      "foot": "Always available", "cta": "/maintenance", "ctaLabel": "Join X-Plan"},
 ]
 
@@ -631,12 +850,20 @@ def email_panel():
 
 SPECIALS = {
     "breadcrumb": [("Home", "/"), ("Specials", "")],
-    "h1": "Seasonal specials, {X}.",
-    "h1Highlight": "extreme savings",
-    "intro": "Real offers on the work you actually need — no gimmicks, no fine-print traps. Mention the offer when you book and we apply it to your invoice.",
+    "h1": "HVAC and plumbing {X} in Dayton and Cincinnati",
+    "h1Highlight": "specials",
+    # No offer amount in the answer block on purpose: it is the most-cited passage on
+    # the page and it should outlive the coupons. Amounts live in OFFERS and nowhere
+    # else, so swapping a promotion is a data edit rather than a copy rewrite.
+    "answer": (f"{D.COMPANY} publishes seasonal offers on heating, cooling and plumbing work "
+               "for homeowners across the Dayton and Cincinnati, Ohio metros. One offer applies "
+               "per household per visit, and the offer has to be named when the job is booked. "
+               "Discounts appear in the upfront quote before work starts."),
+    # The old H1, demoted to the deck line.
+    "intro": "Seasonal specials, extreme savings.",
     "heroChips": ["Updated Seasonally", "Mention at Booking", "Combine with Financing"],
     "redeem": {
-        "h2": "Three steps, zero coupons to print.",
+        "h2": "How do I claim a special?",
         "steps": [
             {"title": "Pick your offer",
              "desc": "One offer per visit — choose the one that saves you the most."},
@@ -646,7 +873,58 @@ SPECIALS = {
              "desc": "The discount shows up in your upfront quote — before any work begins."},
         ],
     },
-    "fineNote": "Offers can't be combined with other discounts unless noted. One offer per household per visit. Must be mentioned at time of booking. Expiration dates and full terms set per promotion.",
+    "fineNote": "Offers cannot be combined with other discounts unless noted. One offer per household per visit. Must be mentioned at the time of booking. Expiration dates and full terms are set per promotion.",
+    # Column 2 names each offer by type rather than by price, so the table survives a
+    # promotion swap. The only amounts are the two Extreme Rewards numbers, which are
+    # the approved customer-facing pair.
+    "table": {
+        "eyebrow": "WHICH OFFER FITS",
+        "h2": "Which offer saves the most on my job?",
+        "id": "which-offer",
+        "takeaway": f"{D.COMPANY} applies one offer per household per visit, so the right choice "
+                    "is the one that matches the job being booked.",
+        "caption": f"Which {D.COMPANY} offer fits which job",
+        "columns": ["What you are booking", "Offer that usually fits", "How to claim it"],
+        "rows": [
+            ["A seasonal tune-up on one system", "The AC or furnace tune-up special",
+             "Name it when you book"],
+            ["A repair on an existing system", "The repair discount", "Name it when you book"],
+            ["One accessible drain that will not clear", "The drain clearing special",
+             "Name it when you book"],
+            ["A replacement quote from another company", "The free second opinion",
+             "Name it when you book"],
+            ["Tune-ups you want every year, not once",
+             "X-Plan membership, which includes two visits a year", "Join X-Plan"],
+            ["A first job after a friend recommended Extreme",
+             f'Extreme Rewards: {D.REWARDS["newSystem"]} on a new system, '
+             f'{D.REWARDS["everythingElse"]} on everything else',
+             "Name your friend when you book"],
+        ],
+    },
+    "faqEyebrow": "OFFER QUESTIONS",
+    "faqH2": "What do people ask about the offers?",
+    "faq": [
+        {"q": "Do I need to print a coupon?",
+         "a": f"No. {D.COMPANY} applies offers at booking. Name the offer on the phone or in the "
+              "note field of the online scheduler and it gets attached to your appointment."},
+        {"q": "Can I use more than one offer on the same visit?",
+         "a": f"One offer applies per household per visit at {D.COMPANY}. Offers do not combine "
+              "with other discounts unless the offer says otherwise."},
+        {"q": "When does the discount get applied?",
+         "a": f"The discount appears in the upfront quote from {D.COMPANY}, before any work "
+              "begins, and it shows again on the invoice."},
+        {"q": "Can I use a special with financing?",
+         "a": f'Yes. Specials from {D.COMPANY} apply alongside '
+              '<a href="/financing-options">monthly payment options</a> and utility rebates on '
+              'the same job.'},
+        {"q": "What if I forget to mention the offer?",
+         "a": f"Offers have to be named when the job is booked. {D.COMPANY} cannot add one to a "
+              "job after the visit, so mention it on the call."},
+        {"q": "Is X-Plan a special or a membership?",
+         "a": f'X-Plan is a membership rather than a limited-time offer. It costs '
+              f'{D.XPLAN["annual"]} per year or {D.XPLAN["monthly"]} per month per system and '
+              f'stays available year round. <a href="/maintenance">Join X-Plan</a>.'},
+    ],
 }
 
 def specials_hero(d):
@@ -656,6 +934,7 @@ def specials_hero(d):
     <div>
       {T.crumbs(d["breadcrumb"])}
       {T.h1(d["h1"], d["h1Highlight"])}
+      {T.answer_block(d)}
       <p class="xsp-intro">{d["intro"]}</p>
       {T.chips(d["heroChips"])}
     </div>
@@ -667,13 +946,47 @@ def specials_page(d, root_class):
     right = (email_panel() if SHOW_EMAIL_SIGNUP else "") + T.promo("spFinance")
     redeem = f'''{T.process(d["redeem"], eyebrow="HOW TO REDEEM")}
 <div class="xco-finenote">{d["fineNote"]}</div>'''
+    offers = section(
+        "CURRENT OFFERS", "What HVAC specials are running in Dayton right now?", coupons,
+        sid="offers",
+        lead=[f"Current offers from {D.COMPANY} cover seasonal tune-ups, repairs, "
+              '<a href="/plumbing/clogged-drain">drain cleaning</a>, a second opinion on a '
+              "replacement quote, and X-Plan membership. Offers change with the season, so the "
+              "coupons on this page are the live set."])
+    combine = prose_section(
+        "STACKING", "Can specials be combined with financing?",
+        [f'Yes. Specials from {D.COMPANY} apply alongside '
+         '<a href="/financing-options">financing</a> and utility rebates, so all three can land '
+         'on the same job. Specials do not stack with each other: one offer applies per '
+         'household per visit.'],
+        sid="combine")
+    members = prose_section(
+        "MEMBERS", "Do X-Plan members get their own offers?",
+        [f'Yes. X-Plan members at {D.COMPANY} take 15% off all repairs, get two seasonal visits '
+         "included, hold priority scheduling, and carry a 5-year warranty on qualified repairs. "
+         f'Membership is {D.XPLAN["annual"]} per year or {D.XPLAN["monthly"]} per month per '
+         f'system. <a href="/maintenance">Join X-Plan</a>.',
+         f'Booking a repair rather than a plan? <a href="/ac-repair">Same-day AC repair</a> and '
+         f'<a href="/furnace-installation">furnace installation</a> both take the offers above.'],
+        sid="members")
+    rotation = prose_section(
+        "HOW OFTEN", "How often do the specials change?",
+        [f"{D.COMPANY} updates the offers on this page seasonally. Expiration dates and full "
+         "terms are set per promotion, and each offer states its own end date."],
+        sid="rotation")
     body = f'''{specials_hero(d)}
 <div class="xco-body">
-  {section("CURRENT OFFERS", "This season's deals.", coupons)}
+  {offers}
   <div class="xco-split">
     <div>{redeem}</div>
     <div style="display:flex;flex-direction:column;gap:16px">{right}</div>
   </div>
+  {combine}
+  {T.table_section(d["table"])}
+  {members}
+  {rotation}
+  {T.faq(d["faq"], d["faqEyebrow"], h2=d["faqH2"])}
+  {T.updated_line(UPDATED, UPDATED_ISO)}
 </div>'''
     return shell(root_class, body)
 
@@ -682,10 +995,24 @@ def specials_page(d, root_class):
 # ================================================================
 ABOUT = {
     "breadcrumb": [("Home", "/"), ("About Us", "")],
-    "h1": "Locally owned. {X} committed.",
-    "h1Highlight": "Extremely",
-    "intro": "The Extreme Team is a family-owned heating, cooling, and plumbing company serving Dayton and Cincinnati — built on honest pricing, clean workmanship, and neighbors referring neighbors.",
-    "heroChips": ["Family Owned &amp; Operated", "20+ Years Local", "4.9 on Google"],
+    "h1": "About {X} Heating, Air, Plumbing",
+    "h1Highlight": "Extreme",
+    # The two Ohio licence numbers are the single cheapest trust win on the site:
+    # externally verifiable, and no competitor in the Dayton SERP publishes theirs.
+    # Until the team section comes back after the photo shoot, the licences and the
+    # founding year are what this page's expertise signal actually rests on.
+    "answer": (f"{D.COMPANY} is a locally owned heating, cooling and plumbing contractor founded "
+               f"in {D.FOUNDED} and serving the Dayton and Cincinnati, Ohio metros. The company "
+               f"works under Ohio HVAC license #37179 and Ohio plumbing license #13557. "
+               f"{D.COMPANY} has {D.JOBS_COMPLETED_LONG} jobs completed and holds a "
+               f"{D.GOOGLE_RATING}-star average across {D.REVIEW_COUNT} {D.REVIEW_SOURCE}."),
+    # The old H1, demoted to the deck line.
+    "intro": "Locally owned. Extremely committed.",
+    # "4.9 on Google" was wrong: the aggregate is Birdeye across platforms. The licence
+    # chip is the only item on this row a customer can independently verify.
+    "heroChips": ["Family Owned &amp; Operated", f"{D.YEARS_LOCAL} Years Local",
+                  f"{D.GOOGLE_RATING} from {D.REVIEW_COUNT} reviews",
+                  f"{D.LICENSE_HVAC} &middot; {D.LICENSE_PLUMBING}"],
     # PLACEHOLDERS until Block B of the shot list is shot. Both are real Extreme
     # photography, but neither is what its slot ultimately wants:
     #  - hero wants a team lineup; this is the branded vehicle at a community event
@@ -693,16 +1020,19 @@ ABOUT = {
     # The story copy says "From one van to the whole Miami Valley" — do NOT let the
     # alt text or any caption imply this photo is that first van.
     "heroPhoto": {"src": PHOTOS["troy"], "pos": "50% 45%",
-                  "alt": "The Extreme Team at a community event in Troy, Ohio"},
+                  "alt": f"The {D.COMPANY} team at a community event in Troy, Ohio"},
     "storyPhoto": {"src": PHOTOS["skyline"],
-                   "alt": "An Extreme service van with the Dayton skyline behind it"},
+                   "alt": f"An {D.COMPANY} service van with the Dayton skyline behind it"},
     "story": {
-        "h2": "From one van to the whole Miami Valley.",
+        "h2": f"How long has {D.COMPANY} been in business?",
         # Founding year and the Mason opening are client-confirmed (2026-08-02). Dates
         # are worth stating plainly rather than as "two decades" — they are the kind of
         # specific, checkable fact both readers and AI answers cite.
-        "p1": "Extreme Heating, Air, Plumbing started in 2004 the way most good service companies do — one van, one toolbox, and a promise to show up when we said we would. We opened the Mason location in 2018, and today we cover Dayton and Cincinnati with a full team of licensed HVAC and plumbing pros.",
-        "p2": "The size changed. The promise didn't: upfront pricing before any work begins, techs who treat your home like their own, and a real person answering the phone — day or night.",
+        # [NEEDS: opening years for the Troy and Waynesville offices. Two more dates
+        # would turn this paragraph into a timeline, which is a far stronger citation
+        # target than a single founding year.]
+        "p1": f"{D.COMPANY} started in {D.FOUNDED} the way most good service companies do: one van, one toolbox, and a promise to show up when we said we would. We opened the Mason location in {D.MASON_OPENED}, and today we cover Dayton and Cincinnati from four Ohio offices with a full team of licensed HVAC and plumbing pros.",
+        "p2": "The work changed. The way it is priced did not. Every job is quoted upfront and approved before anything is opened, and a real person answers the phone, day or night.",
     },
     "values": [
         {"t": "Honest pricing, upfront",
@@ -715,9 +1045,13 @@ ABOUT = {
          "d": "Most new customers come from old ones. We earn that, one visit at a time."},
     ],
     "stats": [
-        {"n": "20+", "cap": "years serving Ohio homes"},
-        {"n": '<span class="st">★</span> 4.9', "cap": "average Google rating"},
-        {"n": "90%", "cap": "of calls handled same-day"},
+        {"n": D.YEARS_LOCAL, "cap": "years serving Ohio homes"},
+        # The 4.9 is a Birdeye aggregate across platforms, not a Google-only rating.
+        # The caption carries the denominator, because a rating with no review count
+        # is the shape of a claim rather than a claim.
+        {"n": f'<span class="st">★</span> {D.GOOGLE_RATING}',
+         "cap": f"average across {D.REVIEW_COUNT} {D.REVIEW_SOURCE}"},
+        {"n": D.SAME_DAY, "cap": "of calls handled same-day"},
         {"n": "24/7", "cap": "emergency service line"},
     ],
     # TODO: replace placeholder team names/roles with real staff + headshots (handoff 4a)
@@ -725,6 +1059,9 @@ ABOUT = {
     # head-and-shoulders portrait at matching framing — the row runs four across and
     # mismatched crops are the first thing you notice.
     # TODO (client): confirm roles and years with the team for each person.
+    #
+    # NOT RENDERED. See the note in about_page() — the section is off the page until
+    # the company photo shoot lands. Do not re-add it here or in the assembler.
     "team": [
         {"name": "Anthony Griffin", "role": "Installer", "photo": PHOTOS["team"]["anthony-griffin"]},
         {"name": "Jayvon Kilgore",  "role": "Installer", "photo": PHOTOS["team"]["jayvon-kilgore"]},
@@ -733,13 +1070,69 @@ ABOUT = {
     ],
     # Both cards used to point at /locations, so two differently-labelled links went
     # to the same place. The per-city pages exist; these are them.
+    #
+    # Loveland was removed from the Cincinnati card: it is not in builder/locations.py
+    # and has no page, so it was a coverage claim with nothing behind it.
     "areas": [
-        {"t": "Dayton",
-         "d": "Serving Dayton, Kettering, Beavercreek, Centerville, Springboro, and surrounding Miami Valley communities.",
-         "lm": "Dayton location &amp; service area →", "href": "/locations/dayton"},
-        {"t": "Cincinnati",
-         "d": "Serving Cincinnati, Mason, West Chester, Loveland, Fairfield, and communities across the metro.",
-         "lm": "Cincinnati location &amp; service area →", "href": "/locations/cincinnati"},
+        {"t": "Dayton metro",
+         "d": "Dayton, Kettering, Beavercreek, Centerville, Springboro, Huber Heights and the surrounding Miami Valley.",
+         "lm": "our Dayton service area →", "href": "/locations/dayton"},
+        {"t": "Cincinnati metro",
+         "d": "Cincinnati, Mason, West Chester, Fairfield, Middletown, Lebanon and communities across the metro.",
+         "lm": "our Cincinnati service area →", "href": "/locations/cincinnati"},
+    ],
+    "table": {
+        "eyebrow": "AT A GLANCE",
+        "h2": f"What are the facts about {D.COMPANY}?",
+        "id": "at-a-glance",
+        "takeaway": f"{D.COMPANY} has served the Dayton and Cincinnati, Ohio metros since "
+                    f"{D.FOUNDED} and holds Ohio HVAC license #37179.",
+        "caption": f"{D.COMPANY} at a glance",
+        "columns": ["Detail", D.COMPANY],
+        "rows": [
+            ["Founded", f"{D.FOUNDED}, locally owned and operated since"],
+            ["Trades", "Heating, cooling, indoor air quality, residential plumbing"],
+            ["Service area", "Dayton and Cincinnati metros, nine Ohio counties"],
+            ["Offices", " · ".join(o["locality"] for o in D.OFFICES)],
+            ["Ohio licenses", f'HVAC {D.LICENSE_HVAC} &middot; Plumbing {D.LICENSE_PLUMBING}'],
+            ["Legal entities", f"{D.ENTITY_HVAC} (HVAC) · {D.ENTITY_PLUMBING} (plumbing)"],
+            ["Jobs completed", D.JOBS_COMPLETED_LONG],
+            ["Customer reviews", f"{D.GOOGLE_RATING}-star average across {D.REVIEW_COUNT} reviews"],
+            ["Emergency service", "24/7, every day of the year"],
+            ["Same-day service", f"{D.SAME_DAY} same-day service"],
+            ["Membership", f'X-Plan, {D.XPLAN["annual"]} per year or {D.XPLAN["monthly"]} per month per system'],
+        ],
+    },
+    "faqEyebrow": "ABOUT THE COMPANY",
+    "faqH2": "What else do people ask about Extreme?",
+    # [NEEDS: is commercial work in scope? Third-party directory listings describe
+    # Extreme as residential and commercial, and there is no commercial route on the
+    # site. Either answer is fine; the mismatch between the two is not. The question is
+    # deliberately absent until the client answers it.]
+    "faq": [
+        {"q": f"When was {D.COMPANY} founded?",
+         "a": f"{D.COMPANY} was founded in {D.FOUNDED} and has been locally owned and operated "
+              f"ever since. The Mason office opened in {D.MASON_OPENED}."},
+        {"q": f"Is {D.COMPANY} a franchise?",
+         "a": f"No. {D.COMPANY} is locally owned and operated from four offices in Ohio, and is "
+              "not part of a national franchise."},
+        {"q": "What are Extreme's Ohio license numbers?",
+         "a": f"{D.COMPANY} holds Ohio HVAC license #37179 and Ohio plumbing license #13557. "
+              "Both appear on estimates, invoices and vehicle graphics, as Ohio requires. "
+              '<a href="/terms">Ohio license numbers and program terms</a> are on the terms '
+              "page."},
+        {"q": "Does Extreme do both HVAC and plumbing?",
+         "a": f'Yes. {D.COMPANY} covers heating, cooling, indoor air quality and residential '
+              'plumbing. One phone number and one '
+              '<a href="/maintenance">X-Plan maintenance membership</a> cover both trades.'},
+        {"q": "How many jobs has Extreme completed?",
+         "a": f"{D.COMPANY} has {D.JOBS_COMPLETED_LONG} jobs completed across the Dayton and "
+              f"Cincinnati metros since {D.FOUNDED}."},
+        {"q": "How do I get in touch?",
+         "a": f'<a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> reaches all four offices. '
+              '<a href="/contact">Office addresses and directions</a> are on the contact page, '
+              'and <a href="/referral">the Extreme Rewards referral program</a> pays existing '
+              'customers who send someone new.'},
     ],
 }
 
@@ -750,6 +1143,7 @@ def about_hero(d):
     <div>
       {T.crumbs(d["breadcrumb"])}
       {T.h1(d["h1"], d["h1Highlight"])}
+      {T.answer_block(d)}
       <p class="xsp-intro">{d["intro"]}</p>
       {T.chips(d["heroChips"])}
     </div>
@@ -770,11 +1164,34 @@ def about_page(d, root_class):
               style="height:280px")}
   </div>
 </div>'''
+    licensed = prose_section(
+        "LICENSED IN OHIO", f"Is {D.COMPANY} licensed and insured in Ohio?",
+        [f"Yes. {D.COMPANY} holds Ohio HVAC license #37179 and Ohio plumbing license #13557. "
+         "Technicians are licensed and insured, and every one of them is drug-tested and "
+         "background-checked before entering a customer's home.",
+         f'Heating and cooling work is performed by {D.ENTITY_HVAC} and plumbing work by '
+         f'{D.ENTITY_PLUMBING}. Full '
+         '<a href="/terms">Ohio license numbers and program terms</a> are on the terms page.'],
+        sid="licensed")
+    # [NEEDS: does the scheduler send a technician name and photo before arrival? It is
+    # one of the strongest trust signals in the trade and it costs nothing to state.
+    # Not written until the client confirms it happens.]
+    who = prose_section(
+        "AT YOUR DOOR", "Who will come to my house?",
+        [f"A licensed, insured technician from {D.COMPANY} arrives in a marked company van. "
+         "Every technician is drug-tested and background-checked. Shoe covers and drop cloths go "
+         "down before the work starts, and the work area is left cleaner than it was found."],
+        sid="who")
     values = "".join(
         f'''<div class="xco-ccard"><span class="xsp-glyph"><i></i><i></i></span>
   <div class="t">{v["t"]}</div><div class="d">{v["d"]}</div></div>''' for v in d["values"])
-    values = section("WHAT WE STAND FOR", "Four things we never compromise on.",
-                     f'<div class="xco-vals">{values}</div>')
+    values = section("WHAT WE STAND FOR", "How does Extreme price a job?",
+                     f'<div class="xco-vals">{values}</div>', sid="pricing",
+                     lead=[f"{D.COMPANY} quotes flat, upfront pricing that the customer approves "
+                           "before any work begins. Estimates on replacements and new "
+                           "installations are free. X-Plan members take 15% off all repairs, and "
+                           '<a href="/financing-options">financing is available on larger '
+                           "work</a>."])
     stats = "".join(
         f'<div><div class="n">{s["n"]}</div><div class="cap">{s["cap"]}</div></div>' for s in d["stats"])
     stats = f'''<div class="xco-stats">
@@ -792,15 +1209,42 @@ def about_page(d, root_class):
   <span class="txt"><span class="t">{a["t"]}</span><br><span class="d">{a["d"]}</span></span>
   <span class="lm">{a["lm"]}</span><span class="mrow">→</span>
 </a>''' for a in d["areas"])
-    areas = section("WHERE WE WORK", "Two home bases, one Extreme Team.",
-                    f'<div class="xco-2col">{areas}</div>')
+    areas = section("WHERE WE WORK", "Which Ohio communities does Extreme serve?",
+                    f'<div class="xco-2col">{areas}</div>', sid="service-area",
+                    lead=[f"{D.COMPANY} serves communities across nine Ohio counties, split "
+                          "between the Dayton and Cincinnati metros. Coverage runs through "
+                          "Montgomery, Greene, Miami, Warren, Butler, Clark, Hamilton, Preble "
+                          "and Darke counties."])
+    # The full four-row address table lives on /contact only. Duplicating it here is a
+    # near-duplicate-content signal on the two pages most likely to be compared.
+    offices = prose_section(
+        "OUR OFFICES", f"Where are {D.COMPANY}'s offices?",
+        [f'{D.COMPANY} operates four offices in Ohio: '
+         + ", ".join(o["locality"] for o in D.OFFICES[:-1]) + f' and {D.OFFICES[-1]["locality"]}. '
+         f'Every one of them routes to the same number, '
+         f'<a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>. Full '
+         '<a href="/contact">office addresses and directions</a> are on the contact page.'],
+        sid="offices")
+    reviews = prose_section(
+        "WHAT CUSTOMERS SAY", "What do customers say about Extreme?",
+        [f"{D.COMPANY} holds a {D.GOOGLE_RATING}-star average across {D.REVIEW_COUNT} "
+         f"{D.REVIEW_SOURCE} from homeowners in the Dayton and Cincinnati areas. Reviews are "
+         "aggregated through Birdeye across the platforms where customers leave them."],
+        sid="reviews")
     body = f'''{about_hero(d)}
 <div class="xco-body">
   {story}
+  {licensed}
+  {who}
   {values}
   {stats}
   {team}
+  {offices}
   {areas}
+  {reviews}
+  {T.table_section(d["table"])}
+  {T.faq(d["faq"], d["faqEyebrow"], h2=d["faqH2"])}
+  {T.updated_line(UPDATED, UPDATED_ISO)}
 </div>'''
     return shell(root_class, body)
 

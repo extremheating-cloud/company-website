@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -366,17 +442,18 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 }
 </style>
 <div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><span class="cur">Thermostat Services</span></div>
-      <h1 class="xsp-h1">Smarter comfort, <em>one tap away</em>.</h1>
-      <p class="xsp-intro">Smart thermostat installation, setup, and troubleshooting — get more comfort and lower bills from the system you already own.</p>
+      <h1 class="xsp-h1">Smart thermostat installation and repair in <em>Dayton &amp; Cincinnati</em>.</h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs, configures and repairs residential thermostats across the Dayton and Cincinnati, Ohio metros, including Nest, ecobee and Honeywell models. The company checks wiring, staging and heat pump compatibility before any equipment is bought. Every install ends with a heating and a cooling cycle run and verified.</p></div>
+      <p class="xsp-intro">Smart thermostat installation, setup and troubleshooting. More comfort and lower bills from the system you already own.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call (844) 584-7399</a>
       </div>
-      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 on Google</div><div class="xsp-chip">Locally Owned</div><div class="xsp-chip">Upfront Pricing</div></div>
+      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 from 1,595 reviews</div><div class="xsp-chip">Locally Owned</div><div class="xsp-chip">Upfront Pricing</div></div>
     </div>
     <div class="xsp-bookcol"><div class="xsp-book">
   <div class="eyebrow">BOOK THERMOSTAT SERVICE</div>
@@ -392,11 +469,11 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/smart-thermostat.jpg" alt="A smart thermostat set from a phone app" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/smart-thermostat.jpg" alt="A smart thermostat set from a phone app" width="730" height="588" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">THERMOSTAT TROUBLE?</div>
   <h2 class="xsp-h2">Signs it's time to call.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Blank or unresponsive display</div><div class="xsp-check"><span class="c">✓</span>Temperature doesn't match the setting</div><div class="xsp-check"><span class="c">✓</span>System won't turn on or off</div><div class="xsp-check"><span class="c">✓</span>Short cycling on and off</div><div class="xsp-check"><span class="c">✓</span>Wi-Fi or app won't connect</div><div class="xsp-check"><span class="c">✓</span>Rooms never feel right</div></div>
-  <div class="xsp-callout">Thermostat acting up? It's often the cheapest fix in HVAC — call <a href="tel:18445847399">(844) 584-7399</a> before assuming the worst.</div>
+  <div class="xsp-callout">Thermostat acting up? It's often the cheapest fix in HVAC. Call <a href="tel:18445847399">(844) 584-7399</a> before assuming the worst.</div>
 </div><div>
   <div class="xsp-eyebrow">WHAT WE DO</div>
   <h2 class="xsp-h2">Install, program, and troubleshoot — any brand.</h2>
@@ -413,32 +490,38 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Thermostat Repair</span><br><span class="d">Wiring faults, compatibility issues, and replacements — diagnosed fast.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">What thermostat services does Extreme offer?</h2><p class="xsp-prose">Installation and setup of smart, programmable and conventional thermostats, plus diagnosis when one stops driving the equipment. Extreme Heating, Air, Plumbing works with any brand, checks compatibility against the actual system in the house first, and runs a heating and a cooling cycle before leaving.</p></div><div class="xsp-section"><h2 class="xsp-h2">Can a smart thermostat be installed without a C-wire?</h2><p class="xsp-prose">Yes, in most homes. The C-wire carries continuous power, and smart thermostats need it. Where one was never run, the fix is either an adapter at the furnace board, repurposing an unused conductor in the existing cable, or running new thermostat wire. All three are routine.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing installs smart thermostats in homes with no C-wire by adding a power adapter at the furnace board or running new thermostat cable.</p></div><div class="xsp-section"><h2 class="xsp-h2">Which smart thermostat works with my system?</h2><p class="xsp-prose">The thermostat has to match the equipment, not the other way round. Single-stage gas heat takes almost anything. Heat pumps, multi-stage equipment and zoned systems narrow the list quickly, and line-voltage electric heat rules most smart thermostats out entirely.</p><p class="xsp-takeaway">Thermostat compatibility in a home is decided by the equipment type and the wiring already at the wall, not by the thermostat's feature list.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Thermostat compatibility by system type, as Extreme Heating, Air, Plumbing checks it before an installation."><table class="xsp-table"><caption>Thermostat compatibility by system type, as Extreme Heating, Air, Plumbing checks it before an installation.</caption><thead><tr><th scope="col">What you have</th><th scope="col">What it means</th><th scope="col">What can be installed</th></tr></thead><tbody><tr><th scope="row">A C-wire already at the thermostat</th><td>Continuous power is available at the wall</td><td>Any mainstream smart thermostat</td></tr><tr><th scope="row">No C-wire, standard furnace</th><td>The thermostat has no steady power source</td><td>A smart thermostat, with a power adapter at the furnace board or new cable</td></tr><tr><th scope="row">Heat pump with auxiliary or emergency heat</th><td>The thermostat has to control the changeover and the backup heat</td><td>A heat pump capable smart thermostat, configured for the correct staging</td></tr><tr><th scope="row">Two-stage or variable-speed equipment</th><td>Extra conductors are needed to drive each stage</td><td>A multi-stage smart thermostat, wiring permitting</td></tr><tr><th scope="row">Millivolt or heat-only system</th><td>There is no 24-volt transformer to power a thermostat</td><td>A compatible millivolt thermostat, not a standard smart model</td></tr><tr><th scope="row">Line-voltage electric baseboard</th><td>The thermostat switches 120 or 240 volts directly</td><td>A line-voltage thermostat only</td></tr><tr><th scope="row">A zoned system with multiple thermostats</th><td>Each zone is driven through a zone control panel</td><td>Matched thermostats compatible with the existing panel</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Why is my thermostat not turning on the furnace?</h2><p class="xsp-prose">The common causes are a dead battery, a tripped breaker, a blown low-voltage fuse on the furnace board, a loose or corroded wire at the terminal, or a furnace door switch that is not seated. Check the battery and the breaker first, since neither costs anything to rule out. If the heat still will not run, <a href="/furnace-heating">furnace and heating service</a> takes it from there.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Working right, explained</div><div class="d">We test heating and cooling cycles and walk you through the controls before we leave.</div></div></div></div>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
+</div><div class="xsp-section"><h2 class="xsp-h2">Can a new thermostat lower my energy bills?</h2><p class="xsp-prose">Some. The saving comes from schedules, setbacks and occupancy sensing rather than from the hardware itself, so it depends on how the house was being run before. A thermostat that is set and then ignored saves nothing, which is why the schedule gets built with you before we leave.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book thermostat service in Dayton or Cincinnati?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online. Extreme Heating, Air, Plumbing handles about 90% of service calls the same day, and a thermostat that has stopped driving the heat counts as a no-heat call. Thermostat staging is also checked on <a href="/heat-pump">heat pump service</a> visits and during a full <a href="/inspection">HVAC inspection</a>.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">THERMOSTAT QUESTIONS</div>
-  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <h2 class="xsp-h2">What else do homeowners ask about thermostats?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast can you get here?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">In most cases, same day — about 90% of our calls are handled the day you reach out, with 24/7 emergency service when it can't wait.</div>
+    <button type="button" aria-expanded="true"><span>Is it more likely the thermostat or the furnace?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">The thermostat is the cheaper thing to rule out, so it gets checked first. A blank display usually points at power: batteries, a tripped breaker, or the low-voltage fuse on the furnace board. Heat that runs but never reaches the set temperature is usually not the thermostat.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Which smart thermostat should I buy?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">It depends on your system's wiring and staging. We'll recommend one that actually works with your equipment — and install it right the first time.</div>
+    <button type="button" aria-expanded="false"><span>Can you install a thermostat I already bought?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes. Bring it out of the box and the compatibility check happens on the visit. If it turns out not to suit the equipment, you will hear that before anything gets wired.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Can a new thermostat lower my bills?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Yes — smart schedules and occupancy sensing typically trim 8–12% off heating and cooling costs.</div>
+    <button type="button" aria-expanded="false"><span>Do smart thermostats work with heat pumps?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes, provided the model supports heat pump staging and auxiliary heat, and it is configured for it. A heat pump thermostat set up as if it were a gas furnace will run backup heat far more than it should, which shows up on the electric bill.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>What about a house with several thermostats?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">That is a zoned system, and the thermostats have to match the zone control panel already installed. Replacing one zone thermostat with a mismatched model is the usual cause of one room going haywire after a DIY swap.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Does a new furnace need a new thermostat?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Not always, but a two-stage or variable-speed furnace can only run its extra stages if the thermostat can drive them. That gets checked during the installation estimate rather than discovered afterwards.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/smart-thermostat.jpg" alt="A smart thermostat set from a phone app" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/smart-thermostat.jpg" alt="A smart thermostat set from a phone app" width="730" height="588" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
@@ -446,7 +529,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 <div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -595,6 +678,24 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -366,17 +442,18 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 }
 </style>
 <div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><span class="cur">HVAC Inspections</span></div>
-      <h1 class="xsp-h1">Know your system, <em>before it surprises you</em>.</h1>
-      <p class="xsp-intro">Full-system HVAC inspections for peace of mind — home purchases, seasonal checkups, and honest second opinions.</p>
+      <h1 class="xsp-h1">HVAC inspection for <em>homes and home buyers</em>.</h1>
+      <div class="xsp-answer" id="answer"><p>An HVAC inspection from Extreme Heating, Air, Plumbing documents the condition of a home's heating, cooling and ductwork across the Dayton and Cincinnati, Ohio metros. Combustion safety, refrigerant performance, electrical components and airflow are tested and photographed. Findings arrive in plain English, sorted into 3 tiers: safety, urgency and cost.</p></div>
+      <p class="xsp-intro">Full-system HVAC inspections for home purchases, seasonal checkups, and honest second opinions.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call (844) 584-7399</a>
       </div>
-      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 on Google</div><div class="xsp-chip">Locally Owned</div><div class="xsp-chip">Upfront Pricing</div></div>
+      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 from 1,595 reviews</div><div class="xsp-chip">Locally Owned</div><div class="xsp-chip">Upfront Pricing</div></div>
     </div>
     <div class="xsp-bookcol"><div class="xsp-book">
   <div class="eyebrow">BOOK AN INSPECTION</div>
@@ -392,11 +469,11 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/sale.jpg" alt="A for-sale sign in the front yard of a two-storey house" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/sale.jpg" alt="A for-sale sign in the front yard of a two-storey house" width="943" height="840" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">WHY INSPECT?</div>
   <h2 class="xsp-h2">When an inspection pays for itself.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Buying or selling a home</div><div class="xsp-check"><span class="c">✓</span>System is 10+ years old</div><div class="xsp-check"><span class="c">✓</span>Bills higher than last year</div><div class="xsp-check"><span class="c">✓</span>Comfort varies room to room</div><div class="xsp-check"><span class="c">✓</span>No service records on file</div><div class="xsp-check"><span class="c">✓</span>Second opinion on a big quote</div></div>
-  <div class="xsp-callout">Want eyes on it before you commit? Call <a href="tel:18445847399">(844) 584-7399</a> — we'll tell you what's real and what can wait.</div>
+  <div class="xsp-callout">Want eyes on it before you commit? Call <a href="tel:18445847399">(844) 584-7399</a> and we'll tell you what's real and what can wait.</div>
 </div><div>
   <div class="xsp-eyebrow">WHAT WE DO</div>
   <h2 class="xsp-h2">Checked bumper to bumper.</h2>
@@ -413,32 +490,38 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Second Opinions</span><br><span class="d">A big repair quote deserves a second set of eyes — no pressure, just numbers.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">What does an HVAC inspection include?</h2><p class="xsp-prose">Combustion safety and carbon monoxide testing, refrigerant performance, electrical components, airflow and static pressure, and the condition of the ductwork. Everything gets photographed, and the report says what is a safety issue, what needs doing this year, and what can wait.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does an HVAC inspection cover that a home inspection does not?</h2><p class="xsp-prose">A home inspection is a visual, non-invasive look at the whole house, and its standards of practice specifically exclude taking equipment apart or testing refrigerant. An HVAC inspection opens the equipment and takes readings, which is where the expensive findings live.</p><p class="xsp-takeaway">A general home inspection reports whether the heating and cooling equipment operates; an HVAC inspection from Extreme Heating, Air, Plumbing reports the condition of the components inside it.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="What a general home inspection covers compared with an HVAC inspection from Extreme Heating, Air, Plumbing."><table class="xsp-table"><caption>What a general home inspection covers compared with an HVAC inspection from Extreme Heating, Air, Plumbing.</caption><thead><tr><th scope="col">What gets checked</th><th scope="col">General home inspection</th><th scope="col">Extreme HVAC inspection</th></tr></thead><tbody><tr><th scope="row">Does the system turn on and produce heat or cool air</th><td>Yes</td><td>Yes</td></tr><tr><th scope="row">Heat exchanger inspected for cracks</th><td>Not typically, the standards exclude disassembly</td><td>Yes, with the cabinet opened</td></tr><tr><th scope="row">Combustion and carbon monoxide testing</th><td>Not typically</td><td>Yes, with a combustion analyser</td></tr><tr><th scope="row">Refrigerant charge and pressures</th><td>Not typically, gauges are not attached</td><td>Yes, measured at the service ports</td></tr><tr><th scope="row">Electrical components tested under load</th><td>Visual check only</td><td>Capacitors, contactors and amp draws measured</td></tr><tr><th scope="row">Airflow and static pressure</th><td>Not typically</td><td>Measured across the system</td></tr><tr><th scope="row">Ductwork condition and leakage</th><td>Visible sections only</td><td>Accessible runs inspected and photographed</td></tr><tr><th scope="row">Written findings</th><td>Included in the whole-house report</td><td>Photo-documented and sorted by safety, urgency and cost</td></tr><tr><th scope="row">Repair estimate</th><td>Not provided</td><td>Provided</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Do I need an HVAC inspection before buying a house?</h2><p class="xsp-prose">If the system is more than about ten years old, or if the seller has no service records, it pays for itself in one finding. A cracked heat exchanger or a failing compressor found before closing is a negotiation. Found after closing, it is a bill.</p><p class="xsp-prose">The report is written to be shared. Photos, plain-English findings and a repair estimate are all in one document, so it can go straight to a realtor or into a repair request without translation.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I know if my heat exchanger is cracked?</h2><p class="xsp-prose">You mostly cannot, from the outside, which is why it gets tested rather than guessed at. The warning signs are a yellow or flickering burner flame, soot around the burner compartment, a carbon monoxide alarm, and headaches or nausea that clear when everyone leaves the house.</p><p class="xsp-prose">Any of those signs together with the smell of gas means leaving the building first and calling from outside. Extreme Heating, Air, Plumbing runs 24/7 emergency service every day of the year, and <a href="/furnace-heating">furnace and heating service</a> covers the repair once the house is safe.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">A report you can act on</div><div class="d">Findings in plain English, prioritized by safety, urgency, and cost.</div></div></div></div>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
+</div><div class="xsp-section"><h2 class="xsp-h2">Is an inspection the same as a tune-up?</h2><p class="xsp-prose">No. An inspection documents condition. A tune-up services the equipment. The two overlap on the testing, and they answer different questions: one tells you what shape the system is in, the other keeps it in shape. The <a href="/maintenance">X-Plan maintenance membership</a> includes both, twice a year.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book an HVAC inspection in Dayton?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online. Extreme Heating, Air, Plumbing works around closing dates when the inspection is for a purchase, and handles about 90% of service calls the same day. The same visit can pick up <a href="/air-conditioning">air conditioning service</a>, <a href="/duct-cleaning">air duct cleaning</a> or <a href="/indoor-air-quality">indoor air quality services</a> if the findings point that way.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">INSPECTION QUESTIONS</div>
-  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <h2 class="xsp-h2">What else do buyers and owners ask about inspections?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast can you get here?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">In most cases, same day — about 90% of our calls are handled the day you reach out, with 24/7 emergency service when it can't wait.</div>
+    <button type="button" aria-expanded="true"><span>Can you inspect a system before I close on a house?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">Yes, and it is one of the most common reasons people book one. Extreme Heating, Air, Plumbing schedules around inspection deadlines, and the report is written so it can go straight to a realtor or into a repair request.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>What does an HVAC inspection include?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Combustion safety, refrigerant performance, electrical checks, airflow, and ductwork condition — documented with photos and plain-English findings.</div>
+    <button type="button" aria-expanded="false"><span>Will you give a second opinion on another company's quote?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes. Bring the quote, and the inspection covers the same components so the findings can be compared line by line. There is no obligation to have the work done by Extreme.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Is an inspection the same as a tune-up?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">No — an inspection documents condition; a tune-up services the equipment. X-Plan includes both, twice a year.</div>
+    <button type="button" aria-expanded="false"><span>What happens if the inspection finds a safety problem?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">You are told on the spot, before anything else in the report. Combustion and carbon monoxide findings come first, in plain English, with what needs to happen and how soon. Emergency service runs 24/7 if it cannot wait.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Can the report be shared with my realtor?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes. Photos, findings and the repair estimate are in one document meant to be forwarded, which is the point of having it in writing.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>How old does a system have to be to justify an inspection?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">About ten years is the usual line, or any age with no service records behind it. A newer system with a documented maintenance history rarely needs one outside of a home purchase.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/sale.jpg" alt="A for-sale sign in the front yard of a two-storey house" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/sale.jpg" alt="A for-sale sign in the front yard of a two-storey house" width="943" height="840" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
@@ -446,7 +529,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 <div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -595,6 +678,24 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

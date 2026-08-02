@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -366,17 +442,18 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 }
 </style>
 <div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><span class="cur">Heat Pump Services</span></div>
-      <h1 class="xsp-h1">Year-round comfort from <em>one system</em>.</h1>
-      <p class="xsp-intro">Heat pump repair, installation, and tune-ups for Dayton & Cincinnati homes — efficient heating and cooling with upfront pricing.</p>
+      <h1 class="xsp-h1">Heat pump service for <em>Ohio winters</em>.</h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs, repairs and maintains heat pumps across the Dayton and Cincinnati, Ohio metros. Modern cold-climate heat pumps heat through an Ohio winter, and dual-fuel systems hand off to a gas furnace during the coldest stretches. Service covers 38 communities, on every major brand.</p></div>
+      <p class="xsp-intro">Heat pump repair, installation and tune-ups for Dayton and Cincinnati homes. Efficient heating and cooling from one system, with upfront pricing.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call (844) 584-7399</a>
       </div>
-      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 on Google</div><div class="xsp-chip">90% Same-Day Service</div><div class="xsp-chip">24/7 Emergency</div></div>
+      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 from 1,595 reviews</div><div class="xsp-chip">90% Same-Day Service</div><div class="xsp-chip">24/7 Emergency</div></div>
     </div>
     <div class="xsp-bookcol"><div class="xsp-book">
   <div class="eyebrow">BOOK HEAT PUMP SERVICE</div>
@@ -395,11 +472,11 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="xsp-pills"><a class="xsp-pill active" href="/heat-pump" aria-current="page">Overview</a><a class="xsp-pill" href="/heat-pump-installation">Installation</a><a class="xsp-pill" href="/heat-pump-repair">Repair</a></div>
 </div></div>
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/ruud-heat-pump.jpg" alt="A Ruud heat pump installed at a Dayton-area home" style="object-position:50% 40%" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/ruud-heat-pump.jpg" alt="A Ruud heat pump installed at a Dayton-area home" style="object-position:50% 40%" width="1050" height="1400" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">HEAT PUMP ACTING UP?</div>
   <h2 class="xsp-h2">Signs it's time to call.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Not heating or cooling like it used to</div><div class="xsp-check"><span class="c">✓</span>Ice building up on the outdoor unit</div><div class="xsp-check"><span class="c">✓</span>Running constantly or short cycling</div><div class="xsp-check"><span class="c">✓</span>Grinding, rattling, or squealing</div><div class="xsp-check"><span class="c">✓</span>Blowing the wrong temperature air</div><div class="xsp-check"><span class="c">✓</span>Energy bills creeping up</div></div>
-  <div class="xsp-callout">Noticing more than one? Small heat pump problems become compressor problems — call <a href="tel:18445847399">(844) 584-7399</a> before it gets expensive.</div>
+  <div class="xsp-callout">Noticing more than one? Small heat pump problems become compressor problems. Call <a href="tel:18445847399">(844) 584-7399</a>, or see what each symptom usually means on our <a href="/heat-pump-repair">heat pump repair</a> page.</div>
 </div><div>
   <div class="xsp-eyebrow">WHAT WE DO</div>
   <h2 class="xsp-h2">Repair, replace, or maintain — we handle it all.</h2>
@@ -416,35 +493,38 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Heat Pump Tune-Ups</span><br><span class="d">Twice-a-year checkups keep efficiency high — included with X-Plan.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">Do heat pumps work in Ohio winters?</h2><p class="xsp-prose">Yes. A heat pump moves heat rather than making it, and modern cold-climate models keep producing heat well below freezing, which covers most of an Ohio winter. On the coldest days a heat pump either leans on backup heat or, in a dual-fuel system, hands the job to a gas furnace.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing installs dual-fuel systems that switch from the heat pump to a <a href="/furnace-heating">gas furnace</a> at a set outdoor temperature, so the cheaper source runs whenever it can.</p></div><div class="xsp-section" id="system-comparison"><h2 class="xsp-h2">Which system fits best: heat pump, furnace or dual fuel?</h2><p class="xsp-prose">It comes down to what fuel the house already has and how cold it gets where it sits. All-electric homes and homes without a gas line usually land on a heat pump. Homes with a working gas line often do best on dual fuel, which uses the heat pump most of the year and the furnace in a cold snap.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing recommends a dual-fuel system for most Dayton and Cincinnati homes that already have a gas line, because one system covers mild weather and the other covers the coldest days.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Heat pump, gas furnace with air conditioning, and dual fuel compared for Dayton and Cincinnati homes."><table class="xsp-table"><caption>Heat pump, gas furnace with air conditioning, and dual fuel compared for Dayton and Cincinnati homes.</caption><thead><tr><th scope="col">Factor</th><th scope="col">Heat pump</th><th scope="col">Gas furnace + AC</th><th scope="col">Dual fuel</th></tr></thead><tbody><tr><th scope="row">Winter performance</th><td>Heats efficiently down to low outdoor temperatures, then leans on backup heat</td><td>Full heat output at any outdoor temperature</td><td>Heat pump handles mild and moderate cold, furnace takes the coldest days</td></tr><tr><th scope="row">Summer cooling</th><td>Included in the same outdoor unit</td><td>Handled by a separate air conditioner</td><td>Included in the same outdoor unit</td></tr><tr><th scope="row">Fuel needed</th><td>Electricity only</td><td>Natural gas plus electricity</td><td>Natural gas plus electricity</td></tr><tr><th scope="row">Equipment count</th><td>One outdoor unit, one indoor air handler</td><td>Furnace plus a separate condenser</td><td>Heat pump outdoor unit plus a gas furnace indoors</td></tr><tr><th scope="row">Backup heat</th><td>Electric resistance strips, or none on a cold-climate model with enough capacity</td><td>Not applicable</td><td>The gas furnace is the backup</td></tr><tr><th scope="row">Best fit</th><td>Homes with no gas line, and all-electric homes</td><td>Homes with very cold design temperatures and cheap gas</td><td>Homes with an existing gas line that want lower shoulder-season running costs</td></tr><tr><th scope="row">Operating cost</th><td>Depends on the local electric rate</td><td>Depends on the local gas rate</td><td>Lowest of the three when the switchover point is set correctly</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">What is a cold-climate heat pump?</h2><p class="xsp-prose">A cold-climate heat pump uses a variable-speed compressor that keeps producing usable heat at low outdoor temperatures instead of falling off a cliff near freezing. Standard models lose capacity earlier and lean harder on electric backup heat, which is the part that shows up on a January electric bill.</p><p class="xsp-takeaway">A cold-climate heat pump holds its heating capacity to a much lower outdoor temperature than a standard model, which is what keeps electric backup heat from running through an Ohio winter.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Standard and cold-climate heat pumps compared."><table class="xsp-table"><caption>Standard and cold-climate heat pumps compared.</caption><thead><tr><th scope="col">Factor</th><th scope="col">Standard heat pump</th><th scope="col">Cold-climate heat pump</th></tr></thead><tbody><tr><th scope="row">Compressor</th><td>Single-stage or two-stage</td><td>Variable-speed inverter</td></tr><tr><th scope="row">Heat output as it gets colder</th><td>Falls off sooner, closer to freezing</td><td>Holds capacity to a much lower outdoor temperature</td></tr><tr><th scope="row">Backup heat use</th><td>Runs electric resistance heat often through an Ohio winter</td><td>Runs backup heat rarely, mostly in the coldest snaps</td></tr><tr><th scope="row">Comfort</th><td>Noticeable temperature swings on cold days</td><td>Steadier supply air, longer run cycles</td></tr><tr><th scope="row">Best fit in this region</th><td>Shoulder-season heating with a gas furnace as the primary</td><td>Whole-winter heating, or dual fuel with a high switchover point</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">What heat pump services does Extreme offer?</h2><p class="xsp-prose">Repair, replacement and seasonal tune-ups on every major brand, plus dual-fuel conversions for homes that already have a gas furnace. Extreme Heating, Air, Plumbing services heat pumps in both heating and cooling mode, which matters because a heat pump gets twice the annual runtime of an air conditioner.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Fixed right, guaranteed</div><div class="d">Clean workmanship, tested before we leave, and backed by our satisfaction guarantee.</div></div></div></div>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
+</div><div class="xsp-section"><h2 class="xsp-h2">What are the signs a heat pump is failing?</h2><p class="xsp-prose">Air that never reaches the set temperature, ice that stays on the outdoor unit after a defrost cycle, running constantly or short cycling, grinding or squealing, and a jump in the electric bill that usually means backup heat is running when it should not be. Each of those is diagnosed on our <a href="/heat-pump-repair">heat pump repair</a> page.</p></div><div class="xsp-section"><h2 class="xsp-h2">How long does a heat pump last?</h2><p class="xsp-prose">Twelve to fifteen years is normal, a little shorter than an <a href="/air-conditioning">air conditioner</a> because a heat pump runs year-round instead of four months. Annual servicing matters more here than on any other system in the house for exactly that reason, which is what the <a href="/maintenance">X-Plan maintenance membership</a> is built around.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book heat pump service in Dayton?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online, and you get an arrival window up front. Extreme Heating, Air, Plumbing handles about 90% of service calls the same day and runs 24/7 emergency service for a house with no heat. Replacement estimates are booked the same way, through <a href="/heat-pump-installation">heat pump installation</a>.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">HEAT PUMP QUESTIONS</div>
-  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <h2 class="xsp-h2">What else do homeowners ask about heat pumps?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast can you get here?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">In most cases, same day — about 90% of our calls are handled the day you reach out, with 24/7 emergency service when it can't wait.</div>
+    <button type="button" aria-expanded="true"><span>Why is my heat pump covered in ice in winter?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">A light coat of frost is normal. Heat pumps run a defrost cycle every so often, and the outdoor unit steams and drips while it does. Ice that stays thick after a defrost cycle, or ice that encases the fan, is a fault worth a call.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Do heat pumps work in Ohio winters?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Yes — modern cold-climate heat pumps heat efficiently well below freezing, and dual-fuel setups pair a heat pump with a furnace for the coldest snaps.</div>
+    <button type="button" aria-expanded="false"><span>What does emergency heat mean on my thermostat?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Emergency heat shuts the heat pump off and runs the backup heat alone, which is the most expensive way to heat a house. It is meant for a broken heat pump, not for a cold day. If a <a href="/thermostat">thermostat</a> is stuck in emergency heat, the system needs to be looked at.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Should I repair or replace my heat pump?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Under 10 years old with a minor issue, repair usually wins. Past 12–15 years with a compressor-level failure, replacement often costs less over time.</div>
+    <button type="button" aria-expanded="false"><span>Can a heat pump replace my furnace?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">In many Ohio homes, yes, and in homes with an existing gas line a dual-fuel setup usually makes more sense than removing the furnace. The deciding factors are the home's insulation, the electrical service, and whether the ductwork can carry the higher airflow a heat pump needs.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Do you service all brands?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Yes — every major make and model, regardless of who installed it.</div>
+    <button type="button" aria-expanded="false"><span>Are there federal tax credits for heat pumps in 2026?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">No. The Section 25C and 25D federal credits both expired on 31 December 2025. Any page still advertising a $2,000 federal heat pump credit is out of date.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Will a heat pump work with my existing ductwork?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Sometimes, and it gets measured rather than assumed. Heat pumps move more air at a lower supply temperature than a furnace, so undersized returns show up as noise and cold spots. Static pressure gets tested during the estimate.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/ruud-heat-pump.jpg" alt="A Ruud heat pump installed at a Dayton-area home" style="object-position:50% 40%" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/ruud-heat-pump.jpg" alt="A Ruud heat pump installed at a Dayton-area home" style="object-position:50% 40%" width="1050" height="1400" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
@@ -452,7 +532,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 <div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -601,6 +681,24 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

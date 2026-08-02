@@ -21,6 +21,7 @@ that repeats the naming instruction instead.
 import os
 import template as T
 import company_pages as CP
+import site_data as D
 
 # Accessible green for type on light backgrounds (4.56:1). #6BB85C/#61BC47 are
 # fills only — they fail AA as text on white (2.43:1 / 2.39:1).
@@ -170,18 +171,37 @@ def shell(root_class, body):
 
 
 # ---------------------------------------------------------------- content
-# Page title / meta description for Framer page settings (embeds cannot set these):
-PAGE_TITLE = "Extreme Rewards Referral Program | Give $250. Get $250."
+# Page title / meta description for Framer page settings (embeds cannot set these).
+# The generated build reads its title and description from shell.CORE["/referral"];
+# these two constants are the Framer-side copy of the same strings and must match.
+#
+# The old title, "Extreme Rewards Referral Program | Give $250. Get $250.", omitted
+# the canonical business name and put "Extreme" in the SERP twice with no company
+# attached — the exact entity problem the GEO contract exists to fix.
+PAGE_TITLE = f"Refer a Friend & Earn $250 | {D.COMPANY}"
 PAGE_DESC = (
-    "Refer a friend: they save $250 on a new system or $100 on any repair, and you "
-    "earn the same on a Visa gift card. Have them name you when they book."
+    f'Extreme Rewards: a friend saves {D.REWARDS["newSystem"]} on a new system or '
+    f'{D.REWARDS["everythingElse"]} on everything else, and you earn the same on a Visa '
+    "gift card. Name them at booking."
 )
+
+UPDATED = CP.UPDATED
+UPDATED_ISO = CP.UPDATED_ISO
 
 REFERRAL = {
     "breadcrumb": [("Home", "/"), ("Extreme Rewards", "")],
     "h1": "Give {X}. Get $250.",
     "h1Highlight": "$250",
     "mirror": "Whatever they save, you earn.",
+    # The H1 stays the two-number promise; the eyebrow directly above it supplies
+    # "EXTREME REWARDS", so putting the program name in the H1 as well would read as
+    # a stutter. The canonical business name enters in the answer block instead,
+    # which is the passage that actually gets cited.
+    "answer": (f"Extreme Rewards is the customer referral program from {D.COMPANY} in the Dayton "
+               f'and Cincinnati, Ohio metros. A referred customer saves {D.REWARDS["newSystem"]} '
+               "on a new heating, cooling or plumbing system, or "
+               f'{D.REWARDS["everythingElse"]} on everything else. The person who referred them '
+               "earns the same amount on a Visa gift card."),
     # "everything else" is a client-directed change from the MD's approved wording ("any
     # repair or installation"), applied site-wide on 2026-07-31 at the client's instruction:
     # /referral, /specials and /terms all now say it. programs.md keeps the narrower phrasing
@@ -201,7 +221,7 @@ REFERRAL = {
          "they": "$100", "you": "$100"},
     ],
     "how": {
-        "h2": "Three steps, and only one of them is yours.",
+        "h2": "How do I earn a referral reward?",
         "steps": [
             {"title": "Tell a friend about us",
              "desc": "Give them our name, and yours. They save $250 on a new heating, cooling, or plumbing system, or $100 on everything else."},
@@ -223,6 +243,54 @@ REFERRAL = {
         ("We issue cards within 90 days of the job being completed and paid.", "The work has to be finished and the invoice settled before a card goes out."),
         ("No referring yourself, and Extreme employees aren't eligible.", "The program is for customers sending us someone new."),
     ],
+    # The whole program, in a shape an engine can lift. Two rows. The tier table, the
+    # spend backstop, the job-type list, the retired X-Plan referral bonus and the
+    # stacking rule all live in the internal-only section of programs.md and none of
+    # them may appear here.
+    "table": {
+        "eyebrow": "THE TWO AMOUNTS",
+        "h2": "How much does a referral pay?",
+        "id": "amounts",
+        "takeaway": f'Extreme Rewards pays {D.REWARDS["newSystem"]} to the person who referred a '
+                    "customer buying a new heating, cooling or plumbing system from "
+                    f"{D.COMPANY}.",
+        "caption": "Extreme Rewards amounts",
+        "columns": ["What the referred customer books", "What they save", "What the referrer earns"],
+        "rows": [
+            ["A new heating, cooling or plumbing system",
+             f'{D.REWARDS["newSystem"]} off the job',
+             f'{D.REWARDS["newSystem"]} on a Visa gift card'],
+            ["Everything else",
+             f'{D.REWARDS["everythingElse"]} off the job',
+             f'{D.REWARDS["everythingElse"]} on a Visa gift card'],
+        ],
+    },
+    "faqEyebrow": "REFERRAL QUESTIONS",
+    "faqH2": "What do people ask about Extreme Rewards?",
+    "faq": [
+        {"q": "How does Extreme Rewards work?",
+         "a": f'A friend books a job with {D.COMPANY} and names the person who referred them. '
+              f'The friend saves {D.REWARDS["newSystem"]} on a new system or '
+              f'{D.REWARDS["everythingElse"]} on everything else, and the referrer earns the '
+              "same amount on a Visa gift card."},
+        {"q": "Is there a limit on how many people I can refer?",
+         "a": "There is no limit on how many friends someone can refer through Extreme Rewards. "
+              "Each completed job earns its own Visa gift card."},
+        {"q": "When do I get my card?",
+         "a": "Extreme Rewards cards are issued within 90 days of the job being completed and "
+              "paid. The work has to be finished and the invoice settled before a card goes out."},
+        {"q": "Can my name be added to a job after the visit?",
+         "a": f"No. The referral has to be named when the job is booked. {D.COMPANY} cannot add "
+              'a name to a job after the fact, so have your friend '
+              '<a href="/contact">book the job</a> with your name ready.'},
+        {"q": "How long does my name stay valid?",
+         "a": f"A name given to {D.COMPANY} stays valid for 90 days from the date it is given, "
+              "which covers a job that gets scheduled or finished later. It is not extra time to "
+              "get a name added."},
+        {"q": "Do Extreme employees qualify?",
+         "a": f"No. Extreme Rewards is for customers sending {D.COMPANY} someone new. "
+              "Self-referrals and employee referrals are not eligible."},
+    ],
 }
 
 
@@ -235,6 +303,7 @@ def hero(d):
       <div class="xsp-eyebrow" style="color:#8FD481;margin-top:14px">EXTREME REWARDS</div>
       {T.h1(d["h1"], d["h1Highlight"])}
       <div class="xrf-mirror-line">{d["mirror"]}</div>
+      {T.answer_block(d)}
       <p class="xsp-intro">{d["intro"]}</p>
       <div class="xsp-hero-ctas">
         <a class="xsp-cta" href="#xrf-share">Share With a Friend</a>
@@ -266,12 +335,17 @@ def pairs(d):
       <div class="cell you"><div class="lab">YOU EARN</div><div class="amt">{p["you"]}</div></div>
     </div>
   </div>''' for p in d["pairs"])
-    return f'''<div>
+    # The mirror cards are the visual form of the same two numbers the table below
+    # carries. The table is the parseable copy; the cards are the one people read.
+    return f'''<div id="xrf-pairs">
   <div class="xsp-eyebrow">THE WHOLE PROGRAM</div>
-  <h2 class="xsp-h2">Two numbers, and they match.</h2>
+  <h2 class="xsp-h2">What is the Extreme Rewards referral program?</h2>
+  {T.paragraphs([f'Extreme Rewards is the referral program run by {D.COMPANY}. A friend who '
+                 'books a job saves money on that job, and the person who sent them earns the '
+                 'same amount on a Visa gift card. Two numbers, and they match.'])}
   <div class="xrf-pairs">{cards}</div>
-  <div class="xrf-nolimit">If your friend saved $100, you earn $100. There's no limit on how many
-  friends you can refer.</div>
+  <div class="xrf-nolimit">If your friend saved {D.REWARDS["everythingElse"]}, you earn
+  {D.REWARDS["everythingElse"]}. There's no limit on how many friends you can refer.</div>
 </div>'''
 
 
@@ -289,7 +363,10 @@ def xplan_strip():
 def share(d):
     return f'''<div id="xrf-share">
   <div class="xsp-eyebrow">SHARE IT</div>
-  <h2 class="xsp-h2">Something to send them.</h2>
+  <h2 class="xsp-h2">How do I tell a friend about Extreme?</h2>
+  {T.paragraphs(["Give them the company name and yours. A short message works better than a "
+                 "pitch, and the one below is written to be sent as a text rather than read as "
+                 "an ad."])}
   <div class="xrf-share" data-xrf-share>
     <p style="font-size:14px;line-height:1.6;font-weight:500;color:var(--body);max-width:70ch">
     Copy this and send it to whoever came to mind. It already tells them to name you when they
@@ -308,7 +385,11 @@ def terms(d):
         f'<li><span class="b"></span><span><b>{b}</b> {rest}</span></li>' for b, rest in d["plain"])
     return f'''<div id="xrf-terms">
   <div class="xsp-eyebrow">THE FINE PRINT, IN PLAIN ENGLISH</div>
-  <h2 class="xsp-h2">What qualifies.</h2>
+  <h2 class="xsp-h2">Who is eligible to refer someone?</h2>
+  {T.paragraphs([f'Any existing customer of {D.COMPANY} can refer someone, with no limit on how '
+                 'many friends they refer. The person being referred has to be a new customer, '
+                 'meaning no service at that address in the last 24 months. Self-referrals and '
+                 'Extreme employees are not eligible.'])}
   <div class="xrf-terms">
     <div class="xrf-terms-line">{d["termsLine"]}</div>
     <ul class="xrf-plain">{items}</ul>
@@ -316,15 +397,29 @@ def terms(d):
 </div>'''
 
 
+def crosslinks():
+    return T.paragraphs(
+        ['While you are here: <a href="/maintenance">the X-Plan maintenance membership</a> covers '
+         'your own system, <a href="/specials">this season\'s specials</a> apply to the job your '
+         'friend books, <a href="/financing-options">financing on a new system</a> runs through '
+         'three lenders, and <a href="/services">heating, cooling and plumbing services</a> are '
+         'all booked on the same number. Full '
+         '<a href="/terms#extreme-rewards">Extreme Rewards terms</a> are on the terms page.'])
+
+
 def referral_page(d, root_class):
     body = f'''{hero(d)}
 {mechanism()}
 <div class="xco-body">
   {pairs(d)}
+  {T.table_section(d["table"])}
   <div id="xrf-how">{T.process(d["how"], eyebrow="HOW IT WORKS")}</div>
   {xplan_strip()}
   {share(d)}
   {terms(d)}
+  {T.faq(d["faq"], d["faqEyebrow"], h2=d["faqH2"])}
+  {crosslinks()}
+  {T.updated_line(UPDATED, UPDATED_ISO)}
 </div>'''
     return shell(root_class, body)
 

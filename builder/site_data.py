@@ -10,12 +10,52 @@ page. If you find yourself typing a price, a phone number or an address into a p
 module, add it here instead.
 """
 
+from urllib.parse import quote as _quote
+
 # ---------------------------------------------------------------- identity
 COMPANY = "Extreme Heating, Air, Plumbing"
 COMPANY_SHORT = "Extreme"
 TAGLINE = "Comfort &amp; efficiency you can trust."
+
+# The canonical host. Verified 2026-08-02 against the live site:
+#   http://extremeheating.com   308 -> https://extremeheating.com
+#   https://extremeheating.com  308 -> https://www.extremeheating.com
+# WWW wins. Every absolute URL on the site is built from CANONICAL_HOST.
+#
+# This file previously carried DOMAIN = "extremeheating.com" alongside
+# SITE_URL = "https://www.extremeheating.com" with nothing saying which was the
+# URL host. Whichever one a page module reached for decided whether its canonical
+# pointed at a 200 or at a 308. They are now two named things with two jobs.
+CANONICAL_HOST = "www.extremeheating.com"
+SITE_URL = f"https://{CANONICAL_HOST}"
+
+# The registrable domain, for the things that are NOT URLs: email addresses, the
+# Google Business Profile, licence records, print. Building a URL out of this is
+# the mistake this file used to invite — it is a bare domain, and a bare-domain
+# canonical on 311 pages would point every one of them at a 308.
 DOMAIN = "extremeheating.com"
-SITE_URL = "https://www.extremeheating.com"
+
+# URL FORM: no trailing slash, except the homepage.
+#
+# Verified 2026-08-02: the live site serves /about at 200 and 308s /about/ to
+# /about. Cloudflare Pages does the same with dir/index.html output. Keeping this
+# form is what preserves parity with every currently-indexed URL and every
+# backlink — do not "fix" it to trailing slashes.
+#
+# This is the ONE place a route becomes an absolute URL. canonical, og:url, the
+# sitemap, llms.txt and the schema url all read from it, so they cannot drift
+# apart, and if a host ever normalises the other way it is a single edit.
+def canonical(path="/"):
+    path = "/" + str(path).strip("/")
+    return SITE_URL + ("/" if path == "/" else path)
+
+def maps_dir(address, html=True):
+    """A Google Maps directions link for a street address. The `dir` endpoint, not a
+    name search — a search for the company name can land on the wrong pin or on a
+    disambiguation list. `html=False` gives the raw URL for JSON-LD `hasMap`, where
+    an escaped ampersand would be wrong."""
+    amp = "&amp;" if html else "&"
+    return f"https://www.google.com/maps/dir/?api=1{amp}destination={_quote(address)}"
 
 # Two legal entities under common ownership — see pages/company/terms.html.
 ENTITY_HVAC = "Extreme Heating &amp; Cooling LLC"
@@ -28,29 +68,110 @@ PHONE_E164 = "+18445847399"
 EMAIL = "info@extremeheating.com"
 
 # Ohio state licences. These are a trust and E-E-A-T signal and belong in the footer
-# and in the LocalBusiness schema, not buried on one page.
+# and in the LocalBusiness schema, not buried on one page. Until the About page's team
+# section comes back after the photo shoot, the licences and the founding year are
+# what the site's expertise signal actually rests on, so they are not decoration.
 LICENSE_HVAC = "OH LIC #37179"
 LICENSE_PLUMBING = "OH LIC #13557"
 
-# Four offices, client-confirmed 2026-08-02. Every location routes to the same main
-# number — the client's instruction — so there is deliberately no per-office phone
-# field here. Service areas, not storefronts, on every page except /contact.
-OFFICES = [
-    {"city": "Dayton", "label": "Beavercreek office",
-     "street": "712 N Fairfield Rd", "locality": "Beavercreek", "region": "OH", "zip": "45434"},
-    {"city": "Cincinnati", "label": "Mason office",
-     "street": "5633 Tylersville Rd", "locality": "Mason", "region": "OH", "zip": "45040"},
-    {"city": "Troy", "label": "Troy office",
-     "street": "2950 Stone Cir Dr", "locality": "Troy", "region": "OH", "zip": "45373"},
-    {"city": "Waynesville", "label": "Waynesville office",
-     "street": "141 North St", "locality": "Waynesville", "region": "OH", "zip": "45068"},
-]
+# Rendered form for the footer and any "licensed" claim that needs its proof point
+# attached. One string so the two numbers can never be published in two orders.
+LICENSES_LINE = f"HVAC {LICENSE_HVAC} &middot; Plumbing {LICENSE_PLUMBING}"
+
+# ---------------------------------------------------------------- history
+# Client-confirmed 2026-08-02. FOUNDED backs the "20+ years" proof point; MASON_OPENED
+# is what makes the Cincinnati-metro presence a date rather than an assertion.
+FOUNDED = 2004
+MASON_OPENED = 2018
 
 # Client-confirmed 2026-08-01. 8-5 is when the OFFICE is staffed; emergency service
 # genuinely runs around the clock. Keep these two facts distinct — collapsing them is
 # what previously made the hours read as a contradiction of the 24/7 claim.
 HOURS_STAFFED = "Monday – Friday, 8:00 AM – 5:00 PM"
 HOURS_EMERGENCY = "24/7 — every day of the year"
+
+# The machine-readable half of HOURS_STAFFED, for openingHoursSpecification. Office
+# nodes only: 24/7 emergency response is a service attribute, not premises hours, and
+# claiming the building is open at 3am is the kind of thing a GBP audit catches.
+HOURS_SPEC = {"dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+              "opens": "08:00", "closes": "17:00"}
+
+# ---------------------------------------------------------------- offices
+# Four offices, client-confirmed 2026-08-02 — including Troy and Waynesville, which
+# earlier drafts of the SEO deliverables marked UNCONFIRMED. The client confirmed both
+# in writing on 2026-08-02; that supersedes the [NEEDS] flags in local-seo.md §3 and
+# geo-contract.md §7.3. Do not re-suppress them.
+#
+# Every location routes to the same main number — the client's explicit instruction —
+# so there is deliberately no per-office phone field. Do not add local DIDs here
+# without the client saying so, however much a local number would help the map pack.
+#
+# `metro` is the marketing region and `locality` is the city in the postal address.
+# They differ for Beavercreek (Dayton metro) and Mason (Cincinnati metro), and that gap
+# is exactly the NAP inconsistency the /contact cards currently ship: a card headed
+# "Dayton" with a Beavercreek address underneath. Head cards by `locality`; use `metro`
+# in the supporting line.
+#
+# `geo` is None on all four on purpose. The coordinates must come from each Google
+# Business Profile's own pin, not from geocoding the street address — a geocoded pin
+# that disagrees with the one Google already holds is worse than no `geo` at all.
+# [NEEDS: GBP pin lat/long, all four offices.] Schema emitters must skip `geo` while
+# it is None rather than substituting anything.
+#
+# `page` is None where no location page exists yet. Waynesville has no entry in
+# locations.py, so it is an office with zero pages — see the handoff note for
+# locations.py.
+OFFICES = [
+    {"slug": "beavercreek", "label": "Beavercreek office", "primary": True,
+     "street": "712 N Fairfield Rd", "locality": "Beavercreek", "region": "OH",
+     "zip": "45434", "county": "Greene", "metro": "Dayton",
+     "geo": None, "page": "/locations/beavercreek"},
+    {"slug": "mason", "label": "Mason office", "primary": False,
+     "street": "5633 Tylersville Rd", "locality": "Mason", "region": "OH",
+     "zip": "45040", "county": "Warren", "metro": "Cincinnati",
+     "geo": None, "page": "/locations/mason"},
+    {"slug": "troy", "label": "Troy office", "primary": False,
+     "street": "2950 Stone Cir Dr", "locality": "Troy", "region": "OH",
+     "zip": "45373", "county": "Miami", "metro": "Dayton",
+     "geo": None, "page": "/locations/troy"},
+    {"slug": "waynesville", "label": "Waynesville office", "primary": False,
+     "street": "141 North St", "locality": "Waynesville", "region": "OH",
+     # metro is None, not guessed. Waynesville sits between the two metros — Warren
+     # County is Cincinnati's MSA, but the shop serves the Dayton side of it — and the
+     # client has not said which way it is presented. A metro label is a marketing
+     # decision, so it waits for the client rather than being inferred from a map.
+     # [NEEDS: how Waynesville is presented — Dayton, Cincinnati, or Warren County.]
+     "zip": "45068", "county": "Warren", "metro": None,
+     "geo": None, "page": None},
+]
+
+# Derived, so no page module has to rebuild an address string by hand. Every consumer
+# — the /contact cards, the footer NAP, the location pages, the JSON-LD, llms.txt —
+# reads one of these. That is the point: one written form, byte-for-byte, everywhere.
+# A NAP audit compares the visible block against the JSON-LD on the same page, and a
+# mismatch between them is machine-detectable.
+#
+# There is deliberately no `city` key. The old one held the metro for three offices and
+# the town for the fourth, which is the ambiguity that put "Dayton" as a heading over a
+# Beavercreek address on /contact. Pick `locality` or `metro` on purpose.
+for _o in OFFICES:
+    _o["oneline"] = f'{_o["street"]}, {_o["locality"]}, {_o["region"]} {_o["zip"]}'
+    _o["citystate"] = f'{_o["locality"]}, {_o["region"]} {_o["zip"]}'
+    _o["name"] = f'{COMPANY} — {_o["locality"]}'
+    _o["hasMap"] = maps_dir(_o["oneline"], html=False)
+    _o["directions"] = maps_dir(_o["oneline"])
+    _o["hours"] = HOURS_STAFFED
+    _o["hoursSpec"] = HOURS_SPEC
+del _o
+
+OFFICE_BY_SLUG = {o["slug"]: o for o in OFFICES}
+OFFICE_PRIMARY = next(o for o in OFFICES if o["primary"])
+assert sum(1 for o in OFFICES if o["primary"]) == 1, "exactly one primary office"
+
+# Sitewide footer line under the primary NAP. Four full addresses on 311 pages reads as
+# stuffing and muddies which office is primary; four links does the same job for the
+# crawler and none of the damage.
+OFFICE_LINKS = [(o["locality"], o["page"]) for o in OFFICES if o["page"]]
 
 SOCIAL = [
     ("Facebook", "https://www.facebook.com/ExtremeHeatingDayton"),
@@ -59,12 +180,34 @@ SOCIAL = [
     ("Google Reviews", "https://maps.app.goo.gl/G7H8dMEFgQLYoeoa7"),
 ]
 
+# schema.org `sameAs` for the organisation node. Same URLs as the footer — profiles the
+# company controls, which is what sameAs is for. Kept as a separate name so a future
+# footer-only link (or a profile the company does not own) cannot leak into the graph.
+SAME_AS = [u for _, u in SOCIAL]
+
 # ---------------------------------------------------------------- proof points
 # The brand rule is that a claim always travels with its proof point, so these are
 # the approved wordings. Do not round or restate them.
 GOOGLE_RATING = "4.9"
+
+# 1,595 reviews, Birdeye-aggregated, client-approved for on-site display 2026-08-02.
+# The count is the half that was missing: "4.9 stars" with no denominator is the shape
+# of a claim, and a ratingValue with no reviewCount is an invalid AggregateRating.
+#
+# Because the aggregate is multi-source, describe it as "customer reviews", not "Google
+# reviews" — REVIEW_SOURCE is the wording to use. Whether it belongs in JSON-LD at all
+# is the schema workstream's call: self-serving LocalBusiness ratings are not eligible
+# for rich results either way, and its real job is visible on-page proof next to the
+# link to the Google profile in SOCIAL.
+REVIEW_COUNT = "1,595"
+REVIEW_COUNT_N = 1595
+REVIEW_SOURCE = "customer reviews"
+
 YEARS_LOCAL = "20+"
 JOBS_COMPLETED = "25k+"
+# The same number written out. "25k+" is right in a stat tile and wrong in a sentence,
+# and wrong again in llms.txt, where a machine reading "25k+" may or may not parse it.
+JOBS_COMPLETED_LONG = "25,000+"
 SAME_DAY = "90%"
 
 STATS = [
@@ -99,6 +242,10 @@ XPLAN = {
         "Priority scheduling",
         # Dispatch / service-call fees ARE publishable (client, 2026-08-02). The
         # no-advertised-rates rule covers repair and installation pricing, not these.
+        # Two SEO deliverables (technical.md §7 phase 1, local-seo.md §0) call for
+        # stripping this line; the client decision on 2026-08-02 supersedes both and it
+        # stays. The one constraint that does apply: these numbers may appear in a
+        # benefit list or a card body, never in an h1, an h2 or a hero.
         "Member service calls: $77 vs $97 · $177 vs $197 after hours",
     ],
     "zeroRisk": ("100% of the investment of your X-Plan membership in consecutive years "
@@ -176,3 +323,33 @@ FOOTER_COLUMNS = [
         ("About", "/about"), ("Specials", "/specials"), ("Locations", "/locations"),
         ("Financing", "/financing-options"), ("X-Plan Membership", "/maintenance")]),
 ]
+
+# ---------------------------------------------------------------- footer data
+# Google reads a footer as a sitewide NAP declaration. A phone-only footer on 311 pages
+# throws that away. These four values are what the footer is missing today: the primary
+# street address, the email, the licence numbers, and links to the other three offices.
+#
+# Deliberately the PRIMARY address only, not all four — 4 addresses x 311 pages is 1,244
+# address instances, which reads as stuffing and leaves no office looking primary. The
+# other three are reachable as links (OFFICE_LINKS) from every page, which is the part
+# that actually matters for crawl.
+#
+# Plain HTML, no microdata. The machine-readable copy is the JSON-LD; emitting the same
+# address twice in two vocabularies on one page is how the two drift.
+FOOTER_NAP = {
+    "name": COMPANY,
+    "street": OFFICE_PRIMARY["street"],
+    "citystate": OFFICE_PRIMARY["citystate"],
+    "phoneDisplay": PHONE_DISPLAY,
+    "phoneHref": PHONE_TEL,
+    "email": EMAIL,
+    "emailHref": f"mailto:{EMAIL}",
+    "hoursStaffed": "Office staffed Mon–Fri, 8–5",
+    "hoursEmergency": "Emergencies 24/7",
+    "officesLabel": "Offices",
+    "offices": OFFICE_LINKS,
+}
+
+# The bottom bar. "Licensed &amp; insured in Ohio" is a claim; these are its proof, and
+# the brand rule is that the two travel together.
+FOOTER_LEGAL = f"&copy; 2026 {COMPANY}. All rights reserved. &middot; {LICENSES_LINE}"

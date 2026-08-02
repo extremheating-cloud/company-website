@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -382,10 +458,18 @@ align-items:center;justify-content:center;font-size:12px;font-weight:700;color:v
 .xco-loc-img img{width:100%;height:100%;object-fit:cover;display:block}
 .xco-loc-body{padding:18px}
 .xco-loc-body .t{font-weight:800;font-size:16.5px}
+.xco-loc-body .meta{font-size:12px;font-weight:700;color:var(--body);margin-top:2px}
 .xco-loc-body .addr{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-loc-body .addr.hrs{font-size:12.5px;margin-top:6px}
 .xco-loc-body a{display:inline-block;font-weight:800;font-size:13px;color:var(--purple);
 text-decoration:none;margin-top:10px}
+/* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
+   "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */
+.xco-loc-body a.alt{display:block;margin-top:6px}
 .xco-loc-body a:hover{color:var(--green-dark)}
+/* A card with no exterior photograph (Troy, Waynesville) has no image box at all. It
+   still has to line up with the two that do, so the body carries the shortfall. */
+.xco-loc:not(:has(.xco-loc-img)) .xco-loc-body{padding-top:22px}
 .xco-hours{border:1px solid var(--rule);border-radius:16px;margin-top:20px;overflow:hidden}
 .xco-hours .row{display:flex;justify-content:space-between;gap:16px;padding:14px 20px;
 border-bottom:1px solid var(--rule)}
@@ -482,16 +566,18 @@ padding:32px 36px;position:relative;overflow:hidden}
   <div class="xsp-hero-grid nocard">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><span class="cur">Specials</span></div>
-      <h1 class="xsp-h1">Seasonal specials, <em>extreme savings</em>.</h1>
-      <p class="xsp-intro">Real offers on the work you actually need — no gimmicks, no fine-print traps. Mention the offer when you book and we apply it to your invoice.</p>
+      <h1 class="xsp-h1">HVAC and plumbing <em>specials</em> in Dayton and Cincinnati</h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing publishes seasonal offers on heating, cooling and plumbing work for homeowners across the Dayton and Cincinnati, Ohio metros. One offer applies per household per visit, and the offer has to be named when the job is booked. Discounts appear in the upfront quote before work starts.</p></div>
+      <p class="xsp-intro">Seasonal specials, extreme savings.</p>
       <div class="xsp-chiprow"><div class="xsp-chip">Updated Seasonally</div><div class="xsp-chip">Mention at Booking</div><div class="xsp-chip">Combine with Financing</div></div>
     </div>
   </div>
 </div>
 <div class="xco-body">
-  <div>
+  <div id="offers">
   <div class="xsp-eyebrow">CURRENT OFFERS</div>
-  <h2 class="xsp-h2">This season's deals.</h2>
+  <h2 class="xsp-h2">What HVAC specials are running in Dayton right now?</h2>
+  <p class="xsp-prose">Current offers from Extreme Heating, Air, Plumbing cover seasonal tune-ups, repairs, <a href="/plumbing/clogged-drain">drain cleaning</a>, a second opinion on a replacement quote, and X-Plan membership. Offers change with the season, so the coupons on this page are the live set.</p>
 <div class="xco-coupons"><div class="xco-coupon">
   <div class="pill">HEATING &amp; AIR</div>
   <div class="val">$79</div>
@@ -508,7 +594,7 @@ padding:32px 36px;position:relative;overflow:hidden}
   <div class="pill">REFERRALS</div>
   <div class="val">$250 off</div>
   <div class="t">When a Friend Refers You</div>
-  <div class="d">New customers save $250 on a new heating, cooling, or plumbing system, or $100 on everything else. Just name whoever sent you when you book.</div>
+  <div class="d">New customers save $250 on a new heating, cooling or plumbing system, or $100 on everything else. Name whoever sent you when you book.</div>
   <div class="foot"><span class="lbl">Always available</span><a class="xco-claim" href="/referral">See Extreme Rewards</a></div>
 </div><div class="xco-coupon">
   <div class="pill">PLUMBING</div>
@@ -526,24 +612,67 @@ padding:32px 36px;position:relative;overflow:hidden}
   <div class="pill">MEMBERSHIP</div>
   <div class="val">$249<span class="per">/yr</span></div>
   <div class="t">Join X-Plan Maintenance</div>
-  <div class="d">Two tune-ups a year, 15% off repairs, priority scheduling, and discounted service calls.</div>
+  <div class="d">Two tune-ups a year, 15% off repairs, priority scheduling, and a reduced member service fee.</div>
   <div class="foot"><span class="lbl">Always available</span><a class="xco-claim" href="/maintenance">Join X-Plan</a></div>
 </div></div>
 </div>
   <div class="xco-split">
     <div><div>
   <div class="xsp-eyebrow">HOW TO REDEEM</div>
-  <h2 class="xsp-h2">Three steps, zero coupons to print.</h2>
+  <h2 class="xsp-h2">How do I claim a special?</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Pick your offer</div><div class="d">One offer per visit — choose the one that saves you the most.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Mention it when you book</div><div class="d">Tell us on the phone or note it in the online scheduler — we attach it to your appointment.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Savings applied on your invoice</div><div class="d">The discount shows up in your upfront quote — before any work begins.</div></div></div></div>
 </div>
-<div class="xco-finenote">Offers can't be combined with other discounts unless noted. One offer per household per visit. Must be mentioned at time of booking. Expiration dates and full terms set per promotion.</div></div>
+<div class="xco-finenote">Offers cannot be combined with other discounts unless noted. One offer per household per visit. Must be mentioned at the time of booking. Expiration dates and full terms are set per promotion.</div></div>
     <div style="display:flex;flex-direction:column;gap:16px"><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Big job? Finance it.</div><div class="d">Specials stack with monthly payment plans through our lenders.</div><div class="lm">Financing Options →</div>
 </a></div>
   </div>
+  <div id="combine">
+  <div class="xsp-eyebrow">STACKING</div>
+  <h2 class="xsp-h2">Can specials be combined with financing?</h2>
+  <p class="xsp-prose">Yes. Specials from Extreme Heating, Air, Plumbing apply alongside <a href="/financing-options">financing</a> and utility rebates, so all three can land on the same job. Specials do not stack with each other: one offer applies per household per visit.</p>
+
+</div>
+  <div class="xsp-section" id="which-offer"><div class="xsp-eyebrow purple">WHICH OFFER FITS</div><h2 class="xsp-h2">Which offer saves the most on my job?</h2><p class="xsp-takeaway">Extreme Heating, Air, Plumbing applies one offer per household per visit, so the right choice is the one that matches the job being booked.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Which Extreme Heating, Air, Plumbing offer fits which job"><table class="xsp-table"><caption>Which Extreme Heating, Air, Plumbing offer fits which job</caption><thead><tr><th scope="col">What you are booking</th><th scope="col">Offer that usually fits</th><th scope="col">How to claim it</th></tr></thead><tbody><tr><th scope="row">A seasonal tune-up on one system</th><td>The AC or furnace tune-up special</td><td>Name it when you book</td></tr><tr><th scope="row">A repair on an existing system</th><td>The repair discount</td><td>Name it when you book</td></tr><tr><th scope="row">One accessible drain that will not clear</th><td>The drain clearing special</td><td>Name it when you book</td></tr><tr><th scope="row">A replacement quote from another company</th><td>The free second opinion</td><td>Name it when you book</td></tr><tr><th scope="row">Tune-ups you want every year, not once</th><td>X-Plan membership, which includes two visits a year</td><td>Join X-Plan</td></tr><tr><th scope="row">A first job after a friend recommended Extreme</th><td>Extreme Rewards: $250 on a new system, $100 on everything else</td><td>Name your friend when you book</td></tr></tbody></table></div></div>
+  <div id="members">
+  <div class="xsp-eyebrow">MEMBERS</div>
+  <h2 class="xsp-h2">Do X-Plan members get their own offers?</h2>
+  <p class="xsp-prose">Yes. X-Plan members at Extreme Heating, Air, Plumbing take 15% off all repairs, get two seasonal visits included, hold priority scheduling, and carry a 5-year warranty on qualified repairs. Membership is $249 per year or $20.75 per month per system. <a href="/maintenance">Join X-Plan</a>.</p><p class="xsp-prose">Booking a repair rather than a plan? <a href="/ac-repair">Same-day AC repair</a> and <a href="/furnace-installation">furnace installation</a> both take the offers above.</p>
+
+</div>
+  <div id="rotation">
+  <div class="xsp-eyebrow">HOW OFTEN</div>
+  <h2 class="xsp-h2">How often do the specials change?</h2>
+  <p class="xsp-prose">Extreme Heating, Air, Plumbing updates the offers on this page seasonally. Expiration dates and full terms are set per promotion, and each offer states its own end date.</p>
+
+</div>
+  <div>
+  <div class="xsp-eyebrow">OFFER QUESTIONS</div>
+  <h2 class="xsp-h2">What do people ask about the offers?</h2>
+  <div class="xsp-faq"><div class="xsp-qa open">
+    <button type="button" aria-expanded="true"><span>Do I need to print a coupon?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">No. Extreme Heating, Air, Plumbing applies offers at booking. Name the offer on the phone or in the note field of the online scheduler and it gets attached to your appointment.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Can I use more than one offer on the same visit?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">One offer applies per household per visit at Extreme Heating, Air, Plumbing. Offers do not combine with other discounts unless the offer says otherwise.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>When does the discount get applied?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">The discount appears in the upfront quote from Extreme Heating, Air, Plumbing, before any work begins, and it shows again on the invoice.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Can I use a special with financing?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes. Specials from Extreme Heating, Air, Plumbing apply alongside <a href="/financing-options">monthly payment options</a> and utility rebates on the same job.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>What if I forget to mention the offer?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Offers have to be named when the job is booked. Extreme Heating, Air, Plumbing cannot add one to a job after the visit, so mention it on the call.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Is X-Plan a special or a membership?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">X-Plan is a membership rather than a limited-time offer. It costs $249 per year or $20.75 per month per system and stays available year round. <a href="/maintenance">Join X-Plan</a>.</div>
+  </div></div>
+</div>
+  <p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p>
 </div>
 
   <script>
@@ -676,6 +805,24 @@ padding:32px 36px;position:relative;overflow:hidden}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -366,17 +442,18 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 }
 </style>
 <div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><span class="cur">Duct Cleaning</span></div>
-      <h1 class="xsp-h1">Cleaner air starts <em>in your ducts</em>.</h1>
-      <p class="xsp-intro">Professional duct cleaning and air balancing for Dayton & Cincinnati homes — better airflow, less dust, upfront pricing.</p>
+      <h1 class="xsp-h1">Air duct cleaning for <em>Dayton &amp; Cincinnati homes</em>.</h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing cleans residential air ducts across the Dayton and Cincinnati, Ohio metros using truck-powered vacuum equipment on every supply and return run. The crew photographs the ducts before and after, so the result is visible rather than described. Most homes need the service every 3 to 5 years.</p></div>
+      <p class="xsp-intro">Professional duct cleaning and air balancing for Dayton and Cincinnati homes. Better airflow, less dust, upfront pricing.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call (844) 584-7399</a>
       </div>
-      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 on Google</div><div class="xsp-chip">Locally Owned</div><div class="xsp-chip">Upfront Pricing</div></div>
+      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 from 1,595 reviews</div><div class="xsp-chip">Locally Owned</div><div class="xsp-chip">Upfront Pricing</div></div>
     </div>
     <div class="xsp-bookcol"><div class="xsp-book">
   <div class="eyebrow">BOOK DUCT CLEANING</div>
@@ -392,7 +469,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/duct-cleaning-truck.jpg" alt="The Extreme air duct cleaning truck parked outside a home" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/duct-cleaning-truck.jpg" alt="The Extreme air duct cleaning truck parked outside a home" width="600" height="533" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">DUSTY HOUSE?</div>
   <h2 class="xsp-h2">Signs your ducts need attention.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Dust returns right after cleaning</div><div class="xsp-check"><span class="c">✓</span>Musty smells when the system runs</div><div class="xsp-check"><span class="c">✓</span>Uneven airflow between rooms</div><div class="xsp-check"><span class="c">✓</span>Allergies acting up indoors</div><div class="xsp-check"><span class="c">✓</span>Visible dust at the vents</div><div class="xsp-check"><span class="c">✓</span>Ducts never professionally cleaned</div></div>
@@ -413,17 +490,17 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Dryer Vent Cleaning</span><br><span class="d">Faster dry times and less fire risk — often same visit.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">Is air duct cleaning actually worth the money?</h2><p class="xsp-prose">Sometimes, and the honest answer depends on what is in the ducts. The EPA does not recommend cleaning ducts on a routine schedule, but it does recommend cleaning when there is visible mould growth, vermin, or enough dust and debris to be blown into the house. Those three conditions are the test.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing photographs every duct system before and after cleaning, so a homeowner in the Dayton or Cincinnati area can see the condition rather than take it on trust.</p></div><div class="xsp-section"><h2 class="xsp-h2">When does duct cleaning help, and when does it not?</h2><p class="xsp-prose">Cleaning removes what has built up inside the duct. It does not change how the duct was built, sealed or sized, so a house with leaky returns or an undersized trunk line will still have the same comfort problem after a spotless cleaning.</p><p class="xsp-takeaway">Duct cleaning removes accumulated dust, debris and biological growth from the duct system, and it does not fix leaks, poor duct design, or an undersized return.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="What air duct cleaning fixes in a Dayton or Cincinnati home, and what it does not."><table class="xsp-table"><caption>What air duct cleaning fixes in a Dayton or Cincinnati home, and what it does not.</caption><thead><tr><th scope="col">What you are seeing</th><th scope="col">What duct cleaning does</th><th scope="col">What actually fixes it</th></tr></thead><tbody><tr><th scope="row">Visible dust blowing from the vents</th><td>Removes the loose debris being picked up in the ducts</td><td>Duct cleaning, plus a better filter</td></tr><tr><th scope="row">Musty smell when the system starts</th><td>Removes biological growth and debris inside the ducts</td><td>Duct cleaning, plus finding the moisture source</td></tr><tr><th scope="row">One room never gets warm or cool</th><td>Nothing, unless the run is fully blocked</td><td>Air balancing, or duct repair and resizing</td></tr><tr><th scope="row">Dust settles again within days of dusting</th><td>Reduces what recirculates through the system</td><td>Duct cleaning, plus higher-efficiency filtration</td></tr><tr><th scope="row">Debris left from a remodel</th><td>Removes drywall dust and construction debris from the runs</td><td>Duct cleaning after the work is finished</td></tr><tr><th scope="row">Allergy symptoms indoors</th><td>Removes settled dust, dander and pollen from the ducts</td><td>Duct cleaning, plus filtration and source control</td></tr><tr><th scope="row">Dryer takes two cycles to dry a load</th><td>Nothing, that is a separate duct</td><td>Dryer vent cleaning</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">How often should air ducts be cleaned?</h2><p class="xsp-prose">Every 3 to 5 years suits most homes. Sooner if there are shedding pets, a recent remodel, a smoker in the house, or allergies that flare indoors and nowhere else. A house that has never had its ducts cleaned is usually worth a look regardless of the calendar.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does an Extreme duct cleaning include?</h2><p class="xsp-prose">Truck-powered vacuum on every supply and return run, agitation inside the ducts to release what is stuck to the walls, the main trunk lines, and the registers and grilles. The system is photographed before the crew starts and after they finish, and the house is left as it was found.</p></div><div>
   <div class="xsp-eyebrow">BEFORE & AFTER</div>
   <h2 class="xsp-h2">See what a difference it can make.</h2>
   <p class="xsp-mediasub">The same run of ductwork, photographed before the crew started and after they finished.</p>
-  <div class="xsp-shot"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/before-after-ducts.jpg" alt="The same length of ductwork before and after cleaning: heavy dust coating the surfaces on the left, bare metal on the right" style="object-position:50% 70%" loading="lazy" decoding="async"></div>
+  <div class="xsp-shot"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/before-after-ducts.jpg" alt="The same length of ductwork before and after cleaning: heavy dust coating the surfaces on the left, bare metal on the right" style="object-position:50% 70%" width="600" height="533" loading="lazy" decoding="async"></div>
   <p class="xsp-mediacap">A duct run from a Dayton-area home.</p>
 </div><div>
   <div class="xsp-eyebrow">HOW WE DO IT</div>
   <h2 class="xsp-h2">Watch a duct cleaning, start to finish.</h2>
   <p class="xsp-mediasub">Truck-powered equipment, every supply and return run, and the ducts photographed before we leave.</p>
-  <div class="xsp-shot"><iframe src="https://www.youtube.com/embed/E_cZVpgYvIw?rel=0&amp;modestbranding=1" title="Extreme Heating - Duct Cleaning - How We Do It!" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  <div class="xsp-shot"><button type="button" class="xsp-vplay js-video" data-video="E_cZVpgYvIw" data-title="Extreme Heating - Duct Cleaning - How We Do It!" aria-label="Play video: Extreme Heating - Duct Cleaning - How We Do It!"><span class="pl" aria-hidden="true">&#9654;</span><span class="vt">Extreme Heating - Duct Cleaning - How We Do It!</span><span class="vh">WATCH ON YOUTUBE</span></button></div>
   
 </div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
@@ -432,25 +509,31 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Cleaner air, guaranteed</div><div class="d">Before-and-after photos of your ducts, and everything left spotless.</div></div></div></div>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
+</div><div class="xsp-section"><h2 class="xsp-h2">Does duct cleaning help with allergies?</h2><p class="xsp-prose">It can. Removing built-up dust, dander and pollen reduces what the system recirculates, which is the part of the problem that lives in the ducts. Pairing it with <a href="/indoor-air-quality-solutions">filtration and purification options</a> does more than either one alone, and source control does more than both.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book duct cleaning in Dayton or Cincinnati?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online. Extreme Heating, Air, Plumbing will tell you honestly whether cleaning will help before booking it, and the before and after photos come with the job either way. Broader <a href="/indoor-air-quality">indoor air quality services</a> and <a href="/humidifier">whole-home humidifiers</a> are quoted on the same visit when they are worth doing.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">DUCT QUESTIONS</div>
-  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <h2 class="xsp-h2">What else do homeowners ask about duct cleaning?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast can you get here?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">In most cases, same day — about 90% of our calls are handled the day you reach out, with 24/7 emergency service when it can't wait.</div>
+    <button type="button" aria-expanded="true"><span>Does duct cleaning improve airflow?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">Only when the ducts were genuinely restricted. Heavy debris in a run does cut airflow, and removing it helps. A duct that is undersized or badly laid out will move exactly as much air after cleaning as before, which is an air balancing job instead.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>How often should ducts be cleaned?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Every 3–5 years for most homes — sooner after a remodel, with shedding pets, or if allergies flare indoors.</div>
+    <button type="button" aria-expanded="false"><span>Should ducts be cleaned after a remodel?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes, once the work is finished. Drywall dust is fine enough to travel the whole duct system and it keeps recirculating for months. Cleaning before the last of the sanding is done just means doing it twice.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Will duct cleaning help my allergies?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">It can — removing built-up dust, dander, and debris reduces what recirculates. Pair it with filtration for the biggest improvement.</div>
+    <button type="button" aria-expanded="false"><span>Do you clean dryer vents as well?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes, and it is often done on the same visit. A clogged dryer vent shows up as clothes needing two cycles to dry, and it is a fire risk rather than an air quality one.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Will duct cleaning make the house less dusty?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">It reduces what the system blows back out, which is a real share of household dust but not all of it. Filtration and sealing the return side handle the rest. Extreme Heating, Air, Plumbing will say which one your house actually needs.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Is duct sealing the same as duct cleaning?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">No. Cleaning removes what is inside the duct. Sealing closes the gaps where conditioned air escapes into an attic or crawlspace before it ever reaches a room. A house can need one, both, or neither.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/duct-cleaning-truck.jpg" alt="The Extreme air duct cleaning truck parked outside a home" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/duct-cleaning-truck.jpg" alt="The Extreme air duct cleaning truck parked outside a home" width="600" height="533" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
@@ -458,7 +541,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 <div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -607,6 +690,24 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -366,12 +442,13 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 }
 </style>
 <div class="xsp-hero sub">
-  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><a href="/plumbing/gas-line/overview">Gas Line Services</a><span class="sep">›</span><span class="cur">Repair</span></div>
-      <h1 class="xsp-h1">Gas leaks fixed <em>safely, fast</em>.</h1>
-      <p class="xsp-intro">Suspected leaks located, repaired, and pressure-tested by licensed pros — safety-first at every step.</p>
+      <h1 class="xsp-h1">Gas leak detection and gas line repair in <em>Dayton &amp; Cincinnati</em>.</h1>
+      <div class="xsp-answer" id="answer"><p>If a gas smell is present, the correct first action is to leave the building and call the gas utility from outside. Extreme Heating, Air, Plumbing locates and repairs residential gas leaks across the Dayton and Cincinnati, Ohio metros. All gas work runs under Ohio plumbing license #13557 and ends with a documented pressure test.</p></div>
+      <p class="xsp-intro">If you smell gas, leave the building and call your gas utility from outside. Call us for the repair once the property is clear.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Repair</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call Now</a>
@@ -395,12 +472,12 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="xsp-pills"><a class="xsp-pill" href="/plumbing/gas-line/overview">Overview</a><a class="xsp-pill active" href="/plumbing/gas-line/repair" aria-current="page">Repair</a><a class="xsp-pill" href="/plumbing/gas-line/installation">Installation</a></div>
 </div></div>
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/1678198029/photo/male-engineer-checking-boiler-system-in-a-basement.jpg?s=612x612&w=0&k=20&c=OmVKbAfup3W8MLolVNeBPGTQB35XxutSLHiPeEeoqIw=" alt="A technician checking a boiler system in a basement" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/1678198029/photo/male-engineer-checking-boiler-system-in-a-basement.jpg?s=612x612&w=0&k=20&c=OmVKbAfup3W8MLolVNeBPGTQB35XxutSLHiPeEeoqIw=" alt="A technician checking a boiler system in a basement" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">SMELL GAS?</div>
   <h2 class="xsp-h2">Take these signs seriously.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Rotten-egg smell indoors or out</div><div class="xsp-check"><span class="c">✓</span>Hissing near lines or appliances</div><div class="xsp-check"><span class="c">✓</span>Dead grass over buried line</div><div class="xsp-check"><span class="c">✓</span>Higher gas bills without cause</div><div class="xsp-check"><span class="c">✓</span>Pilot lights failing repeatedly</div><div class="xsp-check"><span class="c">✓</span>Headaches or dizziness at home</div></div>
-  <div class="xsp-callout safety"><b>Safety first:</b> smell gas now? Leave the house — don't flip switches — then call <a href="tel:18445847399">(844) 584-7399</a> and your utility from outside.</div>
-</div><div>
+  <div class="xsp-callout safety"><b>If you smell gas right now:</b> get everyone out, including pets. Don't touch light switches, thermostats, garage door openers or appliance controls. Don't unplug anything or use a phone indoors. From outside and well away, call your gas utility's 24-hour emergency line, and once they have made the property safe, call <a href="tel:18445847399">(844) 584-7399</a> for the repair. In the Dayton metro the gas utility is CenterPoint Energy Ohio; in the Cincinnati metro it is Duke Energy Ohio.</div>
+</div><div class="xsp-section"><h2 class="xsp-h2">What does a gas leak smell like?</h2><p class="xsp-prose">Natural gas has no odor of its own. Utilities add mercaptan, which smells like rotten eggs or sulfur, precisely so a leak is detectable. If you smell that anywhere in or around the house, treat it as real. A faint smell near one appliance and a strong smell through a whole house are the same instruction: leave, then call.</p><p class="xsp-prose">Natural gas is odorless, and the rotten-egg smell people associate with it comes from mercaptan added by the utility so that leaks can be detected.</p></div><div class="xsp-section"><h2 class="xsp-h2">What are the signs of a gas leak besides the smell?</h2><p class="xsp-prose">Hissing near a line or appliance. A patch of dead or dying grass in a line over a buried gas line, with healthy lawn either side. <a href="/plumbing/water-heater/repair">Pilot lights that will not stay lit</a>. A gas bill climbing with no change in usage. Headaches, dizziness or nausea that improve when people leave the house.</p></div><div class="xsp-section"><h2 class="xsp-h2">Should I call the gas company or a plumber first?</h2><p class="xsp-prose">The gas utility, always, and from outside the building. The utility's job is to make the property safe, shut off supply at the meter if needed, and confirm the area is clear. A licensed plumber's job is to locate and repair the line afterward. They are two different calls and the order is not interchangeable.</p><p class="xsp-prose">A suspected gas leak requires two calls in order: the gas utility to make the property safe, then a licensed plumber to locate and repair the line.</p></div><div class="xsp-section"><h2 class="xsp-h2">How is a gas leak located and repaired?</h2><p class="xsp-prose">Electronic gas detection equipment narrows the location, then the affected section is isolated and pressure-tested to confirm it. Buried lines are traced before anyone digs. The repair is made, the section is brought back up to pressure and held, and the result is documented before the gas is restored.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
@@ -411,29 +488,35 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="t">Aging gas lines?</div>
   <div class="d">Corroded or undersized lines fail again — sometimes a new run is the safer, cheaper answer.</div>
   <a href="/plumbing/gas-line/installation">Gas Line Installation →</a>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">Can I use my other gas appliances until the line is fixed?</h2><p class="xsp-prose">Not until the system has been tested and confirmed safe. A leak on one branch does not stay on one branch once supply is restored, and "it seems fine" is not a test. After the repair we tell you exactly what is usable and when, on the basis of the pressure test rather than an opinion.</p></div><div class="xsp-section"><h2 class="xsp-h2">Why do old gas lines fail?</h2><p class="xsp-prose">Corrosion on buried steel, threaded joints that have loosened over decades of thermal cycling, and lines that were sized for a smaller appliance load than the house now carries. A line that has been repaired more than once is usually telling you that <a href="/plumbing/gas-line/installation">a new run</a> is the cheaper answer.</p></div><div class="xsp-section"><h2 class="xsp-h2">How quickly can someone come out for a suspected gas leak?</h2><p class="xsp-prose">Gas calls are taken 24 hours a day and prioritized above routine work. Extreme runs 90% same-day service across the Dayton and Cincinnati metros, on <a href="tel:18445847399">(844) 584-7399</a>, alongside <a href="/plumbing/emergency-plumbing">24/7 emergency plumbing</a>. That said, the utility call comes first and it comes from outside the building, every time. The <a href="/plumbing/gas-line/overview">gas line services overview</a> covers licensing and permits.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a></div><div>
   <div class="xsp-eyebrow">REPAIR QUESTIONS</div>
-  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <h2 class="xsp-h2">What else do people ask about gas leaks?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast do you respond to gas leaks?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Priority dispatch, around the clock — but leave the house first and call from outside.</div>
+    <button type="button" aria-expanded="true"><span>I smell gas. What do I do right now?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">Leave the building immediately with everyone in it. Do not touch light switches, unplug anything, or use a phone indoors. From outside and well away, call your gas utility's emergency line. Call a licensed plumber for the repair only after the utility has cleared the property.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Do I call the gas company or a plumber?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">The gas utility first, from outside the building. The utility makes the property safe and shuts off supply if it needs to. A licensed plumber locates and repairs the line afterward. In the Dayton metro the gas utility is CenterPoint Energy Ohio; in the Cincinnati metro it is Duke Energy Ohio.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>How do you find a gas leak?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Electronic detection and pressure testing locate leaks precisely — including buried lines.</div>
+    <div class="a">Electronic detection equipment narrows the location, and a pressure test on the isolated section confirms it. Buried lines are traced before any digging. The result is measured and documented, not judged by smell.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Can I keep using other appliances?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Not until the system is tested safe — we'll tell you exactly what's usable and when.</div>
+    <button type="button" aria-expanded="false"><span>What documentation do I get after a gas repair?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">A pressure test record for the isolated section, plus the electronic leak check result. That is what an inspection or a future buyer asks for, and it is produced on every gas job.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Can a small gas leak wait until morning?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">No. Any detectable gas smell is a leave-now situation, at any hour. Gas calls are taken around the clock for exactly that reason.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail flush"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/1678198029/photo/male-engineer-checking-boiler-system-in-a-basement.jpg?s=612x612&w=0&k=20&c=OmVKbAfup3W8MLolVNeBPGTQB35XxutSLHiPeEeoqIw=" alt="A technician checking a boiler system in a basement" loading="lazy" decoding="async"></div><a class="xsp-promo lav js-schedule" href="#">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail flush"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/1678198029/photo/male-engineer-checking-boiler-system-in-a-basement.jpg?s=612x612&w=0&k=20&c=OmVKbAfup3W8MLolVNeBPGTQB35XxutSLHiPeEeoqIw=" alt="A technician checking a boiler system in a basement" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a><div class="xsp-sibs"><div class="h">GAS LINE SERVICES</div><a href="/plumbing/gas-line/overview">Gas Line Overview<span class="ar">→</span></a><a href="/plumbing/gas-line/installation">Gas Line Installation<span class="ar">→</span></a><a href="/plumbing/emergency-plumbing">Emergency Plumbing<span class="ar">→</span></a></div></aside>
 </div>
 <div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -578,6 +661,24 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -382,10 +458,18 @@ align-items:center;justify-content:center;font-size:12px;font-weight:700;color:v
 .xco-loc-img img{width:100%;height:100%;object-fit:cover;display:block}
 .xco-loc-body{padding:18px}
 .xco-loc-body .t{font-weight:800;font-size:16.5px}
+.xco-loc-body .meta{font-size:12px;font-weight:700;color:var(--body);margin-top:2px}
 .xco-loc-body .addr{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-loc-body .addr.hrs{font-size:12.5px;margin-top:6px}
 .xco-loc-body a{display:inline-block;font-weight:800;font-size:13px;color:var(--purple);
 text-decoration:none;margin-top:10px}
+/* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
+   "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */
+.xco-loc-body a.alt{display:block;margin-top:6px}
 .xco-loc-body a:hover{color:var(--green-dark)}
+/* A card with no exterior photograph (Troy, Waynesville) has no image box at all. It
+   still has to line up with the two that do, so the body carries the shortfall. */
+.xco-loc:not(:has(.xco-loc-img)) .xco-loc-body{padding-top:22px}
 .xco-hours{border:1px solid var(--rule);border-radius:16px;margin-top:20px;overflow:hidden}
 .xco-hours .row{display:flex;justify-content:space-between;gap:16px;padding:14px 20px;
 border-bottom:1px solid var(--rule)}
@@ -524,13 +608,14 @@ text-underline-offset:2px}
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><span class="cur">Financing</span></div>
-      <h1 class="xsp-h1">A new system now. <em>Payments</em> that fit.</h1>
-      <p class="xsp-intro">Don't put off a failing furnace or AC because of one big bill. Flexible monthly payment plans through our lenders — GoodLeap, Synchrony, and Wright-Patt Credit Union — make the right fix affordable.</p>
+      <h1 class="xsp-h1">HVAC and plumbing <em>financing</em> in Dayton and Cincinnati</h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing offers financing on heating, cooling and plumbing work across the Dayton and Cincinnati, Ohio metros. Three lenders handle the applications: GoodLeap, Synchrony and Wright-Patt Credit Union. Applying is a request for pre-approval, not an agreement to buy, and the lender sets every rate and term.</p></div>
+      <p class="xsp-intro">A new system now. Payments that fit.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta" href="https://wpcu.merchantlinq.com/customer?t=Sk0wSVBrdjV0VUxsUnJwbXNwWWtpaFhRdmNxN0o1S1V2V2E3NlVnM0xyKjFrODNIKlN1eDlQbElZNEpRT25lOWNBQnJvajUyYTVBNGduaDdwNWJqNDJzZFNLSGQqU3dkVUlKWmxSRUNlTmZIblZtUkowY1ZUWm8qU2RHSW1WM0JFUnFONXZINlN4cGxSQk1QcTdHeEpXZlB5RHlaS3drYjVJZXdBREJFVGNwemkzeUtaVFRpTGR2QWxRc1FBMHZ1RTNPdzhydW9iWHdhTHJqTExGNWVzQWFlbWc9PQ==" target="_blank" rel="noopener noreferrer" data-apply-cta>Apply Online</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call (844) 584-7399</a>
       </div>
-      <div class="xsp-chiprow"><div class="xsp-chip">Apply in Minutes</div><div class="xsp-chip">$0 Down Options</div><div class="xsp-chip">Options for Most Credit</div></div>
+      <div class="xsp-chiprow"><div class="xsp-chip">Apply in Minutes</div><div class="xsp-chip">No Prepayment Penalty</div><div class="xsp-chip">Options for Most Credit</div></div>
     </div>
     <div class="xsp-bookcol"><div class="xsp-book">
   <div class="eyebrow">FINANCING</div>
@@ -549,29 +634,35 @@ text-underline-offset:2px}
   </div>
 </div>
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/ruud-install.jpg" alt="Ruud air handler installed in a Dayton-area home" style="object-position:50% 55%" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/ruud-install.jpg" alt="A Ruud air handler installed by Extreme Heating, Air, Plumbing" style="object-position:50% 55%" width="625" height="1600" fetchpriority="high" decoding="async"></div></div><div id="why">
   <div class="xsp-eyebrow">WHY FINANCE</div>
-  <h2 class="xsp-h2">The right fix, without draining savings.</h2>
+  <h2 class="xsp-h2">Can I finance a new furnace or AC in Dayton?</h2>
+  <p class="xsp-prose">Yes. Extreme Heating, Air, Plumbing finances new furnaces, air conditioners, heat pumps, water heaters and larger repairs across the Dayton and Cincinnati metros. The financing runs through the lender rather than through Extreme, so approval, rate and term all come from them.</p>
 <div class="xco-2col"><div class="xco-ccard"><span class="c">✓</span>
   <div class="t">One bill becomes a monthly payment</div><div class="d">Spread the cost of a new system over time instead of paying it all at once.</div></div><div class="xco-ccard"><span class="c">✓</span>
   <div class="t">Don't downgrade the fix</div><div class="d">Choose the system that's right for your home — not just the one that fits this month's budget.</div></div><div class="xco-ccard"><span class="c">✓</span>
   <div class="t">Keep your emergency fund intact</div><div class="d">Breakdowns never pick a convenient month. Financing keeps your cushion where it belongs.</div></div><div class="xco-ccard"><span class="c">✓</span>
   <div class="t">Stacks with specials &amp; rebates</div><div class="d">Combine financing with seasonal offers and utility rebates for the best total price.</div></div></div>
-</div><div>
+</div><div id="qualifies">
   <div class="xsp-eyebrow">WHAT QUALIFIES</div>
-  <h2 class="xsp-h2">Finance more than just new systems.</h2>
+  <h2 class="xsp-h2">What kind of work qualifies for financing?</h2>
+  <p class="xsp-prose">Financing at Extreme Heating, Air, Plumbing applies to <a href="/ac-installation">AC installation</a>, <a href="/furnace-installation">furnace installation</a>, heat pumps and ductless systems, tank and tankless <a href="/plumbing/water-heater/installation">water heater installation</a>, major HVAC and plumbing repairs, indoor air quality equipment, and sewer line and repiping projects.</p>
 <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>New AC or furnace installation</div><div class="xsp-check"><span class="c">✓</span>Heat pumps &amp; ductless systems</div><div class="xsp-check"><span class="c">✓</span>Water heaters — tank &amp; tankless</div><div class="xsp-check"><span class="c">✓</span>Major HVAC &amp; plumbing repairs</div><div class="xsp-check"><span class="c">✓</span>Indoor air quality equipment</div><div class="xsp-check"><span class="c">✓</span>Sewer line &amp; repiping projects</div></div>
 </div><div>
   <div class="xsp-eyebrow">HOW IT WORKS</div>
-  <h2 class="xsp-h2">Three steps to yes.</h2>
+  <h2 class="xsp-h2">How do I apply for financing?</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Get your upfront quote</div><div class="d">Your tech or comfort advisor prices the work first — so you know exactly what you're financing.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Apply online in minutes</div><div class="d">A short, secure application through one of our lenders — most decisions come back right away.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Approved &amp; installed</div><div class="d">We schedule the work — often the same week — and your monthly plan starts after the job is done right.</div></div></div></div>
-</div><div class="xsp-value" id="xco-lenders">
+</div><div id="lenders">
+  <div class="xsp-eyebrow">OUR LENDERS</div>
+  <h2 class="xsp-h2">Which lenders does Extreme Heating, Air, Plumbing work with?</h2>
+  <p class="xsp-prose">Extreme Heating, Air, Plumbing works with three lenders rather than one: GoodLeap, Synchrony and Wright-Patt Credit Union. Using more than one lender is what makes an approval possible across a wider range of credit situations, and checking options costs nothing.</p>
+<div class="xsp-value" id="xco-lenders">
   <div class="eyebrow">GOOD TO KNOW</div>
   <h3>Financing that works like you'd hope.</h3>
-  <div class="stats"><div><div class="n">Minutes</div><div class="cap">to apply and get a decision — right from your kitchen table.</div></div><div><div class="n">$0 down</div><div class="cap">options available on qualifying plans.</div></div><div><div class="n">No penalty</div><div class="cap">for paying your plan off early.</div></div></div>
+  <div class="stats"><div><div class="n">Minutes</div><div class="cap">to apply and get a decision — right from your kitchen table.</div></div><div><div class="n">Three</div><div class="cap">lenders reviewing your application, not one.</div></div><div><div class="n">No penalty</div><div class="cap">for paying your plan off early.</div></div></div>
   <div class="xco-lchips"><span class="lab">OUR LENDERS</span><div class="chip">GoodLeap</div><div class="chip">Synchrony</div><a class="chip" href="https://wpcu.merchantlinq.com/customer?t=Sk0wSVBrdjV0VUxsUnJwbXNwWWtpaFhRdmNxN0o1S1V2V2E3NlVnM0xyKjFrODNIKlN1eDlQbElZNEpRT25lOWNBQnJvajUyYTVBNGduaDdwNWJqNDJzZFNLSGQqU3dkVUlKWmxSRUNlTmZIblZtUkowY1ZUWm8qU2RHSW1WM0JFUnFONXZINlN4cGxSQk1QcTdHeEpXZlB5RHlaS3drYjVJZXdBREJFVGNwemkzeUtaVFRpTGR2QWxRc1FBMHZ1RTNPdzhydW9iWHdhTHJqTExGNWVzQWFlbWc9PQ==" target="_blank" rel="noopener noreferrer" data-apply-cta>Wright-Patt Credit Union<span class="arw" aria-hidden="true">→</span><span class="xsp-sr">— apply online, opens in a new tab</span></a></div>
   <div class="xco-apply">
     <div>
@@ -583,29 +674,33 @@ text-underline-offset:2px}
       <span class="xsp-sr">(opens in a new tab)</span>
     </a>
   </div>
-  <div class="xco-fine">Financing subject to credit approval. Applying is a request for pre-approval, not an agreement to buy or to lend — rates and terms are set by the lender. See <a href="/terms#financing">financing terms</a>.</div>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/specials">
+  <div class="xco-fine">Financing subject to credit approval. Applying is a request for pre-approval, not an agreement to buy or to lend, and rates and terms are set by the lender. See <a href="/terms#financing">full financing terms</a>.</div>
+</div>
+</div><div class="xsp-section" id="compare"><div class="xsp-eyebrow purple">FINANCE OR PAY UPFRONT</div><h2 class="xsp-h2">Is financing worth it compared with paying upfront?</h2><p class="xsp-takeaway">Extreme Heating, Air, Plumbing offers financing so that an unplanned replacement does not force a smaller system or an empty savings account.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Financing versus paying in full for a system replacement"><table class="xsp-table"><caption>Financing versus paying in full for a system replacement</caption><thead><tr><th scope="col">Factor</th><th scope="col">Financing usually fits when</th><th scope="col">Paying in full usually fits when</th></tr></thead><tbody><tr><th scope="row">Timing</th><td>The system already failed and replacement cannot wait</td><td>The replacement is planned months ahead</td></tr><tr><th scope="row">Cash on hand</th><td>Paying in full would empty the emergency fund</td><td>Cash is available without touching reserves</td></tr><tr><th scope="row">System choice</th><td>Budget alone would force a smaller or lower-efficiency system</td><td>The preferred system is affordable outright</td></tr><tr><th scope="row">Total cost</th><td>A monthly payment is worth the finance charge</td><td>Avoiding any finance charge is the priority</td></tr><tr><th scope="row">Credit</th><td>Credit is in reasonable shape and pre-approval is likely</td><td>Credit is being repaired and a new account would set it back</td></tr></tbody></table></div></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/specials">
   <div class="t">Stack a seasonal special</div><div class="d">Current offers can be combined with financing for the best total price.</div><div class="lm">See Specials →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">Protect the new system</div><div class="d">X-Plan keeps your warranty valid with two documented tune-ups a year.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">FINANCING QUESTIONS</div>
-  
+  <h2 class="xsp-h2">What do people ask before applying?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
     <button type="button" aria-expanded="true"><span>Does applying affect my credit score?</span><span class="tog" aria-hidden="true">−</span></button>
     <div class="a">Checking your options starts with a soft inquiry that doesn't affect your score. A full application follows only if you decide to move forward.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>What if my credit isn't perfect?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">That's why we work with more than one lender. GoodLeap, Synchrony, and Wright-Patt Credit Union each cover a range of credit situations — and checking your options costs nothing.</div>
+    <div class="a">That's why we work with more than one lender. GoodLeap, Synchrony, and Wright-Patt Credit Union each cover a range of credit situations, and checking your options costs nothing.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Can I pay it off early?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Yes — there's no penalty for paying your plan off early.</div>
+    <div class="a">Yes. There's no penalty for paying your plan off early.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>Who sets the interest rate?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">The lender sets the rate and the term, not Extreme Heating, Air, Plumbing. Both are disclosed by the lender in the application, before anything is signed.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Can I combine financing with specials?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Yes — financing stacks with seasonal specials and utility rebates for the best total price on the work.</div>
+    <div class="a">Yes. Financing stacks with <a href="/specials">this season's specials on installations</a> and utility rebates for the best total price on the work.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/ruud-install.jpg" alt="Ruud air handler installed in a Dayton-area home" style="object-position:50% 55%" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/specials">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/equipment/ruud-install.jpg" alt="A Ruud air handler installed by Extreme Heating, Air, Plumbing" style="object-position:50% 55%" width="625" height="1600" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav" href="/specials">
   <div class="t">Stack a seasonal special</div><div class="d">Current offers can be combined with financing for the best total price.</div><div class="lm">See Specials →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">Protect the new system</div><div class="d">X-Plan keeps your warranty valid with two documented tune-ups a year.</div><div class="lm">Explore X-Plan →</div>
@@ -742,6 +837,24 @@ text-underline-offset:2px}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

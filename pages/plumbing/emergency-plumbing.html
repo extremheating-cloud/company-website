@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -366,17 +442,18 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 }
 </style>
 <div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><span class="cur">Emergency Plumbing</span></div>
-      <h1 class="xsp-h1">Plumbing emergencies, <em>handled 24/7</em>.</h1>
-      <p class="xsp-intro">Burst pipes, backups, and no-water emergencies — real 24/7 response from licensed local plumbers.</p>
+      <h1 class="xsp-h1">24/7 emergency plumber for <em>Dayton &amp; Cincinnati</em>.</h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing answers emergency plumbing calls 24 hours a day across the Dayton and Cincinnati, Ohio metros, including nights, weekends and holidays. Burst pipes, sewage backups, no-water calls and fast-leaking water heaters are triaged by phone before a licensed plumber is dispatched. The company has completed 25,000+ jobs since 2004.</p></div>
+      <p class="xsp-intro">Call <a href="tel:18445847399">(844) 584-7399</a>. If you smell gas, leave the house first and call from outside.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call (844) 584-7399</a>
       </div>
-      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 on Google</div><div class="xsp-chip">24/7 Response</div><div class="xsp-chip">Licensed Plumbers</div></div>
+      <div class="xsp-chiprow"><div class="xsp-chip"><span class="st">★</span> 4.9 from 1,595 reviews</div><div class="xsp-chip">24/7 Response</div><div class="xsp-chip">Licensed Plumbers</div></div>
     </div>
     <div class="xsp-bookcol"><div class="xsp-book">
   <div class="eyebrow">EMERGENCY? BOOK NOW</div>
@@ -392,7 +469,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/1409042417/photo/worried-man-calling-plumber.jpg?s=612x612&w=0&k=20&c=UAWD3jyhJtkZwDZy8HjcgOIHAHx82XMyrGS19SnOiT8=" alt="A man phoning for help under a leaking sink" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/1409042417/photo/worried-man-calling-plumber.jpg?s=612x612&w=0&k=20&c=UAWD3jyhJtkZwDZy8HjcgOIHAHx82XMyrGS19SnOiT8=" alt="A man phoning for help under a leaking sink" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">IS IT AN EMERGENCY?</div>
   <h2 class="xsp-h2">Call now if you see these.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Water you can't shut off</div><div class="xsp-check"><span class="c">✓</span>Sewage backing up indoors</div><div class="xsp-check"><span class="c">✓</span>Burst or frozen pipe</div><div class="xsp-check"><span class="c">✓</span>No water to the house</div><div class="xsp-check"><span class="c">✓</span>Water heater leaking fast</div><div class="xsp-check"><span class="c">✓</span>Gas smell near appliances</div></div>
@@ -413,32 +490,35 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Backup Clearing</span><br><span class="d">Sewage backups cleared and sanitized — and the cause identified.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">What counts as a plumbing emergency?</h2><p class="xsp-prose">Water you cannot shut off, sewage coming up indoors, a <a href="/plumbing/leak-detection">burst or frozen pipe</a>, no water to the house, a <a href="/plumbing/water-heater/repair">water heater dumping onto the floor</a>, or a gas smell near an appliance. Anything on that list is worth a 2 a.m. call. Most other plumbing can wait until morning without costing you more.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing answers emergency plumbing calls around the clock across the Dayton and Cincinnati metros, and triages every call by phone before dispatch.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="What to call about immediately and what can wait."><table class="xsp-table"><caption>What to call about immediately and what can wait.</caption><thead><tr><th scope="col">What you're seeing</th><th scope="col">Call 24/7 now</th><th scope="col">Can wait for business hours</th></tr></thead><tbody><tr><th scope="row">Water you cannot stop</th><td>Yes, shut the main valve while you call</td><td>Do not wait</td></tr><tr><th scope="row">Sewage backing up into the house</th><td>Yes, stop using all water</td><td>Do not wait</td></tr><tr><th scope="row">Gas smell anywhere</th><td>Leave the house, then call from outside</td><td>Do not wait</td></tr><tr><th scope="row">No water at any fixture</th><td>Yes</td><td>Do not wait</td></tr><tr><th scope="row">Water heater leaking steadily</th><td>Yes, shut its supply valve</td><td>Do not wait</td></tr><tr><th scope="row">One slow or clogged drain</th><td>Not urgent on its own</td><td>Yes, if no other fixture is affected</td></tr><tr><th scope="row">Running toilet or dripping faucet</th><td>Not urgent</td><td>Yes</td></tr><tr><th scope="row">Low water pressure at one fixture</th><td>Not urgent</td><td>Yes</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Where is my water shut-off valve?</h2><p class="xsp-prose">In most Dayton and Cincinnati homes with a basement, the main shut-off is on the interior wall facing the street, within a few feet of where the pipe comes through the foundation, usually near the meter. Slab homes often have it in a utility closet or the garage. Turn it clockwise until it stops.</p><p class="xsp-prose">In most Dayton and Cincinnati basement homes the main water shut-off valve sits within a few feet of where the supply line enters the foundation on the street-facing wall.</p></div><div class="xsp-section"><h2 class="xsp-h2">What should I do while I wait for a plumber?</h2><p class="xsp-prose">Shut the nearest valve, or the main if you cannot find it. Move anything you care about off the floor. Stop running water into the affected drains, including appliances on a timer. Photograph the damage before you clean it up, because your insurer will ask.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Call any hour</div><div class="d">24/7 dispatch — we triage on the phone and get a plumber moving.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Fixed and protected</div><div class="d">We fix the emergency, then show you how to prevent the next one.</div></div></div></div>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">Can you come out at night or on a weekend?</h2><p class="xsp-prose">Yes. Extreme Heating, Air, Plumbing runs 24/7 emergency service across both metros with licensed plumbers on call, not an answering service that takes a message until Monday. The call is answered by someone who can start talking you through the shut-off immediately, and the work is carried out under Ohio plumbing license #13557.</p></div><div class="xsp-section"><h2 class="xsp-h2">Do emergency calls cost more than a normal visit?</h2><p class="xsp-prose">Every job, at every hour, is quoted flat and approved by you before work begins. Nothing gets added to the invoice afterward. If the honest answer on the phone is that it can safely wait until morning, we will tell you that too.</p></div><div class="xsp-section"><h2 class="xsp-h2">What are the most common winter plumbing emergencies here?</h2><p class="xsp-prose">Frozen and burst supply lines dominate December through February in both metros, usually in an unheated crawl space, an exterior wall, or a garage line nobody thought about. The break itself often happens on the thaw, not the freeze, which is why the flood starts the afternoon it warms up.</p><p class="xsp-prose">Frozen and burst pipe failures across the Dayton and Cincinnati, Ohio metros concentrate in the December to February stretch, when sustained sub-freezing temperatures reach unheated crawl spaces and garage lines. Sewage that comes up indoors is the other winter call, and it is handled through <a href="/plumbing/sewer-line/cleaning">sewer line cleaning</a>.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a><a class="xsp-promo mint" href="/specials">
   <div class="t">Plumbing specials</div><div class="d">Check out current offers on repairs, installs, and more.</div><div class="lm">View Specials →</div>
 </a></div><div>
   <div class="xsp-eyebrow">EMERGENCY QUESTIONS</div>
-  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <h2 class="xsp-h2">What else do people ask at 2 a.m.?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast can you get here in an emergency?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Emergency calls get priority dispatch around the clock — we'll give you a real arrival window when you call, not a whole-day guess.</div>
+    <button type="button" aria-expanded="true"><span>Is there a plumber open right now near me?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">Yes. Extreme Heating, Air, Plumbing answers emergency plumbing calls 24 hours a day, seven days a week, across the Dayton and Cincinnati, Ohio metros at <a href="tel:18445847399">(844) 584-7399</a>.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>What should I do while I wait?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Shut the nearest valve (or the main), move valuables clear, and don't run water to affected drains. We'll talk you through it on the phone.</div>
+    <button type="button" aria-expanded="false"><span>What do I do if a pipe bursts?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Shut the main water valve, then open a low faucet to drain the pressure out of the line. Kill the power to any circuit near standing water at the breaker, not at the switch. Then call, and photograph everything before you start cleaning.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Do emergencies cost more?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">After-hours dispatch differs from standard visits, but pricing is still flat and upfront — approved by you before work starts.</div>
+    <button type="button" aria-expanded="false"><span>What do I do if I smell gas?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Get everyone out of the house first. Do not flip switches, unplug anything, or use a phone indoors. From outside, call your gas utility, then call a licensed plumber once the utility has cleared the property.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>My basement is flooding and the sump pump is not running. What now?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Check the breaker and the float first, because a jammed float is the most common cause. If the pit is still filling, call. <a href="/plumbing/sump-pump/repair">A pump that fails during a storm</a> is an emergency, and Extreme dispatches on sump pump calls around the clock.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/1409042417/photo/worried-man-calling-plumber.jpg?s=612x612&w=0&k=20&c=UAWD3jyhJtkZwDZy8HjcgOIHAHx82XMyrGS19SnOiT8=" alt="A man phoning for help under a leaking sink" loading="lazy" decoding="async"></div><a class="xsp-promo lav js-schedule" href="#">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/1409042417/photo/worried-man-calling-plumber.jpg?s=612x612&w=0&k=20&c=UAWD3jyhJtkZwDZy8HjcgOIHAHx82XMyrGS19SnOiT8=" alt="A man phoning for help under a leaking sink" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a><a class="xsp-promo mint" href="/specials">
   <div class="t">Plumbing specials</div><div class="d">Check out current offers on repairs, installs, and more.</div><div class="lm">View Specials →</div>
@@ -446,7 +526,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div>
 <div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -595,6 +675,24 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {

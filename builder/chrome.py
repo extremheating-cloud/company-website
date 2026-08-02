@@ -242,12 +242,20 @@ display:inline-flex;align-items:center}
 color:rgba(255,255,255,.78);min-height:32px}
 .xf-col a:hover{color:#fff}
 .xf-phone{font-weight:800!important;font-size:16px!important;color:#fff!important}
+/* The sitewide NAP. `address` because that is what it is; font-style reset because
+   the element italicises by default and the rest of the column does not. */
+.xf-nap{font-style:normal;font-size:13.5px;font-weight:600;line-height:1.6;
+color:rgba(255,255,255,.78);margin:0 0 8px}
+.xf-nap b{display:block;color:#fff;font-weight:800;margin-bottom:2px}
 .xf-meta{font-size:12.5px;color:rgba(255,255,255,.55);margin-top:8px;line-height:1.6}
 .xf-areas{padding:22px 0;border-top:1px solid rgba(255,255,255,.12);
 font-size:12px;line-height:1.7;color:rgba(255,255,255,.55);display:grid;gap:8px}
 .xf-areas b{color:rgba(255,255,255,.8);font-weight:800;letter-spacing:.4px;margin-right:6px}
 .xf-areas a{color:rgba(255,255,255,.62);text-decoration:none}
 .xf-areas a:hover{color:#8FD481;text-decoration:underline}
+/* The office row is the one line in this band that points at premises rather than at
+   service areas, so it reads a step brighter than the towns beneath it. */
+.xf-offices a{color:rgba(255,255,255,.85);font-weight:700}
 .xf-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;
 padding:18px 0 30px;border-top:1px solid rgba(255,255,255,.12);
 font-size:12px;color:rgba(255,255,255,.55)}
@@ -436,10 +444,58 @@ def header(current=""):
 def _area_links(items):
     """Service-area towns in the footer link to their own location pages. They are the
     deepest crawlable path into the /locations tree, so leaving them as plain text
-    wastes the one place every page links from."""
+    wastes the one place every page links from.
+
+    Anchor text is always the plain place name. A boilerplate link repeated on ~311
+    pages is discounted anyway, and dressing it as "Dayton Furnace Repair" is the
+    clearest manipulated-linking tell available for no gain."""
     return " · ".join(f'<a href="/locations/{slug}">{name}</a>' for slug, name in items)
 
+def _core_only(items):
+    """The footer carries the core metros, not all 38 towns.
+
+    38 towns x ~311 pages was ~11,800 identical boilerplate links spread evenly over
+    every town the company has a page for, which is the same as spreading them over
+    none. The other towns stay one click away on /locations and keep their links from
+    every town in their own metro, so nothing is orphaned — the footer just stops
+    spending its ~311 links on pages nobody is trying to rank.
+
+    The set of towns this keeps is the same set `shell.py` leaves indexed, read from
+    `locations.py` rather than restated here — a footer that promoted a town whose
+    service pages are noindexed would be spending ~311 links on a dead end. It answers
+    to whichever name that module settles on (`is_core`, `CORE`, or the `FEATURED` set
+    shell.py already reads), and until one of them lands it returns the full list,
+    which is the behaviour that shipped before. A footer that is too generous is a
+    missed opportunity; a footer that silently empties itself is a broken site.
+    """
+    is_core = getattr(L, "is_core", None)
+    if callable(is_core):
+        keep = [(s, n) for s, n in items if is_core(s)]
+    else:
+        core = getattr(L, "CORE_SET", None) or getattr(L, "CORE", None) \
+            or getattr(L, "FEATURED", None)
+        if not core:
+            return items
+        core = set(core)
+        keep = [(s, n) for s, n in items if s in core]
+    return keep or items
+
+def _office_links():
+    """The four office cities, linked from every page.
+
+    These are premises, not service areas, and they are the only location pages
+    carrying a postal address. Sitewide links are what keeps them the first thing
+    reachable from anywhere on the site. Offices with no location page yet are
+    filtered out upstream in site_data.OFFICE_LINKS rather than linked into a 404."""
+    return " · ".join(
+        f'<a href="{href}">{name}</a>' for name, href in D.FOOTER_NAP["offices"])
+
 def footer():
+    """Rendered on every page, so every link here costs ~311 links of boilerplate.
+
+    Budget: ~18 column links + 4 contact + 4 social + 4 offices + 10 core metros +
+    /locations + terms ≈ 42. Add to it only after subtracting something."""
+    nap = D.FOOTER_NAP
     cols = ""
     for heading, links in D.FOOTER_COLUMNS:
         cols += (f'<div class="xf-col"><div class="xf-h">{heading}</div>' +
@@ -472,21 +528,26 @@ def footer():
       {cols}
       <div class="xf-col">
         <div class="xf-h">CONTACT</div>
-        <a class="xf-phone" href="{D.PHONE_TEL}">{D.PHONE_DISPLAY}</a>
+        <address class="xf-nap">
+          <b>{nap["name"]}</b>{nap["street"]}<br>{nap["citystate"]}
+        </address>
+        <a class="xf-phone" href="{nap["phoneHref"]}">{nap["phoneDisplay"]}</a>
+        <a href="{nap["emailHref"]}">{nap["email"]}</a>
         <a class="js-schedule" href="#">Schedule online</a>
         <a href="/contact">Contact us</a>
-        <div class="xf-meta">Office staffed Mon–Fri, 8–5<br>Emergencies 24/7</div>
+        <div class="xf-meta">{nap["hoursStaffed"]}<br>{nap["hoursEmergency"]}</div>
       </div>
     </div>
 
     <div class="xf-areas">
-      <div><b>DAYTON AREA</b>{_area_links(L.DAYTON)}</div>
-      <div><b>CINCINNATI AREA</b>{_area_links(L.CINCINNATI)}</div>
-      <div><b>COUNTIES</b>{_area_links(L.COUNTIES)}</div>
+      <div class="xf-offices"><b>{nap["officesLabel"].upper()}</b>{_office_links()}</div>
+      <div><b>DAYTON AREA</b>{_area_links(_core_only(L.DAYTON))}</div>
+      <div><b>CINCINNATI AREA</b>{_area_links(_core_only(L.CINCINNATI))}</div>
+      <div><b>SERVICE AREA</b><a href="/locations">All {len(L.ALL)} communities we serve →</a></div>
     </div>
 
     <div class="xf-bottom">
-      <div>&copy; 2026 {D.COMPANY}. All rights reserved. · Licensed &amp; insured in Ohio</div>
+      <div>{D.FOOTER_LEGAL}</div>
       <div class="links">
         <!-- TODO (legal): no privacy policy exists yet, so the link is omitted rather
              than shipped as a 404. This needs writing: the schedule form collects name,

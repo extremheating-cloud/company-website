@@ -4,7 +4,11 @@
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
 /* The embed is a bare <section>. Framer's page supplies the white behind it, but
    standalone — a local preview, or anyone opening the file — whatever is behind
@@ -211,8 +215,80 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+.xsp-prose a{color:var(--purple);font-weight:700}
+.xsp-prose a:hover{color:var(--green-dark)}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
+   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
+   keeps each column at a readable measure instead of crushing three columns into a
+   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow-x:auto;-webkit-overflow-scrolling:touch}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
+letter-spacing:1.8px;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
+border-bottom:1px solid #E0D6EA}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
 /* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-tablewrap{border-radius:12px}
+.xsp-table{min-width:520px;font-size:13px}
+.xsp-table th,.xsp-table td{padding:10px 13px}
+.xsp-table tbody th{width:32%}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
 .xsp-dt{display:none !important}
 .xsp-mb{display:revert !important}
@@ -366,12 +442,13 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 }
 </style>
 <div class="xsp-hero sub">
-  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt=""></div>
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
   <div class="xsp-hero-grid">
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><a href="/indoor-air-quality">Indoor Air Quality</a><span class="sep">›</span><span class="cur">FAQ</span></div>
-      <h1 class="xsp-h1">Air quality questions, <em>answered straight</em>.</h1>
-      <p class="xsp-intro">The questions homeowners actually ask about filters, purifiers, humidity, and duct cleaning — answered without the sales pitch.</p>
+      <h1 class="xsp-h1">Indoor air quality questions, <em>answered straight</em>.</h1>
+      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing answers common indoor air quality questions for homeowners in the Dayton and Cincinnati, Ohio metros. Topics covered include filter MERV ratings, UV purifiers, whole-home humidity, duct cleaning, and ventilation. Indoor relative humidity is generally kept between 30% and 50%, and most 1-inch filters are changed every 1 to 3 months.</p></div>
+      <p class="xsp-intro">Straight answers on MERV ratings, filter changes, winter humidity, UV lamps and duct cleaning, for homeowners in Dayton and Cincinnati.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
         <a class="xsp-cta-outline" href="tel:18445847399">Call Now</a>
@@ -395,12 +472,12 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="xsp-pills"><a class="xsp-pill" href="/indoor-air-quality">Overview</a><a class="xsp-pill" href="/indoor-air-quality-solutions">Solutions</a><a class="xsp-pill" href="/importance-iaq">Importance</a><a class="xsp-pill active" href="/iaq-faq" aria-current="page">FAQ</a></div>
 </div></div>
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/dirty-duct.jpg" alt="The inside of an air duct heavily coated with dust" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/dirty-duct.jpg" alt="The inside of an air duct heavily coated with dust" width="239" height="210" fetchpriority="high" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">QUICK ANSWERS</div>
   <h2 class="xsp-h2">The short version.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Filters: highest MERV your system allows</div><div class="xsp-check"><span class="c">✓</span>UV: great for coils, not for dust</div><div class="xsp-check"><span class="c">✓</span>Humidity: keep it 30–50%</div><div class="xsp-check"><span class="c">✓</span>Duct cleaning: every 3–5 years</div><div class="xsp-check"><span class="c">✓</span>Ventilation: tight homes need it most</div><div class="xsp-check"><span class="c">✓</span>Odors: find the source first</div></div>
   <div class="xsp-callout">Have a question that isn't here? Call <a href="tel:18445847399">(844) 584-7399</a> — real answers from real techs.</div>
-</div><div>
+</div><div class="xsp-section" id="merv"><h2 class="xsp-h2">What MERV rating should I use at home?</h2><p class="xsp-prose">The highest rating the duct system can move air through without a pressure penalty. In a standard 1-inch filter slot that is usually MERV 8 to 11. Going higher in the same slot drops airflow, which can freeze an evaporator coil in summer and trip a furnace high limit in winter. The cabinet upgrade that makes MERV 13 realistic is covered under <a href="/indoor-air-quality-solutions">indoor air quality solutions</a>.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing recommends the highest MERV rating a system's measured static pressure allows, which in most Dayton homes falls between MERV 8 and MERV 13.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="MERV ratings and what each one catches."><table class="xsp-table"><caption>MERV ratings and what each one catches.</caption><thead><tr><th scope="col">MERV rating</th><th scope="col">What it captures</th><th scope="col">Airflow risk on a home system</th><th scope="col">Typical use</th></tr></thead><tbody><tr><th scope="row">MERV 1 to 4</th><td>Lint, carpet fiber, and the largest dust</td><td>None, this is the lowest-resistance filter sold</td><td>Fiberglass throwaway filters, which protect the equipment rather than the air</td></tr><tr><th scope="row">MERV 5 to 8</th><td>Dust, pollen, mold spores, and dust mite debris</td><td>Safe in nearly every residential system</td><td>The default 1-inch pleated filter</td></tr><tr><th scope="row">MERV 9 to 12</th><td>Fine dust, pet dander, and most airborne allergens</td><td>Safe in a 4-inch media cabinet, restrictive in a 1-inch slot</td><td>Allergy households that have a media cabinet</td></tr><tr><th scope="row">MERV 13 to 16</th><td>Smoke, bacteria, and particles down to 0.3 microns</td><td>High risk in a 1-inch slot, needs a deep cabinet and measured static pressure</td><td>Only where the duct system has been measured first</td></tr><tr><th scope="row">HEPA</th><td>99.97% of particles at 0.3 microns</td><td>Cannot be fitted inline on a standard residential air handler</td><td>A bypass unit, or a portable room unit</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">How often should a furnace filter be changed?</h2><p class="xsp-prose">A 1-inch filter every 1 to 3 months, sooner with pets or during a remodel. A 4-inch or 5-inch media filter every 6 to 12 months. The reliable test is holding it up to a light: if the light does not come through, the filter is done regardless of the calendar.</p></div><div class="xsp-section"><h2 class="xsp-h2">What humidity should a house hold in winter?</h2><p class="xsp-prose">Between 30% and 40% through the heating season, and no higher than 50% at any time of year. Below 30% causes static, dry sinuses, and shrinking trim. Above 50% in a cold Ohio house puts condensation on the windows, and above 60% feeds mold. <a href="/humidifier">Whole-home humidifier services</a> hold the bottom of that range through a Dayton January.</p></div><div class="xsp-section"><h2 class="xsp-h2">Do UV lights in HVAC systems really work?</h2><p class="xsp-prose">Against biological growth on the evaporator coil and in the drain pan, yes, when they are sized and aimed correctly. They do not remove dust, dander, or pollen, because those are filtered out, not killed. A UV lamp sold as an allergy fix is sold wrong.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
@@ -411,29 +488,32 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="t">Dig into the details</div>
   <div class="d">The full breakdown of what's in indoor air and which solutions match which problems.</div>
   <a href="/importance-iaq">Why IAQ Matters →</a>
-</div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/maintenance">
+</div><div class="xsp-section"><h2 class="xsp-h2">Does duct cleaning improve indoor air quality?</h2><p class="xsp-prose">It helps when the ducts are genuinely dirty, which usually means after a remodel, in a house with pets, or in a system that has never been cleaned. It does not help a clean duct system, and it is no substitute for filtration. The honest version is to look at the ducts before quoting the work, which is how <a href="/duct-cleaning">air duct cleaning</a> is booked here. <a href="/importance-iaq">Why indoor air quality matters</a> covers what is in the air to begin with.</p></div><div class="xsp-section"><h2 class="xsp-h2">How often should air ducts be cleaned?</h2><p class="xsp-prose">Every 3 to 5 years covers most homes, with construction dust, pets, or a known mold problem moving it sooner. A system with a proper media filter and sealed returns stays clean longer, because less gets in to begin with.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I get a straight answer on my own house?</h2><p class="xsp-prose">Assessments are booked by phone at <a href="tel:18445847399">(844) 584-7399</a> or online. The visit measures humidity and airflow, checks the filtration and duct system in the actual house, and produces a recommendation with upfront pricing before anything is installed. Broader <a href="/indoor-air-quality">indoor air quality services in Dayton and Cincinnati</a> start from the same visit.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Plus a 5-year warranty on repairs and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">AIR QUALITY FAQ</div>
-  <h2 class="xsp-h2">Your questions, answered.</h2>
+  <h2 class="xsp-h2">A few more, kept separate from the sections above.</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast can you help with an air quality problem?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Assessments usually within days; most solutions install in a single visit.</div>
+    <button type="button" aria-expanded="true"><span>What is the single best air quality upgrade for most homes?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">A properly sized media filter, changed on schedule, in a system whose return ducts are sealed. It outperforms most add-on equipment, and Extreme Heating, Air, Plumbing will say so rather than quote a purifier.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>What's the single best upgrade for air quality?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">For most homes: a properly-sized media filter, checked seasonally. It outperforms most gadgets.</div>
+    <button type="button" aria-expanded="false"><span>Does a portable air purifier do the same thing as a whole-home system?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">It cleans one room while it runs. A whole-home system treats every room the ductwork reaches, every time the blower runs. For a single bedroom, a portable unit is often the sensible answer.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Does duct cleaning improve air quality?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">It helps when ducts are genuinely dirty — after remodels, with pets, or if never cleaned. We'll look first and tell you honestly.</div>
+    <button type="button" aria-expanded="false"><span>Will a higher MERV filter damage my furnace?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">It can, in a 1-inch slot. Higher MERV in the same thickness raises static pressure and drops airflow, which strains the blower, can freeze the coil in summer, and can trip the furnace high limit in winter. A 4-inch cabinet is the fix.</div>
+  </div><div class="xsp-qa">
+    <button type="button" aria-expanded="false"><span>How fast can you help with an air quality problem?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Assessments are usually scheduled within a few days, and most filtration and UV installs are completed in a single visit.</div>
   </div></div>
-</div></div>
-  <aside class="xsp-rail flush"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/dirty-duct.jpg" alt="The inside of an air duct heavily coated with dust" loading="lazy" decoding="async"></div><a class="xsp-promo mint" href="/maintenance">
+</div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
+  <aside class="xsp-rail flush"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/dirty-duct.jpg" alt="The inside of an air duct heavily coated with dust" width="239" height="210" fetchpriority="high" decoding="async"></div><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Plus a 5-year warranty on repairs and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
 </a><div class="xsp-sibs"><div class="h">INDOOR AIR QUALITY</div><a href="/indoor-air-quality">IAQ Overview<span class="ar">→</span></a><a href="/indoor-air-quality-solutions">Air Quality Solutions<span class="ar">→</span></a><a href="/importance-iaq">Why IAQ Matters<span class="ar">→</span></a></div></aside>
 </div>
 <div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="">
+    <img class="mark" src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -578,6 +658,24 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
             }
           } catch (err) {}
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
         });
       });
       root.querySelectorAll(".xsp-faq").forEach((faq) => {
