@@ -707,7 +707,7 @@ FINANCING = {
         "takeaway": "Financing exists so a system that failed without warning doesn't push you "
                     "into a smaller unit or an empty savings account.",
         "caption": "Financing versus paying in full for a system replacement",
-        "columns": ["Factor", "Financing usually fits when", "Paying in full usually fits when"],
+        "columns": ["What we look at", "Finance when", "Pay in full when"],
         "rows": [
             ["Timing", "The system already failed and replacement cannot wait",
              "The replacement is planned months ahead"],
@@ -1071,7 +1071,10 @@ ABOUT = {
         "takeaway": f"We've served the Dayton and Cincinnati metros since {D.FOUNDED}, under "
                     "Ohio HVAC license #37179.",
         "caption": "Company details at a glance",
-        "columns": ["Detail", D.COMPANY_SHORT],
+        # A key/value fact sheet, so the second column has no name of its own —
+        # "Detail | Extreme" read as though Extreme were one of several things being
+        # compared. The row header carries the meaning; this just labels the pair.
+        "columns": ["What you're asking", "The answer"],
         "rows": [
             ["Founded", f"{D.FOUNDED}, locally owned ever since"],
             ["Trades", "Heating, cooling, indoor air quality, residential plumbing"],

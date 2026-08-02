@@ -515,7 +515,7 @@ LOCAL = {
   caption="Common problems in Dayton, Ohio homes and what to book",
   takeaway="We see the same short list of faults in Dayton's pre-1940 housing, and most of "
            "them trace back to ductwork that got retrofitted into a house built without any.",
-  columns=["Common problem in Dayton homes", "Likely cause", "Service to book", "Urgency"],
+  columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("Upstairs never gets warm or cool", "One central return and no upstairs return path",
     "Heating or cooling assessment", "Book this week"),
@@ -681,7 +681,7 @@ LOCAL = {
   takeaway="Most Cincinnati comfort complaints we get called out to trace back to one of three "
            "things: a house with no ducts, a hillside foundation, or equipment installed "
            "without a permit.",
-  columns=["Common problem in Cincinnati homes", "Likely cause", "Service to book", "Urgency"],
+  columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("Radiators heat fine but there is no way to cool", "House built without duct chases",
     "Ductless or high-velocity assessment", "Plan ahead"),
@@ -843,7 +843,7 @@ LOCAL = {
   caption="Common problems in Beavercreek, Ohio homes and what to book",
   takeaway="Since early 2025, most of the Beavercreek plumbing calls we take come back to one "
            "thing: a softener still tuned for 27 grain water the county no longer delivers.",
-  columns=["Common problem in Beavercreek homes", "Likely cause", "Service to book", "Urgency"],
+  columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("Water feels slippery and salt use jumped",
     "Softener still set for 27 grain water after the 2025 change", "Softener adjustment",
@@ -1002,7 +1002,7 @@ LOCAL = {
   caption="Common problems in Mason, Ohio homes and what to book",
   takeaway="Most Mason calls we take come from equipment installed between 1995 and 2008 that "
            "has reached the end of its life, sitting on ductwork that is still perfectly fine.",
-  columns=["Common problem in Mason homes", "Likely cause", "Service to book", "Urgency"],
+  columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("Furnace over 18 years old, repairs stacking up",
     "First-generation condensing furnace from the 1995 to 2008 build-out",
@@ -1175,7 +1175,7 @@ LOCAL = {
   caption="Common problems in Kettering, Ohio homes and what to book",
   takeaway="Most Kettering comfort complaints we see come back to return air rather than the "
            "furnace, because 1950s ranch ductwork was sized for equipment two generations gone.",
-  columns=["Common problem in Kettering homes", "Likely cause", "Service to book", "Urgency"],
+  columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("New high-MERV filter made airflow worse", "One or two returns for the whole house",
     "Duct and return evaluation", "Book this month"),
@@ -1339,7 +1339,7 @@ LOCAL = {
   caption="Common problems in Centerville, Ohio homes and what to book",
   takeaway="We work two very different housing types in Centerville, and the right answer in a "
            "limestone building from the 1800s is rarely the right answer in a 1980s subdivision.",
-  columns=["Common problem in Centerville homes", "Likely cause", "Service to book", "Urgency"],
+  columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("Nowhere obvious to run a new flue or lineset",
     "Masonry walls in an early stone or timber structure", "On-site replacement survey",
@@ -1497,7 +1497,7 @@ LOCAL = {
   caption="Common problems in West Chester Township, Ohio homes and what to book",
   takeaway="West Chester's 1980 to 2000 housing is reaching its first or second equipment "
            "replacement more or less together, on ductwork that is generally still fine to reuse.",
-  columns=["Common problem in West Chester homes", "Likely cause", "Service to book", "Urgency"],
+  columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("Second repair on the same system this season",
     "Late 1990s or 2000s equipment at end of life", "Repair or replace assessment", "Plan ahead"),
@@ -1665,7 +1665,7 @@ LOCAL = {
   caption="Common problems in Huber Heights, Ohio homes and what to book",
   takeaway="The same faults repeat across Huber Heights because thousands of the houses share a "
            "builder, a date range and a floor plan.",
-  columns=["Common problem in Huber Heights homes", "Likely cause", "Service to book", "Urgency"],
+  columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("Same fault the neighbour had last winter",
     "Shared floor plan and equipment layout across Huber Homes stock", "Heating assessment",
@@ -1829,7 +1829,7 @@ LOCAL = {
   caption="Common problems in Springboro, Ohio homes and what to book",
   takeaway="Springboro's recurring problems come from two things: newer two-storey houses, and a "
            "county line running through the middle of the city.",
-  columns=["Common problem in Springboro homes", "Likely cause", "Service to book", "Urgency"],
+  columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("Upstairs runs hot while downstairs runs cold",
     "Stack effect in a larger two-storey house on one system",
@@ -1988,7 +1988,7 @@ LOCAL = {
   caption="Common problems in Troy, Ohio homes and what to book",
   takeaway="Troy runs a permit process no other city we cover uses, and its water comes straight "
            "out of the buried valley aquifer.",
-  columns=["Common problem in Troy homes", "Likely cause", "Service to book", "Urgency"],
+  columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("Permit filed with the wrong office",
     "City handles zoning, Miami County handles the building permit",

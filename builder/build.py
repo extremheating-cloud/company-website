@@ -101,8 +101,8 @@ AIR_CONDITIONING = {
              "takeaway": ("We'll point you to replacement when the system is past its "
                           "expected life and the repair quote is closing in on a third of "
                           "what a new one costs."),
-             "columns": ["Factor", "Repair usually makes sense when",
-                         "Replacement usually makes sense when"],
+             "columns": ["What we look at", "Repair when",
+                         "Replace when"],
              "rows": [
                  ["System age", "Under 10 years old", "Past 12 to 15 years"],
                  ["Repair cost", "Well under a third of replacement cost",
@@ -439,8 +439,8 @@ FURNACE_REPAIR = {
              "caption": "Repair or replace a furnace: what decides it",
              "takeaway": ("Once a furnace is 15 or older and the repair quote is closing in "
                           "on a third of replacement cost, we'll tell you to replace it."),
-             "columns": ["Factor", "Repair usually makes sense when",
-                         "Replacement usually makes sense when"],
+             "columns": ["What we look at", "Repair when",
+                         "Replace when"],
              "rows": [
                  ["System age", "Under 15 years old", "15 years or older"],
                  ["Heat exchanger", "Intact and passing a combustion safety check",
