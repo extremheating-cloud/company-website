@@ -9,3 +9,6 @@ __pycache__/
 _preview*.html
 _p.jpg
 _ruud-cropped.jpg
+
+# Built self-hosted site — regenerate with: cd builder && python3 build_site.py
+site/
