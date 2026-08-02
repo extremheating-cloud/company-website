@@ -24,7 +24,7 @@ PHONE_DISPLAY = "(844) 584-7399"
 # rebuild. `git rev-parse HEAD` gives it. "main" works but can serve stale files
 # for up to 12 hours.
 ASSET_REPO   = "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website"
-ASSET_COMMIT = "c83bf3b6254c9bd3dbc1bd101024085c183abd20"
+ASSET_COMMIT = "033972506c03489eec477421491916a718bcfabc"
 
 def cdn_asset(relpath, commit=None):
     """URL for anything under assets/. relpath is repo-relative below assets/,
