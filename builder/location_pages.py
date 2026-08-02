@@ -485,7 +485,9 @@ def city_service(city, slug, group, service):
             promos.append(p)
     rail = {"photo": T.cdn_asset(c["photo"]), "photoAlt": c["photoAlt"],
             "photoPos": c.get("photoPos"), "promos": promos}
-    left.append(T.mobile_inline_rail({"rail": rail}, with_photo=True))
+    left.append(T.mobile_inline_rail({"rail": rail}))
+    # The photo goes to the top of the body on mobile, not inline with the promos.
+    left.insert(0, T.mobile_photo(rail))
 
     body = f'''{_hero(city,
         [("Home", "/"), ("Locations", "/locations"), (city, f"/locations/{slug}"), (c["nav"], "")],

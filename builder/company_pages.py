@@ -291,6 +291,7 @@ CONTACT = {
 
 def contact_page(d, root_class):
     left = [
+        T.mobile_photo(d["rail"]),
         book_cards(d),
         location_cards(d),
         hours_table(d),
@@ -552,13 +553,12 @@ FINANCING = {
 
 def financing_page(d, root_class):
     left = [
+        T.mobile_photo(d["rail"]),
         check_cards("WHY FINANCE", "The right fix, without draining savings.", d["why"]),
         checks_only("WHAT QUALIFIES", "Finance more than just new systems.", d["qualifies"]),
         T.process(d["process"], eyebrow="HOW IT WORKS"),
         lenders_panel(d["lenders"]),
-        # with_photo: the rail is hidden under 810px, so this is the only place the
-        # install photo appears on mobile.
-        T.mobile_inline_rail(d, with_photo=True),
+        T.mobile_inline_rail(d),
         T.faq(d["faq"], d["faqEyebrow"], h2=None),
     ]
     body = f'''{financing_hero(d)}

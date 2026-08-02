@@ -602,5 +602,34 @@ JS = """
     }, {passive:true});
   });
 })();
+
+/* --- FAQ accordions ------------------------------------------------------
+   The generated pages carry this behaviour inside their embed script, and the
+   self-hosted shell strips that script because the rest of it is iframe
+   plumbing (see shell._strip_embed). Without a handler here every answer but
+   the first stays shut on every page. Delegated from the document so it covers
+   any FAQ block on any page, in its own IIFE so a page without the header
+   still gets it. */
+(function(){
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('.xsp-qa > button') : null;
+    if (!btn) return;
+    var row = btn.parentElement;
+    var group = row.closest('.xsp-faq') || document;
+    var wasOpen = row.classList.contains('open');
+    group.querySelectorAll('.xsp-qa').forEach(function(r){
+      r.classList.remove('open');
+      var b = r.querySelector('button'), t = r.querySelector('.tog');
+      if (b) b.setAttribute('aria-expanded', 'false');
+      if (t) t.textContent = '+';
+    });
+    if (!wasOpen) {
+      row.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+      var tog = row.querySelector('.tog');
+      if (tog) tog.textContent = '−';
+    }
+  });
+})();
 </script>
 """

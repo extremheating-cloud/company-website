@@ -542,19 +542,25 @@ def hero_detail(d):
 </div>'''
 
 def hero_sub(d):
+    """Same anatomy as hero_detail: booking card in the hero, overhanging the section
+    below, and the CTA pair in the copy column reduced to a mobile fallback for when
+    the card is hidden. The sub pages used to be the one page type without the card
+    in the hero — it lived inline in the rail, so it never overhung anything."""
+    label = d.get("scheduleLabel", "Schedule Service")
     return f'''<div class="xsp-hero sub">
   <div class="xsp-hero-mark"><img src="{X_MARK}" alt=""></div>
-  <div class="xsp-hero-grid nocard">
+  <div class="xsp-hero-grid">
     <div>
       {crumbs(d["breadcrumb"])}
       {h1(d["h1"], d["h1Highlight"])}
       <p class="xsp-intro">{d["intro"]}</p>
-      <div class="xsp-hero-ctas">
-        {schedule_btn(d.get("scheduleLabel", "Schedule Service"), "xsp-cta js-schedule")}
+      <div class="xsp-hero-ctas xsp-mb">
+        {schedule_btn(label, "xsp-cta js-schedule")}
         <a class="xsp-cta-outline" href="{PHONE_TEL}">Call Now</a>
       </div>
       {chips(d.get("heroChips", SUB_CHIPS))}
     </div>
+    <div class="xsp-bookcol">{booking_card(d["bookingCard"], schedule_label=label)}</div>
   </div>
 </div>'''
 
@@ -690,21 +696,22 @@ def related(rel):
   <div class="xsp-rel-grid">{cards}</div>
 </div></div>'''
 
-def mobile_inline_rail(d, with_photo=True):
-    """2b: photo + financing/x-plan promos flow inline after Process on mobile.
-
-    The rail is display:none under 810px, so a rail photo is desktop-only unless it
-    is repeated here. This defaulted off while pages were pasted into Framer by hand
-    and flipping it meant re-pasting ~30 of them; the site is generated now, so every
-    page with a rail photo shows it on a phone too. Pass with_photo=False for a page
-    whose rail image only makes sense beside the copy.
-    """
-    parts = []
-    if with_photo and d["rail"].get("photo"):
-        parts.append(photo_slot("", d["rail"]["photo"], d["rail"].get("photoAlt", ""),
-                                d["rail"].get("photoPos")))
-    parts += [promo(k) for k in d["rail"]["promos"]]
+def mobile_inline_rail(d):
+    """2b: the financing/x-plan promos flow inline after Process on mobile, where the
+    rail itself is display:none."""
+    parts = [promo(k) for k in d["rail"]["promos"]]
     return f'<div class="xsp-mbrail xsp-mb">{"".join(parts)}</div>'
+
+def mobile_photo(r):
+    """The rail photo's mobile home: the top of the body, directly under the pill nav.
+    It rode along with the promos for a while, which dropped it halfway down the page
+    between two text sections — it read as an interruption rather than as the page's
+    image."""
+    if not r.get("photo"):
+        return ""
+    return ('<div class="xsp-mbphoto xsp-mb">'
+            + photo_slot("", r["photo"], r.get("photoAlt", ""), r.get("photoPos"))
+            + "</div>")
 
 # ------------------------------------------------------------ assemblers
 def page_shell(root_class, body):
@@ -717,7 +724,7 @@ def page_shell(root_class, body):
 
 def detail_page(d, root_class):
     """Tier 2 — detail template (2a/2b). Optional pillNav → 2e combo."""
-    left = [checklist(d["symptoms"])]
+    left = [mobile_photo(d["rail"]), checklist(d["symptoms"])]
     if d.get("whatWeDo"):
         left.append(what_we_do(d["whatWeDo"]))
     left.append(process(d["process"]))
@@ -735,22 +742,19 @@ def detail_page(d, root_class):
 
 def sub_page(d, root_class):
     """Tier 3 — sub-page template (2d)."""
-    left = [checklist(d["symptoms"])]
+    left = [mobile_photo(d["rail"]), checklist(d["symptoms"])]
     left.append(process(d["process"]))
     if d.get("decision"):
         left.append(decision_card(d["decision"]))
     left.append(mobile_inline_rail(d))
     left.append(faq(d["faq"], d["faqEyebrow"]))
-    card = booking_card(d["bookingCard"], inflow=True,
-                        schedule_label=d.get("scheduleLabel", "Schedule Service"))
-    # Photo leads the rail, above the booking card — the same order the detail pages
-    # use. At the bottom it was below the fold on most of these pages and read as an
-    # afterthought.
+    # The booking card moved into the hero (see hero_sub), so the rail is photo first
+    # then the promo and sibling links — the same rail the detail pages carry.
     photo = ""
     if d["rail"].get("photo"):
         photo = photo_slot("", d["rail"]["photo"], d["rail"].get("photoAlt", ""),
                            d["rail"].get("photoPos"))
-    rail_html = f'''<aside class="xsp-rail flush">{photo}{card}{promo(d["rail"]["promos"][0])}{sibling_links(d["siblings"])}</aside>'''
+    rail_html = f'''<aside class="xsp-rail flush">{photo}{promo(d["rail"]["promos"][0])}{sibling_links(d["siblings"])}</aside>'''
     body = f'''{hero_sub(d)}
 {pill_nav(d["pillNav"])}
 <div class="xsp-bodygrid">

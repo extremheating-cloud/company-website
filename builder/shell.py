@@ -26,6 +26,9 @@ font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto
 overflow-x:hidden}
 img{max-width:100%}
 main{display:block}
+/* The header is sticky, so a hash link would otherwise land its target underneath
+   it. The embed script measured this at jump time; standalone it is one rule. */
+[id]{scroll-margin-top:96px}
 :where(a,button,input,summary):focus-visible{outline:3px solid #61BC47;outline-offset:2px}
 .skip{position:absolute;left:-9999px;top:0;background:#fff;color:#5F2980;padding:12px 18px;
 font-weight:800;z-index:1000;border-radius:0 0 10px 0}
