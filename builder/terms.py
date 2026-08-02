@@ -283,7 +283,7 @@ def summary():
     bullets = [
         "Payment is due upon completion unless otherwise stated in writing.",
         "Additional work outside the listed scope requires written approval.",
-        "Standard workmanship and material warranty is one year unless otherwise stated in writing.",
+        "Workmanship and materials are warranted for one year unless otherwise stated in writing.",
         "Manufacturer warranties may apply separately to parts and equipment.",
         "Extreme's liability is limited to the amount paid under the applicable estimate or invoice.",
         "Referral rewards require the referring customer to be named when the job is booked.",
@@ -295,8 +295,8 @@ def summary():
   <h2>Please review these Terms carefully.</h2>
   <p>This page outlines payment expectations, warranty limits, property access, liability limits,
   and other conditions that apply to work performed by {ENTITY_SCOPE}. Heating and cooling work is
-  performed by {ENTITY}; plumbing work is performed by {ENTITY_PLUMBING}. These Terms also set out
-  the terms that govern the Extreme Rewards referral program and X-Plan membership.</p>
+  performed by {ENTITY}; plumbing work is performed by {ENTITY_PLUMBING}. These Terms also govern
+  the Extreme Rewards referral program and X-Plan membership.</p>
   <ul>{lis}</ul>
   <div class="xtm-note"><b>Note:</b> Drain cleaning, snake, and roto services are not warranted
   unless specifically stated in writing. Water-related HVAC issues and resulting property damage
@@ -308,8 +308,8 @@ def summary():
 def contact():
     return f'''<div class="xtm-contact">
   <div>
-    <div class="t">Contact Our Team</div>
-    <div class="d">Questions about these terms can be directed to our team before service is authorized.</div>
+    <div class="t">Questions about any of this?</div>
+    <div class="d">Call us before you authorize work and we'll walk through anything here that isn't clear.</div>
   </div>
   <a class="xsp-cta" href="{T.PHONE_TEL}">Call {T.PHONE_DISPLAY}</a>
 </div>'''

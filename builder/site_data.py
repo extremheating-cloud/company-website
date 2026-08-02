@@ -248,9 +248,12 @@ XPLAN = {
         # benefit list or a card body, never in an h1, an h2 or a hero.
         "Member service calls: $77 vs $97 · $177 vs $197 after hours",
     ],
-    "zeroRisk": ("100% of the investment of your X-Plan membership in consecutive years "
-                 "is applied toward your end-of-life equipment replacement — up to "
-                 "$2,500 or 10 years."),
+    # Both accrual conditions have to survive any rewording: shell.n_xplan_service()
+    # greps this string for "consecutive" and "$2,500" and drops the whole sentence from
+    # the schema rather than publish half a promise. Keep both words literal.
+    "zeroRisk": ("Stay a member in consecutive years and every dollar you have paid comes "
+                 "off the cost of replacing that system at end of life, up to $2,500 or "
+                 "10 years, whichever comes first."),
 }
 
 # Extreme Rewards is two numbers and nothing else.

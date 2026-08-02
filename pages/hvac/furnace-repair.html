@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><a href="/furnace-heating">Furnace & Heating</a><span class="sep">›</span><span class="cur">Repair</span></div>
       <h1 class="xsp-h1">Furnace repair in <em>Dayton & Cincinnati</em>, 24/7.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing repairs gas and electric furnaces across the Dayton and Cincinnati, Ohio metros. No-heat calls are prioritized, and every repair is quoted flat before work begins and safety-checked afterward. The company offers 24/7 emergency service and 90% same-day service. Licensed and insured technicians handle every call, and 25,000+ jobs have been completed.</p></div>
+      <div class="xsp-answer" id="answer"><p>No heat? We repair gas and electric furnaces across Dayton and Cincinnati, and no-heat calls go out ahead of everything else. You get a flat price before we start, a safety check after, and an emergency line answered 24/7.</p></div>
       <p class="xsp-intro">No heat is an emergency in an Ohio winter. We diagnose fast, price upfront, and repair every make and model — 24/7.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Repair</a>
@@ -477,40 +535,40 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">Watch for these warning signs.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Blowing cold or lukewarm air</div><div class="xsp-check"><span class="c">✓</span>Short cycling on and off</div><div class="xsp-check"><span class="c">✓</span>Yellow or flickering burner flame</div><div class="xsp-check"><span class="c">✓</span>Burning or musty smells</div><div class="xsp-check"><span class="c">✓</span>Banging or scraping sounds</div><div class="xsp-check"><span class="c">✓</span>Heating bills creeping up</div></div>
   <div class="xsp-callout safety"><b>Safety first:</b> smell gas or suspect carbon monoxide? Leave the house first. Call the gas utility from outside, then call <a href="tel:18445847399">(844) 584-7399</a>. The emergency line is answered 24/7.</div>
-</div><div class="xsp-section"><h2 class="xsp-h2">Why is my furnace blowing cold air?</h2><p class="xsp-prose">Cold air from a running furnace usually means the burners are not lighting or are shutting down early. The most common causes are a dirty flame sensor, a failed ignitor, a blocked condensate drain on a high-efficiency unit, or a thermostat left on Fan rather than Auto.</p><h3 class="xsp-h3">The thermostat check that costs nothing</h3><p class="xsp-prose">A <a href="/thermostat">thermostat</a> set to Fan runs the blower constantly, whether the burners are lit or not, which feels exactly like a furnace blowing cold air. Set it to Auto first. That single switch ends a fair number of no-heat calls before anyone is dispatched.</p></div><div class="xsp-section"><h2 class="xsp-h2">What can I check before calling for furnace repair?</h2><p class="xsp-prose">A handful of checks take about five minutes and fix a real share of no-heat calls. If none of them work, the fault is inside the furnace and needs a technician. None of them involve opening the gas train or the burner compartment.</p><h3 class="xsp-h3">The five-minute checklist</h3><p class="xsp-prose">✓ Thermostat set to Heat, set above room temperature, and set to Auto rather than Fan<br>✓ Thermostat batteries, if it takes them<br>✓ The furnace breaker at the panel, and the switch on the furnace itself, which looks like a light switch and gets flipped by accident<br>✓ The air filter, held up to a light. A filter that blocks light will shut a furnace down on a high-limit trip<br>✓ Supply registers and return grilles open and unblocked by furniture or rugs</p><p class="xsp-prose">These are given away on purpose. Someone who fixes their own no-heat call in five minutes tends to call Extreme Heating, Air, Plumbing when the next one is not so simple.</p></div><div class="xsp-section" id="emergency-or-wait"><div class="xsp-eyebrow">TRIAGE</div><h2 class="xsp-h2">Is this a 24/7 emergency or can it wait?</h2><p class="xsp-prose">Some furnace symptoms are a safety problem and some are a scheduling problem. Gas smell, a sounding carbon monoxide alarm, and no heat with outdoor temperatures below freezing are the three that should never wait for morning.</p><p class="xsp-prose">If the house heats with a heat pump rather than a furnace, the symptoms read differently — <a href="/heat-pump-repair">heat pump repair</a> covers what each one usually means.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing treats a gas smell, a sounding carbon monoxide alarm, and no heat below freezing as 24/7 emergencies across the Dayton and Cincinnati metros.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Furnace symptoms: what needs a 24/7 call and what can wait"><table class="xsp-table"><caption>Furnace symptoms: what needs a 24/7 call and what can wait</caption><thead><tr><th scope="col">What you are seeing</th><th scope="col">Call 24/7 now</th><th scope="col">Can wait for business hours</th></tr></thead><tbody><tr><th scope="row">Gas smell anywhere in the house</th><td>Yes. Leave the house first, then call from outside</td><td>No</td></tr><tr><th scope="row">Carbon monoxide alarm sounding</th><td>Yes. Leave the house, call 911, then call for service</td><td>No</td></tr><tr><th scope="row">No heat with outdoor temperatures below freezing</th><td>Yes</td><td>No</td></tr><tr><th scope="row">Yellow or flickering burner flame</th><td>Yes. Switch the furnace off first</td><td>No</td></tr><tr><th scope="row">Water pooling at the base of a high-efficiency furnace</th><td>Yes, if the furnace has shut down</td><td>Yes, if the furnace is still running</td></tr><tr><th scope="row">Furnace short cycling while the house stays warm</th><td>No</td><td>Yes, book the next business day</td></tr><tr><th scope="row">Burning smell in the first hour of the heating season</th><td>No</td><td>Yes, if it clears within an hour</td></tr><tr><th scope="row">Rattle or squeal with the heat still working</th><td>No</td><td>Yes</td></tr><tr><th scope="row">Heating bill climbing with no change in comfort</th><td>No</td><td>Yes</td></tr></tbody></table></div></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">Why is my furnace blowing cold air?</h2><p class="xsp-prose">Cold air from a running furnace usually means the burners aren't lighting, or they're shutting down early. Most often it's a dirty flame sensor, a failed ignitor, a blocked condensate drain, or a thermostat left on Fan instead of Auto.</p><h3 class="xsp-h3">The thermostat check that costs nothing</h3><p class="xsp-prose">A <a href="/thermostat">thermostat</a> set to Fan runs the blower constantly whether the burners are lit or not, which feels exactly like a furnace blowing cold air. Flip it to Auto first. That one switch ends a fair number of no-heat calls before anyone gets dispatched.</p></div><div class="xsp-section"><h2 class="xsp-h2">What can I check before calling for furnace repair?</h2><p class="xsp-prose">A few checks take five minutes and fix a real share of no-heat calls. If none of them work, the fault is inside the furnace and needs a tech. None of them involve opening the gas train or the burner compartment.</p><h3 class="xsp-h3">The five-minute checklist</h3><p class="xsp-prose">✓ Thermostat set to Heat, set above room temperature, and set to Auto rather than Fan<br>✓ Thermostat batteries, if it takes them<br>✓ The furnace breaker at the panel, and the switch on the furnace itself, which looks like a light switch and gets flipped by accident<br>✓ The air filter, held up to a light. A filter that blocks light will shut a furnace down on a high-limit trip<br>✓ Supply registers and return grilles open and unblocked by furniture or rugs</p><p class="xsp-prose">We give these away on purpose. Someone who fixes their own no-heat call in five minutes tends to call us when the next one isn't so simple.</p></div><div class="xsp-section" id="emergency-or-wait"><div class="xsp-eyebrow">TRIAGE</div><h2 class="xsp-h2">Is this a 24/7 emergency or can it wait?</h2><p class="xsp-prose">Some furnace symptoms are a safety problem and some are a scheduling problem. A gas smell, a carbon monoxide alarm going off, and no heat below freezing are the three that should never wait for morning.</p><p class="xsp-prose">If the house heats with a heat pump rather than a furnace, the symptoms read differently — <a href="/heat-pump-repair">heat pump repair</a> covers what each one usually means.</p><p class="xsp-takeaway">A gas smell, a carbon monoxide alarm going off, and no heat below freezing are 24/7 calls. Most of what's left on this list can wait for business hours.</p><p class="xsp-tablelabel" id="tbl-furnace-symptoms-what-needs-a-24-7-call-and-what">Furnace symptoms: what needs a 24/7 call and what can wait</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-furnace-symptoms-what-needs-a-24-7-call-and-what"><table class="xsp-table" role="table" aria-labelledby="tbl-furnace-symptoms-what-needs-a-24-7-call-and-what"><thead><tr><th scope="col">What you are seeing</th><th scope="col">Call 24/7 now</th><th scope="col">Can wait for business hours</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">Gas smell anywhere in the house</th><td role="cell" data-label="Call 24/7 now"><span>Yes. Leave the house first, then call from outside</span></td><td role="cell" data-label="Can wait for business hours"><span>No</span></td></tr><tr role="row"><th scope="row" role="rowheader">Carbon monoxide alarm sounding</th><td role="cell" data-label="Call 24/7 now"><span>Yes. Leave the house, call 911, then call for service</span></td><td role="cell" data-label="Can wait for business hours"><span>No</span></td></tr><tr role="row"><th scope="row" role="rowheader">No heat with outdoor temperatures below freezing</th><td role="cell" data-label="Call 24/7 now"><span>Yes</span></td><td role="cell" data-label="Can wait for business hours"><span>No</span></td></tr><tr role="row"><th scope="row" role="rowheader">Yellow or flickering burner flame</th><td role="cell" data-label="Call 24/7 now"><span>Yes. Switch the furnace off first</span></td><td role="cell" data-label="Can wait for business hours"><span>No</span></td></tr><tr role="row"><th scope="row" role="rowheader">Water pooling at the base of a high-efficiency furnace</th><td role="cell" data-label="Call 24/7 now"><span>Yes, if the furnace has shut down</span></td><td role="cell" data-label="Can wait for business hours"><span>Yes, if the furnace is still running</span></td></tr><tr role="row"><th scope="row" role="rowheader">Furnace short cycling while the house stays warm</th><td role="cell" data-label="Call 24/7 now"><span>No</span></td><td role="cell" data-label="Can wait for business hours"><span>Yes, book the next business day</span></td></tr><tr role="row"><th scope="row" role="rowheader">Burning smell in the first hour of the heating season</th><td role="cell" data-label="Call 24/7 now"><span>No</span></td><td role="cell" data-label="Can wait for business hours"><span>Yes, if it clears within an hour</span></td></tr><tr role="row"><th scope="row" role="rowheader">Rattle or squeal with the heat still working</th><td role="cell" data-label="Call 24/7 now"><span>No</span></td><td role="cell" data-label="Can wait for business hours"><span>Yes</span></td></tr><tr role="row"><th scope="row" role="rowheader">Heating bill climbing with no change in comfort</th><td role="cell" data-label="Call 24/7 now"><span>No</span></td><td role="cell" data-label="Can wait for business hours"><span>Yes</span></td></tr></tbody></table></div></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A repair visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
-    <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — no-heat calls get priority, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
-    <div><div class="t">Diagnose & quote upfront</div><div class="d">We test the system, explain what failed, and price the fix before any work begins.</div></div></div><div class="xsp-step"><div class="n">03</div>
+    <div><div class="t">Book in minutes</div><div class="d">Call or book online. No-heat calls get priority, and most are same day.</div></div></div><div class="xsp-step"><div class="n">02</div>
+    <div><div class="t">Diagnose & quote upfront</div><div class="d">We test the system, tell you what failed, and price the fix before anything starts.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Fixed right, safety-checked</div><div class="d">Every repair ends with a full safety check — heat exchanger, venting, and CO included.</div></div></div></div>
 </div><div class="xsp-decision">
   <div class="t">Repair or replace?</div>
   <div class="d">If your furnace is 15+ years old and the repair is major, replacement often wins on cost. We'll give you both numbers — no pressure.</div>
   <a href="/furnace-installation">Furnace Installation →</a>
-</div><div class="xsp-section"><h2 class="xsp-h2">What does a furnace repair visit include?</h2><p class="xsp-prose">A technician diagnoses the failure, explains what failed in plain terms, and prices the repair before touching it. Every repair ends with a full safety check covering the heat exchanger, the venting, and carbon monoxide readings, whether or not the original complaint was safety-related.</p></div><div class="xsp-section" id="repair-or-replace"><div class="xsp-eyebrow">DECIDING</div><h2 class="xsp-h2">Should I repair or replace my furnace?</h2><p class="xsp-prose">Two things settle it: how old the furnace is, and what a combustion safety check finds at the heat exchanger. Under 15 years old with an intact heat exchanger, repair usually wins. A cracked heat exchanger is never repaired, and on a furnace of that age the <a href="/furnace-installation">replacement</a> is the whole unit.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing replaces rather than repairs a furnace once it is 15 years or older and the repair quote approaches a third of replacement cost.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Repair or replace a furnace: what decides it"><table class="xsp-table"><caption>Repair or replace a furnace: what decides it</caption><thead><tr><th scope="col">Factor</th><th scope="col">Repair usually makes sense when</th><th scope="col">Replacement usually makes sense when</th></tr></thead><tbody><tr><th scope="row">System age</th><td>Under 15 years old</td><td>15 years or older</td></tr><tr><th scope="row">Heat exchanger</th><td>Intact and passing a combustion safety check</td><td>Cracked. A cracked heat exchanger is replaced, never repaired</td></tr><tr><th scope="row">Repair cost</th><td>Well below a third of replacement cost</td><td>At or above roughly a third of replacement cost</td></tr><tr><th scope="row">Breakdown history</th><td>First failure in several seasons</td><td>Second or third no-heat call in one winter</td></tr><tr><th scope="row">Efficiency</th><td>Furnace is 90% AFUE or higher</td><td>Furnace is an older 60% to 70% AFUE model</td></tr><tr><th scope="row">Parts</th><td>Still available and inside the manufacturer warranty</td><td>Obsolete, or out of warranty on parts and labor</td></tr><tr><th scope="row">Comfort</th><td>One room or one symptom affected</td><td>Uneven heat throughout the house</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">How do I book furnace repair in Dayton or Cincinnati?</h2><p class="xsp-prose">Furnace repair is booked by phone at <a href="tel:18445847399">(844) 584-7399</a> or online. The emergency line runs 24/7, every day of the year, and no-heat calls are dispatched ahead of routine work. The office is staffed Monday to Friday, 8:00 AM to 5:00 PM.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/maintenance">
+</div><div class="xsp-section"><h2 class="xsp-h2">What does a furnace repair visit include?</h2><p class="xsp-prose">Your tech finds the failure, explains it in plain terms, and prices the repair before touching it. Every visit ends with a safety check — heat exchanger, venting and carbon monoxide readings — whether or not that was what you called about.</p></div><div class="xsp-section" id="repair-or-replace"><div class="xsp-eyebrow">DECIDING</div><h2 class="xsp-h2">Should I repair or replace my furnace?</h2><p class="xsp-prose">Two things settle it: how old the furnace is, and what a combustion safety check finds at the heat exchanger. Under 15 with an intact exchanger, repair usually wins. A cracked heat exchanger is never repaired, so at that age the <a href="/furnace-installation">replacement</a> is the whole unit.</p><p class="xsp-takeaway">Once a furnace is 15 or older and the repair quote is closing in on a third of replacement cost, we'll tell you to replace it.</p><p class="xsp-tablelabel" id="tbl-repair-or-replace-a-furnace-what-decides-it">Repair or replace a furnace: what decides it</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-repair-or-replace-a-furnace-what-decides-it"><table class="xsp-table" role="table" aria-labelledby="tbl-repair-or-replace-a-furnace-what-decides-it"><thead><tr><th scope="col">Factor</th><th scope="col">Repair usually makes sense when</th><th scope="col">Replacement usually makes sense when</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">System age</th><td role="cell" data-label="Repair usually makes sense when"><span>Under 15 years old</span></td><td role="cell" data-label="Replacement usually makes sense when"><span>15 years or older</span></td></tr><tr role="row"><th scope="row" role="rowheader">Heat exchanger</th><td role="cell" data-label="Repair usually makes sense when"><span>Intact and passing a combustion safety check</span></td><td role="cell" data-label="Replacement usually makes sense when"><span>Cracked. A cracked heat exchanger is replaced, never repaired</span></td></tr><tr role="row"><th scope="row" role="rowheader">Repair cost</th><td role="cell" data-label="Repair usually makes sense when"><span>Well below a third of replacement cost</span></td><td role="cell" data-label="Replacement usually makes sense when"><span>At or above roughly a third of replacement cost</span></td></tr><tr role="row"><th scope="row" role="rowheader">Breakdown history</th><td role="cell" data-label="Repair usually makes sense when"><span>First failure in several seasons</span></td><td role="cell" data-label="Replacement usually makes sense when"><span>Second or third no-heat call in one winter</span></td></tr><tr role="row"><th scope="row" role="rowheader">Efficiency</th><td role="cell" data-label="Repair usually makes sense when"><span>Furnace is 90% AFUE or higher</span></td><td role="cell" data-label="Replacement usually makes sense when"><span>Furnace is an older 60% to 70% AFUE model</span></td></tr><tr role="row"><th scope="row" role="rowheader">Parts</th><td role="cell" data-label="Repair usually makes sense when"><span>Still available and inside the manufacturer warranty</span></td><td role="cell" data-label="Replacement usually makes sense when"><span>Obsolete, or out of warranty on parts and labor</span></td></tr><tr role="row"><th scope="row" role="rowheader">Comfort</th><td role="cell" data-label="Repair usually makes sense when"><span>One room or one symptom affected</span></td><td role="cell" data-label="Replacement usually makes sense when"><span>Uneven heat throughout the house</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">How do I book furnace repair?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or book online. The emergency line runs 24/7, every day of the year, and we send no-heat calls out ahead of routine work. The office is staffed Monday to Friday, 8:00 AM to 5:00 PM.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Plus a 5-year warranty on repairs and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">FURNACE QUESTIONS</div>
-  <h2 class="xsp-h2">What do homeowners ask before booking furnace repair?</h2>
+  <h2 class="xsp-h2">What should I know before booking furnace repair?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
     <button type="button" aria-expanded="true"><span>Do you repair furnaces at night and on weekends?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Yes. Extreme Heating, Air, Plumbing runs 24/7 emergency service every day of the year across the Dayton and Cincinnati metros. No-heat calls in freezing weather are dispatched ahead of routine work.</div>
+    <div class="a">Yes. The emergency line runs 24/7 across the Dayton and Cincinnati metros, every day of the year. In freezing weather we send no-heat calls out ahead of routine work.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Do you repair all furnace brands?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Yes. Gas, electric, and high-efficiency furnaces from every major manufacturer, regardless of who installed the system.</div>
+    <div class="a">Yes. Gas, electric and high-efficiency furnaces from every major manufacturer, whoever installed the system.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Is a yellow pilot flame dangerous?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">It can be. A healthy burner flame burns blue. Yellow or flickering can signal incomplete combustion, which produces carbon monoxide. Switch the furnace off and have it checked before running it again.</div>
+    <div class="a">It can be. A healthy burner flame burns blue. Yellow or flickering can mean incomplete combustion, which produces carbon monoxide. Shut the furnace off and have it checked before you run it again.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>My furnace turns on and off every few minutes. What causes that?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Short cycling. The most common causes are a clogged air filter, a blocked return, a failing flame sensor, or a furnace that is oversized for the house. A clogged filter is the one a homeowner can rule out in a minute.</div>
+    <div class="a">That's short cycling. Usually a clogged air filter, a blocked return, a failing flame sensor, or a furnace that's oversized for the house. The filter is the one you can rule out in a minute.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Water is pooling under my furnace. Is that normal?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Not normal, but common on high-efficiency condensing furnaces. Those units produce condensate, and a blocked drain line or a failed condensate pump puts that water on the floor and usually shuts the furnace down on a safety switch.</div>
+    <div class="a">Not normal, but common on high-efficiency condensing furnaces. They produce condensate, and a blocked drain line or a failed pump puts that water on the floor — usually tripping a safety switch and shutting the furnace down.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Can I keep running a furnace with a cracked heat exchanger?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">No. A cracked heat exchanger can put combustion gases, including carbon monoxide, into the air the house breathes. A <a href="/inspection">combustion safety check</a> is what confirms a crack, and the furnace should be shut off until it has been done. A cracked exchanger is replaced rather than repaired.</div>
+    <div class="a">No. A crack can put combustion gases, including carbon monoxide, into the air your house breathes. A <a href="/inspection">combustion safety check</a> is what confirms it, and the furnace should stay off until that's done. A cracked exchanger gets replaced, not repaired.</div>
   </div></div>
 </div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
   <aside class="xsp-rail flush"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/service/furnace-repair-open.jpg" alt="An older gas furnace opened up during a repair call, burner compartment and flame sensor exposed" style="object-position:50% 60%" width="825" height="1100" fetchpriority="high" decoding="async"></div><a class="xsp-promo mint" href="/maintenance">

@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><a href="/plumbing/water-heater/overview">Water Heater Services</a><span class="sep">›</span><span class="cur">Installation</span></div>
       <h1 class="xsp-h1">Water heater installation and replacement in <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs tank and tankless water heaters in homes across the Dayton and Cincinnati, Ohio metros, sized to a household's actual hot water demand. Every installation is set to code, tested at each tap, and the old unit is removed. Common tank sizes are stocked, so most replacements finish the same day.</p></div>
+      <div class="xsp-answer" id="answer"><p>Tank or tankless, sized to what your household actually uses at its busiest. Set to code, tested at every tap, old unit hauled away. Common sizes are on the shelf, so most replacements finish the same day.</p></div>
       <p class="xsp-intro">Replacing a tank before it goes beats mopping a utility room after it does. Sized to your household, set to code, old unit hauled away.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Estimate</a>
@@ -477,7 +535,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">Signs a new unit makes sense.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Tank is 10+ years old</div><div class="xsp-check"><span class="c">✓</span>Rusty water from hot taps</div><div class="xsp-check"><span class="c">✓</span>Water pooling at the base</div><div class="xsp-check"><span class="c">✓</span>Repairs getting frequent</div><div class="xsp-check"><span class="c">✓</span>Never enough hot water</div><div class="xsp-check"><span class="c">✓</span>Thinking about tankless</div></div>
   <div class="xsp-callout">Replacing before failure beats a flooded utility room. Call <a href="tel:18445847399">(844) 584-7399</a> for honest numbers.</div>
-</div><div class="xsp-section"><h2 class="xsp-h2">When should I replace my water heater instead of repairing it?</h2><p class="xsp-prose">A tank past ten years, a unit leaking anywhere on the shell, rusty hot water, repeat repairs in a single year, or a household that has outgrown its capacity. Any one of those makes replacement the better money. Replacing ahead of a failure also means choosing the unit rather than taking what is in stock at 9 p.m. Where the fault is a part rather than the tank, <a href="/plumbing/water-heater/repair">repairing it</a> is cheaper.</p></div><div class="xsp-section"><h2 class="xsp-h2">What size water heater do I need?</h2><p class="xsp-prose">Sizing works off peak demand. A household of one or two usually lands on 30 to 40 gallons, three or four on 40 to 50, and five or more on 50 to 80 gallons or a tankless unit. Simultaneous showers, a large tub, or a high-flow shower head all push the number up.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing sizes replacement water heaters against a household's peak hot water demand rather than against the capacity of the unit being removed.</p></div><div class="xsp-section"><h2 class="xsp-h2">Should I switch to tankless?</h2><p class="xsp-prose">Tankless makes sense when you are running out of hot water, when the utility room space matters, or when the existing gas and venting are already being opened up. It costs more to install because it needs <a href="/plumbing/gas-line/installation">a larger gas line</a> and dedicated venting. In a home with adequate hot water, a tank is usually the better value, and the <a href="/plumbing/water-heater/overview">tank and tankless comparison</a> lays both out.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does a water heater installation include?</h2><p class="xsp-prose">Draining and removing the old unit, checking the gas line, venting, electrical and water connections against current code, setting the new unit with a new expansion tank and shut-off where required, testing at every tap, and hauling the old heater away. Permits are pulled where the local jurisdiction requires one.</p><p class="xsp-prose">Every water heater installed by Extreme Heating, Air, Plumbing in the Dayton and Cincinnati metros is set to code, tested at each tap, and leaves with the old unit removed, under Ohio plumbing license #13557.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">When should I replace my water heater instead of repairing it?</h2><p class="xsp-prose">A tank past ten years, a unit leaking anywhere on the shell, rusty hot water, repeat repairs in a single year, or a household that has outgrown its capacity. Any one of those makes replacement the better money. Replacing ahead of a failure also means choosing the unit rather than taking what is in stock at 9 p.m. Where the fault is a part rather than the tank, <a href="/plumbing/water-heater/repair">repairing it</a> is cheaper.</p></div><div class="xsp-section"><h2 class="xsp-h2">What size water heater do I need?</h2><p class="xsp-prose">Sizing works off peak demand. A household of one or two usually lands on 30 to 40 gallons, three or four on 40 to 50, and five or more on 50 to 80 gallons or a tankless unit. Simultaneous showers, a large tub, or a high-flow shower head all push the number up.</p><p class="xsp-prose">We size against that peak, not against whatever is being carried out. Plenty of houses have been living with an undersized tank for years without knowing it.</p></div><div class="xsp-section"><h2 class="xsp-h2">Should I switch to tankless?</h2><p class="xsp-prose">Tankless makes sense when you are running out of hot water, when the utility room space matters, or when the existing gas and venting are already being opened up. It costs more to install because it needs <a href="/plumbing/gas-line/installation">a larger gas line</a> and dedicated venting. In a home with adequate hot water, a tank is usually the better value, and the <a href="/plumbing/water-heater/overview">tank and tankless comparison</a> lays both out.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does a water heater installation include?</h2><p class="xsp-prose">Draining and removing the old unit, checking the gas line, venting, electrical and water connections against current code, setting the new unit with a new expansion tank and shut-off where required, testing at every tap, and hauling the old heater away. We pull the permit where your jurisdiction requires one.</p><p class="xsp-prose">All of it under Ohio plumbing license #13557, and none of it as a line item added after the fact.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
@@ -488,14 +546,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="t">Tank or tankless?</div>
   <div class="d">Tanks cost less upfront; tankless delivers endless hot water and lower bills. We'll lay out both for your home honestly.</div>
   <a href="/plumbing/water-heater/overview">Water Heater Overview →</a>
-</div><div class="xsp-section"><h2 class="xsp-h2">How long does a water heater installation take?</h2><p class="xsp-prose">A straight tank-for-tank swap is usually a few hours. A tankless conversion takes longer, because gas line sizing, venting and sometimes electrical all change. Extreme runs 90% same-day service across the Dayton and Cincinnati metros and stocks common tank sizes, so most replacements happen the day the quote is approved.</p></div><div class="xsp-section"><h2 class="xsp-h2">Is financing available on a water heater replacement?</h2><p class="xsp-prose">Yes, on qualifying installations. A water heater rarely fails on a convenient week, so monthly options exist for exactly that reason. Current terms are on our <a href="/financing-options">financing</a> page.</p></div><div class="xsp-section"><h2 class="xsp-h2">Does hard water shorten the life of a new water heater?</h2><p class="xsp-prose">Yes, and it is worth planning around here. Every municipal system in the footprint delivers at least 7 grains per gallon, and that scale settles in the tank bottom and coats electric elements. Flushing the tank annually helps, and <a href="/plumbing/water-treatment">a softener</a> helps more if the house does not already have one.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">How long does it take?</h2><p class="xsp-prose">A straight tank-for-tank swap is usually a few hours. A tankless conversion runs longer, because the gas line sizing, the venting and sometimes the electrical all change. Common tank sizes are stocked, so most replacements happen the day you approve the quote.</p></div><div class="xsp-section"><h2 class="xsp-h2">Is financing available on a water heater replacement?</h2><p class="xsp-prose">Yes, on qualifying installations. A water heater rarely fails on a convenient week, so monthly options exist for exactly that reason. Current terms are on our <a href="/financing-options">financing</a> page.</p></div><div class="xsp-section"><h2 class="xsp-h2">Does hard water shorten the life of a new water heater?</h2><p class="xsp-prose">Yes, and it is worth planning around here. Every municipal system in the footprint delivers at least 7 grains per gallon, and that scale settles in the tank bottom and coats electric elements. Flushing the tank annually helps, and <a href="/plumbing/water-treatment">a softener</a> helps more if the house does not already have one.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a></div><div>
   <div class="xsp-eyebrow">INSTALLATION QUESTIONS</div>
   <h2 class="xsp-h2">What else do homeowners ask before replacing a water heater?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
     <button type="button" aria-expanded="true"><span>Can you install a water heater the same day?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Usually. Extreme Heating, Air, Plumbing stocks common tank sizes and runs 90% same-day service across the Dayton and Cincinnati metros, so a like-for-like tank replacement often happens the day the quote is approved. Tankless conversions take longer because gas and venting are modified first.</div>
+    <div class="a">Usually. Common tank sizes are stocked, so a like-for-like swap often happens the day you approve the quote. Tankless conversions take longer, because the gas and the venting have to be changed first.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>What size water heater does a family of four need?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">Most four-person households land on a 40 to 50 gallon tank. If two showers run at the same time most mornings, size up rather than down, because recovery rate is what people actually notice.</div>

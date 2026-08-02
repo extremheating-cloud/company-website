@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><span class="cur">Water Treatment</span></div>
       <h1 class="xsp-h1">Water softeners and whole-home filtration in <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs and services water softeners, whole-home filtration and reverse osmosis systems across the Dayton and Cincinnati, Ohio metros. Local supply is drawn from limestone aquifers, so every municipal system in the footprint delivers at least 7 grains per gallon. Greene County Sanitary Engineering cut delivered hardness from 27 grains per gallon to about 8 in early 2025.</p></div>
+      <div class="xsp-answer" id="answer"><p>The water here comes out of limestone, so every municipal system around delivers at least 7 grains per gallon. We test what is actually coming out of your tap before recommending a softener, a filter or reverse osmosis.</p></div>
       <p class="xsp-intro">Softeners, filtration and reverse osmosis, sized against a tested hardness figure rather than a sales quota.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
@@ -490,14 +548,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Reverse Osmosis</span><br><span class="d">Bottle-quality drinking water from your kitchen tap.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div class="xsp-section" id="hardness"><h2 class="xsp-h2">How hard is the water in Dayton and Cincinnati?</h2><p class="xsp-prose">Every water system in this footprint pulls from limestone and dolomite formations or the Great Miami Buried Valley Aquifer, so the raw water is very hard before treatment. What comes out of your tap depends entirely on which utility you are on, and three of them changed within the last four years.</p><p class="xsp-takeaway">Greene County Sanitary Engineering reduced delivered water hardness from 27 grains per gallon to about 8 for 18,092 accounts during a changeover that ran from January to March 2025.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Delivered water hardness by system across the Extreme service area."><table class="xsp-table"><caption>Delivered water hardness by system across the Extreme service area.</caption><thead><tr><th scope="col">Water system</th><th scope="col">Communities served</th><th scope="col">Hardness delivered</th><th scope="col">Recent change</th></tr></thead><tbody><tr><th scope="row">Greene County Sanitary Engineering</th><td><a href="/locations/beavercreek">Beavercreek</a>, Beavercreek Twp, Xenia Twp, Cedarville, parts of Kettering and Centerville</td><td>About 8 grains per gallon</td><td>Cut from 27 gpg between January and March 2025</td></tr><tr><th scope="row">City of Dayton</th><td>Dayton and wholesale customers</td><td>See the current City of Dayton Water Quality Report</td><td>Lime softened, no recent change</td></tr><tr><th scope="row">Greater Cincinnati Water Works</th><td>Cincinnati, most of Hamilton County, Mason</td><td>7 to 8 grains per gallon</td><td>Stable</td></tr><tr><th scope="row">Warren County Water and Sewer</th><td>Franklin-area and Renneker systems, 30,000+ customers</td><td>About 8 grains per gallon</td><td>Cut roughly 55% by nanofiltration, 2022</td></tr><tr><th scope="row">City of Huber Heights</th><td>Huber Heights</td><td>About 7 grains per gallon</td><td>Cut from about 18 gpg by a new softening plant</td></tr><tr><th scope="row">Butler County Water and Sewer</th><td>West Chester, Liberty Twp, Fairfield, Monroe</td><td>About 7.7 grains per gallon</td><td>Stable</td></tr><tr><th scope="row">Private wells</th><td>Scattered across Greene, Warren and Miami counties</td><td>Varies widely, testing required</td><td>Wells were not affected by any utility project</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Do I need a water softener in Dayton?</h2><p class="xsp-prose">Every municipal system in this footprint delivers at least 7 grains per gallon, which is the point at which water is normally classified as hard. Whether it is worth it for your house depends on what you are seeing: <a href="/plumbing/water-heater/installation">scale on fixtures</a>, dishes that spot, <a href="/plumbing/water-heater/overview">appliances failing early</a>, and laundry that comes out stiff.</p><p class="xsp-prose">Delivered water hardness across the Dayton and Cincinnati service area runs at or above 7 grains per gallon on every municipal system Extreme Heating, Air, Plumbing works on.</p></div><div class="xsp-section"><h2 class="xsp-h2">My water got softer in 2025. Does my softener still work?</h2><p class="xsp-prose">If you are on Greene County water in Beavercreek, Beavercreek Township, Xenia Township, Cedarville, or parts of Kettering and Centerville, your supply went from 27 grains per gallon to about 8 in early 2025. A softener still programmed for 27 is now over-softening, burning through salt, and sending very low-hardness water through your pipes. It needs re-dialing, not replacing.</p><p class="xsp-prose">Water softeners in Greene County homes that were programmed before 2025 are set for 27 grains per gallon, more than three times the hardness now delivered. In most cases this is an adjustment rather than a new installation.</p></div><div class="xsp-section"><h2 class="xsp-h2">What is the difference between a softener, a filter and reverse osmosis?</h2><p class="xsp-prose">A softener removes calcium and magnesium, which is what causes scale. A whole-home filter removes chlorine, sediment and taste or odor problems at every tap. Reverse osmosis produces drinking-quality water at one fixture, usually the kitchen sink. They solve different problems and plenty of homes run two of them.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing sizes water treatment equipment from a tested hardness figure and a household's actual water use rather than from a shelf rating.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Water treatment options compared."><table class="xsp-table"><caption>Water treatment options compared.</caption><thead><tr><th scope="col">Factor</th><th scope="col">Water softener</th><th scope="col">Whole-home filtration</th><th scope="col">Reverse osmosis</th></tr></thead><tbody><tr><th scope="row">What it removes</th><td>Calcium and magnesium hardness</td><td>Chlorine, sediment, taste and odor</td><td>Dissolved solids, most contaminants</td></tr><tr><th scope="row">Where it installs</th><td>On the main line where water enters</td><td>On the main line where water enters</td><td>Under one sink, usually the kitchen</td></tr><tr><th scope="row">What it fixes</th><td>Scale, spotting, stiff laundry, early appliance failure</td><td>Chlorine smell, cloudy or discolored water</td><td>Drinking and cooking water quality</td></tr><tr><th scope="row">Service interval</th><td>Salt refills, periodic setting check</td><td>Cartridge changes on a schedule</td><td>Membrane and filter changes on a schedule</td></tr><tr><th scope="row">Best fit</th><td>Any home above 7 grains per gallon</td><td>Municipal supply with taste or odor complaints</td><td>Households buying bottled water</td></tr><tr><th scope="row">Well water</th><td>Requires testing first, iron changes the answer</td><td>Requires testing first</td><td>Common on wells after primary treatment</td></tr></tbody></table></div></div><div>
+</div><div class="xsp-section" id="hardness"><h2 class="xsp-h2">How hard is the water in Dayton and Cincinnati?</h2><p class="xsp-prose">Every water system in this footprint pulls from limestone and dolomite formations or the Great Miami Buried Valley Aquifer, so the raw water is very hard before treatment. What comes out of your tap depends entirely on which utility you are on, and three of them changed within the last four years.</p><p class="xsp-takeaway">Every municipal system across the Dayton and Cincinnati metros delivers at least 7 grains per gallon, the point at which water is classed as hard. The question is not whether your water is hard, it is whether it is costing you anything.</p><p class="xsp-tablelabel" id="tbl-water-hardness-by-community-and-what-it-means-fo">Water hardness by community, and what it means for your home.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-water-hardness-by-community-and-what-it-means-fo"><table class="xsp-table" role="table" aria-labelledby="tbl-water-hardness-by-community-and-what-it-means-fo"><thead><tr><th scope="col">If you're in</th><th scope="col">Your water runs</th><th scope="col">What that means</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader"><a href="/locations/beavercreek">Beavercreek</a>, Beavercreek Twp, Xenia Twp, Cedarville, parts of Kettering and Centerville</th><td role="cell" data-label="Your water runs"><span>About 8 grains per gallon</span></td><td role="cell" data-label="What that means"><span>Hard. Greene County cut it from 27 grains in early 2025, so scale builds far slower than it used to.</span></td></tr><tr role="row"><th scope="row" role="rowheader">Dayton and the communities it supplies wholesale</th><td role="cell" data-label="Your water runs"><span>About 7 to 8 grains per gallon</span></td><td role="cell" data-label="What that means"><span>Hard. Lime softened at the Bolton plant.</span></td></tr><tr role="row"><th scope="row" role="rowheader">Cincinnati, most of Hamilton County, Mason</th><td role="cell" data-label="Your water runs"><span>7 to 8 grains per gallon</span></td><td role="cell" data-label="What that means"><span>Hard. Greater Cincinnati Water Works, steady for years.</span></td></tr><tr role="row"><th scope="row" role="rowheader">Franklin and the Renneker service area</th><td role="cell" data-label="Your water runs"><span>About 8 grains per gallon</span></td><td role="cell" data-label="What that means"><span>Hard. Warren County cut it by roughly 55% with nanofiltration in 2022.</span></td></tr><tr role="row"><th scope="row" role="rowheader">Huber Heights</th><td role="cell" data-label="Your water runs"><span>About 7 grains per gallon</span></td><td role="cell" data-label="What that means"><span>Hard, at the low end. A new softening plant brought it down from about 18 grains.</span></td></tr><tr role="row"><th scope="row" role="rowheader">West Chester, Liberty Twp, Fairfield, Monroe</th><td role="cell" data-label="Your water runs"><span>About 7.7 grains per gallon</span></td><td role="cell" data-label="What that means"><span>Hard. Butler County Water and Sewer, steady for years.</span></td></tr><tr role="row"><th scope="row" role="rowheader">A private well in Greene, Warren or Miami County</th><td role="cell" data-label="Your water runs"><span>Varies widely</span></td><td role="cell" data-label="What that means"><span>Test before you decide anything. None of the utility softening projects changed well water.</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Do I need a water softener in Dayton?</h2><p class="xsp-prose">Every municipal system in this footprint delivers at least 7 grains per gallon, which is the point at which water is normally classified as hard. Whether it is worth it for your house depends on what you are seeing: <a href="/plumbing/water-heater/installation">scale on fixtures</a>, dishes that spot, <a href="/plumbing/water-heater/overview">appliances failing early</a>, and laundry that comes out stiff.</p><p class="xsp-prose">If you are seeing two or three of those, hardness is doing it. If you are seeing none of them, you may not need anything, and we will say so.</p></div><div class="xsp-section"><h2 class="xsp-h2">My water got softer in 2025. Does my softener still work?</h2><p class="xsp-prose">If you are on Greene County water in Beavercreek, Beavercreek Township, Xenia Township, Cedarville, or parts of Kettering and Centerville, your supply went from 27 grains per gallon to about 8 in early 2025. A softener still programmed for 27 is now over-softening, burning through salt, and sending very low-hardness water through your pipes. It needs re-dialing, not replacing.</p><p class="xsp-prose">That is an adjustment, not a new installation, and it is worth doing. Every bag of salt since early 2025 has been paying for hardness that is no longer there.</p></div><div class="xsp-section"><h2 class="xsp-h2">What is the difference between a softener, a filter and reverse osmosis?</h2><p class="xsp-prose">A softener removes calcium and magnesium, which is what causes scale. A whole-home filter removes chlorine, sediment and taste or odor problems at every tap. Reverse osmosis produces drinking-quality water at one fixture, usually the kitchen sink. They solve different problems and plenty of homes run two of them.</p><p class="xsp-takeaway">We size any of these from a tested hardness number and how much water your household actually uses, not from the rating on the box.</p><p class="xsp-tablelabel" id="tbl-water-treatment-options-compared">Water treatment options compared.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-water-treatment-options-compared"><table class="xsp-table" role="table" aria-labelledby="tbl-water-treatment-options-compared"><thead><tr><th scope="col">Factor</th><th scope="col">Water softener</th><th scope="col">Whole-home filtration</th><th scope="col">Reverse osmosis</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">What it removes</th><td role="cell" data-label="Water softener"><span>Calcium and magnesium hardness</span></td><td role="cell" data-label="Whole-home filtration"><span>Chlorine, sediment, taste and odor</span></td><td role="cell" data-label="Reverse osmosis"><span>Dissolved solids, most contaminants</span></td></tr><tr role="row"><th scope="row" role="rowheader">Where it installs</th><td role="cell" data-label="Water softener"><span>On the main line where water enters</span></td><td role="cell" data-label="Whole-home filtration"><span>On the main line where water enters</span></td><td role="cell" data-label="Reverse osmosis"><span>Under one sink, usually the kitchen</span></td></tr><tr role="row"><th scope="row" role="rowheader">What it fixes</th><td role="cell" data-label="Water softener"><span>Scale, spotting, stiff laundry, early appliance failure</span></td><td role="cell" data-label="Whole-home filtration"><span>Chlorine smell, cloudy or discolored water</span></td><td role="cell" data-label="Reverse osmosis"><span>Drinking and cooking water quality</span></td></tr><tr role="row"><th scope="row" role="rowheader">Service interval</th><td role="cell" data-label="Water softener"><span>Salt refills, periodic setting check</span></td><td role="cell" data-label="Whole-home filtration"><span>Cartridge changes on a schedule</span></td><td role="cell" data-label="Reverse osmosis"><span>Membrane and filter changes on a schedule</span></td></tr><tr role="row"><th scope="row" role="rowheader">Best fit</th><td role="cell" data-label="Water softener"><span>Any home above 7 grains per gallon</span></td><td role="cell" data-label="Whole-home filtration"><span>Municipal supply with taste or odor complaints</span></td><td role="cell" data-label="Reverse osmosis"><span>Households buying bottled water</span></td></tr><tr role="row"><th scope="row" role="rowheader">Well water</th><td role="cell" data-label="Water softener"><span>Requires testing first, iron changes the answer</span></td><td role="cell" data-label="Whole-home filtration"><span>Requires testing first</span></td><td role="cell" data-label="Reverse osmosis"><span>Common on wells after primary treatment</span></td></tr></tbody></table></div></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Test & recommend</div><div class="d">A real water test drives the recommendation — city or well.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Installed and tested</div><div class="d">We verify results at the tap and set up simple maintenance.</div></div></div></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">Will softened water taste salty?</h2><p class="xsp-prose">No. A correctly set softener adds far less sodium than people expect, and the exchange happens on the calcium, not on the flavor. If sodium is a genuine concern for a household, a reverse osmosis tap removes it entirely for drinking and cooking.</p></div><div class="xsp-section"><h2 class="xsp-h2">Does city water or well water change the recommendation?</h2><p class="xsp-prose">Completely. Municipal supply in this area is predictable, hardness is published, and the treatment question is mostly about hardness and chlorine. Wells vary street by street and can carry iron, sulfur, bacteria or nitrates, none of which a softener addresses. Well homes get tested before anyone recommends equipment.</p><p class="xsp-prose">Homes on private wells inside the Greene County service area did not receive the 2025 softening change and still draw untreated aquifer water.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does water treatment installation involve?</h2><p class="xsp-prose"><a href="/contact">A water test</a> comes first, then sizing against your household's real usage rather than a box rating. Installation ties into the main line with a bypass so the house still has water if the unit is serviced, and the result is verified at the tap before anyone leaves. Call <a href="tel:18445847399">(844) 584-7399</a> to book it with <a href="/plumbing/services">licensed Ohio plumbers</a>, under Ohio plumbing license #13557.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">Will softened water taste salty?</h2><p class="xsp-prose">No. A correctly set softener adds far less sodium than people expect, and the exchange happens on the calcium, not on the flavor. If sodium is a genuine concern for a household, a reverse osmosis tap removes it entirely for drinking and cooking.</p></div><div class="xsp-section"><h2 class="xsp-h2">Does city water or well water change the recommendation?</h2><p class="xsp-prose">Completely. Municipal supply in this area is predictable, hardness is published, and the treatment question is mostly about hardness and chlorine. Wells vary street by street and can carry iron, sulfur, bacteria or nitrates, none of which a softener addresses. Well homes get tested before anyone recommends equipment.</p><p class="xsp-prose">One thing worth knowing if you are on a well in Greene County: the 2025 softening change was a utility project. It did not touch your water at all.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does water treatment installation involve?</h2><p class="xsp-prose"><a href="/contact">A water test</a> comes first, then sizing against your household's real usage rather than a box rating. Installation ties into the main line with a bypass so the house still has water if the unit is serviced, and the result is verified at the tap before anyone leaves. Call <a href="tel:18445847399">(844) 584-7399</a> to book it with <a href="/plumbing/services">licensed Ohio plumbers</a>, under Ohio plumbing license #13557.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a><a class="xsp-promo mint" href="/specials">
   <div class="t">Plumbing specials</div><div class="d">Check out current offers on repairs, installs, and more.</div><div class="lm">View Specials →</div>

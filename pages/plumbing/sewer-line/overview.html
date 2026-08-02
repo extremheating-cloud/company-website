@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><span class="cur">Sewer Line Services</span></div>
       <h1 class="xsp-h1">Sewer line inspection, cleaning and repair in <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing inspects, cleans and repairs residential main sewer lines across the Dayton and Cincinnati, Ohio metros. Every job starts with a camera pass so the condition of the pipe is known before any work is quoted. Sewer work is performed under Ohio plumbing license #13557.</p></div>
+      <div class="xsp-answer" id="answer"><p>Backups that keep coming back, a soggy patch of lawn, sewage smell outside. We put a camera the full length of your line first, and you watch the same screen we do before anything is quoted or dug.</p></div>
       <p class="xsp-intro">Nobody should pay to dig up a yard on a guess. The camera goes in first, and the quote comes after the footage.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
@@ -493,14 +551,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Camera Inspection</span><br><span class="d">See exactly what's wrong before spending a dollar on digging.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">How do I know if my sewer line is broken?</h2><p class="xsp-prose">The signal is repetition, not severity. Backups that return weeks after a cleaning, <a href="/plumbing/clogged-drain">several fixtures slow at once</a>, sewage odor outside near the line, a patch of yard that stays soggy or greener than the rest, or a section of lawn that has sunk. One of those is worth a camera. Two is a broken line until proven otherwise.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing treats sewer backups that return within weeks of a cleaning as evidence of a structural problem in the line rather than a recurring clog.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does a sewer camera inspection show?</h2><p class="xsp-prose">A camera pushed the length of the lateral shows exactly what a plumber is dealing with: root masses at pipe joints, a belly holding standing water, offset joints where the pipe has shifted, cracks, or a full collapse. It also shows the depth and the distance from the house, which is what determines whether a repair can be done trenchless.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing runs a camera the full length of a sewer lateral before quoting any repair, so the recommendation is based on the pipe's actual condition.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Common sewer line findings and what each one calls for."><table class="xsp-table"><caption>Common sewer line findings and what each one calls for.</caption><thead><tr><th scope="col">What the camera shows</th><th scope="col">What caused it</th><th scope="col">What it needs</th></tr></thead><tbody><tr><th scope="row">Root mass at a pipe joint</th><td>Tree roots entering a clay joint</td><td>Hydro jetting, then repair or lining at that joint</td></tr><tr><th scope="row">Standing water in a low section</th><td>A belly from settled soil</td><td>Excavation and re-grading of that section</td></tr><tr><th scope="row">Offset at a joint</th><td>Ground movement or a shifted pipe</td><td>Spot repair, or lining if the offset is small</td></tr><tr><th scope="row">Grease coating the full diameter</th><td>Kitchen waste over years</td><td>Hydro jetting, then a maintenance schedule</td></tr><tr><th scope="row">Cracks along the pipe barrel</th><td>Aged clay or cast iron</td><td>Trenchless lining, or replacement</td></tr><tr><th scope="row">Full collapse, camera cannot pass</th><td>Structural failure</td><td>Excavation and replacement of that run</td></tr><tr><th scope="row">Clean, sound pipe with a soft blockage</th><td>An ordinary clog</td><td>Cleaning, no repair required</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Who is responsible for the sewer lateral, me or the city?</h2><p class="xsp-prose">In most Ohio communities the homeowner owns and maintains the lateral from the house to the connection at the public main, including the portion under the street or the tree lawn. The exact boundary and any city assistance programs vary by municipality, so it is worth confirming with your own before work begins.</p></div><div class="xsp-section"><h2 class="xsp-h2">Do you have to dig up my yard?</h2><p class="xsp-prose">Not always. Where the pipe is structurally sound enough to hold a liner, <a href="/plumbing/sewer-line/repair">trenchless methods</a> repair from access points at each end and leave the lawn between them intact. Where the line has collapsed, dropped, or bellied, the ground has to be opened. The camera tells us which before anyone commits.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">How do I know if my sewer line is broken?</h2><p class="xsp-prose">The signal is repetition, not severity. Backups that return weeks after a cleaning, <a href="/plumbing/clogged-drain">several fixtures slow at once</a>, sewage odor outside near the line, a patch of yard that stays soggy or greener than the rest, or a section of lawn that has sunk. One of those is worth a camera. Two is a broken line until proven otherwise.</p><p class="xsp-prose">A backup that comes back within weeks of a cleaning is not a clog you got unlucky with. Something in the pipe is holding it, and cleaning it again will not change that.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does a sewer camera inspection show?</h2><p class="xsp-prose">A camera pushed the length of the lateral shows exactly what a plumber is dealing with: root masses at pipe joints, a belly holding standing water, offset joints where the pipe has shifted, cracks, or a full collapse. It also shows the depth and the distance from the house, which is what determines whether a repair can be done trenchless.</p><p class="xsp-takeaway">These are the seven things the camera usually turns up, and only two of them mean digging.</p><p class="xsp-tablelabel" id="tbl-common-sewer-line-findings-and-what-each-one-cal">Common sewer line findings and what each one calls for.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-common-sewer-line-findings-and-what-each-one-cal"><table class="xsp-table" role="table" aria-labelledby="tbl-common-sewer-line-findings-and-what-each-one-cal"><thead><tr><th scope="col">What the camera shows</th><th scope="col">What caused it</th><th scope="col">What it needs</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">Root mass at a pipe joint</th><td role="cell" data-label="What caused it"><span>Tree roots entering a clay joint</span></td><td role="cell" data-label="What it needs"><span>Hydro jetting, then repair or lining at that joint</span></td></tr><tr role="row"><th scope="row" role="rowheader">Standing water in a low section</th><td role="cell" data-label="What caused it"><span>A belly from settled soil</span></td><td role="cell" data-label="What it needs"><span>Excavation and re-grading of that section</span></td></tr><tr role="row"><th scope="row" role="rowheader">Offset at a joint</th><td role="cell" data-label="What caused it"><span>Ground movement or a shifted pipe</span></td><td role="cell" data-label="What it needs"><span>Spot repair, or lining if the offset is small</span></td></tr><tr role="row"><th scope="row" role="rowheader">Grease coating the full diameter</th><td role="cell" data-label="What caused it"><span>Kitchen waste over years</span></td><td role="cell" data-label="What it needs"><span>Hydro jetting, then a maintenance schedule</span></td></tr><tr role="row"><th scope="row" role="rowheader">Cracks along the pipe barrel</th><td role="cell" data-label="What caused it"><span>Aged clay or cast iron</span></td><td role="cell" data-label="What it needs"><span>Trenchless lining, or replacement</span></td></tr><tr role="row"><th scope="row" role="rowheader">Full collapse, camera cannot pass</th><td role="cell" data-label="What caused it"><span>Structural failure</span></td><td role="cell" data-label="What it needs"><span>Excavation and replacement of that run</span></td></tr><tr role="row"><th scope="row" role="rowheader">Clean, sound pipe with a soft blockage</th><td role="cell" data-label="What caused it"><span>An ordinary clog</span></td><td role="cell" data-label="What it needs"><span>Cleaning, no repair required</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Who is responsible for the sewer lateral, me or the city?</h2><p class="xsp-prose">In most Ohio communities the homeowner owns and maintains the lateral from the house to the connection at the public main, including the portion under the street or the tree lawn. The exact boundary and any city assistance programs vary by municipality, so it is worth confirming with your own before work begins.</p></div><div class="xsp-section"><h2 class="xsp-h2">Do you have to dig up my yard?</h2><p class="xsp-prose">Not always. Where the pipe is structurally sound enough to hold a liner, <a href="/plumbing/sewer-line/repair">trenchless methods</a> repair from access points at each end and leave the lawn between them intact. Where the line has collapsed, dropped, or bellied, the ground has to be opened. The camera tells us which before anyone commits.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Fixed with proof</div><div class="d">Camera-verified before and after — you see exactly what you paid for.</div></div></div></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">What causes sewer line failure in older Dayton homes?</h2><p class="xsp-prose">Age of the pipe, mostly. A large share of <a href="/locations/dayton">Dayton's housing</a> predates 1940, and the laterals under those homes are clay tile or cast iron with mortared joints that roots find easily. Newer suburban stock in Beavercreek, Mason and West Chester is usually PVC and fails differently, more often from settling than from roots.</p><p class="xsp-prose">About 38% of Dayton's housing stock was built before 1940, and sewer laterals serving that stock are typically clay tile or cast iron with jointed connections vulnerable to root intrusion.</p></div><div class="xsp-section"><h2 class="xsp-h2">How much does sewer work cost?</h2><p class="xsp-prose">Sewer repair is the largest single plumbing project most homeowners will face, and the range is wide because depth, length and access change everything. Every job is quoted flat after the camera pass, with the footage available so you can see what you are paying to fix. Financing is available on larger sewer work.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book a sewer inspection?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or book online. If sewage is already backing up indoors, stop running water anywhere in the house first, then call. Sewage indoors is an emergency and it gets handled around the clock. Where the pipe is intact and only loaded with grease or roots, <a href="/plumbing/sewer-line/cleaning">hydro jetting</a> is the cheaper answer.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">What causes sewer line failure in older Dayton homes?</h2><p class="xsp-prose">Age of the pipe, mostly. A large share of <a href="/locations/dayton">Dayton's housing</a> predates 1940, and the laterals under those homes are clay tile or cast iron with mortared joints that roots find easily. Newer suburban stock in Beavercreek, Mason and West Chester is usually PVC and fails differently, more often from settling than from roots.</p><p class="xsp-prose">If your house predates the war and still has its original lateral, roots are the first thing we look for. It is the most common finding on that vintage of pipe.</p></div><div class="xsp-section"><h2 class="xsp-h2">How much does sewer work cost?</h2><p class="xsp-prose">Sewer repair is the largest single plumbing project most homeowners will face, and the range is wide because depth, length and access change everything. Every job is quoted flat after the camera pass, with the footage available so you can see what you are paying to fix. Financing is available on larger sewer work.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book a sewer inspection?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or book online. If sewage is already backing up indoors, stop running water anywhere in the house first, then call. Sewage indoors is an emergency and it gets handled around the clock. Where the pipe is intact and only loaded with grease or roots, <a href="/plumbing/sewer-line/cleaning">hydro jetting</a> is the cheaper answer.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a><a class="xsp-promo mint" href="/specials">
   <div class="t">Plumbing specials</div><div class="d">Check out current offers on repairs, installs, and more.</div><div class="lm">View Specials →</div>
@@ -521,7 +579,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div class="a">Every few years is reasonable for a home with mature trees or clay pipe, and a camera inspection is worth doing before buying an older house. Homes with no history of backups and modern PVC laterals rarely need routine inspection.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>How fast can you get a camera in the line?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Extreme Heating, Air, Plumbing runs 90% same-day service across the Dayton and Cincinnati metros, and an active backup is dispatched ahead of a scheduled inspection.</div>
+    <div class="a">Most calls are handled the same day, and an active backup goes out ahead of a scheduled inspection.</div>
   </div></div>
 </div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
   <aside class="xsp-rail"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/510007257/photo/repairing-a-broken-pipe.jpg?s=612x612&w=0&k=20&c=G79pTSQAP2PknUUCcpbXhchQ_vdJ2fLlPMvK1sr5exs=" alt="Gloved hands joining a broken pipe in a muddy trench" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav js-schedule" href="#">

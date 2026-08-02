@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><a href="/furnace-heating">Furnace & Heating</a><span class="sep">›</span><span class="cur">Installation</span></div>
       <h1 class="xsp-h1">Furnace installation and replacement in <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs and replaces gas and electric furnaces for homes across the Dayton and Cincinnati, Ohio metros. Sizing comes from a heat-loss calculation on the actual house, not from the rating plate on the old unit. Replacement estimates are free, and 25,000+ jobs have been completed in over 20 years of local ownership.</p></div>
+      <div class="xsp-answer" id="answer"><p>We size your furnace from a heat-loss calculation on the actual house, not from the rating plate on the old one. Estimates are free, and you leave the visit with a written number and payment options.</p></div>
       <p class="xsp-intro">Right-sized, high-efficiency furnaces installed clean and to code. Heat-loss sizing math, free estimates, and flexible financing.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Estimate</a>
@@ -477,7 +535,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">Signs a new furnace makes sense.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Furnace is 15+ years old</div><div class="xsp-check"><span class="c">✓</span>Repairs are getting frequent</div><div class="xsp-check"><span class="c">✓</span>Bills climbing year over year</div><div class="xsp-check"><span class="c">✓</span>Some rooms never get warm</div><div class="xsp-check"><span class="c">✓</span>Yellow burner flame or soot</div><div class="xsp-check"><span class="c">✓</span>Major component failure</div></div>
   <div class="xsp-callout">Not sure repair vs. replace? Call <a href="tel:18445847399">(844) 584-7399</a> — we'll give you both numbers, no pressure.</div>
-</div><div class="xsp-section"><h2 class="xsp-h2">What does a furnace installation include?</h2><p class="xsp-prose">A replacement covers removal and disposal of the old furnace, the new unit set and leveled, gas piping and shutoff, venting, electrical, condensate drainage on condensing models, and thermostat wiring. The system is commissioned, gas pressure is checked, and the whole thing is walked through before the crew leaves. If the furnace still has years in it, <a href="/furnace-repair">furnace repair</a> is the cheaper answer.</p><h3 class="xsp-h3">What changes when the furnace goes condensing</h3><p class="xsp-prose">Moving from an 80% AFUE furnace to a 90%+ condensing model changes the venting and adds a condensate drain. The old chimney or metal flue is no longer used for the furnace, and PVC runs out through a sidewall instead. If a water heater shared that chimney, it needs its own plan.</p></div><div class="xsp-section"><h2 class="xsp-h2">What size furnace does my house need?</h2><p class="xsp-prose">Size comes from a heat-loss calculation: square footage, insulation, air sealing, window area, and duct condition. Ohio houses get replaced with oversized furnaces regularly, because the easy move is to match the old label. An oversized furnace short cycles, which wears it out early and still leaves the far rooms cold. Whether to <a href="/furnace-repair#repair-or-replace">repair or replace a furnace</a> comes first.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">What does a furnace installation include?</h2><p class="xsp-prose">Removing and disposing of the old furnace, the new one set and levelled, gas piping and shutoff, venting, electrical, condensate drainage on condensing models, and thermostat wiring. We commission it, check gas pressure and walk you through the whole thing before leaving. If yours still has years in it, <a href="/furnace-repair">a repair</a> is the cheaper answer.</p><h3 class="xsp-h3">What changes when the furnace goes condensing</h3><p class="xsp-prose">Moving from an 80% AFUE furnace to a 90%+ condensing model changes the venting and adds a condensate drain. The old chimney or metal flue is no longer used for the furnace, and PVC runs out through a sidewall instead. If a water heater shared that chimney, it needs its own plan.</p></div><div class="xsp-section"><h2 class="xsp-h2">What size furnace does my house need?</h2><p class="xsp-prose">Size comes from a heat-loss calculation: square footage, insulation, air sealing, window area, and duct condition. Ohio houses get replaced with oversized furnaces regularly, because the easy move is to match the old label. An oversized furnace short cycles, which wears it out early and still leaves the far rooms cold. Whether to <a href="/furnace-repair#repair-or-replace">repair or replace a furnace</a> comes first.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
@@ -488,20 +546,20 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="t">Repair or replace?</div>
   <div class="d">If your furnace is under 12 years old and the fix is minor, repair usually wins. We'll lay out both paths honestly.</div>
   <a href="/furnace-repair">Furnace Repair →</a>
-</div><div class="xsp-section" id="afue"><div class="xsp-eyebrow purple">EFFICIENCY TIERS</div><h2 class="xsp-h2">Which AFUE efficiency tier is worth paying for?</h2><p class="xsp-takeaway">Extreme Heating, Air, Plumbing installs furnaces in 3 efficiency bands, and the practical difference in a Dayton or Cincinnati home is venting, drainage, and how evenly the heat arrives.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Furnace efficiency tiers compared."><table class="xsp-table"><caption>Furnace efficiency tiers compared.</caption><thead><tr><th scope="col">Factor</th><th scope="col">80% AFUE</th><th scope="col">90% to 95% AFUE</th><th scope="col">96% AFUE and above</th></tr></thead><tbody><tr><th scope="row">Fuel converted to heat</th><td>About 80 cents of every fuel dollar</td><td>About 90 to 95 cents of every fuel dollar</td><td>About 96 cents or more of every fuel dollar</td></tr><tr><th scope="row">Venting</th><td>Metal flue or a lined masonry chimney</td><td>PVC through a sidewall</td><td>PVC through a sidewall</td></tr><tr><th scope="row">Condensate drain</th><td>Not required</td><td>Required</td><td>Required</td></tr><tr><th scope="row">Burner</th><td>Single stage, larger temperature swings</td><td>Often two stage</td><td>Often modulating, smallest temperature swings</td></tr><tr><th scope="row">Upfront cost</th><td>Lowest of the three</td><td>Middle of the three</td><td>Highest of the three</td></tr><tr><th scope="row">Best fit</th><td>Like-for-like swap where no drain is available</td><td>Most Dayton and Cincinnati replacements</td><td>Owners staying in the home long term</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">How long does a furnace replacement take?</h2><p class="xsp-prose">Most residential furnace replacements are a single-day job. Installation usually happens within a day or two of the estimate, and same-week in most cases even in season. Jobs that change the venting route, add a condensate pump, or open up ductwork run longer. A <a href="/heat-pump-installation">heat pump installation</a> is the alternative worth pricing beside another gas furnace.</p></div><div class="xsp-section"><h2 class="xsp-h2">Can I finance a new furnace?</h2><p class="xsp-prose">Financing is available on qualifying systems through GoodLeap, Synchrony, and Wright-Patt Credit Union. Payment scenarios are shown with the written quote, before anything is ordered. Current terms are on our <a href="/financing-options">HVAC financing options</a> page.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book a furnace estimate?</h2><p class="xsp-prose">Replacement estimates from Extreme Heating, Air, Plumbing are free and are booked by phone at <a href="tel:18445847399">(844) 584-7399</a> or online. The visit covers the heat-loss calculation, a written quote, and financing options, with no obligation to buy. Keeping the manufacturer warranty intact is what the <a href="/maintenance">X-Plan maintenance membership</a> handles after installation.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/maintenance">
+</div><div class="xsp-section" id="afue"><div class="xsp-eyebrow purple">EFFICIENCY TIERS</div><h2 class="xsp-h2">Which AFUE efficiency tier is worth paying for?</h2><p class="xsp-takeaway">There are three efficiency bands to pick from, and what changes between them in a real house is the venting, the drainage, and how evenly the heat arrives.</p><p class="xsp-tablelabel" id="tbl-furnace-efficiency-tiers-compared">Furnace efficiency tiers compared.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-furnace-efficiency-tiers-compared"><table class="xsp-table" role="table" aria-labelledby="tbl-furnace-efficiency-tiers-compared"><thead><tr><th scope="col">Factor</th><th scope="col">80% AFUE</th><th scope="col">90% to 95% AFUE</th><th scope="col">96% AFUE and above</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">Fuel converted to heat</th><td role="cell" data-label="80% AFUE"><span>About 80 cents of every fuel dollar</span></td><td role="cell" data-label="90% to 95% AFUE"><span>About 90 to 95 cents of every fuel dollar</span></td><td role="cell" data-label="96% AFUE and above"><span>About 96 cents or more of every fuel dollar</span></td></tr><tr role="row"><th scope="row" role="rowheader">Venting</th><td role="cell" data-label="80% AFUE"><span>Metal flue or a lined masonry chimney</span></td><td role="cell" data-label="90% to 95% AFUE"><span>PVC through a sidewall</span></td><td role="cell" data-label="96% AFUE and above"><span>PVC through a sidewall</span></td></tr><tr role="row"><th scope="row" role="rowheader">Condensate drain</th><td role="cell" data-label="80% AFUE"><span>Not required</span></td><td role="cell" data-label="90% to 95% AFUE"><span>Required</span></td><td role="cell" data-label="96% AFUE and above"><span>Required</span></td></tr><tr role="row"><th scope="row" role="rowheader">Burner</th><td role="cell" data-label="80% AFUE"><span>Single stage, larger temperature swings</span></td><td role="cell" data-label="90% to 95% AFUE"><span>Often two stage</span></td><td role="cell" data-label="96% AFUE and above"><span>Often modulating, smallest temperature swings</span></td></tr><tr role="row"><th scope="row" role="rowheader">Upfront cost</th><td role="cell" data-label="80% AFUE"><span>Lowest of the three</span></td><td role="cell" data-label="90% to 95% AFUE"><span>Middle of the three</span></td><td role="cell" data-label="96% AFUE and above"><span>Highest of the three</span></td></tr><tr role="row"><th scope="row" role="rowheader">Best fit</th><td role="cell" data-label="80% AFUE"><span>Like-for-like swap where no drain is available</span></td><td role="cell" data-label="90% to 95% AFUE"><span>Most Dayton and Cincinnati replacements</span></td><td role="cell" data-label="96% AFUE and above"><span>Owners staying in the home long term</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">How long does a replacement take?</h2><p class="xsp-prose">Most are a single day. We usually install within a day or two of the estimate, same week even in season. Changing the venting route, adding a condensate pump or opening up ductwork runs longer. A <a href="/heat-pump-installation">heat pump</a> is worth pricing beside another gas furnace while you are deciding.</p></div><div class="xsp-section"><h2 class="xsp-h2">Can I finance it?</h2><p class="xsp-prose">Yes, on qualifying systems, through GoodLeap, Synchrony and Wright-Patt Credit Union. You see payment scenarios with the written quote, before anything is ordered. Current terms are on the <a href="/financing-options">financing page</a>.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book an estimate?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or book online. Estimates are free, and the visit covers the heat-loss calculation, a written quote and financing options, with no obligation to buy. Afterwards, the <a href="/maintenance">X-Plan membership</a> is what keeps the manufacturer warranty intact.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Plus a 5-year warranty on repairs and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">INSTALLATION QUESTIONS</div>
   <h2 class="xsp-h2">What else do homeowners ask before replacing a furnace?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>How fast can you install a new furnace?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Usually within a day or two of the estimate, and same-week in most cases even in the middle of an Ohio winter. Most residential replacements are completed in a single day.</div>
+    <button type="button" aria-expanded="true"><span>How fast can you install one?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">Usually within a day or two of the estimate, same week in most cases even in the middle of an Ohio winter. Most replacements are done in a single day.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>What size furnace do I need?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">The size comes from the home's actual heat loss, not from the rating plate on the old furnace. Extreme Heating, Air, Plumbing runs a heat-loss calculation as part of every free replacement estimate in the Dayton and Cincinnati metros.</div>
+    <div class="a">That comes from your home's actual heat loss, not from the rating plate on the old furnace. We run the heat-loss calculation as part of every free estimate.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Is a 96% AFUE furnace worth it over an 80%?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">It depends on how long the owner plans to stay and whether the house can take a condensing furnace. A 96% unit converts about 96 cents of every fuel dollar into heat against about 80 cents, but it needs sidewall venting and a condensate drain, which not every basement has.</div>
+    <div class="a">Depends how long you plan to stay and whether your house can take a condensing furnace. A 96% unit turns about 96 cents of every fuel dollar into heat against about 80 cents, but it needs sidewall venting and a condensate drain, and not every basement has somewhere to put them.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Do I have to replace the air conditioner at the same time?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">Not always. The furnace and the indoor coil share a cabinet, so replacing both at once avoids paying twice for the same labor. If the air conditioner is newer and the coil matches the new blower, the furnace can be replaced on its own.</div>

@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><span class="cur">Clogged Drain</span></div>
       <h1 class="xsp-h1">Drain cleaning and clogged drain repair in <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing clears clogged and slow drains in homes across the Dayton and Cincinnati, Ohio metros, from a single stopped sink to a backed-up main line. Licensed plumbers use cable augers or hydro jetting depending on what a camera shows in the pipe. Most drain calls are handled the same day.</p></div>
+      <div class="xsp-answer" id="answer"><p>One stopped sink or a backed-up main line, we clear both, most of them the same day. Which machine we bring depends on what the camera shows in your pipe, not on what we happen to be carrying.</p></div>
       <p class="xsp-intro">One slow drain is a clog. Three slow drains at once is your main line. Cleared fast by licensed plumbers, with upfront pricing.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
@@ -490,14 +548,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Preventive Cleaning</span><br><span class="d">Scheduled cleanings for clog-prone lines before they back up.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">Why is my sink draining slowly?</h2><p class="xsp-prose">A single slow fixture is almost always local: hair and soap in a bathroom line, grease and food solids in a kitchen line. The blockage usually sits within a few feet of the trap. It clears with a hand auger or a small cable machine and rarely needs anything opened up.</p></div><div class="xsp-section"><h2 class="xsp-h2">Why are several drains backing up at once?</h2><p class="xsp-prose">When two or more fixtures back up together, especially on the lowest floor, the blockage is downstream of both of them in the main line. That is a different problem and a different machine. Running more water into the house makes it worse, so stop using the fixtures and get a camera in the line.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing treats simultaneous backups in multiple fixtures as a main-line problem requiring <a href="/plumbing/sewer-line/overview">camera inspection</a> before any clearing work begins.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing matches the drain service to what the pipe is actually doing, which is why a camera goes in before a machine does on any recurring clog.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Drain symptoms and the service each one calls for."><table class="xsp-table"><caption>Drain symptoms and the service each one calls for.</caption><thead><tr><th scope="col">Symptom</th><th scope="col">Likely cause</th><th scope="col">Service to book</th></tr></thead><tbody><tr><th scope="row">One bathroom sink drains slowly</th><td>Hair and soap buildup near the trap</td><td>Drain clearing</td></tr><tr><th scope="row">Kitchen sink backs up after cooking</th><td>Grease coating the pipe wall</td><td>Hydro jetting</td></tr><tr><th scope="row">Tub fills when the toilet flushes</th><td>Main line partially blocked</td><td>Camera inspection, then main line clearing</td></tr><tr><th scope="row">Gurgling from drains across the house</th><td>Venting or main line restriction</td><td>Camera inspection</td></tr><tr><th scope="row">Floor drain overflows in heavy rain</th><td>Storm water entering the sanitary line</td><td>Sewer line inspection</td></tr><tr><th scope="row">Same drain clogs every few months</th><td>Root intrusion, a belly, or a broken pipe</td><td>Camera inspection, then sewer repair</td></tr><tr><th scope="row">Sewage odor indoors with no visible backup</th><td>Dry trap or a cracked line</td><td>Leak detection and camera inspection</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Snaking or hydro jetting: which one do I need?</h2><p class="xsp-prose">A cable auger punches a hole through the blockage and gets water moving again. Hydro jetting scours the whole pipe wall with high-pressure water and takes the grease and root hair with it. Snaking is faster and cheaper; jetting lasts far longer on lines that clog repeatedly, which is why <a href="/plumbing/sewer-line/cleaning">maintenance jetting</a> is the answer on a line that backs up every year.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing recommends hydro jetting over cable snaking when a drain has clogged more than once in a year.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Cable snaking compared with hydro jetting."><table class="xsp-table"><caption>Cable snaking compared with hydro jetting.</caption><thead><tr><th scope="col">Factor</th><th scope="col">Cable snaking</th><th scope="col">Hydro jetting</th></tr></thead><tbody><tr><th scope="row">What it does</th><td>Bores an opening through the blockage</td><td>Scours the full pipe diameter</td></tr><tr><th scope="row">Best on</th><td>A one-off clog in a branch line</td><td>Grease, scale and root hair in a main line</td></tr><tr><th scope="row">Pipe condition needed</th><td>Works in most pipe, including fragile lines</td><td>Pipe must be sound; a camera check comes first</td></tr><tr><th scope="row">How long it holds</th><td>Months, if buildup remains</td><td>Years in most homes</td></tr><tr><th scope="row">Typical visit length</th><td>Under an hour</td><td>Longer, and usually camera-verified after</td></tr><tr><th scope="row">When it is the wrong call</th><td>Repeat clogs, where it treats the symptom</td><td>A collapsed or offset pipe, which needs repair</td></tr></tbody></table></div></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">Why is my sink draining slowly?</h2><p class="xsp-prose">A single slow fixture is almost always local: hair and soap in a bathroom line, grease and food solids in a kitchen line. The blockage usually sits within a few feet of the trap. It clears with a hand auger or a small cable machine and rarely needs anything opened up.</p></div><div class="xsp-section"><h2 class="xsp-h2">Why are several drains backing up at once?</h2><p class="xsp-prose">When two or more fixtures back up together, especially on the lowest floor, the blockage is downstream of both of them in the main line. That is a different problem and a different machine. Running more water into the house makes it worse, so stop using the fixtures and get a camera in the line.</p><p class="xsp-prose">When two fixtures go at once we treat it as a main-line problem and put a <a href="/plumbing/sewer-line/overview">camera</a> in before any machine, because clearing blind on a main line is how people pay twice.</p><p class="xsp-takeaway">The service should match what the pipe is actually doing, which is why a camera goes in before a machine does on any clog that keeps coming back.</p><p class="xsp-tablelabel" id="tbl-drain-symptoms-and-the-service-each-one-calls-fo">Drain symptoms and the service each one calls for.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-drain-symptoms-and-the-service-each-one-calls-fo"><table class="xsp-table" role="table" aria-labelledby="tbl-drain-symptoms-and-the-service-each-one-calls-fo"><thead><tr><th scope="col">Symptom</th><th scope="col">Likely cause</th><th scope="col">Service to book</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">One bathroom sink drains slowly</th><td role="cell" data-label="Likely cause"><span>Hair and soap buildup near the trap</span></td><td role="cell" data-label="Service to book"><span>Drain clearing</span></td></tr><tr role="row"><th scope="row" role="rowheader">Kitchen sink backs up after cooking</th><td role="cell" data-label="Likely cause"><span>Grease coating the pipe wall</span></td><td role="cell" data-label="Service to book"><span>Hydro jetting</span></td></tr><tr role="row"><th scope="row" role="rowheader">Tub fills when the toilet flushes</th><td role="cell" data-label="Likely cause"><span>Main line partially blocked</span></td><td role="cell" data-label="Service to book"><span>Camera inspection, then main line clearing</span></td></tr><tr role="row"><th scope="row" role="rowheader">Gurgling from drains across the house</th><td role="cell" data-label="Likely cause"><span>Venting or main line restriction</span></td><td role="cell" data-label="Service to book"><span>Camera inspection</span></td></tr><tr role="row"><th scope="row" role="rowheader">Floor drain overflows in heavy rain</th><td role="cell" data-label="Likely cause"><span>Storm water entering the sanitary line</span></td><td role="cell" data-label="Service to book"><span>Sewer line inspection</span></td></tr><tr role="row"><th scope="row" role="rowheader">Same drain clogs every few months</th><td role="cell" data-label="Likely cause"><span>Root intrusion, a belly, or a broken pipe</span></td><td role="cell" data-label="Service to book"><span>Camera inspection, then sewer repair</span></td></tr><tr role="row"><th scope="row" role="rowheader">Sewage odor indoors with no visible backup</th><td role="cell" data-label="Likely cause"><span>Dry trap or a cracked line</span></td><td role="cell" data-label="Service to book"><span>Leak detection and camera inspection</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Snaking or hydro jetting: which one do I need?</h2><p class="xsp-prose">A cable auger punches a hole through the blockage and gets water moving again. Hydro jetting scours the whole pipe wall with high-pressure water and takes the grease and root hair with it. Snaking is faster and cheaper; jetting lasts far longer on lines that clog repeatedly, which is why <a href="/plumbing/sewer-line/cleaning">maintenance jetting</a> is the answer on a line that backs up every year.</p><p class="xsp-takeaway">If a drain has clogged more than once in a year, jetting is what we will recommend. Snaking it again only clears a path through the same buildup.</p><p class="xsp-tablelabel" id="tbl-cable-snaking-compared-with-hydro-jetting">Cable snaking compared with hydro jetting.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-cable-snaking-compared-with-hydro-jetting"><table class="xsp-table" role="table" aria-labelledby="tbl-cable-snaking-compared-with-hydro-jetting"><thead><tr><th scope="col">Factor</th><th scope="col">Cable snaking</th><th scope="col">Hydro jetting</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">What it does</th><td role="cell" data-label="Cable snaking"><span>Bores an opening through the blockage</span></td><td role="cell" data-label="Hydro jetting"><span>Scours the full pipe diameter</span></td></tr><tr role="row"><th scope="row" role="rowheader">Best on</th><td role="cell" data-label="Cable snaking"><span>A one-off clog in a branch line</span></td><td role="cell" data-label="Hydro jetting"><span>Grease, scale and root hair in a main line</span></td></tr><tr role="row"><th scope="row" role="rowheader">Pipe condition needed</th><td role="cell" data-label="Cable snaking"><span>Works in most pipe, including fragile lines</span></td><td role="cell" data-label="Hydro jetting"><span>Pipe must be sound; a camera check comes first</span></td></tr><tr role="row"><th scope="row" role="rowheader">How long it holds</th><td role="cell" data-label="Cable snaking"><span>Months, if buildup remains</span></td><td role="cell" data-label="Hydro jetting"><span>Years in most homes</span></td></tr><tr role="row"><th scope="row" role="rowheader">Typical visit length</th><td role="cell" data-label="Cable snaking"><span>Under an hour</span></td><td role="cell" data-label="Hydro jetting"><span>Longer, and usually camera-verified after</span></td></tr><tr role="row"><th scope="row" role="rowheader">When it is the wrong call</th><td role="cell" data-label="Cable snaking"><span>Repeat clogs, where it treats the symptom</span></td><td role="cell" data-label="Hydro jetting"><span>A collapsed or offset pipe, which needs repair</span></td></tr></tbody></table></div></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Cleared and verified</div><div class="d">We run water, confirm full flow, and tell you what caused it — so it doesn't repeat.</div></div></div></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">Are chemical drain cleaners safe to use?</h2><p class="xsp-prose">We do not recommend them. Caustic cleaners sit on top of the blockage, generate heat, and damage older pipe and rubber seals while rarely clearing the actual obstruction. They also make the line dangerous for whoever opens it next. Mechanical clearing costs more and does not eat your plumbing.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I stop the same drain clogging every year?</h2><p class="xsp-prose">Repeat clogs in the same line mean something structural, not something you did. Roots find clay joints, grease builds on rough cast iron, and a sagging section holds water and solids. A camera pass finds which, and the fix ranges from scheduled maintenance jetting to a <a href="/plumbing/sewer-line/repair">sewer repair</a>.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing runs a camera inspection on any drain line that has clogged more than once, before recommending cleaning or repair, under Ohio plumbing license #13557.</p></div><div class="xsp-section"><h2 class="xsp-h2">Can a plumber clear my drain today?</h2><p class="xsp-prose">Most drain calls are booked and cleared the same day, and Extreme runs 90% same-day service across both metros. Main line backups get moved up the list, because a backup that is already reaching the floor gets more expensive every hour it sits. Call <a href="tel:18445847399">(844) 584-7399</a>, and if water is already on the floor, <a href="/plumbing/emergency-plumbing">shut the main valve</a> first.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">Are chemical drain cleaners safe to use?</h2><p class="xsp-prose">We do not recommend them. Caustic cleaners sit on top of the blockage, generate heat, and damage older pipe and rubber seals while rarely clearing the actual obstruction. They also make the line dangerous for whoever opens it next. Mechanical clearing costs more and does not eat your plumbing.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I stop the same drain clogging every year?</h2><p class="xsp-prose">Repeat clogs in the same line mean something structural, not something you did. Roots find clay joints, grease builds on rough cast iron, and a sagging section holds water and solids. A camera pass finds which, and the fix ranges from scheduled maintenance jetting to a <a href="/plumbing/sewer-line/repair">sewer repair</a>.</p><p class="xsp-prose">So on any line that has clogged twice, we camera it before recommending anything, working under Ohio plumbing license #13557.</p></div><div class="xsp-section"><h2 class="xsp-h2">Can you clear my drain today?</h2><p class="xsp-prose">Most drain calls get booked and cleared the same day, and a main line backup moves up the list, because water already reaching the floor gets more expensive every hour it sits. Call <a href="tel:18445847399">(844) 584-7399</a>, and if it is already on the floor, <a href="/plumbing/emergency-plumbing">shut the main valve</a> first.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a><a class="xsp-promo mint" href="/specials">
   <div class="t">Plumbing specials</div><div class="d">Check out current offers on repairs, installs, and more.</div><div class="lm">View Specials →</div>
@@ -506,7 +564,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">What else do homeowners ask about drains?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
     <button type="button" aria-expanded="true"><span>How fast can a plumber get here for a backed-up drain?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Extreme Heating, Air, Plumbing runs 90% same-day service across the Dayton and Cincinnati metros, and main line backups get priority over routine drain calls.</div>
+    <div class="a">Most drain calls are handled the same day, and a main line backup gets priority over a routine one.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Why does my drain keep clogging after it has been cleared?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">A cleared drain that clogs again within a year usually has a structural cause: tree roots at a pipe joint, a sagging section holding water, or a break. A camera inspection finds which one, and cleaning alone will not hold until it is fixed.</div>

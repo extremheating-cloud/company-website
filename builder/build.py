@@ -38,15 +38,13 @@ AIR_CONDITIONING = {
     "breadcrumb": [("Heating & Air", "/services"), ("Air Conditioning", "")],
     "h1": "Air conditioning service in {X}.",
     "h1Highlight": "Dayton & Cincinnati",
-    # The answer-first block. Entity, both metros and two stat tokens in 48 words, no
-    # first person and no rates — this is the passage an engine lifts, so nothing in
-    # it may need the rest of the page for context.
-    "answer": ("Extreme Heating, Air, Plumbing repairs, replaces and tunes up residential "
-               "air conditioners across the Dayton and Cincinnati, Ohio metros. Central air "
-               "systems and heat pumps in cooling mode are covered on every major brand, "
-               "whoever installed them. The company has completed 25,000+ jobs and offers "
-               "90% same-day service."),
-    "intro": "Repairs, replacements and tune-ups from the locally owned Extreme Team. Upfront pricing, clean workmanship, and cool air back fast.",
+    # The answer-first block: 31 words, second person, no self-naming. This is the
+    # passage an engine lifts, so it still stands alone — but it reads like something
+    # a person would say. Entity, licences and job count live in the JSON-LD.
+    "answer": ("AC out? We repair, replace and tune up central air and heat pumps across "
+               "Dayton and Cincinnati — every major brand, whoever installed it. We handle "
+               "most calls the same day."),
+    "intro": "Repair, replacement and tune-ups, from a locally owned crew. You'll know the price before anything gets touched.",
     # The 1,595-review figure is a Birdeye aggregate pooling several platforms, so the
     # chip cannot say "on Google" — that is the one review claim a competitor can
     # disprove in thirty seconds. facts.md confirms 4.9 / 1,595 for on-site display.
@@ -58,7 +56,7 @@ AIR_CONDITIONING = {
     },
     "symptoms": {
         "eyebrow": "IS YOUR AC ACTING UP?",
-        "h2": "What are the signs an air conditioner is failing?",
+        "h2": "How do I know my AC is going out?",
         "items": [
             "Blowing warm or room-temp air",
             "Weak airflow in some rooms",
@@ -67,19 +65,19 @@ AIR_CONDITIONING = {
             "Water or refrigerant leaks",
             "Energy bills creeping up",
         ],
-        "callout": f'Noticing more than one? Small AC problems become compressor problems. Call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> before it gets expensive, or read what each symptom usually means on our <a href="/ac-repair">AC repair</a> page.',
+        "callout": f'Seeing more than one? Small AC problems turn into compressor problems. Call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> before that happens, or see what each symptom usually means on our <a href="/ac-repair">AC repair</a> page.',
     },
     "whatWeDo": {
-        "h2": "What air conditioning services does Extreme offer in Dayton and Cincinnati?",
+        "h2": "What kind of AC work do you handle?",
         "cards": [
             {"title": "AC Repair",
-             "desc": "Same-day diagnostics and honest repair options for every make and model — approved by you before we start.",
+             "desc": "Same-day diagnostics on any make or model. You see the price and approve it before we start.",
              "href": "/ac-repair"},
             {"title": "AC Installation & Replacement",
-             "desc": "Right-sized, high-efficiency systems installed clean — with flexible financing options.",
+             "desc": "Right-sized, high-efficiency systems, installed clean — with financing if you'd rather spread it out.",
              "href": "/ac-installation"},
             {"title": "AC Tune-Ups & Maintenance",
-             "desc": "Seasonal tune-ups that catch small issues early — included twice a year with X-Plan.",
+             "desc": "A seasonal tune-up catches the small stuff early — two a year come with X-Plan.",
              "href": "/maintenance"},
         ],
     },
@@ -93,83 +91,80 @@ AIR_CONDITIONING = {
          "id": "repair-or-replace",
          "h2": "Should I repair or replace my air conditioner?",
          "body": ("Age and repair cost decide it, not the symptom. A newer system with a "
-                  "failed capacitor or contactor is a repair. An older system facing a "
-                  "compressor or coil replacement is usually the point where a new unit "
-                  "costs less over the years it has left."),
+                  "failed capacitor or contactor is a repair. An older one facing a "
+                  "compressor or coil is usually where a new unit costs you less over the "
+                  "years it has left."),
          # No dollar figures anywhere in this table, by design: the one-third rule of
          # thumb is client-approved, a published repair price is not.
          "table": {
-             "caption": "Repair or replace an air conditioner: what Extreme Heating, Air, Plumbing weighs on a Dayton or Cincinnati service call.",
-             "takeaway": ("Extreme Heating, Air, Plumbing recommends replacement over repair "
-                          "when an air conditioner is past its expected service life and the "
-                          "repair quote approaches a third of replacement cost."),
+             "caption": "Repair or replace an air conditioner: what we weigh on a service call.",
+             "takeaway": ("We'll point you to replacement when the system is past its "
+                          "expected life and the repair quote is closing in on a third of "
+                          "what a new one costs."),
              "columns": ["Factor", "Repair usually makes sense when",
                          "Replacement usually makes sense when"],
              "rows": [
-                 ["System age", "The air conditioner is under 10 years old",
-                  "The air conditioner is past 12 to 15 years"],
-                 ["Repair cost", "The quote is well under a third of replacement cost",
-                  "The quote is at or above roughly a third of replacement cost"],
-                 ["Breakdown history", "This is the first failure in several cooling seasons",
-                  "This is the second or third service call in one season"],
-                 ["Refrigerant", "The system uses a refrigerant still in production",
-                  "The system uses R-22, which has not been produced or imported in the US since 2020"],
+                 ["System age", "Under 10 years old", "Past 12 to 15 years"],
+                 ["Repair cost", "Well under a third of replacement cost",
+                  "At or above roughly a third of replacement cost"],
+                 ["Breakdown history", "First failure in several cooling seasons",
+                  "Second or third call in one season"],
+                 ["Refrigerant", "Uses a refrigerant still in production",
+                  "Uses R-22, out of production in the US since 2020"],
                  ["Energy bills", "Cooling bills are steady year over year",
-                  "Cooling bills climb with no change in how the house is used"],
-                 ["Comfort", "One room or one symptom is affected",
-                  "Temperatures are uneven throughout the house"],
+                  "Cooling bills climb with no change at home"],
+                 ["Comfort", "One room or one symptom",
+                  "Uneven temperatures throughout the house"],
                  # Deliverable wrote "labour"; the rest of the site is US spelling.
                  ["Warranty", "Parts are still under manufacturer warranty",
                   "Parts and labor warranties have both run out"],
              ],
          }},
         {"h2": "How long does a central air conditioner last?",
-         "body": ("Twelve to fifteen years is the normal working life for a central air "
-                  "conditioner in this climate, and a maintained system reaches the top of "
-                  "that range more often than a neglected one. Past fifteen, most homeowners "
-                  "spend more on repairs than a replacement would have cost.")},
-        {"h2": "Which air conditioner brands does Extreme service?",
-         "body": ("Every major residential make and model, regardless of who installed them. "
-                  "Our techs train across the systems common in Dayton and Cincinnati "
-                  "housing, so a warranty repair on one brand and a twenty-year-old unit "
-                  "from another brand both get handled.")},
+         "body": ("Twelve to fifteen years is normal in this climate, and a system that "
+                  "gets maintained tends to reach the top of that range. Past fifteen, most "
+                  "people spend more on repairs than a replacement would have cost.")},
+        {"h2": "Do you work on my brand?",
+         "body": ("Every major residential make and model, whoever installed it. Our techs "
+                  "train across all of them, so a warranty repair on a new system and a "
+                  "twenty-year-old unit from a different brand both get handled.")},
     ],
     "process": {
         "steps": [
             {"title": "Book in minutes",
-             "desc": "Call or schedule online — we confirm your arrival window fast, with same-day service in most cases."},
+             "desc": "Call or book online. You get an arrival window fast, and most calls are same day."},
             {"title": "Diagnose & quote upfront",
-             "desc": "Your tech walks you through what's wrong and your options — flat, upfront pricing you approve first."},
+             "desc": "Your tech shows you what's wrong and what the options cost. You approve the price first."},
             {"title": "Fixed right, guaranteed",
-             "desc": "Clean workmanship, tested before we leave, and backed by our satisfaction guarantee."},
+             "desc": "Clean work, tested before we leave, backed by our satisfaction guarantee."},
         ],
     },
     "sectionsTail": [
         {"h2": "How often should an air conditioner be serviced?",
          "body": ("Once a year, in spring, before the first stretch of ninety-degree weather. "
-                  "A tune-up cleans the coil, checks refrigerant charge and tests the "
+                  "A tune-up cleans the coil, checks the refrigerant charge and tests the "
                   "electrical parts that fail first in heat. "
                   '<a href="/maintenance">X-Plan</a> members get two visits a year, one for '
                   "cooling and one for heating.")},
-        {"h2": "How do I book AC service in Dayton or Cincinnati?",
-         "body": (f'Call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> or schedule online, and '
-                  "you get an arrival window before the tech leaves the shop. Extreme "
-                  "Heating, Air, Plumbing handles about 90% of service calls the same day, "
-                  "with 24/7 emergency service when a house has no cooling in a heat wave.")},
+        {"h2": "How do I book AC service?",
+         "body": (f'Call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> or book online, and you '
+                  "get an arrival window before the tech leaves the shop. We handle roughly "
+                  "90% of calls the same day, and the emergency line is answered 24/7 when a "
+                  "house has no cooling.")},
     ],
     "faqEyebrow": "AC QUESTIONS",
-    "faqH2": "What do homeowners ask before booking AC service?",
+    "faqH2": "What should I know before booking AC service?",
     "faq": [
         {"q": "Is it worth replacing an R-22 air conditioner?",
-         "a": "Usually yes. R-22 has not been produced or imported in the United States since 2020, so a system that needs a recharge is paying for a shrinking reclaimed supply. If an R-22 unit needs a compressor or a coil, replacement almost always costs less over the years left in it."},
-        {"q": "Can the air conditioner be replaced without replacing the furnace?",
-         "a": "Yes, and often it should be. The indoor coil has to be matched to the new outdoor unit, so the furnace gets opened up either way. If the furnace is also near the end of its life, replacing both in one visit costs less than two separate jobs a few years apart."},
+         "a": "Usually. R-22 hasn't been produced or imported in the US since 2020, so a recharge means paying for a shrinking reclaimed supply. If the unit needs a compressor or a coil, replacing it costs less over the years it has left."},
+        {"q": "Can I replace the AC without replacing the furnace?",
+         "a": "Yes, and often you should. The indoor coil has to match the new outdoor unit, so the furnace gets opened either way. If it's also near the end, doing both in one visit costs less than two jobs a few years apart."},
         {"q": "Do you offer emergency AC repair?",
-         "a": "Yes. Extreme Heating, Air, Plumbing runs 24/7 emergency service across the Dayton and Cincinnati metros, every day of the year. Office phones are staffed Monday to Friday, 8:00 AM to 5:00 PM, and the emergency line never closes."},
+         "a": "Yes. The emergency line runs 24/7 across the Dayton and Cincinnati metros, every day of the year. The office is staffed Monday to Friday, 8:00 AM to 5:00 PM, and after that the emergency line picks up."},
         {"q": "Does X-Plan cover the air conditioner?",
-         "a": "Yes. X-Plan includes two seasonal safety and performance visits a year, one of them a multi-point air conditioner tune-up with refrigerant charge calibration up to 1 lb included. Members also get 15% off all repairs and priority scheduling."},
+         "a": "Yes. You get two seasonal visits a year, one of them a full AC tune-up with refrigerant charge calibration up to 1 lb included. Members also get 15% off repairs and priority scheduling."},
         {"q": "How long does an air conditioner replacement take?",
-         "a": "Most straight-swap replacements are a one-day job. Adding or reworking ductwork, moving the indoor unit, or changing system type adds time. Sizing and pricing for a replacement live on our <a href=\"/ac-installation\">AC installation</a> page."},
+         "a": "Most straight swaps are a one-day job. Adding or reworking ductwork, moving the indoor unit, or changing system type adds time. Sizing and pricing live on our <a href=\"/ac-installation\">AC installation</a> page."},
     ],
     # The copy on this page was rewritten 2026-08-02. shell.py prefers this stated date
     # over its content-hash ledger, so it must move only when the copy actually does.
@@ -207,38 +202,37 @@ HVAC_HUB = {
     "breadcrumb": [("Heating & Air", "")],
     "h1": "Every comfort system, {X}.",
     "h1Highlight": "one Extreme Team",
-    # 47 words, three sentences, entity and both metros present, no first person.
-    "answer": ("Extreme Heating, Air, Plumbing repairs, replaces and maintains residential "
-               "heating, cooling and indoor air quality systems across the Dayton and "
-               "Cincinnati, Ohio metros. Every major brand is covered, whoever installed it, "
-               "under Ohio HVAC license #37179. The company has completed 25,000+ jobs since "
-               "2004."),
-    "intro": "Heating, cooling, air quality, and maintenance for Dayton & Cincinnati homes — explore every service below, or just tell us what's wrong.",
+    # 30 words, second person. The licence number and job count moved to the footer
+    # and the JSON-LD, where they belong — nothing is lost to a crawler.
+    "answer": ("Heating, cooling and air quality for homes across Dayton and Cincinnati. We "
+               "repair, replace and maintain every major brand, whoever installed it, and you "
+               "agree the price before work starts."),
+    "intro": "Heating, cooling, air quality, maintenance. Browse below, or just tell us what's wrong and we'll work out which one it is.",
     # Replaced ac-install.jpg: that photo's condenser carries a visible CARRIER badge,
     # so the HVAC hub was advertising a competitor's equipment. This is a real Ruud
     # unit from a job, badge legible, no service stickers in frame.
     "photo": T.PHOTOS["ruudHeatPump"],
     "photoPos": "50% 40%",
     "photoAlt": "A Ruud condenser installed at a Dayton-area home",
-    "coreH2": "Comfort solutions for every season.",
+    "coreH2": "What do you need looked at?",
     "core": [
         {"title": "Air Conditioning", "desc": "AC repair, replacement, and tune-ups.", "href": "/air-conditioning"},
         {"title": "Furnace & Heating", "desc": "Furnace repairs, installs, and safety checks.", "href": "/furnace-heating"},
-        {"title": "Heat Pump", "desc": "Year-round efficiency with heat pump systems.", "href": "/heat-pump"},
+        {"title": "Heat Pump", "desc": "Heat and cooling from one system.", "href": "/heat-pump"},
         {"title": "Duct Cleaning", "desc": "Duct cleaning and air balancing.", "href": "/duct-cleaning"},
         {"title": "Indoor Air Quality", "desc": "Filtration, UV, and humidity control.", "href": "/indoor-air-quality"},
     ],
     "additionalLabel": "X-PLAN & ADDITIONAL SERVICES",
     "additional": [
-        {"title": "Maintenance Plans", "badge": "X-PLAN", "desc": "Bi-annual tune-ups and priority service.", "href": "/maintenance"},
-        {"title": "HVAC Inspections", "desc": "Full-system checks for peace of mind.", "href": "/inspection"},
+        {"title": "Maintenance Plans", "badge": "X-PLAN", "desc": "Two tune-ups a year and priority service.", "href": "/maintenance"},
+        {"title": "HVAC Inspections", "desc": "A full-system check, top to bottom.", "href": "/inspection"},
         {"title": "Thermostat Services", "desc": "Smart thermostat install and setup.", "href": "/thermostat"},
-        {"title": "Humidifier Services", "desc": "Whole-home humidity done right.", "href": "/humidifier"},
+        {"title": "Humidifier Services", "desc": "Fixes dry air in winter.", "href": "/humidifier"},
     ],
     "panel": "xplan",
     "cross": [
-        {"cls": "lav", "t": "Interested in financing?",
-         "d": "Flexible payment options that fit your budget.",
+        {"cls": "lav", "t": "Need to spread the cost?",
+         "d": "Monthly payment plans on the bigger jobs.",
          "lm": "Learn More", "href": "/financing-options"},
         {"cls": "mint", "t": "Need a plumber instead?",
          "d": "Drains, water heaters, sump pumps, and more.",
@@ -256,26 +250,24 @@ PLUMB_HUB = {
     "breadcrumb": [("Plumbing", "")],
     "h1": "Licensed plumbers serving {X} homes.",
     "h1Highlight": "Dayton & Cincinnati",
-    # 49 words, three sentences. The Ohio plumbing licence number is the cheapest
-    # checkable credibility signal a plumbing page has, and checkable is what makes a
-    # passage citable. facts.md confirms OH LIC #13557.
-    "answer": ("Extreme Heating, Air, Plumbing provides residential plumbing service across "
-               "38 communities in the Dayton and Cincinnati, Ohio metros. Coverage includes "
-               "drains, water heaters, sewer lines, sump pumps and gas lines, all performed "
-               "under Ohio plumbing license #13557. The company offers 24/7 emergency "
-               "service and 90% same-day service."),
+    # 31 words, second person. The Ohio plumbing licence number is still the cheapest
+    # checkable credibility signal this page has — it now sits in the footer and in
+    # LocalBusiness.hasCredential rather than mid-paragraph. facts.md: OH LIC #13557.
+    "answer": ("Drains, water heaters, sewer lines, sump pumps and gas lines, for homes "
+               "across Dayton and Cincinnati. Licensed plumbers, a price you agree before "
+               "work starts, and an emergency line answered 24/7."),
     "intro": "Same trucks, same phone number, same people you already call about the furnace.",
     # PLACEHOLDER: the slot wants a plumber on the job and no such photo exists yet
     # (Block A of the shot list). A real branded van beats an empty grey box until
     # then — swap it when the session delivers.
     "photo": T.PHOTOS["vans"],
     "photoAlt": "Extreme Heating, Air, Plumbing service vans leaving the Beavercreek shop at the start of a work day",
-    "coreH2": "What plumbing services does Extreme offer in Dayton and Cincinnati?",
+    "coreH2": "What plumbing work do you do?",
     "core": [
         {"title": "Clogged Drain", "desc": "Fast help for clogged and slow drains.", "href": "/plumbing/clogged-drain"},
         {"title": "Water Heater", "desc": "Repair, replacement, and tankless upgrades.", "href": "/plumbing/water-heater/overview"},
         {"title": "Sewer Line", "desc": "Inspection, repair, and cleaning.", "href": "/plumbing/sewer-line/overview"},
-        {"title": "Sump Pump", "desc": "Protection against basement water issues.", "href": "/plumbing/sump-pump/overview"},
+        {"title": "Sump Pump", "desc": "Keeps the basement dry.", "href": "/plumbing/sump-pump/overview"},
         {"title": "Gas Line", "desc": "Safe installation and repair for gas piping.", "href": "/plumbing/gas-line/overview"},
     ],
     "additionalLabel": "ADDITIONAL SERVICES",
@@ -287,8 +279,8 @@ PLUMB_HUB = {
     ],
     "panel": "xplan",
     "cross": [
-        {"cls": "lav", "t": "Interested in financing?",
-         "d": "Flexible payment options that fit your budget.",
+        {"cls": "lav", "t": "Need to spread the cost?",
+         "d": "Monthly payment plans on the bigger jobs.",
          "lm": "Learn More", "href": "/financing-options"},
         {"cls": "mint", "t": "Need HVAC instead?",
          "d": "Heating, cooling, and air quality from the same team.",
@@ -305,13 +297,12 @@ FURNACE_REPAIR = {
     "breadcrumb": [("Heating & Air", "/services"), ("Furnace & Heating", "/furnace-heating"), ("Repair", "")],
     "h1": "Furnace repair in {X}, 24/7.",
     "h1Highlight": "Dayton & Cincinnati",
-    # 55 words, four sentences. Both metros, the entity, and three approved stat
-    # tokens; no first person, no rates, no response-time promise beyond the tokens.
-    "answer": ("Extreme Heating, Air, Plumbing repairs gas and electric furnaces across the "
-               "Dayton and Cincinnati, Ohio metros. No-heat calls are prioritized, and every "
-               "repair is quoted flat before work begins and safety-checked afterward. The "
-               "company offers 24/7 emergency service and 90% same-day service. Licensed and "
-               "insured technicians handle every call, and 25,000+ jobs have been completed."),
+    # 39 words, second person. Someone reads this at 9pm on a phone with no heat, so it
+    # leads with their problem and reaches the 24/7 line inside one short paragraph.
+    # Licences, job count and the entity name live in the JSON-LD and the footer.
+    "answer": ("No heat? We repair gas and electric furnaces across Dayton and Cincinnati, "
+               "and no-heat calls go out ahead of everything else. You get a flat price "
+               "before we start, a safety check after, and an emergency line answered 24/7."),
     "intro": "No heat is an emergency in an Ohio winter. We diagnose fast, price upfront, and repair every make and model — 24/7.",
     # Sub pages default to SUB_CHIPS, which says "4.9 on Google". The 1,595-review
     # figure is a Birdeye aggregate, so the source is named accurately here instead.
@@ -345,23 +336,22 @@ FURNACE_REPAIR = {
     # Diagnosis questions before Process, the decision and booking questions after it.
     "sections": [
         {"h2": "Why is my furnace blowing cold air?",
-         "body": ("Cold air from a running furnace usually means the burners are not lighting "
-                  "or are shutting down early. The most common causes are a dirty flame "
-                  "sensor, a failed ignitor, a blocked condensate drain on a high-efficiency "
-                  "unit, or a thermostat left on Fan rather than Auto."),
+         "body": ("Cold air from a running furnace usually means the burners aren't lighting, "
+                  "or they're shutting down early. Most often it's a dirty flame sensor, a "
+                  "failed ignitor, a blocked condensate drain, or a thermostat left on Fan "
+                  "instead of Auto."),
          "h3s": [
              {"h3": "The thermostat check that costs nothing",
               "body": ('A <a href="/thermostat">thermostat</a> set to Fan runs the blower '
-                       "constantly, whether the burners are lit or not, which feels exactly "
-                       "like a furnace blowing cold air. Set it to Auto first. That single "
-                       "switch ends a fair number of no-heat calls before anyone is "
+                       "constantly whether the burners are lit or not, which feels exactly "
+                       "like a furnace blowing cold air. Flip it to Auto first. That one "
+                       "switch ends a fair number of no-heat calls before anyone gets "
                        "dispatched.")},
          ]},
         {"h2": "What can I check before calling for furnace repair?",
-         "body": ("A handful of checks take about five minutes and fix a real share of "
-                  "no-heat calls. If none of them work, the fault is inside the furnace and "
-                  "needs a technician. None of them involve opening the gas train or the "
-                  "burner compartment."),
+         "body": ("A few checks take five minutes and fix a real share of no-heat calls. If "
+                  "none of them work, the fault is inside the furnace and needs a tech. None "
+                  "of them involve opening the gas train or the burner compartment."),
          "h3s": [
              # Rendered as one paragraph with ticked lines rather than a <ul>: nothing
              # in the page CSS styles a list, and an unstyled <ul> in the main column
@@ -372,25 +362,24 @@ FURNACE_REPAIR = {
                        "<br>✓ The furnace breaker at the panel, and the switch on the furnace itself, which looks like a light switch and gets flipped by accident"
                        "<br>✓ The air filter, held up to a light. A filter that blocks light will shut a furnace down on a high-limit trip"
                        "<br>✓ Supply registers and return grilles open and unblocked by furniture or rugs",
-                       "These are given away on purpose. Someone who fixes their own no-heat "
-                       "call in five minutes tends to call Extreme Heating, Air, Plumbing "
-                       "when the next one is not so simple."]},
+                       "We give these away on purpose. Someone who fixes their own no-heat "
+                       "call in five minutes tends to call us when the next one isn't so "
+                       "simple."]},
          ]},
         {"eyebrow": "TRIAGE",
          "id": "emergency-or-wait",
          "h2": "Is this a 24/7 emergency or can it wait?",
          "body": ["Some furnace symptoms are a safety problem and some are a scheduling "
-                  "problem. Gas smell, a sounding carbon monoxide alarm, and no heat with "
-                  "outdoor temperatures below freezing are the three that should never wait "
-                  "for morning.",
+                  "problem. A gas smell, a carbon monoxide alarm going off, and no heat "
+                  "below freezing are the three that should never wait for morning.",
                   'If the house heats with a heat pump rather than a furnace, the symptoms '
                   'read differently — <a href="/heat-pump-repair">heat pump repair</a> covers '
                   'what each one usually means.'],
          "table": {
              "caption": "Furnace symptoms: what needs a 24/7 call and what can wait",
-             "takeaway": ("Extreme Heating, Air, Plumbing treats a gas smell, a sounding "
-                          "carbon monoxide alarm, and no heat below freezing as 24/7 "
-                          "emergencies across the Dayton and Cincinnati metros."),
+             "takeaway": ("A gas smell, a carbon monoxide alarm going off, and no heat below "
+                          "freezing are 24/7 calls. Most of what's left on this list can "
+                          "wait for business hours."),
              "columns": ["What you are seeing", "Call 24/7 now",
                          "Can wait for business hours"],
              "rows": [
@@ -416,9 +405,9 @@ FURNACE_REPAIR = {
         "h2": "A repair visit without surprises.",
         "steps": [
             {"title": "Book in minutes",
-             "desc": "Call or schedule online — no-heat calls get priority, with same-day service in most cases."},
+             "desc": "Call or book online. No-heat calls get priority, and most are same day."},
             {"title": "Diagnose & quote upfront",
-             "desc": "We test the system, explain what failed, and price the fix before any work begins."},
+             "desc": "We test the system, tell you what failed, and price the fix before anything starts."},
             {"title": "Fixed right, safety-checked",
              "desc": "Every repair ends with a full safety check — heat exchanger, venting, and CO included."},
         ],
@@ -434,23 +423,22 @@ FURNACE_REPAIR = {
     # cannibalization note in handoff-build.md.
     "sectionsTail": [
         {"h2": "What does a furnace repair visit include?",
-         "body": ("A technician diagnoses the failure, explains what failed in plain terms, "
-                  "and prices the repair before touching it. Every repair ends with a full "
-                  "safety check covering the heat exchanger, the venting, and carbon monoxide "
-                  "readings, whether or not the original complaint was safety-related.")},
+         "body": ("Your tech finds the failure, explains it in plain terms, and prices the "
+                  "repair before touching it. Every visit ends with a safety check — heat "
+                  "exchanger, venting and carbon monoxide readings — whether or not that was "
+                  "what you called about.")},
         {"eyebrow": "DECIDING",
          "id": "repair-or-replace",
          "h2": "Should I repair or replace my furnace?",
          "body": ("Two things settle it: how old the furnace is, and what a combustion safety "
-                  "check finds at the heat exchanger. Under 15 years old with an intact heat "
-                  "exchanger, repair usually wins. A cracked heat exchanger is never "
-                  'repaired, and on a furnace of that age the <a href="/furnace-installation">'
-                  "replacement</a> is the whole unit."),
+                  "check finds at the heat exchanger. Under 15 with an intact exchanger, "
+                  "repair usually wins. A cracked heat exchanger is never repaired, so at "
+                  'that age the <a href="/furnace-installation">replacement</a> is the whole '
+                  "unit."),
          "table": {
              "caption": "Repair or replace a furnace: what decides it",
-             "takeaway": ("Extreme Heating, Air, Plumbing replaces rather than repairs a "
-                          "furnace once it is 15 years or older and the repair quote "
-                          "approaches a third of replacement cost."),
+             "takeaway": ("Once a furnace is 15 or older and the repair quote is closing in "
+                          "on a third of replacement cost, we'll tell you to replace it."),
              "columns": ["Factor", "Repair usually makes sense when",
                          "Replacement usually makes sense when"],
              "rows": [
@@ -469,27 +457,27 @@ FURNACE_REPAIR = {
                   "Uneven heat throughout the house"],
              ],
          }},
-        {"h2": "How do I book furnace repair in Dayton or Cincinnati?",
-         "body": (f'Furnace repair is booked by phone at <a href="{T.PHONE_TEL}">'
-                  f'{T.PHONE_DISPLAY}</a> or online. The emergency line runs 24/7, every day '
-                  "of the year, and no-heat calls are dispatched ahead of routine work. The "
-                  "office is staffed Monday to Friday, 8:00 AM to 5:00 PM.")},
+        {"h2": "How do I book furnace repair?",
+         "body": (f'Call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> or book online. The '
+                  "emergency line runs 24/7, every day of the year, and we send no-heat calls "
+                  "out ahead of routine work. The office is staffed Monday to Friday, 8:00 AM "
+                  "to 5:00 PM.")},
     ],
     "faqEyebrow": "FURNACE QUESTIONS",
-    "faqH2": "What do homeowners ask before booking furnace repair?",
+    "faqH2": "What should I know before booking furnace repair?",
     "faq": [
         {"q": "Do you repair furnaces at night and on weekends?",
-         "a": "Yes. Extreme Heating, Air, Plumbing runs 24/7 emergency service every day of the year across the Dayton and Cincinnati metros. No-heat calls in freezing weather are dispatched ahead of routine work."},
+         "a": "Yes. The emergency line runs 24/7 across the Dayton and Cincinnati metros, every day of the year. In freezing weather we send no-heat calls out ahead of routine work."},
         {"q": "Do you repair all furnace brands?",
-         "a": "Yes. Gas, electric, and high-efficiency furnaces from every major manufacturer, regardless of who installed the system."},
+         "a": "Yes. Gas, electric and high-efficiency furnaces from every major manufacturer, whoever installed the system."},
         {"q": "Is a yellow pilot flame dangerous?",
-         "a": "It can be. A healthy burner flame burns blue. Yellow or flickering can signal incomplete combustion, which produces carbon monoxide. Switch the furnace off and have it checked before running it again."},
+         "a": "It can be. A healthy burner flame burns blue. Yellow or flickering can mean incomplete combustion, which produces carbon monoxide. Shut the furnace off and have it checked before you run it again."},
         {"q": "My furnace turns on and off every few minutes. What causes that?",
-         "a": "Short cycling. The most common causes are a clogged air filter, a blocked return, a failing flame sensor, or a furnace that is oversized for the house. A clogged filter is the one a homeowner can rule out in a minute."},
+         "a": "That's short cycling. Usually a clogged air filter, a blocked return, a failing flame sensor, or a furnace that's oversized for the house. The filter is the one you can rule out in a minute."},
         {"q": "Water is pooling under my furnace. Is that normal?",
-         "a": "Not normal, but common on high-efficiency condensing furnaces. Those units produce condensate, and a blocked drain line or a failed condensate pump puts that water on the floor and usually shuts the furnace down on a safety switch."},
+         "a": "Not normal, but common on high-efficiency condensing furnaces. They produce condensate, and a blocked drain line or a failed pump puts that water on the floor — usually tripping a safety switch and shutting the furnace down."},
         {"q": "Can I keep running a furnace with a cracked heat exchanger?",
-         "a": "No. A cracked heat exchanger can put combustion gases, including carbon monoxide, into the air the house breathes. A <a href=\"/inspection\">combustion safety check</a> is what confirms a crack, and the furnace should be shut off until it has been done. A cracked exchanger is replaced rather than repaired."},
+         "a": "No. A crack can put combustion gases, including carbon monoxide, into the air your house breathes. A <a href=\"/inspection\">combustion safety check</a> is what confirms it, and the furnace should stay off until that's done. A cracked exchanger gets replaced, not repaired."},
     ],
     # Copy rewritten 2026-08-02. Move this only when the copy moves.
     "updated": "August 2, 2026",
@@ -528,8 +516,11 @@ WATER_HEATER_OVERVIEW = {
     "breadcrumb": [("Plumbing", "/plumbing/services"), ("Water Heater Services", "")],
     "h1": "Hot water, {X}.",
     "h1Highlight": "back fast",
-    "intro": "Repair, replacement, and tankless upgrades for every water heater — from the same Extreme Team you trust with your comfort.",
-    "heroChips": ["4.9 on Google", "Same-Day Replacement", "Licensed Plumbers"],
+    "intro": "Repair, replacement, and tankless upgrades for every water heater — from the same people who handle your heating and air.",
+    # "4.9 on Google" was wrong here the same way it was wrong on the two pages above:
+    # the 1,595-review figure is a Birdeye aggregate pooling several platforms, so it
+    # cannot be attributed to Google. facts.md confirms 4.9 / 1,595 for display.
+    "heroChips": ["4.9 from 1,595 reviews", "Same-Day Replacement", "Licensed Plumbers"],
     "bookingCard": {
         "eyebrow": "BOOK WATER HEATER SERVICE",
         "title": "Get a plumber to your door.",
@@ -563,19 +554,19 @@ WATER_HEATER_OVERVIEW = {
              "desc": "Elements, thermostats, valves, pilot issues — diagnosed fast and priced before we start.",
              "href": "/plumbing/water-heater/repair"},
             {"title": "Water Heater Installation & Replacement",
-             "desc": "Right-sized tank replacements, installed clean — often the same day, with financing options.",
+             "desc": "Right-sized tanks, installed clean — often the same day, with financing if you need it.",
              "href": "/plumbing/water-heater/installation"},
             {"title": "Tankless Water Heaters",
-             "desc": "Endless hot water and lower energy use — we'll tell you honestly if tankless fits your home.",
+             "desc": "Hot water that doesn't run out, and a lower bill — we'll tell you straight if it suits your house.",
              "href": "/plumbing/water-heater/installation"},
         ],
     },
     "process": {
         "steps": [
             {"title": "Book in minutes",
-             "desc": "Call or schedule online — no-hot-water calls get priority dispatch."},
+             "desc": "Call or book online. No-hot-water calls get priority dispatch."},
             {"title": "Diagnose & quote upfront",
-             "desc": "Repair vs. replace laid out honestly, with flat pricing you approve first."},
+             "desc": "Repair or replace, laid out straight, with a flat price you approve first."},
             {"title": "Hot water, guaranteed",
              "desc": "Installed to code, tested at every tap, and the old unit hauled away."},
         ],
@@ -583,13 +574,13 @@ WATER_HEATER_OVERVIEW = {
     "faqEyebrow": "WATER HEATER QUESTIONS",
     "faq": [
         {"q": "Can you replace my water heater the same day?",
-         "a": "Usually, yes. We stock common tank sizes and can install the same day in most cases — so you're not going a week without hot water."},
+         "a": "Usually, yes. We stock the common tank sizes, so most replacements go in the same day — you're not waiting a week for hot water."},
         {"q": "Tank or tankless — which is right for my home?",
-         "a": "Tanks cost less upfront and suit most homes; tankless costs more to install but delivers endless hot water and lower energy bills. We'll walk you through both honestly — no upsell."},
+         "a": "Tanks cost less upfront and suit most homes. Tankless costs more to install but gives you hot water that doesn't run out and a lower energy bill. We'll walk you through both and let you decide."},
         {"q": "How long do water heaters last?",
-         "a": "Tank units typically last 8–12 years; tankless can reach 20 with maintenance. Past the 10-year mark, replacement is usually smarter than a major repair."},
+         "a": "Tank units usually last 8–12 years; tankless can reach 20 with maintenance. Past ten years, replacing beats a major repair most of the time."},
         {"q": "What size water heater do I need?",
-         "a": "It depends on your household — a family of four typically needs a 40–50 gallon tank. We size it to your actual hot water use, not a guess."},
+         "a": "Depends on the household — a family of four usually needs 40 to 50 gallons. We size it to how much hot water you actually use, not a guess."},
     ],
     "rail": {
         # Carried over from the old page (hotlinked stock preview) — replace
@@ -628,19 +619,19 @@ MAINTENANCE_3A = {
     # Leads with Zero Risk Investment per programs.md — it is the only benefit
     # competitors don't also offer. Both conditions (consecutive years, $2,500 or
     # 10 years) must appear wherever the accrual is stated.
-    "intro": "X-Plan is our maintenance membership, and it pays you back: 100% of the investment of your X-Plan membership in consecutive years is applied toward your end-of-life equipment replacement — up to $2,500 or 10 years. Along the way, two visits a year, 15% off all repairs, and priority scheduling.",
+    "intro": "X-Plan is our maintenance membership, and it pays you back. Every dollar you spend on it in consecutive years goes toward replacing your system at the end of its life — up to $2,500 or 10 years. Plus two visits a year, 15% off repairs, and priority scheduling.",
     "heroChips": ["2 Tune-Ups a Year", "15% Off Repairs", "Priority Scheduling"],
     "benefits": {
         "h2": "One membership, six ways it pays off.",
         "cards": [
             {"t": "100% back toward your next system",
-             "d": "Every dollar of your membership in consecutive years is applied toward end-of-life equipment replacement — up to $2,500 or 10 years, whichever comes first."},
+             "d": "Every dollar you pay in consecutive years goes toward end-of-life equipment replacement — up to $2,500 or 10 years, whichever comes first."},
             {"t": "Two seasonal tune-ups a year",
              "d": "AC in spring, furnace in fall — we call you to schedule, not the other way around."},
             {"t": "15% off every repair",
-             "d": "HVAC and plumbing repairs alike — member pricing, automatically."},
+             "d": "HVAC and plumbing alike — member pricing, applied automatically."},
             {"t": "Priority scheduling",
-             "d": "Members move to the front of the line — even in peak season."},
+             "d": "You go to the front of the line, even in peak season."},
             {"t": "5-year warranty on repairs",
              "d": "Five times the standard coverage on parts and labor we install."},
             {"t": "Discounted service calls",
@@ -648,45 +639,45 @@ MAINTENANCE_3A = {
         ],
     },
     "useCases": {
-        "h2": "Made for homeowners who'd rather not think about it.",
+        "h2": "Made for people who'd rather not think about it.",
         "cards": [
             {"t": "Your system is 5+ years old",
-             "d": "This is when small issues start compounding. Twice-a-year checks catch them while they're still cheap."},
+             "d": "This is when small issues start compounding. Two checks a year catch them while they're still cheap."},
             {"t": "You just bought a new system",
-             "d": "Manufacturer warranties require documented annual maintenance — X-Plan keeps you covered without the calendar reminders."},
+             "d": "Manufacturer warranties want documented annual maintenance — this keeps you covered without the calendar reminders."},
             {"t": "You've had a surprise breakdown before",
-             "d": "The worst repairs happen on the worst days. Priority scheduling and discounted service calls take the sting out."},
+             "d": "The worst repairs happen on the worst days. Priority scheduling and a cheaper service call take the sting out."},
         ],
     },
     "value": {
         "h2": "Most members come out ahead in year one.",
         "stats": [
-            {"n": "2×", "cap": "tune-ups included — booked separately, they'd cost more than the membership alone."},
-            {"n": "15%", "cap": "off one mid-size repair typically covers the rest."},
-            {"n": "$20", "cap": "off every service call — including emergencies, when timing is worst."},
+            {"n": "2×", "cap": "tune-ups included — booked separately they'd cost more than the membership."},
+            {"n": "15%", "cap": "off one mid-size repair usually covers the rest."},
+            {"n": "$20", "cap": "off every service call, emergencies included, when the timing is worst."},
         ],
     },
     "process": {
         "h2": "Join once. We handle the rest.",
         "steps": [
             {"title": "Join online or by phone",
-             "desc": "Pick yearly or monthly billing, and we'll set your membership up on the spot."},
+             "desc": "Pick yearly or monthly billing, and we'll set you up on the spot."},
             {"title": "We schedule your tune-ups",
-             "desc": "We reach out each spring and fall to book your visits around your calendar."},
+             "desc": "We reach out each spring and fall and book around your calendar."},
             {"title": "You save automatically",
-             "desc": "Member pricing, priority dispatch, and the 5-year repair warranty apply from day one."},
+             "desc": "Member pricing, priority dispatch and the 5-year repair warranty apply from day one."},
         ],
     },
     "faqEyebrow": "X-PLAN QUESTIONS",
     "faq": [
         {"q": "How does the Zero Risk Investment work?",
-         "a": "100% of what you pay for X-Plan in consecutive years is applied toward replacing your equipment at the end of its life — up to $2,500 or 10 years, whichever comes first. Membership years have to be consecutive, and the credit follows you rather than the property."},
+         "a": "Everything you pay for X-Plan in consecutive years goes toward replacing your equipment at the end of its life — up to $2,500 or 10 years, whichever comes first. The years have to be consecutive, and the credit follows you, not the house."},
         {"q": "What happens if I let my membership lapse?",
-         "a": "The Zero Risk Investment builds on consecutive years, so a gap in membership interrupts it. If you're thinking about pausing, call us first and we'll walk through what it means for your balance."},
+         "a": "The Zero Risk Investment builds on consecutive years, so a gap interrupts it. If you're thinking about pausing, call us first and we'll walk through what it does to your balance."},
         {"q": "Does the 15% discount cover plumbing repairs too?",
          "a": "Yes — member pricing applies to HVAC and plumbing repairs alike, automatically."},
         {"q": "What happens at a tune-up visit?",
-         "a": "A full system inspection and safety check: capacitor, relay, and thermostat testing, compressor amp draws, drain line cleaning, a pressure check, and light coil cleaning."},
+         "a": "A full system inspection and safety check: capacitor, relay and thermostat testing, compressor amp draws, drain line cleaning, a pressure check, and light coil cleaning."},
     ],
     "joinBand": {
         "bold": "Ready to stop worrying about breakdowns?",

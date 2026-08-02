@@ -547,12 +547,15 @@ def llms_txt():
     offices = " | ".join(o["oneline"] for o in D.OFFICES)
     # Wrapped at write time rather than hand-broken: the values are interpolated, so a
     # hand-broken blockquote goes ragged the first time a number gains a digit.
+    # Second person, and only the facts that answer "who are you and how fast do you
+    # get here". The founding year, the job count and the rating are not dropped — they
+    # are stated once each further down, under Company, instead of stacked in one
+    # 45-word sentence that names the business twice. The name is the H1 above.
     summary = textwrap.fill(
-        "Locally owned heating, cooling and plumbing contractor serving the Dayton and "
-        f"Cincinnati, Ohio metros. {D.COMPANY} was founded in {D.FOUNDED}, has completed "
-        f"{D.JOBS_COMPLETED_LONG} jobs, offers 24/7 emergency service and {D.SAME_DAY} "
-        f"same-day service, and holds a {D.GOOGLE_RATING}-star average across "
-        f"{D.REVIEW_COUNT} {D.REVIEW_SOURCE}.",
+        "Locally owned heating, cooling and plumbing company for the Dayton and "
+        f"Cincinnati, Ohio metros, in business since {D.FOUNDED}. We finish roughly "
+        f"{D.SAME_DAY} of jobs the same day and answer the emergency line at any hour. "
+        "You get the price before work starts.",
         width=86, initial_indent="> ", subsequent_indent="> ")
     head = f"""\
 # {D.COMPANY}
@@ -567,20 +570,20 @@ Service area: {len(L.ALL)} communities and counties across the Dayton and Cincin
 Trades: heating, cooling, indoor air quality, and residential plumbing.
 Licences: HVAC {D.LICENSE_HVAC}; plumbing {D.LICENSE_PLUMBING}.
 Legal entities: {D.ENTITY_HVAC.replace("&amp;", "&")} (HVAC), {D.ENTITY_PLUMBING} (plumbing).
-Pricing is quoted upfront before work begins.
+Pricing: a flat number, quoted before we start.
 """
     programs = f"""\
 ## Membership, offers and financing
 
-- [X-Plan maintenance membership]({u}/maintenance): X-Plan costs {D.XPLAN["annual"]} per year or {D.XPLAN["monthly"]} per month {D.XPLAN["monthlyNote"]}. It includes two seasonal safety and performance visits, 15% off all repairs, priority scheduling, a reduced member service fee including after-hours and holidays, and a 5-year warranty on qualified repairs. Members accrue 100% of their membership investment in consecutive years toward end-of-life equipment replacement, up to $2,500 or 10 years, whichever comes first. The accrual follows the member, not the property.
-- [Extreme Rewards referral program]({u}/referral): Refer a friend and whatever they save, you earn. They save {D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or {D.REWARDS["everythingElse"]} on everything else, and the referrer earns the same amount on a Visa gift card. New customers only; the referral must be named when the job is booked; the reward is issued within 90 days of job completion.
-- [Current specials]({u}/specials): Current promotional offers.
-- [Financing options]({u}/financing-options): Financing is available through {", ".join(D.LENDERS[:-1])} and {D.LENDERS[-1]}.
+- [X-Plan maintenance membership]({u}/maintenance): {D.XPLAN["annual"]} a year, or {D.XPLAN["monthly"]} a month {D.XPLAN["monthlyNote"]}. You get two seasonal safety and performance visits, 15% off every repair, priority scheduling, a lower service-call fee that also applies after hours and on holidays, and a 5-year warranty on qualified repairs. Stay a member in consecutive years and every dollar you have paid comes off the cost of replacing that system at end of life, up to $2,500 or 10 years, whichever comes first. The credit follows you, not the house.
+- [Extreme Rewards referral program]({u}/referral): Refer a friend and whatever they save, you earn. They save {D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or {D.REWARDS["everythingElse"]} on everything else, and you get the same amount on a Visa gift card. New customers only. Name them when the job is booked, and we send your reward within 90 days of finishing the job.
+- [Current specials]({u}/specials): Whatever we're running right now.
+- [Financing options]({u}/financing-options): Monthly payment plans through {", ".join(D.LENDERS[:-1])} and {D.LENDERS[-1]}.
 """
     company = f"""\
 ## Company
 
-- [About]({u}/about): Company background. Locally owned and operated since {D.FOUNDED}, {D.JOBS_COMPLETED_LONG} jobs completed. The Mason office opened in {D.MASON_OPENED}.
+- [About]({u}/about): Locally owned and operated since {D.FOUNDED}, with {D.JOBS_COMPLETED_LONG} jobs behind us. The Mason office opened in {D.MASON_OPENED}.
 - [Contact]({u}/contact): Phone, office addresses and hours.
 - [Reviews]({dict(D.SOCIAL)["Google Reviews"]}): {D.GOOGLE_RATING}-star average across {D.REVIEW_COUNT} {D.REVIEW_SOURCE}.
 

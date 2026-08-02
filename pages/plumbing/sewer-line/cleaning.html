@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><a href="/plumbing/sewer-line/overview">Sewer Line Services</a><span class="sep">›</span><span class="cur">Cleaning</span></div>
       <h1 class="xsp-h1">Sewer line cleaning and hydro jetting in <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing cleans residential main sewer lines across the Dayton and Cincinnati, Ohio metros using high-pressure hydro jetting. Jetting scours the full diameter of the pipe rather than boring a hole through the blockage. A camera pass confirms the pipe can take it beforehand, and backups indoors are handled 24/7.</p></div>
+      <div class="xsp-answer" id="answer"><p>Hydro jetting scours the full diameter of your pipe instead of boring a hole through the blockage, which is why it holds for years rather than months. A camera pass confirms the pipe can take it first.</p></div>
       <p class="xsp-intro">A snake makes a hole. A jetter cleans the pipe. They are not the same visit.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
@@ -477,7 +535,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">Signs your main line needs cleaning.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Whole-house drains run slow</div><div class="xsp-check"><span class="c">✓</span>Gurgling after flushing</div><div class="xsp-check"><span class="c">✓</span>Grease-heavy kitchen line</div><div class="xsp-check"><span class="c">✓</span>Roots found on camera</div><div class="xsp-check"><span class="c">✓</span>Annual backups like clockwork</div><div class="xsp-check"><span class="c">✓</span>Never been jetted</div></div>
   <div class="xsp-callout">Snaking pokes a hole; jetting cleans the pipe. Call <a href="tel:18445847399">(844) 584-7399</a> to break the backup cycle, or <a href="/plumbing/emergency-plumbing">around the clock</a> if sewage is already indoors.</div>
-</div><div class="xsp-section"><h2 class="xsp-h2">Sewage is backing up in my basement. What do I do?</h2><p class="xsp-prose">Stop running water anywhere in the house immediately, including the dishwasher and the washing machine, and keep everyone off the lowest-floor fixtures. Every gallon that goes down adds to what comes up. Then call. Sewage indoors is a health issue as well as a plumbing one and it gets dispatched around the clock.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing dispatches on indoor sewage backups 24 hours a day across the Dayton and Cincinnati metros, under Ohio plumbing license #13557.</p></div><div class="xsp-section"><h2 class="xsp-h2">What is hydro jetting and how is it different from snaking?</h2><p class="xsp-prose">A cable machine bores an opening through a blockage, which restores flow and leaves the buildup on the pipe wall. Hydro jetting pushes high-pressure water through a specialized nozzle that scours the full inside diameter, cutting root hair and stripping grease and scale. A cable restores flow, and a jetter restores the pipe.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing recommends hydro jetting rather than cable snaking for any main sewer line that has backed up more than once in a year.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Cable snaking and hydro jetting compared for main sewer lines."><table class="xsp-table"><caption>Cable snaking and hydro jetting compared for main sewer lines.</caption><thead><tr><th scope="col">Factor</th><th scope="col">Cable snaking</th><th scope="col">Hydro jetting</th></tr></thead><tbody><tr><th scope="row">What it removes</th><td>An opening through the blockage</td><td>Roots, grease and scale from the full pipe wall</td></tr><tr><th scope="row">Result on the pipe wall</th><td>Buildup remains</td><td>Pipe returned close to its original diameter</td></tr><tr><th scope="row">Best used for</th><td>An emergency reopening to restore flow</td><td>Ending a cycle of repeat backups</td></tr><tr><th scope="row">Root intrusion</th><td>Cuts what the head contacts</td><td>Cuts fine root hair the cable misses</td></tr><tr><th scope="row">Pipe condition required</th><td>Works in most pipe including fragile lines</td><td>Pipe must be sound, confirmed by camera first</td></tr><tr><th scope="row">How long results hold</th><td>Months on a line with buildup</td><td>Years in most homes</td></tr><tr><th scope="row">Verification</th><td>Flow test</td><td>Camera pass after the cleaning</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">How often should a sewer line be cleaned?</h2><p class="xsp-prose">Most homes never need scheduled cleaning. Homes with mature trees over a clay lateral, or <a href="/plumbing/clogged-drain">a kitchen line carrying years of grease</a>, do better on a maintenance interval than on an emergency call. Where a line has been jetted once, the camera footage usually tells us whether it will need it again.</p></div><div class="xsp-section"><h2 class="xsp-h2">Is hydro jetting safe for old pipes?</h2><p class="xsp-prose">Not universally, which is why the camera goes in first. Thinned cast iron and cracked clay can be damaged by high-pressure water, and in those lines the honest recommendation is cleaning by cable and planning a repair. We say that before jetting rather than after, and the footage is there to back it up.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing inspects a sewer line by <a href="/plumbing/sewer-line/overview">camera inspection</a> before hydro jetting it, because high-pressure water can damage thinned cast iron or cracked clay pipe.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">Sewage is backing up in my basement. What do I do?</h2><p class="xsp-prose">Stop running water anywhere in the house immediately, including the dishwasher and the washing machine, and keep everyone off the lowest-floor fixtures. Every gallon that goes down adds to what comes up. Then call. Sewage indoors is a health issue as well as a plumbing one and it gets dispatched around the clock.</p><p class="xsp-prose">Someone answers at any hour for this one, and the plumber who turns up is working under Ohio plumbing license #13557.</p></div><div class="xsp-section"><h2 class="xsp-h2">What is hydro jetting and how is it different from snaking?</h2><p class="xsp-prose">A cable machine bores an opening through a blockage, which restores flow and leaves the buildup on the pipe wall. Hydro jetting pushes high-pressure water through a specialized nozzle that scours the full inside diameter, cutting root hair and stripping grease and scale. A cable restores flow, and a jetter restores the pipe.</p><p class="xsp-takeaway">If your main line has backed up more than once in a year, jetting is what we will recommend. A cable restores flow; a jetter restores the pipe.</p><p class="xsp-tablelabel" id="tbl-cable-snaking-and-hydro-jetting-compared-for-mai">Cable snaking and hydro jetting compared for main sewer lines.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-cable-snaking-and-hydro-jetting-compared-for-mai"><table class="xsp-table" role="table" aria-labelledby="tbl-cable-snaking-and-hydro-jetting-compared-for-mai"><thead><tr><th scope="col">Factor</th><th scope="col">Cable snaking</th><th scope="col">Hydro jetting</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">What it removes</th><td role="cell" data-label="Cable snaking"><span>An opening through the blockage</span></td><td role="cell" data-label="Hydro jetting"><span>Roots, grease and scale from the full pipe wall</span></td></tr><tr role="row"><th scope="row" role="rowheader">Result on the pipe wall</th><td role="cell" data-label="Cable snaking"><span>Buildup remains</span></td><td role="cell" data-label="Hydro jetting"><span>Pipe returned close to its original diameter</span></td></tr><tr role="row"><th scope="row" role="rowheader">Best used for</th><td role="cell" data-label="Cable snaking"><span>An emergency reopening to restore flow</span></td><td role="cell" data-label="Hydro jetting"><span>Ending a cycle of repeat backups</span></td></tr><tr role="row"><th scope="row" role="rowheader">Root intrusion</th><td role="cell" data-label="Cable snaking"><span>Cuts what the head contacts</span></td><td role="cell" data-label="Hydro jetting"><span>Cuts fine root hair the cable misses</span></td></tr><tr role="row"><th scope="row" role="rowheader">Pipe condition required</th><td role="cell" data-label="Cable snaking"><span>Works in most pipe including fragile lines</span></td><td role="cell" data-label="Hydro jetting"><span>Pipe must be sound, confirmed by camera first</span></td></tr><tr role="row"><th scope="row" role="rowheader">How long results hold</th><td role="cell" data-label="Cable snaking"><span>Months on a line with buildup</span></td><td role="cell" data-label="Hydro jetting"><span>Years in most homes</span></td></tr><tr role="row"><th scope="row" role="rowheader">Verification</th><td role="cell" data-label="Cable snaking"><span>Flow test</span></td><td role="cell" data-label="Hydro jetting"><span>Camera pass after the cleaning</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">How often should a sewer line be cleaned?</h2><p class="xsp-prose">Most homes never need scheduled cleaning. Homes with mature trees over a clay lateral, or <a href="/plumbing/clogged-drain">a kitchen line carrying years of grease</a>, do better on a maintenance interval than on an emergency call. Where a line has been jetted once, the camera footage usually tells us whether it will need it again.</p></div><div class="xsp-section"><h2 class="xsp-h2">Is hydro jetting safe for old pipes?</h2><p class="xsp-prose">Not universally, which is why the camera goes in first. Thinned cast iron and cracked clay can be damaged by high-pressure water, and in those lines the honest recommendation is cleaning by cable and planning a repair. We say that before jetting rather than after, and the footage is there to back it up.</p><p class="xsp-prose">That is the whole reason the <a href="/plumbing/sewer-line/overview">camera</a> goes in first. High-pressure water belongs in a pipe someone has actually looked at.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
@@ -488,14 +546,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="t">Cleaning or repair?</div>
   <div class="d">If the camera shows breaks or bellies, cleaning alone won't hold — we'll show you the footage and price both.</div>
   <a href="/plumbing/sewer-line/repair">Sewer Repair →</a>
-</div><div class="xsp-section"><h2 class="xsp-h2">Why does my basement floor drain back up when it rains?</h2><p class="xsp-prose">Heavy rain getting into a sanitary line usually means storm water is entering somewhere it should not: a cracked lateral, a downspout tied into the sanitary system, or a failed cleanout cap. Cleaning helps if the line is partly restricted, but the entry point is the actual problem and a camera finds it. <a href="/plumbing/sump-pump/repair">A failed sump pump</a> produces the same wet basement from a different cause.</p></div><div class="xsp-section"><h2 class="xsp-h2">How fast can you jet my line?</h2><p class="xsp-prose">Extreme runs 90% same-day service across the Dayton and Cincinnati metros, and active backups are prioritized over scheduled cleaning. Storm events produce clusters of these calls in the same afternoon, so a call earlier in the day gets a better slot. Call <a href="tel:18445847399">(844) 584-7399</a>.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">Why does my basement floor drain back up when it rains?</h2><p class="xsp-prose">Heavy rain getting into a sanitary line usually means storm water is entering somewhere it should not: a cracked lateral, a downspout tied into the sanitary system, or a failed cleanout cap. Cleaning helps if the line is partly restricted, but the entry point is the actual problem and a camera finds it. <a href="/plumbing/sump-pump/repair">A failed sump pump</a> produces the same wet basement from a different cause.</p></div><div class="xsp-section"><h2 class="xsp-h2">How fast can you jet my line?</h2><p class="xsp-prose">Most calls are handled the same day, and an active backup goes ahead of a scheduled cleaning. Storms produce these calls in clusters within the same afternoon, so calling earlier in the day gets you a better slot. Call <a href="tel:18445847399">(844) 584-7399</a>.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a></div><div>
   <div class="xsp-eyebrow">CLEANING QUESTIONS</div>
   <h2 class="xsp-h2">What else do homeowners ask about jetting?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
     <button type="button" aria-expanded="true"><span>Sewage is coming up in my basement floor drain. Who do I call?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Call a licensed plumber immediately and stop using water in the house until they arrive. Extreme Heating, Air, Plumbing answers backup calls 24 hours a day across the Dayton and Cincinnati metros at <a href="tel:18445847399">(844) 584-7399</a>.</div>
+    <div class="a">Call a licensed plumber now, and stop using water in the house until one arrives. Someone answers at <a href="tel:18445847399">(844) 584-7399</a> at any hour for this.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>How long does hydro jetting last?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">Years in most homes, because jetting removes the buildup instead of punching through it. Lines with continuing root intrusion or heavy grease loading do better on a maintenance schedule than on a wait-and-see basis.</div>

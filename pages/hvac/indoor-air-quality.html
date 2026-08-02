@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><span class="cur">Indoor Air Quality</span></div>
       <h1 class="xsp-h1">Indoor air quality services for <em>your home</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing improves indoor air quality in Dayton and Cincinnati, Ohio homes through filtration, UV purification, ventilation and humidity control. Work starts by finding the source of the problem, not by selling a package. Indoor humidity is targeted at 30 to 50% depending on the season.</p></div>
+      <div class="xsp-answer" id="answer"><p>Filtration, UV purification, ventilation and humidity control, aimed at whatever is actually wrong in your house. We find the source first. Nobody gets sold a package because it was next on the list.</p></div>
       <p class="xsp-intro">Filtration, purification and humidity control for Dayton and Cincinnati homes. Cleaner air from the team you already trust.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
@@ -493,14 +551,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">IAQ Questions</span><br><span class="d">Straight answers on filters, purifiers, humidity, and more.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">How do I improve the air quality in my house?</h2><p class="xsp-prose">In this order: control the source, then filter, then purify. Sealing a mouldy crawlspace does more than any purifier will, a better filter does more than a UV lamp, and the equipment only earns its keep once the first two are handled. Anyone selling the order backwards is selling equipment.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing treats indoor air quality in three steps: source control first, filtration second, purification third, in that order. The hardware for each step is compared on our <a href="/indoor-air-quality-solutions">filtration, UV and ventilation options</a> page.</p></div><div class="xsp-section"><h2 class="xsp-h2">What are the signs of poor indoor air quality?</h2><p class="xsp-prose">Allergies that flare indoors and settle outdoors, dust that returns within a day of cleaning, odours that linger, a house that is humid in summer and static-dry in winter, musty smells near returns, and everyone sleeping better away from home. Any one of those on its own means little. Four at once is a pattern, and <a href="/importance-iaq">why indoor air quality matters</a> covers what is behind them.</p></div><div class="xsp-section"><h2 class="xsp-h2">Which air quality problem does your home actually have?</h2><p class="xsp-prose">Different symptoms point at different sources, and the fix follows the source rather than the symptom. The table below is how a tech narrows it down on a first visit.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing diagnoses indoor air quality by symptom and source, because the same complaint can come from a filter, a duct leak, or standing water under the house.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Indoor air quality symptoms and their usual sources in Dayton and Cincinnati homes."><table class="xsp-table"><caption>Indoor air quality symptoms and their usual sources in Dayton and Cincinnati homes.</caption><thead><tr><th scope="col">What you are noticing</th><th scope="col">Likely source</th><th scope="col">What usually fixes it</th></tr></thead><tbody><tr><th scope="row">Dust returns within a day of cleaning</th><td>Low-efficiency filter, or return-side duct leaks</td><td>Higher-efficiency media filtration and duct sealing</td></tr><tr><th scope="row">Musty smell when the system starts</th><td>Biological growth on the evaporator coil or in the ducts</td><td>Coil cleaning, UV at the coil, duct cleaning</td></tr><tr><th scope="row">Humid, clammy air in summer</th><td>Oversized air conditioner short-cycling, or high infiltration</td><td>Correct sizing, or whole-home dehumidification</td></tr><tr><th scope="row">Static shocks and dry sinuses in winter</th><td>Very low indoor relative humidity</td><td>Whole-home humidifier sized to the house</td></tr><tr><th scope="row">Stale air, odours that will not clear</th><td>Not enough fresh-air ventilation in a tight house</td><td>Mechanical ventilation</td></tr><tr><th scope="row">Allergy symptoms indoors only</th><td>Pollen, dander and dust recirculating through the system</td><td>Filtration upgrade, duct cleaning, source control</td></tr><tr><th scope="row">Visible mould near a register or crawlspace</th><td>Standing water or a moisture path, not an air problem</td><td>Fix the moisture source first, then treat the air</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">What indoor air quality services does Extreme offer?</h2><p class="xsp-prose">Media filtration, UV purification at the coil, whole-home humidification and dehumidification, ventilation, coil cleaning and <a href="/duct-cleaning">air duct cleaning</a>. Extreme Heating, Air, Plumbing measures before and after rather than promising a result, and everything installs into the HVAC system already in the house.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">How do I improve the air quality in my house?</h2><p class="xsp-prose">In this order: control the source, then filter, then purify. Sealing a mouldy crawlspace does more than any purifier will, a better filter does more than a UV lamp, and the equipment only earns its keep once the first two are handled. Anyone selling the order backwards is selling equipment.</p><p class="xsp-prose">So that is the order we work in: source, then filter, then purify. The hardware for each step sits side by side on our <a href="/indoor-air-quality-solutions">filtration, UV and ventilation options</a> page.</p></div><div class="xsp-section"><h2 class="xsp-h2">What are the signs of poor indoor air quality?</h2><p class="xsp-prose">Allergies that flare indoors and settle outdoors, dust that returns within a day of cleaning, odours that linger, a house that is humid in summer and static-dry in winter, musty smells near returns, and everyone sleeping better away from home. Any one of those on its own means little. Four at once is a pattern, and <a href="/importance-iaq">why indoor air quality matters</a> covers what is behind them.</p></div><div class="xsp-section"><h2 class="xsp-h2">Which air quality problem does your home actually have?</h2><p class="xsp-prose">Different symptoms point at different sources, and the fix follows the source rather than the symptom. The table below is how a tech narrows it down on a first visit.</p><p class="xsp-takeaway">We work backwards from the symptom, because the same complaint can come from a cheap filter, a leaking return, or standing water under the house.</p><p class="xsp-tablelabel" id="tbl-indoor-air-quality-symptoms-and-their-usual-sour">Indoor air quality symptoms and their usual sources.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-indoor-air-quality-symptoms-and-their-usual-sour"><table class="xsp-table" role="table" aria-labelledby="tbl-indoor-air-quality-symptoms-and-their-usual-sour"><thead><tr><th scope="col">What you are noticing</th><th scope="col">Likely source</th><th scope="col">What usually fixes it</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">Dust returns within a day of cleaning</th><td role="cell" data-label="Likely source"><span>Low-efficiency filter, or return-side duct leaks</span></td><td role="cell" data-label="What usually fixes it"><span>Higher-efficiency media filtration and duct sealing</span></td></tr><tr role="row"><th scope="row" role="rowheader">Musty smell when the system starts</th><td role="cell" data-label="Likely source"><span>Biological growth on the evaporator coil or in the ducts</span></td><td role="cell" data-label="What usually fixes it"><span>Coil cleaning, UV at the coil, duct cleaning</span></td></tr><tr role="row"><th scope="row" role="rowheader">Humid, clammy air in summer</th><td role="cell" data-label="Likely source"><span>Oversized air conditioner short-cycling, or high infiltration</span></td><td role="cell" data-label="What usually fixes it"><span>Correct sizing, or whole-home dehumidification</span></td></tr><tr role="row"><th scope="row" role="rowheader">Static shocks and dry sinuses in winter</th><td role="cell" data-label="Likely source"><span>Very low indoor relative humidity</span></td><td role="cell" data-label="What usually fixes it"><span>Whole-home humidifier sized to the house</span></td></tr><tr role="row"><th scope="row" role="rowheader">Stale air, odours that will not clear</th><td role="cell" data-label="Likely source"><span>Not enough fresh-air ventilation in a tight house</span></td><td role="cell" data-label="What usually fixes it"><span>Mechanical ventilation</span></td></tr><tr role="row"><th scope="row" role="rowheader">Allergy symptoms indoors only</th><td role="cell" data-label="Likely source"><span>Pollen, dander and dust recirculating through the system</span></td><td role="cell" data-label="What usually fixes it"><span>Filtration upgrade, duct cleaning, source control</span></td></tr><tr role="row"><th scope="row" role="rowheader">Visible mould near a register or crawlspace</th><td role="cell" data-label="Likely source"><span>Standing water or a moisture path, not an air problem</span></td><td role="cell" data-label="What usually fixes it"><span>Fix the moisture source first, then treat the air</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">What can you install?</h2><p class="xsp-prose">Media filtration, UV purification at the coil, whole-home humidification and dehumidification, fresh-air ventilation, coil cleaning and <a href="/duct-cleaning">duct cleaning</a>. All of it goes into the system you already own, and we take readings before and after instead of promising you a result.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Cleaner air, measured</div><div class="d">We verify results with before-and-after readings — not promises.</div></div></div></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">Do UV lights in HVAC systems work?</h2><p class="xsp-prose">Against biological growth on a wet evaporator coil, yes, when the lamp is sized and aimed correctly and the bulb gets replaced on schedule. Against dust, pollen and dander, no. Those are particles, and particles are a filter's job. Anyone selling UV as an allergy fix is overselling it. More of the same ground is covered in our <a href="/iaq-faq">common filter and MERV questions</a>.</p></div><div class="xsp-section"><h2 class="xsp-h2">What humidity should an Ohio home hold?</h2><p class="xsp-prose">Between 30 and 50% relative humidity. Nearer 30 to 35% in deep winter, because higher than that condenses on cold windows and does damage in the wall behind them. Nearer 45 to 50% in summer, which is dry enough that the house feels cool without overcooling it. A <a href="/humidifier">whole-home humidifier installation</a> is what holds the winter end of that range.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book air quality help in Dayton?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online. Extreme Heating, Air, Plumbing will find the source before recommending equipment, and about 90% of service calls are handled the same day. Filter and pad changes come with the <a href="/maintenance">X-Plan maintenance membership</a> visits.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
+</div><div class="xsp-section"><h2 class="xsp-h2">Do UV lights in HVAC systems work?</h2><p class="xsp-prose">Against biological growth on a wet evaporator coil, yes, when the lamp is sized and aimed correctly and the bulb gets replaced on schedule. Against dust, pollen and dander, no. Those are particles, and particles are a filter's job. Anyone selling UV as an allergy fix is overselling it. More of the same ground is covered in our <a href="/iaq-faq">common filter and MERV questions</a>.</p></div><div class="xsp-section"><h2 class="xsp-h2">What humidity should an Ohio home hold?</h2><p class="xsp-prose">Between 30 and 50% relative humidity. Nearer 30 to 35% in deep winter, because higher than that condenses on cold windows and does damage in the wall behind them. Nearer 45 to 50% in summer, which is dry enough that the house feels cool without overcooling it. A <a href="/humidifier">whole-home humidifier installation</a> is what holds the winter end of that range.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book air quality help?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online. We find the source before recommending equipment, and most calls are handled the same day. Filter and pad changes come with the <a href="/maintenance">X-Plan maintenance membership</a> visits.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
@@ -509,7 +567,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">What else do homeowners ask about indoor air?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
     <button type="button" aria-expanded="true"><span>Where do you start when the whole house feels stuffy?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">With the return side and the filter, then humidity, then ventilation. A stuffy house is usually one that is sealed tighter than its ventilation was designed for. Extreme Heating, Air, Plumbing takes readings before recommending anything.</div>
+    <div class="a">With the return side and the filter, then humidity, then ventilation. A stuffy house is usually one sealed tighter than its ventilation was designed for. We take the readings before recommending anything.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Can indoor air quality be measured before and after?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">Yes. Temperature, relative humidity, static pressure and particulate readings all get taken on the visit, and again after the work. That is the only way to tell whether the money did anything.</div>

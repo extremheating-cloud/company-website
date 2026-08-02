@@ -197,18 +197,17 @@ REFERRAL = {
     # "EXTREME REWARDS", so putting the program name in the H1 as well would read as
     # a stutter. The canonical business name enters in the answer block instead,
     # which is the passage that actually gets cited.
-    "answer": (f"Extreme Rewards is the customer referral program from {D.COMPANY} in the Dayton "
-               f'and Cincinnati, Ohio metros. A referred customer saves {D.REWARDS["newSystem"]} '
-               "on a new heating, cooling or plumbing system, or "
-               f'{D.REWARDS["everythingElse"]} on everything else. The person who referred them '
-               "earns the same amount on a Visa gift card."),
+    "answer": ("A friend you send us saves "
+               f'{D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or '
+               f'{D.REWARDS["everythingElse"]} on everything else. You earn the same amount back '
+               "on a Visa gift card once their job is done."),
     # "everything else" is a client-directed change from the MD's approved wording ("any
     # repair or installation"), applied site-wide on 2026-07-31 at the client's instruction:
     # /referral, /specials and /terms all now say it. programs.md keeps the narrower phrasing
     # on purpose as a commercial guard (a diagnostic that doesn't lead to work isn't a
     # repair); "everything else" reads as covering a standalone diagnostic too. The client
     # was told and chose to align. Update programs.md if this becomes the official wording.
-    "intro": "Send someone our way and they'll get $250 off a new heating, cooling, or plumbing system, or $100 off everything else. When the job's finished, you earn the same amount on a Visa gift card.",
+    "intro": "There's no limit on how many people you send, and no form to fill in. They just have to give your name when they book.",
     "heroChips": [
         "No limit on how many friends you refer",
         "Paid on a Visa gift card",
@@ -251,9 +250,8 @@ REFERRAL = {
         "eyebrow": "THE TWO AMOUNTS",
         "h2": "How much does a referral pay?",
         "id": "amounts",
-        "takeaway": f'Extreme Rewards pays {D.REWARDS["newSystem"]} to the person who referred a '
-                    "customer buying a new heating, cooling or plumbing system from "
-                    f"{D.COMPANY}.",
+        "takeaway": f'A referral on a new heating, cooling or plumbing system pays '
+                    f'{D.REWARDS["newSystem"]} to the person who sent them.',
         "caption": "Extreme Rewards amounts",
         "columns": ["What the referred customer books", "What they save", "What the referrer earns"],
         "rows": [
@@ -269,27 +267,24 @@ REFERRAL = {
     "faqH2": "What do people ask about Extreme Rewards?",
     "faq": [
         {"q": "How does Extreme Rewards work?",
-         "a": f'A friend books a job with {D.COMPANY} and names the person who referred them. '
-              f'The friend saves {D.REWARDS["newSystem"]} on a new system or '
-              f'{D.REWARDS["everythingElse"]} on everything else, and the referrer earns the '
-              "same amount on a Visa gift card."},
+         "a": "Your friend books a job and gives your name. They save "
+              f'{D.REWARDS["newSystem"]} on a new system or '
+              f'{D.REWARDS["everythingElse"]} on everything else, and you earn the same amount '
+              "on a Visa gift card."},
         {"q": "Is there a limit on how many people I can refer?",
-         "a": "There is no limit on how many friends someone can refer through Extreme Rewards. "
-              "Each completed job earns its own Visa gift card."},
+         "a": "No limit. Every completed job earns its own card."},
         {"q": "When do I get my card?",
-         "a": "Extreme Rewards cards are issued within 90 days of the job being completed and "
-              "paid. The work has to be finished and the invoice settled before a card goes out."},
+         "a": "Within 90 days of the job being finished and paid. The invoice has to be settled "
+              "before a card goes out."},
         {"q": "Can my name be added to a job after the visit?",
-         "a": f"No. The referral has to be named when the job is booked. {D.COMPANY} cannot add "
-              'a name to a job after the fact, so have your friend '
-              '<a href="/contact">book the job</a> with your name ready.'},
+         "a": "No. It has to be given when the job is booked — we can't add it afterwards, so "
+              'have your friend <a href="/contact">book with your name ready</a>.'},
         {"q": "How long does my name stay valid?",
-         "a": f"A name given to {D.COMPANY} stays valid for 90 days from the date it is given, "
-              "which covers a job that gets scheduled or finished later. It is not extra time to "
-              "get a name added."},
-        {"q": "Do Extreme employees qualify?",
-         "a": f"No. Extreme Rewards is for customers sending {D.COMPANY} someone new. "
-              "Self-referrals and employee referrals are not eligible."},
+         "a": "90 days from the day it's given, which covers a job that gets scheduled or "
+              "finished later. It isn't extra time to get the name added."},
+        {"q": "Do employees qualify?",
+         "a": "No. This is for customers sending us someone new, so self-referrals and employee "
+              "referrals aren't eligible."},
     ],
 }
 
@@ -340,9 +335,8 @@ def pairs(d):
     return f'''<div id="xrf-pairs">
   <div class="xsp-eyebrow">THE WHOLE PROGRAM</div>
   <h2 class="xsp-h2">What is the Extreme Rewards referral program?</h2>
-  {T.paragraphs([f'Extreme Rewards is the referral program run by {D.COMPANY}. A friend who '
-                 'books a job saves money on that job, and the person who sent them earns the '
-                 'same amount on a Visa gift card. Two numbers, and they match.'])}
+  {T.paragraphs(['Two numbers, and they match. Whatever your friend saves on the job they book, '
+                 'you earn back on a Visa gift card.'])}
   <div class="xrf-pairs">{cards}</div>
   <div class="xrf-nolimit">If your friend saved {D.REWARDS["everythingElse"]}, you earn
   {D.REWARDS["everythingElse"]}. There's no limit on how many friends you can refer.</div>
@@ -386,10 +380,10 @@ def terms(d):
     return f'''<div id="xrf-terms">
   <div class="xsp-eyebrow">THE FINE PRINT, IN PLAIN ENGLISH</div>
   <h2 class="xsp-h2">Who is eligible to refer someone?</h2>
-  {T.paragraphs([f'Any existing customer of {D.COMPANY} can refer someone, with no limit on how '
-                 'many friends they refer. The person being referred has to be a new customer, '
-                 'meaning no service at that address in the last 24 months. Self-referrals and '
-                 'Extreme employees are not eligible.'])}
+  {T.paragraphs(['If we have worked on your home before, you can refer someone, as many times '
+                 'as you like. The person you send has to be new to us, meaning no service at '
+                 'that address in the last 24 months. You cannot refer yourself, and employees '
+                 'are not eligible.'])}
   <div class="xrf-terms">
     <div class="xrf-terms-line">{d["termsLine"]}</div>
     <ul class="xrf-plain">{items}</ul>
@@ -399,11 +393,11 @@ def terms(d):
 
 def crosslinks():
     return T.paragraphs(
-        ['While you are here: <a href="/maintenance">the X-Plan maintenance membership</a> covers '
-         'your own system, <a href="/specials">this season\'s specials</a> apply to the job your '
-         'friend books, <a href="/financing-options">financing on a new system</a> runs through '
-         'three lenders, and <a href="/services">heating, cooling and plumbing services</a> are '
-         'all booked on the same number. Full '
+        ['While you\'re here: <a href="/maintenance">X-Plan</a> covers your own system, '
+         '<a href="/specials">this season\'s specials</a> apply to the job your friend books, '
+         '<a href="/financing-options">financing on a new system</a> runs through three lenders, '
+         'and every <a href="/services">heating, cooling and plumbing service</a> is booked on '
+         'the same number. Full '
          '<a href="/terms#extreme-rewards">Extreme Rewards terms</a> are on the terms page.'])
 
 

@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><span class="cur">Gas Line Services</span></div>
       <h1 class="xsp-h1">Gas line installation, repair and appliance hookups in <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs, repairs and pressure-tests residential natural gas lines across the Dayton and Cincinnati, Ohio metros. Runs for ranges, dryers, grills, garage heaters and standby generators are all covered. All gas work is performed under Ohio plumbing license #13557 and permitted where the jurisdiction requires it.</p></div>
+      <div class="xsp-answer" id="answer"><p>New runs for ranges, dryers, grills, garage heaters and standby generators, plus repairs on lines already in the ground. Every job is done under Ohio plumbing license #13557, permitted where your jurisdiction requires it, and pressure-tested at the end.</p></div>
       <p class="xsp-intro">If you smell gas right now, stop reading. Leave the house and call your gas utility from outside.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
@@ -493,14 +551,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Appliance Hookups</span><br><span class="d">Safe connections with proper shutoffs and leak checks.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">Who is licensed to run a gas line in Ohio?</h2><p class="xsp-prose">Gas piping is licensed work. Plumbing and HVAC contractors in Ohio are licensed at the state level through the Ohio Construction Industry Licensing Board, and many municipalities require a local contractor registration on top of that. Extreme holds Ohio plumbing license #13557 and <a href="/services">Ohio HVAC license #37179</a>.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing performs residential gas line work in the Dayton and Cincinnati metros under Ohio plumbing license #13557.</p></div><div class="xsp-section" id="smell-gas"><h2 class="xsp-h2">What should I do if I smell gas?</h2><p class="xsp-prose">Leave the building first, with everyone in it. Do not flip a light switch, unplug anything, use a phone indoors, or light a match. From outside and well away, call your gas utility's emergency line. Once the utility has made the property safe, call a licensed plumber to <a href="/plumbing/gas-line/repair">locate and repair the leak</a>.</p><p class="xsp-takeaway">The gas utility makes a property safe and a licensed plumber repairs the line, which is why a suspected gas leak means two calls in a fixed order.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Gas situations and the correct order of calls."><table class="xsp-table"><caption>Gas situations and the correct order of calls.</caption><thead><tr><th scope="col">What's happening</th><th scope="col">Call first</th><th scope="col">Then call</th></tr></thead><tbody><tr><th scope="row">Strong gas smell indoors</th><td>Leave the house, then the gas utility from outside</td><td>Extreme, once the property is cleared</td></tr><tr><th scope="row">Faint smell near one appliance</th><td>The gas utility, from outside</td><td>Extreme, for appliance connection and testing</td></tr><tr><th scope="row">Hissing from a buried line outdoors</th><td>The gas utility, from a distance</td><td>Extreme, for the repair</td></tr><tr><th scope="row">Dead grass in a line over a buried gas line</th><td>The gas utility</td><td>Extreme, for locating and repair</td></tr><tr><th scope="row">Pilot lights repeatedly going out</th><td>Extreme</td><td>Utility only if a smell is present</td></tr><tr><th scope="row"><a href="/plumbing/gas-line/installation">Adding a line for a new appliance</a></th><td>Extreme</td><td>No utility call needed</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Which utility supplies natural gas here?</h2><p class="xsp-prose">In the Dayton metro, natural gas comes from CenterPoint Energy Ohio, which was Vectren until it was renamed in May 2021, while electricity comes separately from AES Ohio. In the Cincinnati metro, Duke Energy Ohio supplies both gas and electricity. The two metros are structured differently, which matters when you are outside the house looking up an emergency number.</p><p class="xsp-prose">Natural gas in the Dayton metro is supplied by CenterPoint Energy Ohio, while Duke Energy Ohio supplies both gas and electricity across the Cincinnati metro.</p></div><div class="xsp-section"><h2 class="xsp-h2">Do I need a permit for gas line work in Ohio?</h2><p class="xsp-prose">Most new gas piping requires a permit and an inspection, and the issuing authority depends on where you live. Greene County permits Beavercreek but not Fairborn or Xenia, and the City of Dayton runs its own plumbing inspection separate from the county program. Extreme pulls the permit and closes out the inspection as part of the job.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">Who is licensed to run a gas line in Ohio?</h2><p class="xsp-prose">Gas piping is licensed work. Plumbing and HVAC contractors in Ohio are licensed at the state level through the Ohio Construction Industry Licensing Board, and many municipalities require a local contractor registration on top of that. We hold Ohio plumbing license #13557 and <a href="/services">Ohio HVAC license #37179</a>.</p><p class="xsp-prose">Both numbers are checkable, and you should check them, on anyone who quotes you gas work.</p></div><div class="xsp-section" id="smell-gas"><h2 class="xsp-h2">What should I do if I smell gas?</h2><p class="xsp-prose">Leave the building first, with everyone in it. Do not flip a light switch, unplug anything, use a phone indoors, or light a match. From outside and well away, call your gas utility's emergency line. Once the utility has made the property safe, call a licensed plumber to <a href="/plumbing/gas-line/repair">locate and repair the leak</a>.</p><p class="xsp-takeaway">The gas utility makes a property safe and a licensed plumber repairs the line, which is why a suspected gas leak means two calls in a fixed order.</p><p class="xsp-tablelabel" id="tbl-gas-situations-and-the-correct-order-of-calls">Gas situations and the correct order of calls.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-gas-situations-and-the-correct-order-of-calls"><table class="xsp-table" role="table" aria-labelledby="tbl-gas-situations-and-the-correct-order-of-calls"><thead><tr><th scope="col">What's happening</th><th scope="col">Call first</th><th scope="col">Then call</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">Strong gas smell indoors</th><td role="cell" data-label="Call first"><span>Leave the house, then the gas utility from outside</span></td><td role="cell" data-label="Then call"><span>Us, once the property is cleared</span></td></tr><tr role="row"><th scope="row" role="rowheader">Faint smell near one appliance</th><td role="cell" data-label="Call first"><span>The gas utility, from outside</span></td><td role="cell" data-label="Then call"><span>Us, for appliance connection and testing</span></td></tr><tr role="row"><th scope="row" role="rowheader">Hissing from a buried line outdoors</th><td role="cell" data-label="Call first"><span>The gas utility, from a distance</span></td><td role="cell" data-label="Then call"><span>Us, for the repair</span></td></tr><tr role="row"><th scope="row" role="rowheader">Dead grass in a line over a buried gas line</th><td role="cell" data-label="Call first"><span>The gas utility</span></td><td role="cell" data-label="Then call"><span>Us, for locating and repair</span></td></tr><tr role="row"><th scope="row" role="rowheader">Pilot lights repeatedly going out</th><td role="cell" data-label="Call first"><span>Us</span></td><td role="cell" data-label="Then call"><span>The utility, only if you can smell gas</span></td></tr><tr role="row"><th scope="row" role="rowheader"><a href="/plumbing/gas-line/installation">Adding a line for a new appliance</a></th><td role="cell" data-label="Call first"><span>Us</span></td><td role="cell" data-label="Then call"><span>No utility call needed</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Which utility supplies natural gas here?</h2><p class="xsp-prose">In the Dayton metro, natural gas comes from CenterPoint Energy Ohio, which was Vectren until it was renamed in May 2021, while electricity comes separately from AES Ohio. In the Cincinnati metro, Duke Energy Ohio supplies both gas and electricity. The two metros are structured differently, which matters when you are outside the house looking up an emergency number.</p><p class="xsp-prose">Worth putting the right one in your phone now, while nothing is wrong.</p></div><div class="xsp-section"><h2 class="xsp-h2">Do I need a permit for gas line work?</h2><p class="xsp-prose">Most new gas piping does, along with an inspection, and who issues it depends on where you live. Greene County permits Beavercreek but not Fairborn or Xenia, and the City of Dayton runs its own plumbing inspection separate from the county program. We pull the permit and close out the inspection as part of the job.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Tested and certified</div><div class="d">Every job ends with a pressure test and leak check — documented.</div></div></div></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">What can a gas line be run for?</h2><p class="xsp-prose">Ranges and cooktops, clothes dryers, outdoor grills and fire pits, pool and spa heaters, garage and shop heaters, standby generators, and fireplace logs. Each has a different BTU demand, which is why a line sized for a dryer will not necessarily carry a generator on the same run, and why <a href="/plumbing/water-heater/installation">a larger gas line for a tankless unit</a> is part of that conversation.</p></div><div class="xsp-section"><h2 class="xsp-h2">How is a gas leak found?</h2><p class="xsp-prose">Electronic gas detection equipment and a pressure test on an isolated section. The pressure test is the part that matters: a section of pipe is isolated, brought up to pressure, and watched, so a passing result is measured rather than sniffed. Every gas job Extreme completes ends with one, documented. Call <a href="tel:18445847399">(844) 584-7399</a>, or <a href="/plumbing/emergency-plumbing">24/7 emergency plumbing</a> if something is happening now.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">What can a gas line be run for?</h2><p class="xsp-prose">Ranges and cooktops, clothes dryers, outdoor grills and fire pits, pool and spa heaters, garage and shop heaters, standby generators, and fireplace logs. Each has a different BTU demand, which is why a line sized for a dryer will not necessarily carry a generator on the same run, and why <a href="/plumbing/water-heater/installation">a larger gas line for a tankless unit</a> is part of that conversation.</p></div><div class="xsp-section"><h2 class="xsp-h2">How is a gas leak found?</h2><p class="xsp-prose">Electronic gas detection equipment and a pressure test on an isolated section. The pressure test is the part that matters: a section of pipe is isolated, brought up to pressure, and watched, so a pass is measured rather than sniffed. Every gas job we do ends with one, documented for your records. Call <a href="tel:18445847399">(844) 584-7399</a>, or <a href="/plumbing/emergency-plumbing">24/7 emergency plumbing</a> if something is happening now.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a><a class="xsp-promo mint" href="/specials">
   <div class="t">Plumbing specials</div><div class="d">Check out current offers on repairs, installs, and more.</div><div class="lm">View Specials →</div>
@@ -509,7 +567,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">What else do homeowners ask about gas lines?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
     <button type="button" aria-expanded="true"><span>Who is licensed to install a gas line in Ohio?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Gas piping is licensed work in Ohio, regulated at the state level by the Ohio Construction Industry Licensing Board, with local contractor registration required by many municipalities. Extreme Heating, Air, Plumbing holds Ohio plumbing license #13557.</div>
+    <div class="a">Gas piping is licensed work, regulated by the Ohio Construction Industry Licensing Board, and many municipalities want a local contractor registration on top. We hold Ohio plumbing license #13557.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>What do I do if I smell gas in my house?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">Leave immediately with everyone in the building. Do not touch light switches, unplug anything, or use a phone indoors. From outside, call your gas utility's emergency line, then call a licensed plumber once the property has been cleared.</div>
@@ -518,7 +576,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div class="a">Yes. An outdoor grill or fire pit line is a common job. It is sized to the appliance's BTU demand, run with a shutoff at the connection point, pressure-tested, and permitted where required.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Do you handle the permit and the inspection?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Yes. Extreme pulls the permit, schedules the inspection and closes it out. The issuing authority varies across this service area, which is part of why it is worth handing over.</div>
+    <div class="a">Yes. We pull the permit, schedule the inspection and close it out. Who issues it changes from one town to the next around here, which is part of why it is worth handing over.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>How do you know a gas line is safe after a repair?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">Every gas job ends with a pressure test on the isolated section and an electronic leak check, and the result is documented for your records. A visual inspection alone is not a test.</div>

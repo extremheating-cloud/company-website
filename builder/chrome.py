@@ -288,19 +288,21 @@ font-size:12px;color:rgba(255,255,255,.55)}
 # Promo asides, verbatim from the Framer desktop header.
 PROMOS = {
     "hvac": [
-        ("lav", "Interested in Financing?",
-         "Spread out the cost of a new comfort system with flexible payment options that fit "
-         "your budget.", "Learn More →", "/financing-options"),
+        ("lav", "Want to spread out the cost?",
+         "You can pay for a new system monthly instead of all at once. See what you qualify "
+         "for before you decide anything.", "See payment options →", "/financing-options"),
         ("mint", "X-Plan Maintenance Plan",
-         "Scheduled tune-ups, priority service, and exclusive member discounts — from "
-         "$20.75/mo.", "Explore X-Plan →", "/maintenance"),
+         "Your tune-ups get scheduled for you, and when something breaks you jump the line. "
+         "Members pay less on the work too. $20.75 a month.",
+         "See what's included →", "/maintenance"),
     ],
     "plumbing": [
-        ("lav", "Need Plumbing Help Fast?",
-         "Same-day and emergency plumbing service across Dayton &amp; Cincinnati.",
+        ("lav", "Need a plumber today?",
+         "Burst pipe or a drain backing up? We come out same day across Dayton and "
+         "Cincinnati, and we answer the emergency line at night.",
          "Schedule Service →", None),          # None = opens the schedule dialog
         ("mint", "Plumbing Specials",
-         "Current offers and seasonal savings on plumbing services.",
+         "What we have running on plumbing work right now. Worth a look before you book.",
          "View Specials →", "/specials"),
     ],
 }
@@ -508,8 +510,8 @@ def footer():
   <div class="xf-wrap">
     <div class="xf-cta">
       <div>
-        <h2>Need help today? The Extreme Team is ready.</h2>
-        <p>24/7 emergency service across Dayton &amp; Cincinnati.</p>
+        <h2>Need someone out today? Let's get you on the schedule.</h2>
+        <p>Someone answers the phone 24/7, across Dayton &amp; Cincinnati.</p>
       </div>
       <div class="xf-cta-btns">
         <button class="xf-btn-green js-schedule" type="button">Schedule Service&nbsp;&nbsp;→</button>
@@ -520,9 +522,9 @@ def footer():
     <div class="xf-grid">
       <div class="xf-col xf-brand">
         <img class="xf-logo" src="{LOGO_TIGHT}" alt="{D.COMPANY}">
-        <p class="xf-blurb">Locally owned &amp; operated, serving the Miami Valley and Greater
-        Cincinnati for over 20 years.</p>
-        <div class="xf-247"><span class="dot"></span>Available 24/7 · 7 days a week</div>
+        <p class="xf-blurb">Locally owned, and we have been working on homes across the Miami
+        Valley and Greater Cincinnati for over 20 years.</p>
+        <div class="xf-247"><span class="dot"></span>We answer 24/7 · 7 days a week</div>
         <div class="xf-social">{social}</div>
       </div>
       {cols}

@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><span class="cur">Heat Pump Services</span></div>
       <h1 class="xsp-h1">Heat pump service for <em>Ohio winters</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs, repairs and maintains heat pumps across the Dayton and Cincinnati, Ohio metros. Modern cold-climate heat pumps heat through an Ohio winter, and dual-fuel systems hand off to a gas furnace during the coldest stretches. Service covers 38 communities, on every major brand.</p></div>
+      <div class="xsp-answer" id="answer"><p>We install, repair and tune up heat pumps across Dayton and Cincinnati, on every major brand. A modern cold-climate unit will heat through an Ohio winter, and a dual-fuel setup hands off to your gas furnace on the worst nights.</p></div>
       <p class="xsp-intro">Heat pump repair, installation and tune-ups for Dayton and Cincinnati homes. Efficient heating and cooling from one system, with upfront pricing.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
@@ -493,14 +551,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Heat Pump Tune-Ups</span><br><span class="d">Twice-a-year checkups keep efficiency high — included with X-Plan.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">Do heat pumps work in Ohio winters?</h2><p class="xsp-prose">Yes. A heat pump moves heat rather than making it, and modern cold-climate models keep producing heat well below freezing, which covers most of an Ohio winter. On the coldest days a heat pump either leans on backup heat or, in a dual-fuel system, hands the job to a gas furnace.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing installs dual-fuel systems that switch from the heat pump to a <a href="/furnace-heating">gas furnace</a> at a set outdoor temperature, so the cheaper source runs whenever it can.</p></div><div class="xsp-section" id="system-comparison"><h2 class="xsp-h2">Which system fits best: heat pump, furnace or dual fuel?</h2><p class="xsp-prose">It comes down to what fuel the house already has and how cold it gets where it sits. All-electric homes and homes without a gas line usually land on a heat pump. Homes with a working gas line often do best on dual fuel, which uses the heat pump most of the year and the furnace in a cold snap.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing recommends a dual-fuel system for most Dayton and Cincinnati homes that already have a gas line, because one system covers mild weather and the other covers the coldest days.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Heat pump, gas furnace with air conditioning, and dual fuel compared for Dayton and Cincinnati homes."><table class="xsp-table"><caption>Heat pump, gas furnace with air conditioning, and dual fuel compared for Dayton and Cincinnati homes.</caption><thead><tr><th scope="col">Factor</th><th scope="col">Heat pump</th><th scope="col">Gas furnace + AC</th><th scope="col">Dual fuel</th></tr></thead><tbody><tr><th scope="row">Winter performance</th><td>Heats efficiently down to low outdoor temperatures, then leans on backup heat</td><td>Full heat output at any outdoor temperature</td><td>Heat pump handles mild and moderate cold, furnace takes the coldest days</td></tr><tr><th scope="row">Summer cooling</th><td>Included in the same outdoor unit</td><td>Handled by a separate air conditioner</td><td>Included in the same outdoor unit</td></tr><tr><th scope="row">Fuel needed</th><td>Electricity only</td><td>Natural gas plus electricity</td><td>Natural gas plus electricity</td></tr><tr><th scope="row">Equipment count</th><td>One outdoor unit, one indoor air handler</td><td>Furnace plus a separate condenser</td><td>Heat pump outdoor unit plus a gas furnace indoors</td></tr><tr><th scope="row">Backup heat</th><td>Electric resistance strips, or none on a cold-climate model with enough capacity</td><td>Not applicable</td><td>The gas furnace is the backup</td></tr><tr><th scope="row">Best fit</th><td>Homes with no gas line, and all-electric homes</td><td>Homes with very cold design temperatures and cheap gas</td><td>Homes with an existing gas line that want lower shoulder-season running costs</td></tr><tr><th scope="row">Operating cost</th><td>Depends on the local electric rate</td><td>Depends on the local gas rate</td><td>Lowest of the three when the switchover point is set correctly</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">What is a cold-climate heat pump?</h2><p class="xsp-prose">A cold-climate heat pump uses a variable-speed compressor that keeps producing usable heat at low outdoor temperatures instead of falling off a cliff near freezing. Standard models lose capacity earlier and lean harder on electric backup heat, which is the part that shows up on a January electric bill.</p><p class="xsp-takeaway">A cold-climate heat pump holds its heating capacity to a much lower outdoor temperature than a standard model, which is what keeps electric backup heat from running through an Ohio winter.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Standard and cold-climate heat pumps compared."><table class="xsp-table"><caption>Standard and cold-climate heat pumps compared.</caption><thead><tr><th scope="col">Factor</th><th scope="col">Standard heat pump</th><th scope="col">Cold-climate heat pump</th></tr></thead><tbody><tr><th scope="row">Compressor</th><td>Single-stage or two-stage</td><td>Variable-speed inverter</td></tr><tr><th scope="row">Heat output as it gets colder</th><td>Falls off sooner, closer to freezing</td><td>Holds capacity to a much lower outdoor temperature</td></tr><tr><th scope="row">Backup heat use</th><td>Runs electric resistance heat often through an Ohio winter</td><td>Runs backup heat rarely, mostly in the coldest snaps</td></tr><tr><th scope="row">Comfort</th><td>Noticeable temperature swings on cold days</td><td>Steadier supply air, longer run cycles</td></tr><tr><th scope="row">Best fit in this region</th><td>Shoulder-season heating with a gas furnace as the primary</td><td>Whole-winter heating, or dual fuel with a high switchover point</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">What heat pump services does Extreme offer?</h2><p class="xsp-prose">Repair, replacement and seasonal tune-ups on every major brand, plus dual-fuel conversions for homes that already have a gas furnace. Extreme Heating, Air, Plumbing services heat pumps in both heating and cooling mode, which matters because a heat pump gets twice the annual runtime of an air conditioner.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">Do heat pumps work in Ohio winters?</h2><p class="xsp-prose">Yes. A heat pump moves heat rather than making it, and modern cold-climate models keep producing heat well below freezing, which covers most of an Ohio winter. On the coldest days a heat pump either leans on backup heat or, in a dual-fuel system, hands the job to a gas furnace.</p><p class="xsp-prose">We set dual-fuel systems to switch from the heat pump to your <a href="/furnace-heating">gas furnace</a> at a chosen outdoor temperature, so whichever source is cheaper is the one running.</p></div><div class="xsp-section" id="system-comparison"><h2 class="xsp-h2">Which system fits best: heat pump, furnace or dual fuel?</h2><p class="xsp-prose">It comes down to what fuel the house already has and how cold it gets where it sits. All-electric homes and homes without a gas line usually land on a heat pump. Homes with a working gas line often do best on dual fuel, which uses the heat pump most of the year and the furnace in a cold snap.</p><p class="xsp-takeaway">If your house already has a gas line, dual fuel is usually what we recommend: the heat pump covers mild weather and the furnace covers the coldest days.</p><p class="xsp-tablelabel" id="tbl-heat-pump-gas-furnace-with-air-conditioning-and-">Heat pump, gas furnace with air conditioning, and dual fuel compared for Dayton and Cincinnati homes.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-heat-pump-gas-furnace-with-air-conditioning-and-"><table class="xsp-table" role="table" aria-labelledby="tbl-heat-pump-gas-furnace-with-air-conditioning-and-"><thead><tr><th scope="col">Factor</th><th scope="col">Heat pump</th><th scope="col">Gas furnace + AC</th><th scope="col">Dual fuel</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">Winter performance</th><td role="cell" data-label="Heat pump"><span>Heats efficiently down to low outdoor temperatures, then leans on backup heat</span></td><td role="cell" data-label="Gas furnace + AC"><span>Full heat output at any outdoor temperature</span></td><td role="cell" data-label="Dual fuel"><span>Heat pump handles mild and moderate cold, furnace takes the coldest days</span></td></tr><tr role="row"><th scope="row" role="rowheader">Summer cooling</th><td role="cell" data-label="Heat pump"><span>Included in the same outdoor unit</span></td><td role="cell" data-label="Gas furnace + AC"><span>Handled by a separate air conditioner</span></td><td role="cell" data-label="Dual fuel"><span>Included in the same outdoor unit</span></td></tr><tr role="row"><th scope="row" role="rowheader">Fuel needed</th><td role="cell" data-label="Heat pump"><span>Electricity only</span></td><td role="cell" data-label="Gas furnace + AC"><span>Natural gas plus electricity</span></td><td role="cell" data-label="Dual fuel"><span>Natural gas plus electricity</span></td></tr><tr role="row"><th scope="row" role="rowheader">Equipment count</th><td role="cell" data-label="Heat pump"><span>One outdoor unit, one indoor air handler</span></td><td role="cell" data-label="Gas furnace + AC"><span>Furnace plus a separate condenser</span></td><td role="cell" data-label="Dual fuel"><span>Heat pump outdoor unit plus a gas furnace indoors</span></td></tr><tr role="row"><th scope="row" role="rowheader">Backup heat</th><td role="cell" data-label="Heat pump"><span>Electric resistance strips, or none on a cold-climate model with enough capacity</span></td><td role="cell" data-label="Gas furnace + AC"><span>Not applicable</span></td><td role="cell" data-label="Dual fuel"><span>The gas furnace is the backup</span></td></tr><tr role="row"><th scope="row" role="rowheader">Best fit</th><td role="cell" data-label="Heat pump"><span>Homes with no gas line, and all-electric homes</span></td><td role="cell" data-label="Gas furnace + AC"><span>Homes with very cold design temperatures and cheap gas</span></td><td role="cell" data-label="Dual fuel"><span>Homes with an existing gas line that want lower shoulder-season running costs</span></td></tr><tr role="row"><th scope="row" role="rowheader">Operating cost</th><td role="cell" data-label="Heat pump"><span>Depends on the local electric rate</span></td><td role="cell" data-label="Gas furnace + AC"><span>Depends on the local gas rate</span></td><td role="cell" data-label="Dual fuel"><span>Lowest of the three when the switchover point is set correctly</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">What is a cold-climate heat pump?</h2><p class="xsp-prose">A cold-climate heat pump uses a variable-speed compressor that keeps producing usable heat at low outdoor temperatures instead of falling off a cliff near freezing. Standard models lose capacity earlier and lean harder on electric backup heat, which is the part that shows up on a January electric bill.</p><p class="xsp-takeaway">A cold-climate heat pump holds its heating capacity to a much lower outdoor temperature than a standard model, which is what keeps electric backup heat from running through an Ohio winter.</p><p class="xsp-tablelabel" id="tbl-standard-and-cold-climate-heat-pumps-compared">Standard and cold-climate heat pumps compared.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-standard-and-cold-climate-heat-pumps-compared"><table class="xsp-table" role="table" aria-labelledby="tbl-standard-and-cold-climate-heat-pumps-compared"><thead><tr><th scope="col">Factor</th><th scope="col">Standard heat pump</th><th scope="col">Cold-climate heat pump</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">Compressor</th><td role="cell" data-label="Standard heat pump"><span>Single-stage or two-stage</span></td><td role="cell" data-label="Cold-climate heat pump"><span>Variable-speed inverter</span></td></tr><tr role="row"><th scope="row" role="rowheader">Heat output as it gets colder</th><td role="cell" data-label="Standard heat pump"><span>Falls off sooner, closer to freezing</span></td><td role="cell" data-label="Cold-climate heat pump"><span>Holds capacity to a much lower outdoor temperature</span></td></tr><tr role="row"><th scope="row" role="rowheader">Backup heat use</th><td role="cell" data-label="Standard heat pump"><span>Runs electric resistance heat often through an Ohio winter</span></td><td role="cell" data-label="Cold-climate heat pump"><span>Runs backup heat rarely, mostly in the coldest snaps</span></td></tr><tr role="row"><th scope="row" role="rowheader">Comfort</th><td role="cell" data-label="Standard heat pump"><span>Noticeable temperature swings on cold days</span></td><td role="cell" data-label="Cold-climate heat pump"><span>Steadier supply air, longer run cycles</span></td></tr><tr role="row"><th scope="row" role="rowheader">Best fit in this region</th><td role="cell" data-label="Standard heat pump"><span>Shoulder-season heating with a gas furnace as the primary</span></td><td role="cell" data-label="Cold-climate heat pump"><span>Whole-winter heating, or dual fuel with a high switchover point</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">What heat pump work do you handle?</h2><p class="xsp-prose">Repair, replacement and seasonal tune-ups on every major brand, plus dual-fuel conversions for homes that already have a gas furnace. We test in both heating and cooling mode, which matters because your heat pump runs about twice the hours an air conditioner does.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Fixed right, guaranteed</div><div class="d">Clean workmanship, tested before we leave, and backed by our satisfaction guarantee.</div></div></div></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">What are the signs a heat pump is failing?</h2><p class="xsp-prose">Air that never reaches the set temperature, ice that stays on the outdoor unit after a defrost cycle, running constantly or short cycling, grinding or squealing, and a jump in the electric bill that usually means backup heat is running when it should not be. Each of those is diagnosed on our <a href="/heat-pump-repair">heat pump repair</a> page.</p></div><div class="xsp-section"><h2 class="xsp-h2">How long does a heat pump last?</h2><p class="xsp-prose">Twelve to fifteen years is normal, a little shorter than an <a href="/air-conditioning">air conditioner</a> because a heat pump runs year-round instead of four months. Annual servicing matters more here than on any other system in the house for exactly that reason, which is what the <a href="/maintenance">X-Plan maintenance membership</a> is built around.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book heat pump service in Dayton?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online, and you get an arrival window up front. Extreme Heating, Air, Plumbing handles about 90% of service calls the same day and runs 24/7 emergency service for a house with no heat. Replacement estimates are booked the same way, through <a href="/heat-pump-installation">heat pump installation</a>.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
+</div><div class="xsp-section"><h2 class="xsp-h2">What are the signs a heat pump is failing?</h2><p class="xsp-prose">Air that never reaches the set temperature, ice that stays on the outdoor unit after a defrost cycle, running constantly or short cycling, grinding or squealing, and a jump in the electric bill that usually means backup heat is running when it should not be. Each of those is diagnosed on our <a href="/heat-pump-repair">heat pump repair</a> page.</p></div><div class="xsp-section"><h2 class="xsp-h2">How long does a heat pump last?</h2><p class="xsp-prose">Twelve to fifteen years is normal, a little shorter than an <a href="/air-conditioning">air conditioner</a> because a heat pump runs year-round instead of four months. Annual servicing matters more here than on any other system in the house for exactly that reason, which is what the <a href="/maintenance">X-Plan maintenance membership</a> is built around.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book heat pump service?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online, and you get an arrival window up front. Most calls are handled the same day, and a house with no heat gets the emergency line at any hour. Replacement estimates book the same way, through <a href="/heat-pump-installation">heat pump installation</a>.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>

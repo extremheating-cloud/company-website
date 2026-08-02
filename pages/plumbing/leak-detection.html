@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><span class="cur">Leak Detection</span></div>
       <h1 class="xsp-h1">Hidden water leak detection in <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing locates hidden water leaks in homes across the Dayton and Cincinnati, Ohio metros using acoustic and thermal equipment rather than exploratory demolition. Slab leaks, supply lines inside walls, and buried service lines are all traceable without opening the house first. Work is performed under Ohio plumbing license #13557.</p></div>
+      <div class="xsp-answer" id="answer"><p>Water is going somewhere and you cannot see it. We listen for it and look for its heat, so a leak under your slab or inside a wall gets narrowed to inches before anyone cuts anything open.</p></div>
       <p class="xsp-intro">Most people find a leak on the water bill before they find it on the floor. We find it without tearing up the house.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
@@ -490,14 +548,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Repipe Options</span><br><span class="d">For aging systems that keep leaking, honest whole-home repipe numbers.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">How do I know if I have a hidden leak?</h2><p class="xsp-prose">Run the house dry: turn off every fixture and appliance that uses water, then watch the meter for fifteen minutes. If the dial moves at all, water is going somewhere. That test costs nothing and it is the first thing we will ask whether you tried.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing recommends a 15-minute water meter test with all fixtures off as the first check for a hidden leak in any Dayton or Cincinnati home.</p></div><div class="xsp-section"><h2 class="xsp-h2">Why did my water bill double with no leak I can see?</h2><p class="xsp-prose">A leak that never reaches a visible surface still runs through the meter. The usual culprits are a <a href="/plumbing/toilet-repair">toilet flapper passing water silently</a>, an irrigation line, a slab leak under the floor, or a service line between the meter and the house. All four are invisible and all four bill.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing narrows a hidden leak by symptom before any equipment comes out, because the symptom usually names the location.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Leak symptoms, likely location, and how each is found."><table class="xsp-table"><caption>Leak symptoms, likely location, and how each is found.</caption><thead><tr><th scope="col">Symptom</th><th scope="col">Likely location</th><th scope="col">How it's found</th><th scope="col">Urgency</th></tr></thead><tbody><tr><th scope="row">Bill jumped, nothing visible</th><td>Toilet flapper or irrigation</td><td>Dye test, then meter isolation</td><td>Low, but it bills daily</td></tr><tr><th scope="row">Warm spot on a floor</th><td>Hot supply line under the slab</td><td>Thermal imaging</td><td>High, slab leaks worsen</td></tr><tr><th scope="row">Damp drywall or a ceiling stain</th><td>Supply or drain line in the wall or above</td><td>Acoustic and moisture meter</td><td>High</td></tr><tr><th scope="row">Running water sound at night</th><td>Pressurized supply line</td><td>Acoustic listening</td><td>High</td></tr><tr><th scope="row">Wet patch in the yard year-round</th><td>Buried service line</td><td>Line tracing and acoustic</td><td>High, and it undermines soil</td></tr><tr><th scope="row">Musty smell, no visible water</th><td>Slow leak behind a finished wall</td><td>Moisture mapping</td><td>Medium, mold follows</td></tr><tr><th scope="row">Meter moves with the house valve shut</th><td>Between the meter and the house</td><td>Line tracing</td><td>High, this one is on you</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Can you find a leak without opening walls?</h2><p class="xsp-prose">Usually. Acoustic listening equipment picks up pressurized water escaping a line through drywall, tile and concrete, and thermal imaging shows where a hot line is heating the floor above it. That narrows the search to inches, so when something is opened, it is one small access hole and not a wall.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">How do I know if I have a hidden leak?</h2><p class="xsp-prose">Run the house dry: turn off every fixture and appliance that uses water, then watch the meter for fifteen minutes. If the dial moves at all, water is going somewhere. That test costs nothing and it is the first thing we will ask whether you tried.</p><p class="xsp-prose">Do it before you call. If the dial moved, you have your answer and we can skip straight to finding where.</p></div><div class="xsp-section"><h2 class="xsp-h2">Why did my water bill double with no leak I can see?</h2><p class="xsp-prose">A leak that never reaches a visible surface still runs through the meter. The usual culprits are a <a href="/plumbing/toilet-repair">toilet flapper passing water silently</a>, an irrigation line, a slab leak under the floor, or a service line between the meter and the house. All four are invisible and all four bill.</p><p class="xsp-takeaway">Find your symptom in the left column. It usually names the location before any equipment comes out of the van.</p><p class="xsp-tablelabel" id="tbl-leak-symptoms-likely-location-and-how-each-is-fo">Leak symptoms, likely location, and how each is found.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-leak-symptoms-likely-location-and-how-each-is-fo"><table class="xsp-table" role="table" aria-labelledby="tbl-leak-symptoms-likely-location-and-how-each-is-fo"><thead><tr><th scope="col">Symptom</th><th scope="col">Likely location</th><th scope="col">How it's found</th><th scope="col">Urgency</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">Bill jumped, nothing visible</th><td role="cell" data-label="Likely location"><span>Toilet flapper or irrigation</span></td><td role="cell" data-label="How it's found"><span>Dye test, then meter isolation</span></td><td role="cell" data-label="Urgency"><span>Low, but it bills daily</span></td></tr><tr role="row"><th scope="row" role="rowheader">Warm spot on a floor</th><td role="cell" data-label="Likely location"><span>Hot supply line under the slab</span></td><td role="cell" data-label="How it's found"><span>Thermal imaging</span></td><td role="cell" data-label="Urgency"><span>High, slab leaks worsen</span></td></tr><tr role="row"><th scope="row" role="rowheader">Damp drywall or a ceiling stain</th><td role="cell" data-label="Likely location"><span>Supply or drain line in the wall or above</span></td><td role="cell" data-label="How it's found"><span>Acoustic and moisture meter</span></td><td role="cell" data-label="Urgency"><span>High</span></td></tr><tr role="row"><th scope="row" role="rowheader">Running water sound at night</th><td role="cell" data-label="Likely location"><span>Pressurized supply line</span></td><td role="cell" data-label="How it's found"><span>Acoustic listening</span></td><td role="cell" data-label="Urgency"><span>High</span></td></tr><tr role="row"><th scope="row" role="rowheader">Wet patch in the yard year-round</th><td role="cell" data-label="Likely location"><span>Buried service line</span></td><td role="cell" data-label="How it's found"><span>Line tracing and acoustic</span></td><td role="cell" data-label="Urgency"><span>High, and it undermines soil</span></td></tr><tr role="row"><th scope="row" role="rowheader">Musty smell, no visible water</th><td role="cell" data-label="Likely location"><span>Slow leak behind a finished wall</span></td><td role="cell" data-label="How it's found"><span>Moisture mapping</span></td><td role="cell" data-label="Urgency"><span>Medium, mold follows</span></td></tr><tr role="row"><th scope="row" role="rowheader">Meter moves with the house valve shut</th><td role="cell" data-label="Likely location"><span>Between the meter and the house</span></td><td role="cell" data-label="How it's found"><span>Line tracing</span></td><td role="cell" data-label="Urgency"><span>High, this one is on you</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Can you find a leak without opening walls?</h2><p class="xsp-prose">Usually. Acoustic listening equipment picks up pressurized water escaping a line through drywall, tile and concrete, and thermal imaging shows where a hot line is heating the floor above it. That narrows the search to inches, so when something is opened, it is one small access hole and not a wall.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Fixed and verified</div><div class="d">We pressure-test after repair and confirm the meter sits still.</div></div></div></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">What is a slab leak and how bad is it?</h2><p class="xsp-prose">A slab leak is a supply line failure under the concrete floor of a house built on a slab. Signs are a warm patch of floor, an unexplained bill, or the sound of running water with everything off. Left alone it saturates the soil under the foundation, which is the expensive part, not the pipe.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing locates slab leaks in Dayton and Cincinnati homes with thermal imaging before any concrete is opened.</p></div><div class="xsp-section"><h2 class="xsp-h2">What gets documented when a leak is found?</h2><p class="xsp-prose">The source and the moisture readings are photographed before the repair, and the line is pressure-tested afterward. That record is what a claim or a future buyer asks for, and it is produced whether or not anyone ends up needing it.</p></div><div class="xsp-section"><h2 class="xsp-h2">How fast can a leak be found and fixed?</h2><p class="xsp-prose">Detection is usually a single visit. Extreme runs 90% same-day service across the Dayton and Cincinnati metros, and most leaks are located and repaired in the same appointment unless the fix means opening a slab or <a href="/plumbing/services">replacing a run of line</a>. Call <a href="tel:18445847399">(844) 584-7399</a>, or <a href="/plumbing/emergency-plumbing">emergency plumbing</a> if water is moving now.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">What is a slab leak and how bad is it?</h2><p class="xsp-prose">A slab leak is a supply line failure under the concrete floor of a house built on a slab. Signs are a warm patch of floor, an unexplained bill, or the sound of running water with everything off. Left alone it saturates the soil under the foundation, which is the expensive part, not the pipe.</p><p class="xsp-prose">We find it with thermal imaging first. No concrete gets opened until we know which foot of pipe we are opening it for.</p></div><div class="xsp-section"><h2 class="xsp-h2">What gets documented when a leak is found?</h2><p class="xsp-prose">The source and the moisture readings are photographed before the repair, and the line is pressure-tested afterward. That record is what a claim or a future buyer asks for, and it is produced whether or not anyone ends up needing it.</p></div><div class="xsp-section"><h2 class="xsp-h2">How fast can a leak be found and fixed?</h2><p class="xsp-prose">Detection is usually one visit, and most leaks get located and repaired in the same appointment unless the fix means opening a slab or <a href="/plumbing/services">replacing a run of line</a>. Most calls are handled the same day. Call <a href="tel:18445847399">(844) 584-7399</a>, or <a href="/plumbing/emergency-plumbing">the emergency line</a> if water is moving right now.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a><a class="xsp-promo mint" href="/specials">
   <div class="t">Plumbing specials</div><div class="d">Check out current offers on repairs, installs, and more.</div><div class="lm">View Specials →</div>
@@ -506,7 +564,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">What else do homeowners ask about hidden leaks?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
     <button type="button" aria-expanded="true"><span>How do I check for a water leak myself?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Turn off every water-using fixture and appliance in the house, then watch the water meter for 15 minutes. If it moves, you have a leak. That single test is free and it is the fastest confirmation available to a homeowner.</div>
+    <div class="a">Turn off every fixture and appliance that uses water, then watch the meter for 15 minutes. If it moves, you have a leak. The test is free and it is the fastest answer you can get without anyone coming out.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Can you find a leak without cutting into my walls?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">In most cases, yes. Acoustic and thermal detection narrows a hidden leak to within a few inches before anything is opened, so a repair usually means one small access point rather than an exploratory demolition.</div>
@@ -518,7 +576,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div class="a">It can be condensation, a leaking T&amp;P valve, or the first sign of <a href="/plumbing/water-heater/repair">a tank failing at the bottom seam</a>. All three look the same on the floor and only one of them is harmless, so it is worth a look before the tank opens up.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Do you repair the leak, or only find it?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Both. Extreme Heating, Air, Plumbing locates and repairs hidden leaks under Ohio plumbing license #13557, and the line is pressure-tested after the repair before anyone leaves.</div>
+    <div class="a">Both, under Ohio plumbing license #13557. The line gets pressure-tested after the repair, before anyone leaves.</div>
   </div></div>
 </div><p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p></div>
   <aside class="xsp-rail"><div class="xsp-photo"><img src="https://media.istockphoto.com/id/1884881753/photo/home-inspector-use-thermal-imager.jpg?s=612x612&w=0&k=20&c=JvFI2aM5a0GUydpVRhN0l2MfjvZuHkK0nvdfEEJREvk=" alt="An inspector scanning for leaks with a thermal imaging camera" fetchpriority="high" decoding="async"></div><a class="xsp-promo lav js-schedule" href="#">

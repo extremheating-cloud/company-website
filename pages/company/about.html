@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -567,7 +625,7 @@ padding:32px 36px;position:relative;overflow:hidden}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><span class="cur">About Us</span></div>
       <h1 class="xsp-h1">About <em>Extreme</em> Heating, Air, Plumbing</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing is a locally owned heating, cooling and plumbing contractor founded in 2004 and serving the Dayton and Cincinnati, Ohio metros. The company works under Ohio HVAC license #37179 and Ohio plumbing license #13557. Extreme Heating, Air, Plumbing has 25,000+ jobs completed and holds a 4.9-star average across 1,595 customer reviews.</p></div>
+      <div class="xsp-answer" id="answer"><p>We're a locally owned heating, cooling and plumbing company, working the Dayton and Cincinnati metros out of four Ohio shops since 2004. We hold Ohio licenses in both trades, and we've done more than 25,000 jobs.</p></div>
       <p class="xsp-intro">Locally owned. Extremely committed.</p>
       <div class="xsp-chiprow"><div class="xsp-chip">Family Owned &amp; Operated</div><div class="xsp-chip">20+ Years Local</div><div class="xsp-chip"><span class="st">★</span> 4.9 from 1,595 reviews</div><div class="xsp-chip">OH LIC #37179 &middot; OH LIC #13557</div></div>
     </div>
@@ -579,29 +637,29 @@ padding:32px 36px;position:relative;overflow:hidden}
   <div class="xco-story">
     <div>
       <div class="xsp-eyebrow">OUR STORY</div>
-      <h2 class="xsp-h2">How long has Extreme Heating, Air, Plumbing been in business?</h2>
-      <p>Extreme Heating, Air, Plumbing started in 2004 the way most good service companies do: one van, one toolbox, and a promise to show up when we said we would. We opened the Mason location in 2018, and today we cover Dayton and Cincinnati from four Ohio offices with a full team of licensed HVAC and plumbing pros.</p>
-      <p>The work changed. The way it is priced did not. Every job is quoted upfront and approved before anything is opened, and a real person answers the phone, day or night.</p>
+      <h2 class="xsp-h2">How long have you been doing this?</h2>
+      <p>We started in 2004 the way most good service companies do: one van, one toolbox, and a promise to show up when we said we would. Mason opened in 2018. Today it's four Ohio shops and a full crew of licensed HVAC and plumbing techs covering the same two metros.</p>
+      <p>The work got bigger. The way it's priced didn't. You get a flat quote and you approve it before we open anything up, and a real person still answers the phone, day or night.</p>
     </div>
     <div class="xco-slot" style="height:280px"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/locations/dayton-skyline-van.jpg" alt="An Extreme Heating, Air, Plumbing service van with the Dayton skyline behind it" loading="lazy" decoding="async"></div>
   </div>
 </div>
   <div id="licensed">
   <div class="xsp-eyebrow">LICENSED IN OHIO</div>
-  <h2 class="xsp-h2">Is Extreme Heating, Air, Plumbing licensed and insured in Ohio?</h2>
-  <p class="xsp-prose">Yes. Extreme Heating, Air, Plumbing holds Ohio HVAC license #37179 and Ohio plumbing license #13557. Technicians are licensed and insured, and every one of them is drug-tested and background-checked before entering a customer's home.</p><p class="xsp-prose">Heating and cooling work is performed by Extreme Heating &amp; Cooling LLC and plumbing work by Extreme Home Services LLC. Full <a href="/terms">Ohio license numbers and program terms</a> are on the terms page.</p>
+  <h2 class="xsp-h2">Are you licensed and insured?</h2>
+  <p class="xsp-prose">Yes, on both counts: Ohio HVAC license #37179 and Ohio plumbing license #13557. Every tech is licensed and insured, and drug-tested and background-checked before they set foot in your house.</p><p class="xsp-prose">Heating and cooling runs through Extreme Heating &amp; Cooling LLC, plumbing through Extreme Home Services LLC. Both sets of <a href="/terms">license numbers and program terms</a> are on the terms page.</p>
 
 </div>
   <div id="who">
   <div class="xsp-eyebrow">AT YOUR DOOR</div>
   <h2 class="xsp-h2">Who will come to my house?</h2>
-  <p class="xsp-prose">A licensed, insured technician from Extreme Heating, Air, Plumbing arrives in a marked company van. Every technician is drug-tested and background-checked. Shoe covers and drop cloths go down before the work starts, and the work area is left cleaner than it was found.</p>
+  <p class="xsp-prose">A licensed, insured technician in a marked company van. Shoe covers and drop cloths go down before anything starts, and we leave the space cleaner than we found it.</p>
 
 </div>
   <div id="pricing">
   <div class="xsp-eyebrow">WHAT WE STAND FOR</div>
-  <h2 class="xsp-h2">How does Extreme price a job?</h2>
-  <p class="xsp-prose">Extreme Heating, Air, Plumbing quotes flat, upfront pricing that the customer approves before any work begins. Estimates on replacements and new installations are free. X-Plan members take 15% off all repairs, and <a href="/financing-options">financing is available on larger work</a>.</p>
+  <h2 class="xsp-h2">How do you price a job?</h2>
+  <p class="xsp-prose">Flat price, quoted before we start, and you approve it before anything gets opened up. Estimates on replacements and new installs are free, X-Plan members take 15% off repairs, and <a href="/financing-options">financing covers the bigger jobs</a>.</p>
 <div class="xco-vals"><div class="xco-ccard"><span class="xsp-glyph"><i></i><i></i></span>
   <div class="t">Honest pricing, upfront</div><div class="d">Flat quotes you approve before we start. No surprise line items, ever.</div></div><div class="xco-ccard"><span class="xsp-glyph"><i></i><i></i></span>
   <div class="t">Your home, respected</div><div class="d">Shoe covers, drop cloths, and a workspace left cleaner than we found it.</div></div><div class="xco-ccard"><span class="xsp-glyph"><i></i><i></i></span>
@@ -615,14 +673,14 @@ padding:32px 36px;position:relative;overflow:hidden}
   
   <div id="offices">
   <div class="xsp-eyebrow">OUR OFFICES</div>
-  <h2 class="xsp-h2">Where are Extreme Heating, Air, Plumbing's offices?</h2>
-  <p class="xsp-prose">Extreme Heating, Air, Plumbing operates four offices in Ohio: Beavercreek, Mason, Troy and Waynesville. Every one of them routes to the same number, <a href="tel:18445847399">(844) 584-7399</a>. Full <a href="/contact">office addresses and directions</a> are on the contact page.</p>
+  <h2 class="xsp-h2">Where are your offices?</h2>
+  <p class="xsp-prose">Four of them, all in Ohio: Beavercreek, Mason, Troy and Waynesville. They all route to the same number, <a href="tel:18445847399">(844) 584-7399</a>, and the <a href="/contact">addresses and directions</a> are on the contact page.</p>
 
 </div>
   <div id="service-area">
   <div class="xsp-eyebrow">WHERE WE WORK</div>
-  <h2 class="xsp-h2">Which Ohio communities does Extreme serve?</h2>
-  <p class="xsp-prose">Extreme Heating, Air, Plumbing serves communities across nine Ohio counties, split between the Dayton and Cincinnati metros. Coverage runs through Montgomery, Greene, Miami, Warren, Butler, Clark, Hamilton, Preble and Darke counties.</p>
+  <h2 class="xsp-h2">Do you come out to my town?</h2>
+  <p class="xsp-prose">Probably. We work across nine Ohio counties between the two metros: Montgomery, Greene, Miami, Warren, Butler, Clark, Hamilton, Preble and Darke.</p>
 <div class="xco-2col"><a class="xsp-card" href="/locations/dayton">
   <span class="txt"><span class="t">Dayton metro</span><br><span class="d">Dayton, Kettering, Beavercreek, Centerville, Springboro, Huber Heights and the surrounding Miami Valley.</span></span>
   <span class="lm">our Dayton service area →</span><span class="mrow">→</span>
@@ -633,32 +691,32 @@ padding:32px 36px;position:relative;overflow:hidden}
 </div>
   <div id="reviews">
   <div class="xsp-eyebrow">WHAT CUSTOMERS SAY</div>
-  <h2 class="xsp-h2">What do customers say about Extreme?</h2>
-  <p class="xsp-prose">Extreme Heating, Air, Plumbing holds a 4.9-star average across 1,595 customer reviews from homeowners in the Dayton and Cincinnati areas. Reviews are aggregated through Birdeye across the platforms where customers leave them.</p>
+  <h2 class="xsp-h2">What do customers say?</h2>
+  <p class="xsp-prose">4.9 stars across 1,595 customer reviews from homeowners around Dayton and Cincinnati. That number is a Birdeye aggregate, so it pulls from every platform people leave reviews on rather than from a single site.</p>
 
 </div>
-  <div class="xsp-section" id="at-a-glance"><div class="xsp-eyebrow purple">AT A GLANCE</div><h2 class="xsp-h2">What are the facts about Extreme Heating, Air, Plumbing?</h2><p class="xsp-takeaway">Extreme Heating, Air, Plumbing has served the Dayton and Cincinnati, Ohio metros since 2004 and holds Ohio HVAC license #37179.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Extreme Heating, Air, Plumbing at a glance"><table class="xsp-table"><caption>Extreme Heating, Air, Plumbing at a glance</caption><thead><tr><th scope="col">Detail</th><th scope="col">Extreme Heating, Air, Plumbing</th></tr></thead><tbody><tr><th scope="row">Founded</th><td>2004, locally owned and operated since</td></tr><tr><th scope="row">Trades</th><td>Heating, cooling, indoor air quality, residential plumbing</td></tr><tr><th scope="row">Service area</th><td>Dayton and Cincinnati metros, nine Ohio counties</td></tr><tr><th scope="row">Offices</th><td>Beavercreek · Mason · Troy · Waynesville</td></tr><tr><th scope="row">Ohio licenses</th><td>HVAC OH LIC #37179 &middot; Plumbing OH LIC #13557</td></tr><tr><th scope="row">Legal entities</th><td>Extreme Heating &amp; Cooling LLC (HVAC) · Extreme Home Services LLC (plumbing)</td></tr><tr><th scope="row">Jobs completed</th><td>25,000+</td></tr><tr><th scope="row">Customer reviews</th><td>4.9-star average across 1,595 reviews</td></tr><tr><th scope="row">Emergency service</th><td>24/7, every day of the year</td></tr><tr><th scope="row">Same-day service</th><td>90% same-day service</td></tr><tr><th scope="row">Membership</th><td>X-Plan, $249 per year or $20.75 per month per system</td></tr></tbody></table></div></div>
+  <div class="xsp-section" id="at-a-glance"><div class="xsp-eyebrow purple">AT A GLANCE</div><h2 class="xsp-h2">Who am I actually hiring?</h2><p class="xsp-takeaway">We've served the Dayton and Cincinnati metros since 2004, under Ohio HVAC license #37179.</p><p class="xsp-tablelabel" id="tbl-company-details-at-a-glance">Company details at a glance</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-company-details-at-a-glance"><table class="xsp-table" role="table" aria-labelledby="tbl-company-details-at-a-glance"><thead><tr><th scope="col">Detail</th><th scope="col">Extreme</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">Founded</th><td role="cell" data-label="Extreme"><span>2004, locally owned ever since</span></td></tr><tr role="row"><th scope="row" role="rowheader">Trades</th><td role="cell" data-label="Extreme"><span>Heating, cooling, indoor air quality, residential plumbing</span></td></tr><tr role="row"><th scope="row" role="rowheader">Service area</th><td role="cell" data-label="Extreme"><span>Dayton and Cincinnati metros, nine Ohio counties</span></td></tr><tr role="row"><th scope="row" role="rowheader">Offices</th><td role="cell" data-label="Extreme"><span>Beavercreek · Mason · Troy · Waynesville</span></td></tr><tr role="row"><th scope="row" role="rowheader">Ohio licenses</th><td role="cell" data-label="Extreme"><span>HVAC OH LIC #37179 &middot; Plumbing OH LIC #13557</span></td></tr><tr role="row"><th scope="row" role="rowheader">Legal entities</th><td role="cell" data-label="Extreme"><span>Extreme Heating &amp; Cooling LLC (HVAC) · Extreme Home Services LLC (plumbing)</span></td></tr><tr role="row"><th scope="row" role="rowheader">Jobs completed</th><td role="cell" data-label="Extreme"><span>25,000+</span></td></tr><tr role="row"><th scope="row" role="rowheader">Customer reviews</th><td role="cell" data-label="Extreme"><span>4.9-star average across 1,595 reviews</span></td></tr><tr role="row"><th scope="row" role="rowheader">Emergency service</th><td role="cell" data-label="Extreme"><span>24/7, every day of the year</span></td></tr><tr role="row"><th scope="row" role="rowheader">Same-day service</th><td role="cell" data-label="Extreme"><span>90% same-day service</span></td></tr><tr role="row"><th scope="row" role="rowheader">Membership</th><td role="cell" data-label="Extreme"><span>X-Plan, $249 per year or $20.75 per month per system</span></td></tr></tbody></table></div></div>
   <div>
   <div class="xsp-eyebrow">ABOUT THE COMPANY</div>
-  <h2 class="xsp-h2">What else do people ask about Extreme?</h2>
+  <h2 class="xsp-h2">What else do people ask?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
-    <button type="button" aria-expanded="true"><span>When was Extreme Heating, Air, Plumbing founded?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">Extreme Heating, Air, Plumbing was founded in 2004 and has been locally owned and operated ever since. The Mason office opened in 2018.</div>
+    <button type="button" aria-expanded="true"><span>When did you start?</span><span class="tog" aria-hidden="true">−</span></button>
+    <div class="a">2004, and we've been locally owned ever since. The Mason office opened in 2018.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Is Extreme Heating, Air, Plumbing a franchise?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">No. Extreme Heating, Air, Plumbing is locally owned and operated from four offices in Ohio, and is not part of a national franchise.</div>
+    <button type="button" aria-expanded="false"><span>Are you a franchise?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">No. Locally owned, run out of four Ohio offices, and not part of a national chain.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>What are Extreme's Ohio license numbers?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Extreme Heating, Air, Plumbing holds Ohio HVAC license #37179 and Ohio plumbing license #13557. Both appear on estimates, invoices and vehicle graphics, as Ohio requires. <a href="/terms">Ohio license numbers and program terms</a> are on the terms page.</div>
+    <button type="button" aria-expanded="false"><span>What are your Ohio license numbers?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Ohio HVAC #37179 and Ohio plumbing #13557. Both are on our estimates, invoices and trucks, as Ohio requires, and the <a href="/terms">license numbers and program terms</a> are on the terms page.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>Does Extreme do both HVAC and plumbing?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Yes. Extreme Heating, Air, Plumbing covers heating, cooling, indoor air quality and residential plumbing. One phone number and one <a href="/maintenance">X-Plan maintenance membership</a> cover both trades.</div>
+    <button type="button" aria-expanded="false"><span>Do you do both HVAC and plumbing?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">Yes. Heating, cooling, indoor air quality and residential plumbing. One phone number and one <a href="/maintenance">X-Plan membership</a> cover both trades.</div>
   </div><div class="xsp-qa">
-    <button type="button" aria-expanded="false"><span>How many jobs has Extreme completed?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Extreme Heating, Air, Plumbing has 25,000+ jobs completed across the Dayton and Cincinnati metros since 2004.</div>
+    <button type="button" aria-expanded="false"><span>How many jobs have you done?</span><span class="tog" aria-hidden="true">+</span></button>
+    <div class="a">More than 25,000 across the two metros since 2004.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>How do I get in touch?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a"><a href="tel:18445847399">(844) 584-7399</a> reaches all four offices. <a href="/contact">Office addresses and directions</a> are on the contact page, and <a href="/referral">the Extreme Rewards referral program</a> pays existing customers who send someone new.</div>
+    <div class="a"><a href="tel:18445847399">(844) 584-7399</a> reaches all four offices. <a href="/contact">Addresses and directions</a> are on the contact page, and <a href="/referral">Extreme Rewards</a> pays you for sending someone new.</div>
   </div></div>
 </div>
   <p class="xsp-updated">Last updated <time datetime="2026-08-02">August 2, 2026</time></p>

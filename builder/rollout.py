@@ -1128,18 +1128,17 @@ geo(HVAC_PAGES, "furnace-heating.html",
     h1="Furnace and heating service in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Furnace repairs, installations and safety checks from the locally owned "
           "Extreme Team. Upfront pricing, and warm air back fast.",
-    answer="Extreme Heating, Air, Plumbing repairs, replaces and safety-checks gas and "
-           "electric furnaces across the Dayton and Cincinnati, Ohio metros. No-heat calls "
-           "are covered by 24/7 emergency service, and every visit ends with a combustion "
-           "and carbon monoxide check. The company has served the Miami Valley since 2004.",
+    answer="No heat? We repair, replace and safety-check gas and electric furnaces across "
+           "Dayton and Cincinnati, and the emergency line is answered at any hour. Every "
+           "visit ends with a combustion and carbon monoxide check.",
     callout="<b>Safety first:</b> smell gas or suspect carbon monoxide? Leave the house "
             "first, then call {tel}. We answer 24/7.",
     sections=[
-        sec("What heating services does Extreme offer in Dayton and Cincinnati?",
-            "Furnace repair, furnace replacement and seasonal safety checks, on gas and "
-            "electric equipment from any manufacturer. Extreme Heating, Air, Plumbing works "
-            "on the systems in postwar Dayton housing and in new Warren County construction "
-            "alike, and carries the parts for common no-heat faults on the truck."),
+        sec("What heating work do you actually handle?",
+            "Furnace repair, furnace replacement and seasonal safety checks, on gas or "
+            "electric equipment from any manufacturer. We work on postwar Dayton furnaces "
+            "and brand-new Warren County builds alike, and the parts for common no-heat "
+            "faults ride on the truck."),
         sec("Should I repair or replace my furnace?",
             "Two things settle it: how old the furnace is, and whether the failure is a part "
             "or the heat exchanger. A twelve-year-old furnace with a bad ignitor is a repair. "
@@ -1148,11 +1147,10 @@ geo(HVAC_PAGES, "furnace-heating.html",
             "<a href=\"/furnace-installation\">furnace installation</a> covers sizing and "
             "efficiency tiers.",
             sid="repair-or-replace",
-            table=tbl("Repair or replace a furnace: what Extreme Heating, Air, Plumbing weighs "
-                      "on a no-heat call in the Dayton and Cincinnati metros.",
-                      "Extreme Heating, Air, Plumbing recommends replacing a furnace rather "
-                      "than repairing it once the unit is past 15 years old and the repair "
-                      "quote approaches a third of replacement cost.",
+            table=tbl("Repair or replace a furnace: what we weigh up on a no-heat call.",
+                      "Once a furnace is past 15 years old and the repair quote gets near a "
+                      "third of what a new one costs, we will tell you replacement is the "
+                      "better money.",
                       ["Factor", "Repair usually makes sense when",
                        "Replacement usually makes sense when"],
                       [("System age", "The furnace is under 12 years old",
@@ -1193,24 +1191,22 @@ geo(HVAC_PAGES, "furnace-heating.html",
             "carbon monoxide all get looked at. The <a href=\"/maintenance\">X-Plan "
             "maintenance membership</a> covers that visit plus a cooling visit, scheduled "
             "automatically."),
-        sec("Does Extreme service electric furnaces and air handlers?",
+        sec("Do you work on electric furnaces and air handlers?",
             "Yes, on any brand. Electric furnaces, air handlers and the "
             "<a href=\"/heat-pump\">heat pump and dual-fuel systems</a> that pair with them "
             "are all covered, whoever installed the equipment."),
-        sec("How do I book heating service in Dayton or Cincinnati?",
-            call("Call {tel} or schedule online. A no-heat call in a cold snap gets the "
-                 "emergency line, which runs 24/7 every day of the year. Extreme Heating, "
-                 "Air, Plumbing handles about 90% of service calls the same day, and a "
-                 "<a href=\"/inspection\">pre-purchase HVAC inspection</a> can be booked "
-                 "the same way.")),
+        sec("How do I book heating service?",
+            call("Call {tel} or schedule online. A no-heat call in a cold snap goes to the "
+                 "emergency line, which runs every day of the year. We reach most homes the "
+                 "same day, and a <a href=\"/inspection\">pre-purchase HVAC inspection</a> "
+                 "books the same way.")),
     ],
     faqH2="What else do homeowners ask about furnaces?",
     faq=qa(
         ("What should I do if the furnace quits in the middle of the night?",
-         call("Call {tel}. Extreme Heating, Air, Plumbing runs 24/7 emergency service across "
-              "the Dayton and Cincinnati metros. While you wait, check that the thermostat is "
-              "set to Heat, the breaker has not tripped, and the furnace door switch is "
-              "seated.")),
+         call("Call {tel}. Someone answers at any hour. While you wait, check that the "
+              "thermostat is set to Heat, that the breaker has not tripped, and that the "
+              "furnace door switch is seated.")),
         ("Is a cracked heat exchanger repairable?",
          "No. A cracked heat exchanger lets combustion gases, including carbon monoxide, into "
          "the air the furnace blows through the house. The fix is a new heat exchanger or a "
@@ -1234,10 +1230,9 @@ geo(HVAC_PAGES, "heat-pump.html",
     h1="Heat pump service for {X}.", h1Highlight="Ohio winters",
     intro="Heat pump repair, installation and tune-ups for Dayton and Cincinnati homes. "
           "Efficient heating and cooling from one system, with upfront pricing.",
-    answer="Extreme Heating, Air, Plumbing installs, repairs and maintains heat pumps across "
-           "the Dayton and Cincinnati, Ohio metros. Modern cold-climate heat pumps heat "
-           "through an Ohio winter, and dual-fuel systems hand off to a gas furnace during "
-           "the coldest stretches. Service covers 38 communities, on every major brand.",
+    answer="We install, repair and tune up heat pumps across Dayton and Cincinnati, on every "
+           "major brand. A modern cold-climate unit will heat through an Ohio winter, and a "
+           "dual-fuel setup hands off to your gas furnace on the worst nights.",
     callout="Noticing more than one? Small heat pump problems become compressor problems. "
             "Call {tel}, or see what each symptom usually means on our "
             "<a href=\"/heat-pump-repair\">heat pump repair</a> page.",
@@ -1247,9 +1242,9 @@ geo(HVAC_PAGES, "heat-pump.html",
              "models keep producing heat well below freezing, which covers most of an Ohio "
              "winter. On the coldest days a heat pump either leans on backup heat or, in a "
              "dual-fuel system, hands the job to a gas furnace.",
-             "Extreme Heating, Air, Plumbing installs dual-fuel systems that switch from the "
-             "heat pump to a <a href=\"/furnace-heating\">gas furnace</a> at a set outdoor "
-             "temperature, so the cheaper source runs whenever it can."]),
+             "We set dual-fuel systems to switch from the heat pump to your "
+             "<a href=\"/furnace-heating\">gas furnace</a> at a chosen outdoor temperature, "
+             "so whichever source is cheaper is the one running."]),
         sec("Which system fits best: heat pump, furnace or dual fuel?",
             "It comes down to what fuel the house already has and how cold it gets where it "
             "sits. All-electric homes and homes without a gas line usually land on a heat "
@@ -1258,9 +1253,9 @@ geo(HVAC_PAGES, "heat-pump.html",
             sid="system-comparison",
             table=tbl("Heat pump, gas furnace with air conditioning, and dual fuel compared "
                       "for Dayton and Cincinnati homes.",
-                      "Extreme Heating, Air, Plumbing recommends a dual-fuel system for most "
-                      "Dayton and Cincinnati homes that already have a gas line, because one "
-                      "system covers mild weather and the other covers the coldest days.",
+                      "If your house already has a gas line, dual fuel is usually what we "
+                      "recommend: the heat pump covers mild weather and the furnace covers "
+                      "the coldest days.",
                       ["Factor", "Heat pump", "Gas furnace + AC", "Dual fuel"],
                       [("Winter performance",
                         "Heats efficiently down to low outdoor temperatures, then leans on backup heat",
@@ -1304,11 +1299,11 @@ geo(HVAC_PAGES, "heat-pump.html",
                        ("Best fit in this region",
                         "Shoulder-season heating with a gas furnace as the primary",
                         "Whole-winter heating, or dual fuel with a high switchover point")])),
-        sec("What heat pump services does Extreme offer?",
+        sec("What heat pump work do you handle?",
             "Repair, replacement and seasonal tune-ups on every major brand, plus dual-fuel "
-            "conversions for homes that already have a gas furnace. Extreme Heating, Air, "
-            "Plumbing services heat pumps in both heating and cooling mode, which matters "
-            "because a heat pump gets twice the annual runtime of an air conditioner."),
+            "conversions for homes that already have a gas furnace. We test in both heating "
+            "and cooling mode, which matters because your heat pump runs about twice the "
+            "hours an air conditioner does."),
     ],
     sectionsTail=[
         sec("What are the signs a heat pump is failing?",
@@ -1323,11 +1318,10 @@ geo(HVAC_PAGES, "heat-pump.html",
             "year-round instead of four months. Annual servicing matters more here than on "
             "any other system in the house for exactly that reason, which is what the "
             "<a href=\"/maintenance\">X-Plan maintenance membership</a> is built around."),
-        sec("How do I book heat pump service in Dayton?",
-            call("Call {tel} or schedule online, and you get an arrival window up front. "
-                 "Extreme Heating, Air, Plumbing handles about 90% of service calls the same "
-                 "day and runs 24/7 emergency service for a house with no heat. Replacement "
-                 "estimates are booked the same way, through "
+        sec("How do I book heat pump service?",
+            call("Call {tel} or schedule online, and you get an arrival window up front. Most "
+                 "calls are handled the same day, and a house with no heat gets the emergency "
+                 "line at any hour. Replacement estimates book the same way, through "
                  "<a href=\"/heat-pump-installation\">heat pump installation</a>.")),
     ],
     faqH2="What else do homeowners ask about heat pumps?",
@@ -1359,10 +1353,9 @@ geo(HVAC_PAGES, "duct-cleaning.html",
     h1="Air duct cleaning for {X}.", h1Highlight="Dayton &amp; Cincinnati homes",
     intro="Professional duct cleaning and air balancing for Dayton and Cincinnati homes. "
           "Better airflow, less dust, upfront pricing.",
-    answer="Extreme Heating, Air, Plumbing cleans residential air ducts across the Dayton and "
-           "Cincinnati, Ohio metros using truck-powered vacuum equipment on every supply and "
-           "return run. The crew photographs the ducts before and after, so the result is "
-           "visible rather than described. Most homes need the service every 3 to 5 years.",
+    answer="We clean air ducts with truck-powered vacuum equipment, on every supply and return "
+           "run in the house. Your ducts get photographed before and after, so you can see the "
+           "difference instead of taking our word for it.",
     callout="Remodeling dust, pets, or allergies? Call {tel} and we'll tell you honestly "
             "whether cleaning will help.",
     sections=[
@@ -1371,18 +1364,16 @@ geo(HVAC_PAGES, "duct-cleaning.html",
              "not recommend cleaning ducts on a routine schedule, but it does recommend "
              "cleaning when there is visible mould growth, vermin, or enough dust and debris "
              "to be blown into the house. Those three conditions are the test.",
-             "Extreme Heating, Air, Plumbing photographs every duct system before and after "
-             "cleaning, so a homeowner in the Dayton or Cincinnati area can see the condition "
-             "rather than take it on trust."]),
+             "So we photograph the ducts before we start and again when we finish. You look "
+             "at the pictures and decide for yourself whether the money did anything."]),
         sec("When does duct cleaning help, and when does it not?",
             "Cleaning removes what has built up inside the duct. It does not change how the "
             "duct was built, sealed or sized, so a house with leaky returns or an undersized "
             "trunk line will still have the same comfort problem after a spotless cleaning.",
-            table=tbl("What air duct cleaning fixes in a Dayton or Cincinnati home, and what "
-                      "it does not.",
-                      "Duct cleaning removes accumulated dust, debris and biological growth "
-                      "from the duct system, and it does not fix leaks, poor duct design, or "
-                      "an undersized return.",
+            table=tbl("What duct cleaning fixes in a house, and what it does not.",
+                      "Cleaning takes out the dust, debris and growth sitting in the ducts. It "
+                      "will not fix a leak, a bad duct layout, or a return that is too small "
+                      "for the system.",
                       ["What you are seeing", "What duct cleaning does", "What actually fixes it"],
                       [("Visible dust blowing from the vents",
                         "Removes the loose debris being picked up in the ducts",
@@ -1409,11 +1400,11 @@ geo(HVAC_PAGES, "duct-cleaning.html",
             "remodel, a smoker in the house, or allergies that flare indoors and nowhere "
             "else. A house that has never had its ducts cleaned is usually worth a look "
             "regardless of the calendar."),
-        sec("What does an Extreme duct cleaning include?",
-            "Truck-powered vacuum on every supply and return run, agitation inside the ducts "
-            "to release what is stuck to the walls, the main trunk lines, and the registers "
-            "and grilles. The system is photographed before the crew starts and after they "
-            "finish, and the house is left as it was found."),
+        sec("What do you actually clean?",
+            "Every supply and return run, the main trunk lines, and the registers and grilles. "
+            "The truck-powered vacuum pulls while a brush agitates the duct wall to release "
+            "what is stuck to it. You get before and after photos, and the house is left the "
+            "way we found it."),
     ],
     sectionsTail=[
         sec("Does duct cleaning help with allergies?",
@@ -1422,13 +1413,12 @@ geo(HVAC_PAGES, "duct-cleaning.html",
             "it with <a href=\"/indoor-air-quality-solutions\">filtration and purification "
             "options</a> does more than either one alone, and source control does more than "
             "both."),
-        sec("How do I book duct cleaning in Dayton or Cincinnati?",
-            call("Call {tel} or schedule online. Extreme Heating, Air, Plumbing will tell you "
-                 "honestly whether cleaning will help before booking it, and the before and "
-                 "after photos come with the job either way. Broader "
-                 "<a href=\"/indoor-air-quality\">indoor air quality services</a> and "
-                 "<a href=\"/humidifier\">whole-home humidifiers</a> are quoted on the same "
-                 "visit when they are worth doing.")),
+        sec("How do I book duct cleaning?",
+            call("Call {tel} or schedule online. We will tell you whether cleaning is likely "
+                 "to help before you book it, and the photos come with the job either way. If "
+                 "<a href=\"/indoor-air-quality\">air quality work</a> or a "
+                 "<a href=\"/humidifier\">whole-home humidifier</a> would do more for you, we "
+                 "will price that on the same visit.")),
     ],
     faqH2="What else do homeowners ask about duct cleaning?",
     faq=qa(
@@ -1446,9 +1436,9 @@ geo(HVAC_PAGES, "duct-cleaning.html",
          "clothes needing two cycles to dry, and it is a fire risk rather than an air quality "
          "one."),
         ("Will duct cleaning make the house less dusty?",
-         "It reduces what the system blows back out, which is a real share of household dust "
-         "but not all of it. Filtration and sealing the return side handle the rest. Extreme "
-         "Heating, Air, Plumbing will say which one your house actually needs."),
+         "It cuts what the system blows back out, which is a real share of household dust but "
+         "not all of it. Filtration and sealing the return side handle the rest, and we will "
+         "tell you which one your house actually needs."),
         ("Is duct sealing the same as duct cleaning?",
          "No. Cleaning removes what is inside the duct. Sealing closes the gaps where "
          "conditioned air escapes into an attic or crawlspace before it ever reaches a room. "
@@ -1459,11 +1449,9 @@ geo(HVAC_PAGES, "indoor-air-quality.html",
     h1="Indoor air quality services for {X}.", h1Highlight="your home",
     intro="Filtration, purification and humidity control for Dayton and Cincinnati homes. "
           "Cleaner air from the team you already trust.",
-    answer="Extreme Heating, Air, Plumbing improves indoor air quality in Dayton and "
-           "Cincinnati, Ohio homes through filtration, UV purification, ventilation and "
-           "humidity control. Work starts by finding the source of the problem, not by "
-           "selling a package. Indoor humidity is targeted at 30 to 50% depending on the "
-           "season.",
+    answer="Filtration, UV purification, ventilation and humidity control, aimed at whatever "
+           "is actually wrong in your house. We find the source first. Nobody gets sold a "
+           "package because it was next on the list.",
     callout="Air quality problems compound quietly. Call {tel} and we'll find the source, "
             "not just the symptom.",
     sections=[
@@ -1472,9 +1460,8 @@ geo(HVAC_PAGES, "indoor-air-quality.html",
              "crawlspace does more than any purifier will, a better filter does more than a "
              "UV lamp, and the equipment only earns its keep once the first two are handled. "
              "Anyone selling the order backwards is selling equipment.",
-             "Extreme Heating, Air, Plumbing treats indoor air quality in three steps: source "
-             "control first, filtration second, purification third, in that order. The "
-             "hardware for each step is compared on our "
+             "So that is the order we work in: source, then filter, then purify. The hardware "
+             "for each step sits side by side on our "
              "<a href=\"/indoor-air-quality-solutions\">filtration, UV and ventilation "
              "options</a> page."]),
         sec("What are the signs of poor indoor air quality?",
@@ -1488,11 +1475,10 @@ geo(HVAC_PAGES, "indoor-air-quality.html",
             "Different symptoms point at different sources, and the fix follows the source "
             "rather than the symptom. The table below is how a tech narrows it down on a "
             "first visit.",
-            table=tbl("Indoor air quality symptoms and their usual sources in Dayton and "
-                      "Cincinnati homes.",
-                      "Extreme Heating, Air, Plumbing diagnoses indoor air quality by symptom "
-                      "and source, because the same complaint can come from a filter, a duct "
-                      "leak, or standing water under the house.",
+            table=tbl("Indoor air quality symptoms and their usual sources.",
+                      "We work backwards from the symptom, because the same complaint can come "
+                      "from a cheap filter, a leaking return, or standing water under the "
+                      "house.",
                       ["What you are noticing", "Likely source", "What usually fixes it"],
                       [("Dust returns within a day of cleaning",
                         "Low-efficiency filter, or return-side duct leaks",
@@ -1515,12 +1501,12 @@ geo(HVAC_PAGES, "indoor-air-quality.html",
                        ("Visible mould near a register or crawlspace",
                         "Standing water or a moisture path, not an air problem",
                         "Fix the moisture source first, then treat the air")])),
-        sec("What indoor air quality services does Extreme offer?",
+        sec("What can you install?",
             "Media filtration, UV purification at the coil, whole-home humidification and "
-            "dehumidification, ventilation, coil cleaning and "
-            "<a href=\"/duct-cleaning\">air duct cleaning</a>. Extreme Heating, Air, Plumbing "
-            "measures before and after rather than promising a result, and everything "
-            "installs into the HVAC system already in the house."),
+            "dehumidification, fresh-air ventilation, coil cleaning and "
+            "<a href=\"/duct-cleaning\">duct cleaning</a>. All of it goes into the system you "
+            "already own, and we take readings before and after instead of promising you a "
+            "result."),
     ],
     sectionsTail=[
         sec("Do UV lights in HVAC systems work?",
@@ -1535,18 +1521,18 @@ geo(HVAC_PAGES, "indoor-air-quality.html",
             "them. Nearer 45 to 50% in summer, which is dry enough that the house feels cool "
             "without overcooling it. A <a href=\"/humidifier\">whole-home humidifier "
             "installation</a> is what holds the winter end of that range."),
-        sec("How do I book air quality help in Dayton?",
-            call("Call {tel} or schedule online. Extreme Heating, Air, Plumbing will find the "
-                 "source before recommending equipment, and about 90% of service calls are "
-                 "handled the same day. Filter and pad changes come with the "
-                 "<a href=\"/maintenance\">X-Plan maintenance membership</a> visits.")),
+        sec("How do I book air quality help?",
+            call("Call {tel} or schedule online. We find the source before recommending "
+                 "equipment, and most calls are handled the same day. Filter and pad changes "
+                 "come with the <a href=\"/maintenance\">X-Plan maintenance membership</a> "
+                 "visits.")),
     ],
     faqH2="What else do homeowners ask about indoor air?",
     faq=qa(
         ("Where do you start when the whole house feels stuffy?",
          "With the return side and the filter, then humidity, then ventilation. A stuffy house "
-         "is usually one that is sealed tighter than its ventilation was designed for. Extreme "
-         "Heating, Air, Plumbing takes readings before recommending anything."),
+         "is usually one sealed tighter than its ventilation was designed for. We take the "
+         "readings before recommending anything."),
         ("Can indoor air quality be measured before and after?",
          "Yes. Temperature, relative humidity, static pressure and particulate readings all "
          "get taken on the visit, and again after the work. That is the only way to tell "
@@ -1569,48 +1555,42 @@ geo(HVAC_PAGES, "maintenance.html",
     h1="X-Plan: the HVAC maintenance plan for {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Two seasonal tune-ups a year, priority scheduling, 15% off repairs, and a 5-year "
           "repair warranty. $249 a year or $20.75 a month.",
-    answer="X-Plan is the maintenance membership from Extreme Heating, Air, Plumbing, priced "
-           "at $249 per year or $20.75 per month. It includes two seasonal safety and "
-           "performance visits, 15% off all repairs and priority scheduling. Members accrue "
-           "100% of their membership investment in consecutive years toward end-of-life "
-           "equipment replacement, up to $2,500 or 10 years.",
+    answer="X-Plan costs $249 a year, or $20.75 a month. You get two seasonal tune-ups, 15% "
+           "off every repair, a reduced service fee and a spot at the front of the line when "
+           "the weather turns and everyone calls at once.",
     callout="Questions about membership or billing? Call {tel} and we'll walk you through it.",
     sections=[
-        sec("What is the X-Plan maintenance membership?",
-            "X-Plan is Extreme's HVAC maintenance membership for homeowners in the Dayton and "
-            "Cincinnati metros. It bundles the two tune-ups a system needs each year with "
-            "member pricing on repairs, a longer repair warranty, and a place at the front of "
-            "the line when the weather turns."),
-        sec("How much does an X-Plan membership cost?",
+        sec("What is X-Plan?",
+            "A maintenance membership. It bundles the two tune-ups your system needs each year "
+            "with member pricing on repairs, a longer repair warranty, and a place at the "
+            "front of the line when the weather turns and the phones light up."),
+        sec("What does it cost?",
             "$249 a year, or $20.75 a month per system. That covers both seasonal visits, 15% "
-            "off every repair, a reduced member service fee including after hours and "
-            "holidays, priority scheduling, and a 5-year warranty on qualified repairs. "
-            "Larger replacements can also run through our "
-            "<a href=\"/financing-options\">financing options</a>."),
-        sec("What is included in an X-Plan tune-up?",
-            "Two safety and performance visits a year. Each one covers a full system "
-            "inspection and safety check, capacitor, relay and thermostat testing, compressor "
-            "amp draws, drain line cleaning, a pressure check, light coil cleaning, "
-            "refrigerant charge calibration up to 1 lb, airflow adjustments and efficiency "
-            "measurements. One visit covers "
-            "<a href=\"/air-conditioning\">air conditioning service</a> and the other covers "
-            "<a href=\"/furnace-heating\">furnace and heating service</a>."),
-        sec("How does the X-Plan Zero Risk Investment work?",
-            "Members accrue 100% of their membership investment in consecutive years toward "
-            "end-of-life equipment replacement, up to $2,500 or 10 years. The accrual follows "
-            "the member, not the house. Consecutive years is the condition that matters most: "
-            "a lapsed membership starts the clock over."),
+            "off every repair, a reduced service fee including after hours and holidays, "
+            "priority scheduling, and a 5-year warranty on qualified repairs. Bigger "
+            "replacements can run through <a href=\"/financing-options\">financing</a> "
+            "instead."),
+        sec("What happens on a tune-up visit?",
+            "A full system inspection and safety check, capacitor, relay and thermostat "
+            "testing, compressor amp draws, drain line cleaning, a pressure check, light coil "
+            "cleaning, refrigerant charge calibration up to 1 lb, airflow adjustment and "
+            "efficiency readings. One visit covers "
+            "<a href=\"/air-conditioning\">your air conditioning</a>, the other covers "
+            "<a href=\"/furnace-heating\">your furnace</a>."),
+        sec("How does the Zero Risk Investment work?",
+            "You accrue 100% of what you have paid in toward replacing the equipment when it "
+            "reaches the end of its life, in consecutive years, capped at $2,500 or 10 years. "
+            "It follows you, not the house. Consecutive is the word that matters: let the "
+            "membership lapse and the clock starts over."),
     ],
     sectionsTail=[
         sec("Is X-Plan worth it compared with paying per visit?",
             "It depends on how often you would book a tune-up anyway. Two visits a year, at "
             "member pricing, plus 15% off any repair, is the arithmetic most members are "
             "running. Priority scheduling is what they mention in July.",
-            table=tbl("X-Plan membership compared with paying per visit, from Extreme Heating, "
-                      "Air, Plumbing.",
-                      "An X-Plan membership from Extreme Heating, Air, Plumbing includes two "
-                      "seasonal visits a year, a 15% repair discount and a 5-year repair "
-                      "warranty, none of which apply to a one-off service call.",
+            table=tbl("X-Plan membership compared with paying per visit.",
+                      "Membership gets you two seasonal visits a year, 15% off repairs and a "
+                      "5-year repair warranty. None of those apply to a one-off service call.",
                       ["What you get", "X-Plan member", "Non-member"],
                       [("Seasonal safety and performance visits", "Two per year, included",
                         "Booked and billed individually"),
@@ -1632,12 +1612,11 @@ geo(HVAC_PAGES, "maintenance.html",
             "skipping whichever season is further away. A "
             "<a href=\"/heat-pump\">heat pump</a> wants both visits, because it runs "
             "year-round."),
-        sec("How do I join X-Plan in Dayton or Cincinnati?",
-            call("Call {tel} or sign up online, and the first visit gets scheduled on the same "
-                 "call. Extreme Heating, Air, Plumbing books both seasonal visits automatically "
-                 "after that, so the membership does not depend on remembering it. Members who "
-                 "send us a neighbour can also use "
-                 "<a href=\"/referral\">Extreme Rewards</a>.")),
+        sec("How do I join?",
+            call("Call {tel} or sign up online, and we schedule the first visit on the same "
+                 "call. After that we book both seasonal visits for you, so the membership "
+                 "does not depend on you remembering it. Send us a neighbour and there is "
+                 "<a href=\"/referral\">Extreme Rewards</a> too.")),
     ],
     faqH2="What else do members ask about X-Plan?",
     faq=qa(
@@ -1652,25 +1631,22 @@ geo(HVAC_PAGES, "maintenance.html",
          "Yes, 15% off all repairs, on every visit, plus a reduced member service fee that "
          "also applies after hours and on holidays. Qualified repairs carry a 5-year warranty."),
         ("Do I have to remember to book the visits?",
-         "No. Extreme Heating, Air, Plumbing schedules the spring and fall visits "
-         "automatically and calls to confirm the window."),
-        ("What does the X-Plan accrual actually pay for?",
-         "Members accrue 100% of their membership investment in consecutive years toward "
-         "end-of-life equipment replacement, up to $2,500 or 10 years. It applies when the "
-         "equipment is replaced, and consecutive years is the condition that matters: a lapse "
-         "restarts it. A full <a href=\"/inspection\">HVAC inspection</a> is what documents "
-         "that the system has reached that point."),
+         "No. We schedule the spring and fall visits and call you to confirm the window."),
+        ("What does the accrual actually pay for?",
+         "You accrue 100% of what you have paid in toward end-of-life equipment replacement, "
+         "in consecutive years, capped at $2,500 or 10 years. It applies when the equipment "
+         "gets replaced, and a lapse restarts it. A full "
+         "<a href=\"/inspection\">HVAC inspection</a> documents that the system has reached "
+         "that point."),
     ))
 
 geo(HVAC_PAGES, "inspection.html",
     h1="HVAC inspection for {X}.", h1Highlight="homes and home buyers",
     intro="Full-system HVAC inspections for home purchases, seasonal checkups, and honest "
           "second opinions.",
-    answer="An HVAC inspection from Extreme Heating, Air, Plumbing documents the condition of "
-           "a home's heating, cooling and ductwork across the Dayton and Cincinnati, Ohio "
-           "metros. Combustion safety, refrigerant performance, electrical components and "
-           "airflow are tested and photographed. Findings arrive in plain English, sorted "
-           "into 3 tiers: safety, urgency and cost.",
+    answer="We open the equipment up and take readings: combustion safety, refrigerant, "
+           "electrical, airflow, ductwork. It all gets photographed. You get the findings in "
+           "plain English, sorted into what is unsafe, what is urgent, and what can wait.",
     callout="Want eyes on it before you commit? Call {tel} and we'll tell you what's real and "
             "what can wait.",
     sections=[
@@ -1684,12 +1660,10 @@ geo(HVAC_PAGES, "inspection.html",
             "standards of practice specifically exclude taking equipment apart or testing "
             "refrigerant. An HVAC inspection opens the equipment and takes readings, which is "
             "where the expensive findings live.",
-            table=tbl("What a general home inspection covers compared with an HVAC inspection "
-                      "from Extreme Heating, Air, Plumbing.",
-                      "A general home inspection reports whether the heating and cooling "
-                      "equipment operates; an HVAC inspection from Extreme Heating, Air, "
-                      "Plumbing reports the condition of the components inside it.",
-                      ["What gets checked", "General home inspection", "Extreme HVAC inspection"],
+            table=tbl("A general home inspection compared with a dedicated HVAC inspection.",
+                      "A home inspection tells you the equipment turns on. An HVAC inspection "
+                      "tells you what shape the parts inside it are in.",
+                      ["What gets checked", "General home inspection", "HVAC inspection"],
                       [("Does the system turn on and produce heat or cool air", "Yes", "Yes"),
                        ("Heat exchanger inspected for cracks",
                         "Not typically, the standards exclude disassembly",
@@ -1721,9 +1695,8 @@ geo(HVAC_PAGES, "inspection.html",
              "guessed at. The warning signs are a yellow or flickering burner flame, soot "
              "around the burner compartment, a carbon monoxide alarm, and headaches or nausea "
              "that clear when everyone leaves the house.",
-             "Any of those signs together with the smell of gas means leaving the building "
-             "first and calling from outside. Extreme Heating, Air, Plumbing runs 24/7 "
-             "emergency service every day of the year, and "
+             "Any of those together with a smell of gas means leaving the building first and "
+             "calling from outside. Someone answers at any hour, and "
              "<a href=\"/furnace-heating\">furnace and heating service</a> covers the repair "
              "once the house is safe."]),
     ],
@@ -1734,25 +1707,23 @@ geo(HVAC_PAGES, "inspection.html",
             "shape the system is in, the other keeps it in shape. The "
             "<a href=\"/maintenance\">X-Plan maintenance membership</a> includes both, twice "
             "a year."),
-        sec("How do I book an HVAC inspection in Dayton?",
-            call("Call {tel} or schedule online. Extreme Heating, Air, Plumbing works around "
-                 "closing dates when the inspection is for a purchase, and handles about 90% "
-                 "of service calls the same day. The same visit can pick up "
-                 "<a href=\"/air-conditioning\">air conditioning service</a>, "
-                 "<a href=\"/duct-cleaning\">air duct cleaning</a> or "
-                 "<a href=\"/indoor-air-quality\">indoor air quality services</a> if the "
-                 "findings point that way.")),
+        sec("How do I book an inspection?",
+            call("Call {tel} or schedule online. If it is for a purchase, we work around your "
+                 "closing date. Most calls are handled the same day, and the same visit can "
+                 "pick up <a href=\"/air-conditioning\">air conditioning service</a>, "
+                 "<a href=\"/duct-cleaning\">duct cleaning</a> or "
+                 "<a href=\"/indoor-air-quality\">air quality work</a> if the findings point "
+                 "that way.")),
     ],
     faqH2="What else do buyers and owners ask about inspections?",
     faq=qa(
         ("Can you inspect a system before I close on a house?",
-         "Yes, and it is one of the most common reasons people book one. Extreme Heating, Air, "
-         "Plumbing schedules around inspection deadlines, and the report is written so it can "
-         "go straight to a realtor or into a repair request."),
+         "Yes, and it is one of the most common reasons people book one. We schedule around "
+         "inspection deadlines, and the report is written so it can go straight to your "
+         "realtor or into a repair request."),
         ("Will you give a second opinion on another company's quote?",
-         "Yes. Bring the quote, and the inspection covers the same components so the findings "
-         "can be compared line by line. There is no obligation to have the work done by "
-         "Extreme."),
+         "Yes. Bring the quote. The inspection covers the same components, so you can compare "
+         "the findings line by line. There is no obligation to have the work done by us."),
         ("What happens if the inspection finds a safety problem?",
          "You are told on the spot, before anything else in the report. Combustion and carbon "
          "monoxide findings come first, in plain English, with what needs to happen and how "
@@ -1771,36 +1742,33 @@ geo(HVAC_PAGES, "thermostat.html",
     h1Highlight="Dayton &amp; Cincinnati",
     intro="Smart thermostat installation, setup and troubleshooting. More comfort and lower "
           "bills from the system you already own.",
-    answer="Extreme Heating, Air, Plumbing installs, configures and repairs residential "
-           "thermostats across the Dayton and Cincinnati, Ohio metros, including Nest, ecobee "
-           "and Honeywell models. The company checks wiring, staging and heat pump "
-           "compatibility before any equipment is bought. Every install ends with a heating "
-           "and a cooling cycle run and verified.",
+    answer="We install, set up and repair thermostats of any brand, Nest and ecobee and "
+           "Honeywell included. We check your wiring and staging before you buy anything, and "
+           "run a heating and a cooling cycle before we leave.",
     callout="Thermostat acting up? It's often the cheapest fix in HVAC. Call {tel} before "
             "assuming the worst.",
     sections=[
-        sec("What thermostat services does Extreme offer?",
-            "Installation and setup of smart, programmable and conventional thermostats, plus "
-            "diagnosis when one stops driving the equipment. Extreme Heating, Air, Plumbing "
-            "works with any brand, checks compatibility against the actual system in the "
-            "house first, and runs a heating and a cooling cycle before leaving."),
+        sec("What thermostat work do you handle?",
+            "Installing and setting up smart, programmable and conventional thermostats, and "
+            "figuring out why one has stopped driving the equipment. Any brand. We check "
+            "compatibility against the system actually in your house first, then run a heating "
+            "and a cooling cycle before leaving."),
         sec("Can a smart thermostat be installed without a C-wire?",
             ["Yes, in most homes. The C-wire carries continuous power, and smart thermostats "
              "need it. Where one was never run, the fix is either an adapter at the furnace "
              "board, repurposing an unused conductor in the existing cable, or running new "
              "thermostat wire. All three are routine.",
-             "Extreme Heating, Air, Plumbing installs smart thermostats in homes with no "
-             "C-wire by adding a power adapter at the furnace board or running new thermostat "
-             "cable."]),
+             "If your wall has no C-wire, we either add a power adapter at the furnace board "
+             "or pull new thermostat cable. It is not a reason to give up on the thermostat "
+             "you wanted."]),
         sec("Which smart thermostat works with my system?",
             "The thermostat has to match the equipment, not the other way round. Single-stage "
             "gas heat takes almost anything. Heat pumps, multi-stage equipment and zoned "
             "systems narrow the list quickly, and line-voltage electric heat rules most smart "
             "thermostats out entirely.",
-            table=tbl("Thermostat compatibility by system type, as Extreme Heating, Air, "
-                      "Plumbing checks it before an installation.",
-                      "Thermostat compatibility in a home is decided by the equipment type and "
-                      "the wiring already at the wall, not by the thermostat's feature list.",
+            table=tbl("Thermostat compatibility by system type.",
+                      "What you can install is decided by your equipment and the wiring already "
+                      "at the wall, not by the feature list on the box.",
                       ["What you have", "What it means", "What can be installed"],
                       [("A C-wire already at the thermostat",
                         "Continuous power is available at the wall",
@@ -1836,12 +1804,11 @@ geo(HVAC_PAGES, "thermostat.html",
             "from the hardware itself, so it depends on how the house was being run before. A "
             "thermostat that is set and then ignored saves nothing, which is why the schedule "
             "gets built with you before we leave."),
-        sec("How do I book thermostat service in Dayton or Cincinnati?",
-            call("Call {tel} or schedule online. Extreme Heating, Air, Plumbing handles about "
-                 "90% of service calls the same day, and a thermostat that has stopped driving "
-                 "the heat counts as a no-heat call. Thermostat staging is also checked on "
-                 "<a href=\"/heat-pump\">heat pump service</a> visits and during a full "
-                 "<a href=\"/inspection\">HVAC inspection</a>.")),
+        sec("How do I book thermostat service?",
+            call("Call {tel} or schedule online. Most calls are handled the same day, and a "
+                 "thermostat that has stopped driving the heat counts as a no-heat call. We "
+                 "also check staging on <a href=\"/heat-pump\">heat pump service</a> visits "
+                 "and during a full <a href=\"/inspection\">HVAC inspection</a>.")),
     ],
     faqH2="What else do homeowners ask about thermostats?",
     faq=qa(
@@ -1871,11 +1838,9 @@ geo(HVAC_PAGES, "humidifier.html",
     h1="Whole-home humidifier installation for {X}.", h1Highlight="Ohio winters",
     intro="Whole-home humidifier installation and service. End dry winter air, static shocks, "
           "and cracked wood floors.",
-    answer="Extreme Heating, Air, Plumbing installs and services whole-home humidifiers on "
-           "residential furnaces and air handlers across the Dayton and Cincinnati, Ohio "
-           "metros. The company fits bypass, fan-powered and steam models, sized to the house "
-           "rather than the furnace. Target indoor humidity through an Ohio winter is 30 to "
-           "40%.",
+    answer="Static shocks, cracked trim, waking up congested. That is what an Ohio winter does "
+           "to indoor air. We fit bypass, fan-powered and steam humidifiers, sized to your "
+           "house, and set them to hold 30 to 40% through the heating season.",
     callout="Dry air is hardest on homes in an Ohio winter. Call {tel} and we'll size the "
             "right solution.",
     sections=[
@@ -1894,11 +1859,9 @@ geo(HVAC_PAGES, "humidifier.html",
             "moisture the house needs and how the heating system delivers air. Bypass units "
             "are the simplest. Steam units are the only ones that do not care whether the "
             "furnace is running.",
-            table=tbl("Whole-home humidifier types compared, as Extreme Heating, Air, Plumbing "
-                      "sizes them for Dayton and Cincinnati homes.",
-                      "Extreme Heating, Air, Plumbing fits bypass, fan-powered and steam "
-                      "humidifiers, and matches the type to the size of the house and the kind "
-                      "of heating system installed.",
+            table=tbl("Whole-home humidifier types compared.",
+                      "We match the type to the size of your house and the kind of heating "
+                      "system you have, not to whatever is on the van that day.",
                       ["Factor", "Bypass", "Fan-powered", "Steam"],
                       [("How it works", "Furnace airflow is routed across a wet pad",
                         "A built-in fan pushes air across the wet pad",
@@ -1938,13 +1901,13 @@ geo(HVAC_PAGES, "humidifier.html",
             "30%, because static needs dry air to build up. Dry skin, cracked lips and morning "
             "congestion generally ease as well. Wood floors and trim stop opening up at the "
             "seams, which is the expensive part."),
-        sec("How do I book humidifier service in Dayton or Cincinnati?",
-            call("Call {tel} or schedule online. Extreme Heating, Air, Plumbing sizes the "
-                 "humidifier to the house before quoting one, and handles about 90% of service "
-                 "calls the same day. Summer is the other half of the problem, and "
+        sec("How do I book humidifier service?",
+            call("Call {tel} or schedule online. We size the humidifier to your house before "
+                 "quoting one, and most calls are handled the same day. Summer is the other "
+                 "half of this problem, so "
                  "<a href=\"/indoor-air-quality-solutions\">whole-home dehumidification</a> "
-                 "and wider <a href=\"/indoor-air-quality\">indoor air quality services</a> "
-                 "are quoted the same way.")),
+                 "and wider <a href=\"/indoor-air-quality\">air quality work</a> get quoted "
+                 "the same way.")),
     ],
     faqH2="What else do homeowners ask about humidifiers?",
     faq=qa(
@@ -1957,8 +1920,8 @@ geo(HVAC_PAGES, "humidifier.html",
          "air than a gas furnace, so a bypass humidifier has too little heat to evaporate much "
          "water and underperforms all winter."),
         ("How often does the humidifier pad need changing?",
-         "Once a heating season for most homes, and more often on very hard water. Extreme "
-         "Heating, Air, Plumbing handles the pad change and cleaning during X-Plan visits."),
+         "Once a heating season for most homes, and more often on very hard water. We handle "
+         "the pad change and cleaning during X-Plan visits."),
         ("Does the humidifier run in summer?",
          "No. The water supply gets shut off and the damper closed at the end of the heating "
          "season, then opened again in fall. Leaving it running in summer adds moisture the "
@@ -1979,28 +1942,24 @@ geo(HVAC_SUBS, "ac-repair.html",
     h1="AC repair in {X}, day or night.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Cool air back, usually the same day. We diagnose fast, quote flat before any work "
           "starts, and repair every make and model, with the emergency line answered 24/7.",
-    answer="Extreme Heating, Air, Plumbing repairs residential air conditioners across the "
-           "Dayton and Cincinnati, Ohio metros. Every make and model is covered, whoever "
-           "installed it, with a flat repair price quoted before work starts. The company "
-           "offers 24/7 emergency service and 90% same-day service, backed by 25,000+ jobs "
-           "completed.",
+    answer="AC out? We repair every make and model across Dayton and Cincinnati, most of them "
+           "the same day. You get a flat price before we start, and the emergency line is "
+           "answered at any hour.",
     sections=[
-        sec("What does an AC repair visit include?",
-            "An AC repair visit starts with a diagnosis, not a quote. A technician reads "
-            "pressures and the temperature split at the supply and return, checks the "
-            "electrical side, and finds the actual failure. The price for that repair is set "
-            "and approved before any part comes off the truck. The wider "
-            "<a href=\"/air-conditioning\">air conditioning services overview</a> covers "
-            "tune-ups and replacement.",
-            h3s=[("What a technician checks first",
+        sec("What happens on an AC repair visit?",
+            "We diagnose before we quote. That means reading pressures, checking the "
+            "temperature split at the supply and return, going over the electrical side, and "
+            "finding the actual failure. Then you get a price, and nothing comes off the truck "
+            "until you approve it. The <a href=\"/air-conditioning\">air conditioning "
+            "overview</a> covers tune-ups and replacement.",
+            h3s=[("What gets checked first",
                   "Refrigerant pressures, the contactor and capacitor, the condenser fan "
-                  "motor, the blower, the condensate drain, and the airflow across the "
-                  "evaporator coil. Most calls that come in as \"the AC quit\" end at one of "
-                  "those six."),
+                  "motor, the blower, the condensate drain, and airflow across the evaporator "
+                  "coil. Most calls that come in as \"the AC quit\" end at one of those six."),
                  ("What happens after the repair",
-                  "Every repair ends with the system running and measured. A technician "
-                  "confirms the temperature split at the register before leaving, so the fix "
-                  "is verified rather than assumed.")]),
+                  "We run the system and measure it. You get the temperature split at the "
+                  "register confirmed before we leave, so the fix is verified rather than "
+                  "assumed.")]),
         sec("Why is my air conditioner blowing warm air?",
             "Warm air from a running system usually means one of four things: a dirty or iced "
             "evaporator coil, low refrigerant from a leak, a failed capacitor stopping the "
@@ -2012,16 +1971,14 @@ geo(HVAC_SUBS, "ac-repair.html",
                   "is wrong, and running the system that way is how a repair turns into a "
                   "compressor replacement. Switch the cooling off and leave the fan running so "
                   "the ice melts before anyone looks at it.")]),
-        sec("Can someone come out today for AC repair?",
-            "In most cases, yes. Extreme Heating, Air, Plumbing handles about 90% of service "
-            "calls the same day across the Dayton and Cincinnati metros, and the emergency "
-            "line is answered 24/7. Calls with no cooling in a heat wave are dispatched ahead "
-            "of routine work."),
+        sec("Can someone come out today?",
+            "Usually, yes. About nine calls in ten get handled the day you reach out, and the "
+            "emergency line is answered at any hour. If you have no cooling in a heat wave, "
+            "you go ahead of routine work."),
     ],
     table=tbl("Repair or replace an air conditioner: what decides it.",
-              "Extreme Heating, Air, Plumbing recommends replacing an air conditioner rather "
-              "than repairing it once the system is 12 years or older and the repair quote "
-              "approaches a third of replacement cost.",
+              "Once a system is 12 years or older and the repair quote gets near a third of "
+              "what a new one costs, replacement is usually the better money.",
               ["Factor", "Repair usually makes sense when", "Replacement usually makes sense when"],
               [("System age", "Under 12 years old", "12 years or older"),
                ("Failed part", "Capacitor, contactor, fan motor, or control board",
@@ -2036,30 +1993,27 @@ geo(HVAC_SUBS, "ac-repair.html",
               h2="Should I repair or replace my air conditioner?", sid="repair-or-replace",
               eyebrow="REPAIR OR REPLACE"),
     sectionsTail=[
-        sec("Is AC repair work covered by a warranty?",
-            "Repairs carried out by Extreme Heating, Air, Plumbing are backed by the company's "
-            "satisfaction guarantee. <a href=\"/maintenance\">X-Plan maintenance membership</a> "
-            "members get a 5-year warranty on qualified repairs. Parts still inside the "
-            "manufacturer's warranty period are handled as warranty work, whoever installed "
-            "the system. Once the age and the failed part point the other way, "
-            "<a href=\"/ac-installation\">air conditioner replacement in Dayton and "
-            "Cincinnati</a> is the next page."),
-        sec("How do I book AC repair in Dayton or Cincinnati?",
-            call("Service is booked by phone at {tel} or online. The emergency line runs 24/7, "
-                 "every day of the year. The office is staffed Monday to Friday, 8:00 AM to "
-                 "5:00 PM, for scheduling that is not urgent. If the outdoor unit is a heat "
-                 "pump rather than an air conditioner, "
-                 "<a href=\"/heat-pump-repair\">heat pump repair</a> is the right page.")),
+        sec("Is the repair covered by a warranty?",
+            "Our work is backed by a satisfaction guarantee, and "
+            "<a href=\"/maintenance\">X-Plan members</a> get a 5-year warranty on qualified "
+            "repairs. If a part is still inside the manufacturer's warranty period, we handle "
+            "it as warranty work, whoever installed the system. Once the age and the failed "
+            "part point the other way, <a href=\"/ac-installation\">replacement</a> is the "
+            "next page."),
+        sec("How do I book AC repair?",
+            call("Call {tel} or book online. The emergency line runs every day of the year. "
+                 "For anything that is not urgent, the office is staffed Monday to Friday, "
+                 "8:00 AM to 5:00 PM. If your outdoor unit is a heat pump rather than an air "
+                 "conditioner, <a href=\"/heat-pump-repair\">heat pump repair</a> is the page "
+                 "you want.")),
     ],
     faqH2="What else do homeowners ask about AC repair?",
     faq=qa(
-        ("How fast can you get here for AC repair?",
-         "In most cases, the same day. Extreme Heating, Air, Plumbing handles about 90% of "
-         "service calls the day the customer reaches out, across the Dayton and Cincinnati "
-         "metros, with 24/7 emergency service when it cannot wait."),
-        ("Do you repair every air conditioner brand?",
-         "Yes. Extreme Heating, Air, Plumbing repairs every major make and model of "
-         "residential air conditioner, regardless of which company installed it."),
+        ("How fast can you get here?",
+         "Usually the same day. About nine calls in ten are handled the day you reach out, and "
+         "the emergency line is answered at any hour when it cannot wait."),
+        ("Do you repair every brand?",
+         "Yes, every major make and model, whoever installed it."),
         ("Will I know the price before you start?",
          "Yes. The repair is diagnosed first, then priced flat, and nothing is taken apart "
          "until the price is approved. No part is charged without approval first."),
@@ -2069,27 +2023,24 @@ geo(HVAC_SUBS, "ac-repair.html",
          "compressor through ice is a common cause of compressor failure."),
         ("My air conditioner is 14 years old. Is a repair still worth it?",
          "Sometimes. A capacitor or contactor on a 14-year-old system is usually worth fixing. "
-         "A failed compressor or a leaking evaporator coil on a system that age is usually "
-         "where replacement wins, and Extreme Heating, Air, Plumbing gives both numbers so the "
-         "choice stays with the homeowner."),
+         "A failed compressor or a leaking evaporator coil at that age is usually where "
+         "replacement wins. You get both numbers, and the choice stays yours."),
     ))
 
 geo(HVAC_SUBS, "ac-installation.html",
     h1="AC installation and replacement in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Right-sized, high-efficiency air conditioners installed clean and to code. Honest "
           "sizing math, free replacement estimates, and flexible financing.",
-    answer="Extreme Heating, Air, Plumbing installs and replaces residential air conditioning "
-           "systems throughout the Dayton and Cincinnati, Ohio metros. Every replacement "
-           "starts with a load calculation of the home's actual heat gain rather than a match "
-           "to the old label. The company has completed 25,000+ jobs across both metros in "
-           "over 20 years of local ownership.",
+    answer="Comparing quotes? Ours starts with a load calculation on your house, not a match "
+           "to the label on the old unit. You get the sizing math, a written price and "
+           "financing options in one visit, free.",
     sections=[
         sec("What does an AC installation include?",
-            "A replacement covers the outdoor condenser, the indoor evaporator coil, the line "
-            "set connection, the electrical whip and disconnect, and the refrigerant charge. "
-            "Old equipment and refrigerant leave with the crew. The system is commissioned and "
-            "measured before anyone signs off on it. If the system still has years in it, "
-            "<a href=\"/ac-repair\">AC repair</a> is usually the better money.",
+            "The outdoor condenser, the indoor evaporator coil, the line set connection, the "
+            "electrical whip and disconnect, and the refrigerant charge. Your old equipment "
+            "and refrigerant leave with the crew. The system gets commissioned and measured "
+            "before anyone signs off on it. If yours still has years in it, "
+            "<a href=\"/ac-repair\">a repair</a> is usually the better money.",
             h3s=[("What gets checked that most quotes skip",
                   "Line set condition, the size of the existing electrical circuit, condensate "
                   "drainage, and whether the return duct can move the air the new system "
@@ -2109,9 +2060,8 @@ geo(HVAC_SUBS, "ac-installation.html",
                   "and still feels damp. The fix is right-sizing rather than more tonnage.")]),
     ],
     table=tbl("Single-stage, two-stage and variable-speed air conditioners compared.",
-              "Extreme Heating, Air, Plumbing installs three grades of residential air "
-              "conditioner across the Dayton and Cincinnati metros, and they differ most in "
-              "how well they handle summer humidity.",
+              "There are three grades to choose from, and where they differ most is how well "
+              "they pull humidity out of the house in August.",
               ["Factor", "Single-stage", "Two-stage", "Variable-speed"],
               [("How it runs", "Full capacity or off", "High or low capacity",
                 "Adjusts continuously across a wide range"),
@@ -2132,35 +2082,30 @@ geo(HVAC_SUBS, "ac-installation.html",
               h2="Single-stage, two-stage, or variable-speed: which one fits?",
               sid="stages", eyebrow="CHOOSING A SYSTEM"),
     sectionsTail=[
-        sec("How long does an AC replacement take?",
-            "Most residential air conditioner replacements are a single-day job. Installation "
-            "usually happens within a day or two of the estimate, and same-week in most cases "
-            "even in the middle of a Dayton summer. Jobs that add ductwork, a new circuit, or "
-            "a new pad take longer. Replacing the outdoor unit with a "
-            "<a href=\"/heat-pump-installation\">heat pump installation</a> instead is worth "
-            "pricing at the same time."),
-        sec("Can I finance a new air conditioner?",
-            "Financing is available on qualifying systems through GoodLeap, Synchrony, and "
-            "Wright-Patt Credit Union. Payment scenarios are shown alongside the written "
-            "quote, before anything is ordered. Terms and current offers live on our "
-            "<a href=\"/financing-options\">HVAC financing options</a> page."),
-        sec("How do I book a replacement estimate?",
-            call("Replacement estimates from Extreme Heating, Air, Plumbing are free. "
-                 "Estimates are booked by phone at {tel} or online, and include the load "
-                 "calculation, a written quote, and financing options in one visit. Protecting "
-                 "the new system afterwards is what the "
-                 "<a href=\"/maintenance\">X-Plan maintenance membership</a> is for.")),
+        sec("How long does a replacement take?",
+            "Most are a single day. We usually install within a day or two of the estimate, "
+            "same week even in the middle of summer. Adding ductwork, a new circuit or a new "
+            "pad stretches it out. If you are open to it, price a "
+            "<a href=\"/heat-pump-installation\">heat pump</a> alongside at the same time."),
+        sec("Can I finance it?",
+            "Yes, on qualifying systems, through GoodLeap, Synchrony and Wright-Patt Credit "
+            "Union. You see payment scenarios next to the written quote, before anything is "
+            "ordered. Terms and current offers are on the "
+            "<a href=\"/financing-options\">financing page</a>."),
+        sec("How do I book an estimate?",
+            call("Call {tel} or book online. Replacement estimates are free, and one visit "
+                 "covers the load calculation, a written quote and your financing options. "
+                 "Once the new system is in, the "
+                 "<a href=\"/maintenance\">X-Plan membership</a> is what keeps it healthy.")),
     ],
     faqH2="What else do homeowners ask before replacing an AC?",
     faq=qa(
         ("What size air conditioner do I need?",
-         "The size comes from a load calculation on the specific house, not from the tonnage "
-         "printed on the old unit. Extreme Heating, Air, Plumbing runs that calculation as "
-         "part of every free replacement estimate in the Dayton and Cincinnati metros."),
-        ("How fast can you install a new AC?",
-         "Usually within a day or two of the estimate, and same-week in most cases, including "
-         "during a Dayton heat wave. Most residential replacements are completed in a single "
-         "day."),
+         "That comes from a load calculation on your house, not from the tonnage printed on "
+         "the old unit. We run it as part of every free replacement estimate."),
+        ("How fast can you install one?",
+         "Usually within a day or two of the estimate, same week in most cases, heat wave or "
+         "not. Most replacements are done in a single day."),
         ("Do I have to replace the furnace at the same time?",
          "Not always. If the furnace is newer and the blower and coil cabinet match the new "
          "outdoor unit, the air conditioner can be replaced on its own. If the furnace is near "
@@ -2178,19 +2123,16 @@ geo(HVAC_SUBS, "furnace-installation.html",
     h1="Furnace installation and replacement in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Right-sized, high-efficiency furnaces installed clean and to code. Heat-loss sizing "
           "math, free estimates, and flexible financing.",
-    answer="Extreme Heating, Air, Plumbing installs and replaces gas and electric furnaces for "
-           "homes across the Dayton and Cincinnati, Ohio metros. Sizing comes from a heat-loss "
-           "calculation on the actual house, not from the rating plate on the old unit. "
-           "Replacement estimates are free, and 25,000+ jobs have been completed in over 20 "
-           "years of local ownership.",
+    answer="We size your furnace from a heat-loss calculation on the actual house, not from "
+           "the rating plate on the old one. Estimates are free, and you leave the visit with "
+           "a written number and payment options.",
     sections=[
         sec("What does a furnace installation include?",
-            "A replacement covers removal and disposal of the old furnace, the new unit set "
-            "and leveled, gas piping and shutoff, venting, electrical, condensate drainage on "
-            "condensing models, and thermostat wiring. The system is commissioned, gas "
-            "pressure is checked, and the whole thing is walked through before the crew "
-            "leaves. If the furnace still has years in it, "
-            "<a href=\"/furnace-repair\">furnace repair</a> is the cheaper answer.",
+            "Removing and disposing of the old furnace, the new one set and levelled, gas "
+            "piping and shutoff, venting, electrical, condensate drainage on condensing "
+            "models, and thermostat wiring. We commission it, check gas pressure and walk you "
+            "through the whole thing before leaving. If yours still has years in it, "
+            "<a href=\"/furnace-repair\">a repair</a> is the cheaper answer.",
             h3s=[("What changes when the furnace goes condensing",
                   "Moving from an 80% AFUE furnace to a 90%+ condensing model changes the "
                   "venting and adds a condensate drain. The old chimney or metal flue is no "
@@ -2205,9 +2147,8 @@ geo(HVAC_SUBS, "furnace-installation.html",
             "furnace</a> comes first."),
     ],
     table=tbl("Furnace efficiency tiers compared.",
-              "Extreme Heating, Air, Plumbing installs furnaces in 3 efficiency bands, and the "
-              "practical difference in a Dayton or Cincinnati home is venting, drainage, and "
-              "how evenly the heat arrives.",
+              "There are three efficiency bands to pick from, and what changes between them in "
+              "a real house is the venting, the drainage, and how evenly the heat arrives.",
               ["Factor", "80% AFUE", "90% to 95% AFUE", "96% AFUE and above"],
               [("Fuel converted to heat", "About 80 cents of every fuel dollar",
                 "About 90 to 95 cents of every fuel dollar",
@@ -2225,40 +2166,37 @@ geo(HVAC_SUBS, "furnace-installation.html",
               h2="Which AFUE efficiency tier is worth paying for?", sid="afue",
               eyebrow="EFFICIENCY TIERS"),
     sectionsTail=[
-        sec("How long does a furnace replacement take?",
-            "Most residential furnace replacements are a single-day job. Installation usually "
-            "happens within a day or two of the estimate, and same-week in most cases even in "
-            "season. Jobs that change the venting route, add a condensate pump, or open up "
-            "ductwork run longer. A <a href=\"/heat-pump-installation\">heat pump "
-            "installation</a> is the alternative worth pricing beside another gas furnace."),
-        sec("Can I finance a new furnace?",
-            "Financing is available on qualifying systems through GoodLeap, Synchrony, and "
-            "Wright-Patt Credit Union. Payment scenarios are shown with the written quote, "
-            "before anything is ordered. Current terms are on our "
-            "<a href=\"/financing-options\">HVAC financing options</a> page."),
-        sec("How do I book a furnace estimate?",
-            call("Replacement estimates from Extreme Heating, Air, Plumbing are free and are "
-                 "booked by phone at {tel} or online. The visit covers the heat-loss "
-                 "calculation, a written quote, and financing options, with no obligation to "
-                 "buy. Keeping the manufacturer warranty intact is what the "
-                 "<a href=\"/maintenance\">X-Plan maintenance membership</a> handles after "
-                 "installation.")),
+        sec("How long does a replacement take?",
+            "Most are a single day. We usually install within a day or two of the estimate, "
+            "same week even in season. Changing the venting route, adding a condensate pump or "
+            "opening up ductwork runs longer. A "
+            "<a href=\"/heat-pump-installation\">heat pump</a> is worth pricing beside another "
+            "gas furnace while you are deciding."),
+        sec("Can I finance it?",
+            "Yes, on qualifying systems, through GoodLeap, Synchrony and Wright-Patt Credit "
+            "Union. You see payment scenarios with the written quote, before anything is "
+            "ordered. Current terms are on the "
+            "<a href=\"/financing-options\">financing page</a>."),
+        sec("How do I book an estimate?",
+            call("Call {tel} or book online. Estimates are free, and the visit covers the "
+                 "heat-loss calculation, a written quote and financing options, with no "
+                 "obligation to buy. Afterwards, the "
+                 "<a href=\"/maintenance\">X-Plan membership</a> is what keeps the "
+                 "manufacturer warranty intact.")),
     ],
     faqH2="What else do homeowners ask before replacing a furnace?",
     faq=qa(
-        ("How fast can you install a new furnace?",
-         "Usually within a day or two of the estimate, and same-week in most cases even in the "
-         "middle of an Ohio winter. Most residential replacements are completed in a single "
-         "day."),
+        ("How fast can you install one?",
+         "Usually within a day or two of the estimate, same week in most cases even in the "
+         "middle of an Ohio winter. Most replacements are done in a single day."),
         ("What size furnace do I need?",
-         "The size comes from the home's actual heat loss, not from the rating plate on the "
-         "old furnace. Extreme Heating, Air, Plumbing runs a heat-loss calculation as part of "
-         "every free replacement estimate in the Dayton and Cincinnati metros."),
+         "That comes from your home's actual heat loss, not from the rating plate on the old "
+         "furnace. We run the heat-loss calculation as part of every free estimate."),
         ("Is a 96% AFUE furnace worth it over an 80%?",
-         "It depends on how long the owner plans to stay and whether the house can take a "
-         "condensing furnace. A 96% unit converts about 96 cents of every fuel dollar into "
-         "heat against about 80 cents, but it needs sidewall venting and a condensate drain, "
-         "which not every basement has."),
+         "Depends how long you plan to stay and whether your house can take a condensing "
+         "furnace. A 96% unit turns about 96 cents of every fuel dollar into heat against "
+         "about 80 cents, but it needs sidewall venting and a condensate drain, and not every "
+         "basement has somewhere to put them."),
         ("Do I have to replace the air conditioner at the same time?",
          "Not always. The furnace and the indoor coil share a cabinet, so replacing both at "
          "once avoids paying twice for the same labor. If the air conditioner is newer and the "
@@ -2273,10 +2211,9 @@ geo(HVAC_SUBS, "heat-pump-repair.html",
     intro="A heat pump works year-round, so a fault shows up as no heat in January or no "
           "cooling in July. We diagnose fast, price flat before any work, and repair every "
           "make and model.",
-    answer="Extreme Heating, Air, Plumbing repairs residential heat pumps across the Dayton "
-           "and Cincinnati, Ohio metros, in both heating and cooling mode. Light frost and a "
-           "few minutes of cool air during a defrost cycle are normal, not faults. The company "
-           "offers 24/7 emergency service and 90% same-day service.",
+    answer="Before you call: light frost on the outdoor unit and a few minutes of cool air "
+           "during a defrost cycle are normal. Anything past that, we repair in both heating "
+           "and cooling mode, most of them the same day.",
     sections=[
         sec("Is ice on a heat pump normal in winter?",
             "Some of it is. A heat pump running in heating mode pulls heat out of outdoor air, "
@@ -2312,18 +2249,16 @@ geo(HVAC_SUBS, "heat-pump-repair.html",
                   "anything else does. <a href=\"/thermostat\">Thermostat repair and "
                   "replacement</a> matters here too, because a thermostat configured as if the "
                   "system were a gas furnace will call the backup far more than it should.")]),
-        sec("What does a heat pump repair visit include?",
-            "A technician tests the system in both heating and cooling mode, because a heat "
-            "pump fault often shows in only one of them. Pressures, the reversing valve, the "
-            "defrost board, and the backup heat staging all get checked. The repair is priced "
-            "flat and approved before work starts. A year-round system wants two seasonal "
-            "visits, which is what the <a href=\"/maintenance\">X-Plan maintenance "
-            "membership</a> covers."),
+        sec("What happens on a repair visit?",
+            "We test the system in both heating and cooling mode, because a heat pump fault "
+            "often shows up in only one of them. Pressures, the reversing valve, the defrost "
+            "board and the backup heat staging all get checked. You get a flat price and "
+            "approve it before work starts. A system that runs year-round wants two seasonal "
+            "visits, which is what <a href=\"/maintenance\">X-Plan</a> covers."),
     ],
     table=tbl("Repair or replace a heat pump: what decides it.",
-              "Extreme Heating, Air, Plumbing recommends replacing a heat pump rather than "
-              "repairing it once the system is 12 years or older and the compressor or "
-              "reversing valve has failed.",
+              "Once a system is 12 years or older and the compressor or reversing valve has "
+              "gone, replacement is usually the better money.",
               ["Factor", "Repair usually makes sense when", "Replacement usually makes sense when"],
               [("System age", "Under 12 years old", "12 years or older"),
                ("Failed part", "Capacitor, contactor, defrost board, or fan motor",
@@ -2339,19 +2274,16 @@ geo(HVAC_SUBS, "heat-pump-repair.html",
               eyebrow="REPAIR OR REPLACE"),
     sectionsTail=[
         sec("How do I book heat pump repair?",
-            call("Heat pump repair is booked by phone at {tel} or online. The emergency line "
-                 "runs 24/7, every day of the year. A heat pump that has stopped heating in "
-                 "freezing weather is dispatched as a no-heat call. Where age and the failed "
-                 "part point at a new system, "
-                 "<a href=\"/heat-pump-installation\">heat pump replacement</a> is quoted "
-                 "free.")),
+            call("Call {tel} or book online. The emergency line runs every day of the year, "
+                 "and a heat pump that has stopped heating in freezing weather goes out as a "
+                 "no-heat call. If the age and the failed part point at a new system, "
+                 "<a href=\"/heat-pump-installation\">replacement</a> is quoted free.")),
     ],
     faqH2="What else do homeowners ask about heat pump repair?",
     faq=qa(
-        ("How fast can you get here for a heat pump repair?",
-         "In most cases the same day. Extreme Heating, Air, Plumbing handles about 90% of "
-         "service calls the day the customer reaches out, with 24/7 emergency service when it "
-         "cannot wait."),
+        ("How fast can you get here?",
+         "Usually the same day. About nine calls in ten are handled the day you reach out, and "
+         "the emergency line is answered at any hour when it cannot wait."),
         ("My heat pump is covered in ice. Is it broken?",
          "Not necessarily. Frost on the outdoor coil is normal in heating mode, and the unit "
          "runs a defrost cycle to clear it. A unit encased in ice, or one whose ice never "
@@ -2377,11 +2309,9 @@ geo(HVAC_SUBS, "heat-pump-installation.html",
     h1="Heat pump installation in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Right-sized, high-efficiency heat pumps installed clean and to code. Heat-loss "
           "sizing, backup heat configured at commissioning, and flexible financing.",
-    answer="Extreme Heating, Air, Plumbing installs and replaces residential heat pumps across "
-           "the Dayton and Cincinnati, Ohio metros, including dual-fuel systems paired with a "
-           "gas furnace. Sizing and backup heat are set from a heat-loss calculation on the "
-           "specific house. The company has completed 25,000+ jobs in over 20 years of local "
-           "ownership.",
+    answer="We set both the capacity and the backup heat from a heat-loss calculation on your "
+           "house, so the system is built around your coldest nights rather than an average "
+           "one. We will price a dual-fuel setup against a straight heat pump.",
     sections=[
         sec("How is a heat pump sized for an Ohio winter?",
             "Sizing starts from the home's heat loss at the coldest outdoor temperature the "
@@ -2398,9 +2328,9 @@ geo(HVAC_SUBS, "heat-pump-installation.html",
             "quoted together as a dual-fuel system.",
             sid="backup-heat",
             table=tbl("Backup heat options on a residential heat pump.",
-                      "Extreme Heating, Air, Plumbing configures backup heat on every heat "
-                      "pump installation across the Dayton and Cincinnati metros, in 1 of 3 "
-                      "arrangements.",
+                      "Every heat pump we install gets its backup heat configured one of three "
+                      "ways, and which one you want mostly depends on whether gas is already "
+                      "at the house.",
                       ["Factor", "Electric backup heat", "Dual fuel, gas furnace backup",
                        "No backup heat"],
                       [("How the backup works",
@@ -2426,11 +2356,11 @@ geo(HVAC_SUBS, "heat-pump-installation.html",
             "the right call depends on the ductwork, the insulation, and whether gas is "
             "already at the house. The <a href=\"/heat-pump\">heat pump services overview</a> "
             "carries the full system comparison."),
-        sec("What does a heat pump installation include?",
-            "Removal and disposal of the old equipment, the outdoor unit set and leveled, the "
-            "line set and electrical, the indoor air handler or coil, refrigerant charge "
-            "verified by weight and subcooling, backup heat wired and staged, and thermostat "
-            "configuration. Commissioning readings are taken before the crew leaves."),
+        sec("What does the installation include?",
+            "Removing and disposing of your old equipment, the outdoor unit set and levelled, "
+            "the line set and electrical, the indoor air handler or coil, refrigerant charge "
+            "verified by weight and subcooling, backup heat wired and staged, and the "
+            "thermostat configured. We take commissioning readings before we leave."),
     ],
     sectionsTail=[
         sec("How long does a heat pump replacement take?",
@@ -2438,21 +2368,20 @@ geo(HVAC_SUBS, "heat-pump-installation.html",
             "usually happens within a day or two of the estimate. A dual-fuel conversion that "
             "also replaces the furnace, or a job that adds an electrical circuit, runs into a "
             "second day."),
-        sec("Can I finance a heat pump replacement?",
-            "Financing is available on qualifying systems through GoodLeap, Synchrony, and "
-            "Wright-Patt Credit Union, with payment scenarios shown alongside the written "
-            "quote. Terms are on our <a href=\"/financing-options\">HVAC financing options</a> "
-            "page. The Section 25C and 25D federal tax credits both expired on 31 December "
-            "2025, so nothing on this page depends on one. A year-round system wants two "
-            "seasonal visits, which the <a href=\"/maintenance\">X-Plan maintenance "
-            "membership</a> covers."),
+        sec("Can I finance it?",
+            "Yes, on qualifying systems, through GoodLeap, Synchrony and Wright-Patt Credit "
+            "Union, with payment scenarios shown next to the written quote. Terms are on the "
+            "<a href=\"/financing-options\">financing page</a>. One thing to know: the Section "
+            "25C and 25D federal tax credits both expired on 31 December 2025, so no number we "
+            "give you leans on one. Afterwards, <a href=\"/maintenance\">X-Plan</a> covers the "
+            "two seasonal visits a year-round system wants."),
     ],
     faqH2="What else do homeowners ask before installing a heat pump?",
     faq=qa(
         ("Will a heat pump keep up in an Ohio winter?",
-         "It keeps up when it is sized for the home's actual heat loss and the backup heat is "
-         "configured for the coldest nights. Extreme Heating, Air, Plumbing sets both from a "
-         "heat-loss calculation rather than from the size of the old system."),
+         "It will, when it is sized for your home's actual heat loss and the backup heat is "
+         "set up for the coldest nights. We set both from the heat-loss calculation rather "
+         "than from the size of whatever is out there now."),
         ("What is a dual-fuel system?",
          "A heat pump paired with a gas furnace. The heat pump handles the mild and moderate "
          "hours, and the furnace takes over below a set outdoor temperature called the balance "
@@ -2474,11 +2403,9 @@ geo(HVAC_SUBS, "indoor-air-quality-solutions.html",
     h1="Whole-home air quality solutions for {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Filtration, UV purification, ventilation and humidity control, matched to your "
           "home's measured problem rather than sold as a package.",
-    answer="Extreme Heating, Air, Plumbing installs indoor air quality equipment in Dayton and "
-           "Cincinnati, Ohio homes across five categories. The five categories are media "
-           "filtration, UV purification, humidification, dehumidification, and fresh-air "
-           "ventilation. Equipment is matched to a measured problem in the home rather than "
-           "sold as a package. Results are verified with before-and-after readings.",
+    answer="Five kinds of equipment: media filtration, UV purification, humidifiers, "
+           "dehumidifiers and fresh-air ventilation. Each one fixes a different problem, so we "
+           "measure yours first and check the readings again afterwards.",
     sections=[
         sec("Which air quality equipment fixes which problem?",
             "Every piece of equipment on this page targets one thing well and most other "
@@ -2489,9 +2416,9 @@ geo(HVAC_SUBS, "indoor-air-quality-solutions.html",
             "in Dayton and Cincinnati</a> starts.",
             sid="equipment",
             table=tbl("Indoor air quality equipment: what each option targets.",
-                      "Extreme Heating, Air, Plumbing installs indoor air quality equipment in "
-                      "5 categories across the Dayton and Cincinnati metros, each aimed at a "
-                      "different problem in the home.",
+                      "There are five categories of equipment here and each one is aimed at a "
+                      "different problem, which is why buying before you know the problem "
+                      "usually disappoints.",
                       ["Option", "What it targets", "Where it installs", "Service interval"],
                       [("1-inch pleated filter", "Lint, larger dust, and coarse pollen",
                         "The return grille or the filter slot at the air handler",
@@ -2566,9 +2493,9 @@ geo(HVAC_SUBS, "indoor-air-quality-solutions.html",
     faqH2="What else do homeowners ask about air quality equipment?",
     faq=qa(
         ("Which filter rating should I use at home?",
-         "The highest MERV the system can move air through. A 1-inch filter slot generally "
-         "tops out around MERV 8 to 11. MERV 13 needs a 4-inch or 5-inch media cabinet, and "
-         "Extreme Heating, Air, Plumbing measures static pressure before recommending one."),
+         "The highest MERV your system can move air through. A 1-inch slot generally tops out "
+         "around MERV 8 to 11. MERV 13 needs a 4-inch or 5-inch media cabinet, and we measure "
+         "static pressure before recommending one."),
         ("Do UV lights in HVAC systems really work?",
          "Against biological growth on the evaporator coil and in the drain pan, yes, when "
          "they are sized and aimed correctly. They do not remove dust, dander, or pollen, so a "
@@ -2590,11 +2517,9 @@ geo(HVAC_SUBS, "importance-iaq.html",
     h1="Why indoor air quality matters in {X}.", h1Highlight="Ohio homes",
     intro="The EPA reports indoor air often carries 2 to 5 times the pollutant levels of "
           "outdoor air. Here is what that means for a house in this region.",
-    answer="Extreme Heating, Air, Plumbing assesses and improves indoor air quality in homes "
-           "across the Dayton and Cincinnati, Ohio metros. The EPA reports that indoor air "
-           "commonly carries pollutant levels 2 to 5 times higher than outdoor air. Tighter, "
-           "newer construction traps more of what is generated indoors, which makes "
-           "ventilation more important, not less.",
+    answer="The EPA puts indoor pollutant levels at 2 to 5 times what is outside. The sources "
+           "are all in the house, and a well-sealed modern home holds onto them longer. That is "
+           "why a new build usually needs mechanical ventilation more than an old one does.",
     sections=[
         sec("Is indoor air really worse than outdoor air?",
             "Usually, yes. The EPA reports indoor pollutant levels commonly run 2 to 5 times "
@@ -2612,9 +2537,8 @@ geo(HVAC_SUBS, "importance-iaq.html",
             "<a href=\"/inspection\">furnace safety inspection</a> exists to catch.",
             sid="pollutants",
             table=tbl("Common indoor air pollutants, their sources, and what reduces them.",
-                      "Extreme Heating, Air, Plumbing sorts indoor air problems into 7 "
-                      "categories, and the fix for each one starts with removing the source "
-                      "rather than adding equipment.",
+                      "Seven problems, seven different sources. The fix for each one starts "
+                      "with removing the source rather than buying equipment to chase it.",
                       ["What is in the air", "Where it comes from", "What reduces it"],
                       [("Fine dust and dander",
                         "Skin, pets, carpet, and soil tracked in from outdoors",
@@ -2683,19 +2607,17 @@ geo(HVAC_SUBS, "importance-iaq.html",
          "it."),
         ("What is the single most useful thing to fix first?",
          "The source, then the filter. A correctly sized media filter changed on schedule, in "
-         "a system whose return ducts are sealed, outperforms most add-on equipment, and "
-         "Extreme Heating, Air, Plumbing will say so rather than quote a purifier."),
+         "a system whose return ducts are sealed, beats most add-on equipment. We will say so "
+         "rather than quote you a purifier."),
     ))
 
 geo(HVAC_SUBS, "iaq-faq.html",
     h1="Indoor air quality questions, {X}.", h1Highlight="answered straight",
     intro="Straight answers on MERV ratings, filter changes, winter humidity, UV lamps and "
           "duct cleaning, for homeowners in Dayton and Cincinnati.",
-    answer="Extreme Heating, Air, Plumbing answers common indoor air quality questions for "
-           "homeowners in the Dayton and Cincinnati, Ohio metros. Topics covered include "
-           "filter MERV ratings, UV purifiers, whole-home humidity, duct cleaning, and "
-           "ventilation. Indoor relative humidity is generally kept between 30% and 50%, and "
-           "most 1-inch filters are changed every 1 to 3 months.",
+    answer="The short version: keep the house between 30% and 50% humidity, change a 1-inch "
+           "filter every 1 to 3 months, and do not buy a UV lamp expecting it to help with "
+           "dust. The longer version is below.",
     sections=[
         sec("What MERV rating should I use at home?",
             "The highest rating the duct system can move air through without a pressure "
@@ -2706,9 +2628,8 @@ geo(HVAC_SUBS, "iaq-faq.html",
             "<a href=\"/indoor-air-quality-solutions\">indoor air quality solutions</a>.",
             sid="merv",
             table=tbl("MERV ratings and what each one catches.",
-                      "Extreme Heating, Air, Plumbing recommends the highest MERV rating a "
-                      "system's measured static pressure allows, which in most Dayton homes "
-                      "falls between MERV 8 and MERV 13.",
+                      "Go as high as your system's measured static pressure allows, which for "
+                      "most houses around here means somewhere between MERV 8 and MERV 13.",
                       ["MERV rating", "What it captures", "Airflow risk on a home system",
                        "Typical use"],
                       [("MERV 1 to 4", "Lint, carpet fiber, and the largest dust",
@@ -2757,20 +2678,19 @@ geo(HVAC_SUBS, "iaq-faq.html",
             "Every 3 to 5 years covers most homes, with construction dust, pets, or a known "
             "mold problem moving it sooner. A system with a proper media filter and sealed "
             "returns stays clean longer, because less gets in to begin with."),
-        sec("How do I get a straight answer on my own house?",
-            call("Assessments are booked by phone at {tel} or online. The visit measures "
-                 "humidity and airflow, checks the filtration and duct system in the actual "
-                 "house, and produces a recommendation with upfront pricing before anything is "
-                 "installed. Broader "
-                 "<a href=\"/indoor-air-quality\">indoor air quality services in Dayton and "
-                 "Cincinnati</a> start from the same visit.")),
+        sec("How do I get a straight answer about my own house?",
+            call("Call {tel} or book an assessment online. We measure humidity and airflow, "
+                 "look at your filtration and ductwork, and give you a recommendation with a "
+                 "price on it before anything gets installed. Wider "
+                 "<a href=\"/indoor-air-quality\">air quality work</a> starts from the same "
+                 "visit.")),
     ],
     faqH2="A few more, kept separate from the sections above.",
     faq=qa(
         ("What is the single best air quality upgrade for most homes?",
          "A properly sized media filter, changed on schedule, in a system whose return ducts "
-         "are sealed. It outperforms most add-on equipment, and Extreme Heating, Air, Plumbing "
-         "will say so rather than quote a purifier."),
+         "are sealed. It beats most add-on equipment, and we will tell you that rather than "
+         "quote you a purifier."),
         ("Does a portable air purifier do the same thing as a whole-home system?",
          "It cleans one room while it runs. A whole-home system treats every room the ductwork "
          "reaches, every time the blower runs. For a single bedroom, a portable unit is often "
@@ -2805,10 +2725,9 @@ geo(PLUMB_PAGES, "clogged-drain.html",
     h1Highlight="Dayton &amp; Cincinnati",
     intro="One slow drain is a clog. Three slow drains at once is your main line. Cleared fast "
           "by licensed plumbers, with upfront pricing.",
-    answer="Extreme Heating, Air, Plumbing clears clogged and slow drains in homes across the "
-           "Dayton and Cincinnati, Ohio metros, from a single stopped sink to a backed-up main "
-           "line. Licensed plumbers use cable augers or hydro jetting depending on what a "
-           "camera shows in the pipe. Most drain calls are handled the same day.",
+    answer="One stopped sink or a backed-up main line, we clear both, most of them the same "
+           "day. Which machine we bring depends on what the camera shows in your pipe, not on "
+           "what we happen to be carrying.",
     callout="Multiple drains backing up at once? That's a main-line warning. Call {tel} before "
             "it becomes a mess, or see what a "
             "<a href=\"/plumbing/sewer-line/overview\">camera inspection</a> finds.",
@@ -2823,14 +2742,13 @@ geo(PLUMB_PAGES, "clogged-drain.html",
              "blockage is downstream of both of them in the main line. That is a different "
              "problem and a different machine. Running more water into the house makes it "
              "worse, so stop using the fixtures and get a camera in the line.",
-             "Extreme Heating, Air, Plumbing treats simultaneous backups in multiple fixtures "
-             "as a main-line problem requiring "
-             "<a href=\"/plumbing/sewer-line/overview\">camera inspection</a> before any "
-             "clearing work begins."],
+             "When two fixtures go at once we treat it as a main-line problem and put a "
+             "<a href=\"/plumbing/sewer-line/overview\">camera</a> in before any machine, "
+             "because clearing blind on a main line is how people pay twice."],
             table=tbl("Drain symptoms and the service each one calls for.",
-                      "Extreme Heating, Air, Plumbing matches the drain service to what the "
-                      "pipe is actually doing, which is why a camera goes in before a machine "
-                      "does on any recurring clog.",
+                      "The service should match what the pipe is actually doing, which is why "
+                      "a camera goes in before a machine does on any clog that keeps coming "
+                      "back.",
                       ["Symptom", "Likely cause", "Service to book"],
                       [("One bathroom sink drains slowly",
                         "Hair and soap buildup near the trap", "Drain clearing"),
@@ -2856,8 +2774,9 @@ geo(PLUMB_PAGES, "clogged-drain.html",
             "<a href=\"/plumbing/sewer-line/cleaning\">maintenance jetting</a> is the answer "
             "on a line that backs up every year.",
             table=tbl("Cable snaking compared with hydro jetting.",
-                      "Extreme Heating, Air, Plumbing recommends hydro jetting over cable "
-                      "snaking when a drain has clogged more than once in a year.",
+                      "If a drain has clogged more than once in a year, jetting is what we "
+                      "will recommend. Snaking it again only clears a path through the same "
+                      "buildup.",
                       ["Factor", "Cable snaking", "Hydro jetting"],
                       [("What it does", "Bores an opening through the blockage",
                         "Scours the full pipe diameter"),
@@ -2886,21 +2805,19 @@ geo(PLUMB_PAGES, "clogged-drain.html",
              "holds water and solids. A camera pass finds which, and the fix ranges from "
              "scheduled maintenance jetting to a "
              "<a href=\"/plumbing/sewer-line/repair\">sewer repair</a>.",
-             "Extreme Heating, Air, Plumbing runs a camera inspection on any drain line that "
-             "has clogged more than once, before recommending cleaning or repair, " + LICENCE_LINE + "."]),
-        sec("Can a plumber clear my drain today?",
-            call("Most drain calls are booked and cleared the same day, and Extreme runs 90% "
-                 "same-day service across both metros. Main line backups get moved up the "
-                 "list, because a backup that is already reaching the floor gets more "
-                 "expensive every hour it sits. Call {tel}, and if water is already on the "
-                 "floor, <a href=\"/plumbing/emergency-plumbing\">shut the main valve</a> "
-                 "first.")),
+             "So on any line that has clogged twice, we camera it before recommending "
+             "anything, working " + LICENCE_LINE + "."]),
+        sec("Can you clear my drain today?",
+            call("Most drain calls get booked and cleared the same day, and a main line backup "
+                 "moves up the list, because water already reaching the floor gets more "
+                 "expensive every hour it sits. Call {tel}, and if it is already on the floor, "
+                 "<a href=\"/plumbing/emergency-plumbing\">shut the main valve</a> first.")),
     ],
     faqH2="What else do homeowners ask about drains?",
     faq=qa(
         ("How fast can a plumber get here for a backed-up drain?",
-         "Extreme Heating, Air, Plumbing runs 90% same-day service across the Dayton and "
-         "Cincinnati metros, and main line backups get priority over routine drain calls."),
+         "Most drain calls are handled the same day, and a main line backup gets priority over "
+         "a routine one."),
         ("Why does my drain keep clogging after it has been cleared?",
          "A cleared drain that clogs again within a year usually has a structural cause: tree "
          "roots at a pipe joint, a sagging section holding water, or a break. A camera "
@@ -2922,11 +2839,9 @@ geo(PLUMB_PAGES, "clogged-drain.html",
 geo(PLUMB_PAGES, "emergency-plumbing.html",
     h1="24/7 emergency plumber for {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro=call("Call {tel}. If you smell gas, leave the house first and call from outside."),
-    answer="Extreme Heating, Air, Plumbing answers emergency plumbing calls 24 hours a day "
-           "across the Dayton and Cincinnati, Ohio metros, including nights, weekends and "
-           "holidays. Burst pipes, sewage backups, no-water calls and fast-leaking water "
-           "heaters are triaged by phone before a licensed plumber is dispatched. The company "
-           "has completed 25,000+ jobs since 2004.",
+    answer="Someone picks up at 2 a.m., on a Sunday, on Christmas. Burst pipe, sewage backing "
+           "up, no water, water heater emptying onto the floor: tell us what you are looking "
+           "at and we will talk you through it while a plumber heads over.",
     callout="<b>Safety first:</b> for gas smells, leave the house before calling {tel}. For "
             "water, shut the main valve if you can reach it safely.",
     sections=[
@@ -2937,9 +2852,8 @@ geo(PLUMB_PAGES, "emergency-plumbing.html",
             "floor</a>, or a gas smell near an appliance. Anything on that list is worth a 2 "
             "a.m. call. Most other plumbing can wait until morning without costing you more.",
             table=tbl("What to call about immediately and what can wait.",
-                      "Extreme Heating, Air, Plumbing answers emergency plumbing calls around "
-                      "the clock across the Dayton and Cincinnati metros, and triages every "
-                      "call by phone before dispatch.",
+                      "If it is on the left-hand list, call now, whatever the hour. If it is "
+                      "on the right, morning is fine and it will not cost you more.",
                       ["What you're seeing", "Call 24/7 now", "Can wait for business hours"],
                       [("Water you cannot stop",
                         "Yes, shut the main valve while you call", "Do not wait"),
@@ -2959,9 +2873,8 @@ geo(PLUMB_PAGES, "emergency-plumbing.html",
              "interior wall facing the street, within a few feet of where the pipe comes "
              "through the foundation, usually near the meter. Slab homes often have it in a "
              "utility closet or the garage. Turn it clockwise until it stops.",
-             "In most Dayton and Cincinnati basement homes the main water shut-off valve sits "
-             "within a few feet of where the supply line enters the foundation on the "
-             "street-facing wall."]),
+             "If you cannot find it, say so when you call and we will walk you through it on "
+             "the phone. Knowing where it is beats knowing anything else on this page."]),
         sec("What should I do while I wait for a plumber?",
             "Shut the nearest valve, or the main if you cannot find it. Move anything you care "
             "about off the floor. Stop running water into the affected drains, including "
@@ -2970,10 +2883,9 @@ geo(PLUMB_PAGES, "emergency-plumbing.html",
     ],
     sectionsTail=[
         sec("Can you come out at night or on a weekend?",
-            "Yes. Extreme Heating, Air, Plumbing runs 24/7 emergency service across both "
-            "metros with licensed plumbers on call, not an answering service that takes a "
-            "message until Monday. The call is answered by someone who can start talking you "
-            "through the shut-off immediately, and the work is carried out " + LICENCE_LINE + "."),
+            "Yes. There are licensed plumbers on call, not an answering service taking a "
+            "message until Monday. Whoever picks up can start talking you through the shut-off "
+            "straight away, and the repair is done " + LICENCE_LINE + "."),
         sec("Do emergency calls cost more than a normal visit?",
             "Every job, at every hour, is quoted flat and approved by you before work begins. "
             "Nothing gets added to the invoice afterward. If the honest answer on the phone is "
@@ -2983,18 +2895,13 @@ geo(PLUMB_PAGES, "emergency-plumbing.html",
              "usually in an unheated crawl space, an exterior wall, or a garage line nobody "
              "thought about. The break itself often happens on the thaw, not the freeze, which "
              "is why the flood starts the afternoon it warms up.",
-             "Frozen and burst pipe failures across the Dayton and Cincinnati, Ohio metros "
-             "concentrate in the December to February stretch, when sustained sub-freezing "
-             "temperatures reach unheated crawl spaces and garage lines. Sewage that comes up "
-             "indoors is the other winter call, and it is handled through "
-             "<a href=\"/plumbing/sewer-line/cleaning\">sewer line cleaning</a>."]),
+             "Sewage coming up indoors is the other winter call we get, and that one runs "
+             "through <a href=\"/plumbing/sewer-line/cleaning\">sewer line cleaning</a>."]),
     ],
     faqH2="What else do people ask at 2 a.m.?",
     faq=qa(
         ("Is there a plumber open right now near me?",
-         call("Yes. Extreme Heating, Air, Plumbing answers emergency plumbing calls 24 hours a "
-              "day, seven days a week, across the Dayton and Cincinnati, Ohio metros at "
-              "{tel}.")),
+         call("Yes. Someone answers at {tel} at any hour, any day, including holidays.")),
         ("What do I do if a pipe bursts?",
          "Shut the main water valve, then open a low faucet to drain the pressure out of the "
          "line. Kill the power to any circuit near standing water at the breaker, not at the "
@@ -3007,18 +2914,16 @@ geo(PLUMB_PAGES, "emergency-plumbing.html",
          "Check the breaker and the float first, because a jammed float is the most common "
          "cause. If the pit is still filling, call. "
          "<a href=\"/plumbing/sump-pump/repair\">A pump that fails during a storm</a> is an "
-         "emergency, and Extreme dispatches on sump pump calls around the clock."),
+         "emergency and we dispatch on those at any hour."),
     ))
 
 geo(PLUMB_PAGES, "leak-detection.html",
     h1="Hidden water leak detection in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Most people find a leak on the water bill before they find it on the floor. We find "
           "it without tearing up the house.",
-    answer="Extreme Heating, Air, Plumbing locates hidden water leaks in homes across the "
-           "Dayton and Cincinnati, Ohio metros using acoustic and thermal equipment rather "
-           "than exploratory demolition. Slab leaks, supply lines inside walls, and buried "
-           "service lines are all traceable without opening the house first. Work is performed "
-           "under Ohio plumbing license #13557.",
+    answer="Water is going somewhere and you cannot see it. We listen for it and look for its "
+           "heat, so a leak under your slab or inside a wall gets narrowed to inches before "
+           "anyone cuts anything open.",
     callout="Leaks only get bigger. Call {tel} before a drip becomes drywall.",
     sections=[
         sec("How do I know if I have a hidden leak?",
@@ -3026,9 +2931,8 @@ geo(PLUMB_PAGES, "leak-detection.html",
              "watch the meter for fifteen minutes. If the dial moves at all, water is going "
              "somewhere. That test costs nothing and it is the first thing we will ask whether "
              "you tried.",
-             "Extreme Heating, Air, Plumbing recommends a 15-minute water meter test with all "
-             "fixtures off as the first check for a hidden leak in any Dayton or Cincinnati "
-             "home."]),
+             "Do it before you call. If the dial moved, you have your answer and we can skip "
+             "straight to finding where."]),
         sec("Why did my water bill double with no leak I can see?",
             "A leak that never reaches a visible surface still runs through the meter. The "
             "usual culprits are a "
@@ -3036,8 +2940,8 @@ geo(PLUMB_PAGES, "leak-detection.html",
             "irrigation line, a slab leak under the floor, or a service line between the meter "
             "and the house. All four are invisible and all four bill.",
             table=tbl("Leak symptoms, likely location, and how each is found.",
-                      "Extreme Heating, Air, Plumbing narrows a hidden leak by symptom before "
-                      "any equipment comes out, because the symptom usually names the location.",
+                      "Find your symptom in the left column. It usually names the location "
+                      "before any equipment comes out of the van.",
                       ["Symptom", "Likely location", "How it's found", "Urgency"],
                       [("Bill jumped, nothing visible", "Toilet flapper or irrigation",
                         "Dye test, then meter isolation", "Low, but it bills daily"),
@@ -3068,26 +2972,26 @@ geo(PLUMB_PAGES, "leak-detection.html",
              "on a slab. Signs are a warm patch of floor, an unexplained bill, or the sound of "
              "running water with everything off. Left alone it saturates the soil under the "
              "foundation, which is the expensive part, not the pipe.",
-             "Extreme Heating, Air, Plumbing locates slab leaks in Dayton and Cincinnati homes "
-             "with thermal imaging before any concrete is opened."]),
+             "We find it with thermal imaging first. No concrete gets opened until we know "
+             "which foot of pipe we are opening it for."]),
         sec("What gets documented when a leak is found?",
             "The source and the moisture readings are photographed before the repair, and the "
             "line is pressure-tested afterward. That record is what a claim or a future buyer "
             "asks for, and it is produced whether or not anyone ends up needing it."),
         sec("How fast can a leak be found and fixed?",
-            call("Detection is usually a single visit. Extreme runs 90% same-day service "
-                 "across the Dayton and Cincinnati metros, and most leaks are located and "
-                 "repaired in the same appointment unless the fix means opening a slab or "
-                 "<a href=\"/plumbing/services\">replacing a run of line</a>. Call {tel}, or "
-                 "<a href=\"/plumbing/emergency-plumbing\">emergency plumbing</a> if water is "
-                 "moving now.")),
+            call("Detection is usually one visit, and most leaks get located and repaired in "
+                 "the same appointment unless the fix means opening a slab or "
+                 "<a href=\"/plumbing/services\">replacing a run of line</a>. Most calls are "
+                 "handled the same day. Call {tel}, or "
+                 "<a href=\"/plumbing/emergency-plumbing\">the emergency line</a> if water is "
+                 "moving right now.")),
     ],
     faqH2="What else do homeowners ask about hidden leaks?",
     faq=qa(
         ("How do I check for a water leak myself?",
-         "Turn off every water-using fixture and appliance in the house, then watch the water "
-         "meter for 15 minutes. If it moves, you have a leak. That single test is free and it "
-         "is the fastest confirmation available to a homeowner."),
+         "Turn off every fixture and appliance that uses water, then watch the meter for 15 "
+         "minutes. If it moves, you have a leak. The test is free and it is the fastest answer "
+         "you can get without anyone coming out."),
         ("Can you find a leak without cutting into my walls?",
          "In most cases, yes. Acoustic and thermal detection narrows a hidden leak to within a "
          "few inches before anything is opened, so a repair usually means one small access "
@@ -3101,19 +3005,16 @@ geo(PLUMB_PAGES, "leak-detection.html",
          "three look the same on the floor and only one of them is harmless, so it is worth a "
          "look before the tank opens up."),
         ("Do you repair the leak, or only find it?",
-         "Both. Extreme Heating, Air, Plumbing locates and repairs hidden leaks under Ohio "
-         "plumbing license #13557, and the line is pressure-tested after the repair before "
+         "Both, " + LICENCE_LINE + ". The line gets pressure-tested after the repair, before "
          "anyone leaves."),
     ))
 
 geo(PLUMB_PAGES, "toilet-repair.html",
     h1="Toilet repair and replacement in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Some of this is a ten-minute fix you can do yourself. We will tell you which.",
-    answer="Extreme Heating, Air, Plumbing repairs and replaces residential toilets across the "
-           "Dayton and Cincinnati, Ohio metros, covering running fill valves, recurring clogs, "
-           "base leaks and rocking bowls. Most toilet repairs are completed in a single visit. "
-           "The company has completed 25,000+ jobs since 2004 under Ohio plumbing license "
-           "#13557.",
+    answer="Running fill valve, clogs that keep coming back, water at the base, a bowl that "
+           "rocks. Most of it is a single visit. Some of it is a ten-minute job you can do "
+           "yourself, and we will say which is which.",
     callout="A running toilet can waste 200 gallons a day. Call {tel} and stop paying for it.",
     sections=[
         sec("Why does my toilet keep running?",
@@ -3121,18 +3022,16 @@ geo(PLUMB_PAGES, "toilet-repair.html",
              "hardens, stops sealing, and lets water trickle into the bowl until the fill "
              "valve kicks back on. A flapper is inexpensive and takes about ten minutes. If a "
              "new flapper does not fix it, the fill valve is next.",
-             "A continuously running toilet can waste about 200 gallons of water per day, "
-             "which is why Extreme Heating, Air, Plumbing treats it as a billing problem "
-             "rather than a nuisance."]),
+             "It is worth doing quickly. A toilet running non-stop can put about 200 gallons a "
+             "day through your meter, so this is a bill problem more than a noise problem."]),
         sec("Is a running toilet a DIY job or a plumber job?",
             "If replacing the flapper fixes it, it is a DIY job and you should keep the money. "
             "Call a plumber when the leak is at the base, when the bowl rocks, when the tank "
             "is cracked, or when the flange under the toilet has failed. Those need the toilet "
             "pulled.",
             table=tbl("When a toilet is worth repairing and when it should be replaced.",
-                      "Extreme Heating, Air, Plumbing recommends replacing a toilet rather "
-                      "than repairing it when the porcelain is cracked or the unit predates "
-                      "the 1994 federal efficiency standard.",
+                      "Cracked porcelain, or a unit older than the 1994 efficiency standard, "
+                      "and you are better off replacing it than buying parts for it.",
                       ["Factor", "Repair usually makes sense", "Replacement usually makes sense"],
                       [("What failed", "Flapper, fill valve, supply line or wax ring",
                         "Cracked tank or bowl"),
@@ -3167,14 +3066,13 @@ geo(PLUMB_PAGES, "toilet-repair.html",
             "inspected before anything new goes down, a new wax ring and supply line go in, "
             "and the new toilet is set, leveled and flush-tested. Leaving the old toilet at "
             "the curb is not part of it."),
-        sec("Can a plumber fix a toilet the same day?",
-            call("Usually. Extreme runs 90% same-day service across the Dayton and Cincinnati "
-                 "metros, and toilet work is short enough that it often fits the day it is "
-                 "booked. Common flappers, fill valves, supply lines and wax rings ride on the "
-                 "truck. Call {tel}, and see "
-                 "<a href=\"/plumbing/emergency-plumbing\">same-day service</a> if the "
-                 "overflow is already on the floor. All of it is carried out by "
-                 "<a href=\"/plumbing/services\">licensed Ohio plumbers</a>.")),
+        sec("Can you fix a toilet the same day?",
+            call("Usually. Toilet work is short enough that it often fits the day you book it, "
+                 "and common flappers, fill valves, supply lines and wax rings ride on the "
+                 "truck. Call {tel}, or "
+                 "<a href=\"/plumbing/emergency-plumbing\">the emergency line</a> if the "
+                 "overflow is already on the floor. Either way it is a "
+                 "<a href=\"/plumbing/services\">licensed Ohio plumber</a> at your door.")),
     ],
     faqH2="What else do homeowners ask about toilets?",
     faq=qa(
@@ -3195,8 +3093,8 @@ geo(PLUMB_PAGES, "toilet-repair.html",
          "fix and the second is a floor repair, so it is worth finding out which before it "
          "gets worse."),
         ("How fast can you get here for a toilet repair?",
-         "Extreme Heating, Air, Plumbing runs 90% same-day service across the Dayton and "
-         "Cincinnati metros, and a house with one working bathroom gets moved up the list."),
+         "Most calls are handled the same day, and a house down to one working bathroom gets "
+         "moved up the list."),
     ))
 
 geo(PLUMB_PAGES, "water-treatment.html",
@@ -3204,12 +3102,9 @@ geo(PLUMB_PAGES, "water-treatment.html",
     h1Highlight="Dayton &amp; Cincinnati",
     intro="Softeners, filtration and reverse osmosis, sized against a tested hardness figure "
           "rather than a sales quota.",
-    answer="Extreme Heating, Air, Plumbing installs and services water softeners, whole-home "
-           "filtration and reverse osmosis systems across the Dayton and Cincinnati, Ohio "
-           "metros. Local supply is drawn from limestone aquifers, so every municipal system "
-           "in the footprint delivers at least 7 grains per gallon. Greene County Sanitary "
-           "Engineering cut delivered hardness from 27 grains per gallon to about 8 in early "
-           "2025.",
+    answer="The water here comes out of limestone, so every municipal system around delivers "
+           "at least 7 grains per gallon. We test what is actually coming out of your tap "
+           "before recommending a softener, a filter or reverse osmosis.",
     callout="Curious what's in your water? Call {tel}. We test first and recommend second.",
     sections=[
         sec("How hard is the water in Dayton and Cincinnati?",
@@ -3218,37 +3113,47 @@ geo(PLUMB_PAGES, "water-treatment.html",
             "treatment. What comes out of your tap depends entirely on which utility you are "
             "on, and three of them changed within the last four years.",
             sid="hardness",
-            table=tbl("Delivered water hardness by system across the Extreme service area.",
-                      "Greene County Sanitary Engineering reduced delivered water hardness "
-                      "from 27 grains per gallon to about 8 for 18,092 accounts during a "
-                      "changeover that ran from January to March 2025.",
-                      ["Water system", "Communities served", "Hardness delivered",
-                       "Recent change"],
-                      [("Greene County Sanitary Engineering",
-                        "<a href=\"/locations/beavercreek\">Beavercreek</a>, Beavercreek Twp, "
-                        "Xenia Twp, Cedarville, parts of Kettering and Centerville",
+            # Restructured after the client read it and said it was confusing. It was:
+            # Water system | Communities served | Hardness delivered | Recent change.
+            # That asks a homeowner to know which utility they are on before they can
+            # find their row, then hands them a number in grains per gallon with
+            # nothing saying whether that is bad. The utility's project history had a
+            # column of its own and the Dayton row's answer was "go read the report".
+            # Now: find your town, see the number, read what it means. 7 gpg is the
+            # standard threshold for "hard", so every row here is hard water — which
+            # is the actual finding and is now impossible to miss.
+            table=tbl("Water hardness by community, and what it means for your home.",
+                      "Every municipal system across the Dayton and Cincinnati metros "
+                      "delivers at least 7 grains per gallon, the point at which water "
+                      "is classed as hard. The question is not whether your water is "
+                      "hard, it is whether it is costing you anything.",
+                      ["If you're in", "Your water runs", "What that means"],
+                      [("<a href=\"/locations/beavercreek\">Beavercreek</a>, Beavercreek "
+                        "Twp, Xenia Twp, Cedarville, parts of Kettering and Centerville",
                         "About 8 grains per gallon",
-                        "Cut from 27 gpg between January and March 2025"),
-                       ("City of Dayton", "Dayton and wholesale customers",
-                        "See the current City of Dayton Water Quality Report",
-                        "Lime softened, no recent change"),
-                       ("Greater Cincinnati Water Works",
-                        "Cincinnati, most of Hamilton County, Mason",
-                        "7 to 8 grains per gallon", "Stable"),
-                       ("Warren County Water and Sewer",
-                        "Franklin-area and Renneker systems, 30,000+ customers",
+                        "Hard. Greene County cut it from 27 grains in early 2025, so "
+                        "scale builds far slower than it used to."),
+                       ("Dayton and the communities it supplies wholesale",
+                        "About 7 to 8 grains per gallon",
+                        "Hard. Lime softened at the Bolton plant."),
+                       ("Cincinnati, most of Hamilton County, Mason",
+                        "7 to 8 grains per gallon",
+                        "Hard. Greater Cincinnati Water Works, steady for years."),
+                       ("Franklin and the Renneker service area",
                         "About 8 grains per gallon",
-                        "Cut roughly 55% by nanofiltration, 2022"),
-                       ("City of Huber Heights", "Huber Heights",
+                        "Hard. Warren County cut it by roughly 55% with nanofiltration "
+                        "in 2022."),
+                       ("Huber Heights",
                         "About 7 grains per gallon",
-                        "Cut from about 18 gpg by a new softening plant"),
-                       ("Butler County Water and Sewer",
-                        "West Chester, Liberty Twp, Fairfield, Monroe",
-                        "About 7.7 grains per gallon", "Stable"),
-                       ("Private wells",
-                        "Scattered across Greene, Warren and Miami counties",
-                        "Varies widely, testing required",
-                        "Wells were not affected by any utility project")])),
+                        "Hard, at the low end. A new softening plant brought it down "
+                        "from about 18 grains."),
+                       ("West Chester, Liberty Twp, Fairfield, Monroe",
+                        "About 7.7 grains per gallon",
+                        "Hard. Butler County Water and Sewer, steady for years."),
+                       ("A private well in Greene, Warren or Miami County",
+                        "Varies widely",
+                        "Test before you decide anything. None of the utility softening "
+                        "projects changed well water.")])),
         sec("Do I need a water softener in Dayton?",
             ["Every municipal system in this footprint delivers at least 7 grains per gallon, "
              "which is the point at which water is normally classified as hard. Whether it is "
@@ -3256,27 +3161,25 @@ geo(PLUMB_PAGES, "water-treatment.html",
              "<a href=\"/plumbing/water-heater/installation\">scale on fixtures</a>, dishes "
              "that spot, <a href=\"/plumbing/water-heater/overview\">appliances failing "
              "early</a>, and laundry that comes out stiff.",
-             "Delivered water hardness across the Dayton and Cincinnati service area runs at "
-             "or above 7 grains per gallon on every municipal system Extreme Heating, Air, "
-             "Plumbing works on."]),
+             "If you are seeing two or three of those, hardness is doing it. If you are seeing "
+             "none of them, you may not need anything, and we will say so."]),
         sec("My water got softer in 2025. Does my softener still work?",
             ["If you are on Greene County water in Beavercreek, Beavercreek Township, Xenia "
              "Township, Cedarville, or parts of Kettering and Centerville, your supply went "
              "from 27 grains per gallon to about 8 in early 2025. A softener still programmed "
              "for 27 is now over-softening, burning through salt, and sending very "
              "low-hardness water through your pipes. It needs re-dialing, not replacing.",
-             "Water softeners in Greene County homes that were programmed before 2025 are set "
-             "for 27 grains per gallon, more than three times the hardness now delivered. In "
-             "most cases this is an adjustment rather than a new installation."]),
+             "That is an adjustment, not a new installation, and it is worth doing. Every bag "
+             "of salt since early 2025 has been paying for hardness that is no longer "
+             "there."]),
         sec("What is the difference between a softener, a filter and reverse osmosis?",
             "A softener removes calcium and magnesium, which is what causes scale. A "
             "whole-home filter removes chlorine, sediment and taste or odor problems at every "
             "tap. Reverse osmosis produces drinking-quality water at one fixture, usually the "
             "kitchen sink. They solve different problems and plenty of homes run two of them.",
             table=tbl("Water treatment options compared.",
-                      "Extreme Heating, Air, Plumbing sizes water treatment equipment from a "
-                      "tested hardness figure and a household's actual water use rather than "
-                      "from a shelf rating.",
+                      "We size any of these from a tested hardness number and how much water "
+                      "your household actually uses, not from the rating on the box.",
                       ["Factor", "Water softener", "Whole-home filtration", "Reverse osmosis"],
                       [("What it removes", "Calcium and magnesium hardness",
                         "Chlorine, sediment, taste and odor",
@@ -3310,8 +3213,8 @@ geo(PLUMB_PAGES, "water-treatment.html",
              "and the treatment question is mostly about hardness and chlorine. Wells vary "
              "street by street and can carry iron, sulfur, bacteria or nitrates, none of which "
              "a softener addresses. Well homes get tested before anyone recommends equipment.",
-             "Homes on private wells inside the Greene County service area did not receive the "
-             "2025 softening change and still draw untreated aquifer water."]),
+             "One thing worth knowing if you are on a well in Greene County: the 2025 softening "
+             "change was a utility project. It did not touch your water at all."]),
         sec("What does water treatment installation involve?",
             call("<a href=\"/contact\">A water test</a> comes first, then sizing against your "
                  "household's real usage rather than a box rating. Installation ties into the "
@@ -3354,10 +3257,9 @@ geo(PLUMB_FAMILIES, "sewer-line/overview.html",
     h1Highlight="Dayton &amp; Cincinnati",
     intro="Nobody should pay to dig up a yard on a guess. The camera goes in first, and the "
           "quote comes after the footage.",
-    answer="Extreme Heating, Air, Plumbing inspects, cleans and repairs residential main sewer "
-           "lines across the Dayton and Cincinnati, Ohio metros. Every job starts with a "
-           "camera pass so the condition of the pipe is known before any work is quoted. Sewer "
-           "work is performed under Ohio plumbing license #13557.",
+    answer="Backups that keep coming back, a soggy patch of lawn, sewage smell outside. We put "
+           "a camera the full length of your line first, and you watch the same screen we do "
+           "before anything is quoted or dug.",
     callout="Sewage backing up indoors? Stop running water and call {tel}. "
             "<a href=\"/plumbing/emergency-plumbing\">That is an emergency</a> and it is "
             "handled around the clock.",
@@ -3368,9 +3270,9 @@ geo(PLUMB_FAMILIES, "sewer-line/overview.html",
              "sewage odor outside near the line, a patch of yard that stays soggy or greener "
              "than the rest, or a section of lawn that has sunk. One of those is worth a "
              "camera. Two is a broken line until proven otherwise.",
-             "Extreme Heating, Air, Plumbing treats sewer backups that return within weeks of "
-             "a cleaning as evidence of a structural problem in the line rather than a "
-             "recurring clog."]),
+             "A backup that comes back within weeks of a cleaning is not a clog you got "
+             "unlucky with. Something in the pipe is holding it, and cleaning it again will "
+             "not change that."]),
         sec("What does a sewer camera inspection show?",
             "A camera pushed the length of the lateral shows exactly what a plumber is dealing "
             "with: root masses at pipe joints, a belly holding standing water, offset joints "
@@ -3378,9 +3280,8 @@ geo(PLUMB_FAMILIES, "sewer-line/overview.html",
             "and the distance from the house, which is what determines whether a repair can be "
             "done trenchless.",
             table=tbl("Common sewer line findings and what each one calls for.",
-                      "Extreme Heating, Air, Plumbing runs a camera the full length of a sewer "
-                      "lateral before quoting any repair, so the recommendation is based on "
-                      "the pipe's actual condition.",
+                      "These are the seven things the camera usually turns up, and only two of "
+                      "them mean digging.",
                       ["What the camera shows", "What caused it", "What it needs"],
                       [("Root mass at a pipe joint", "Tree roots entering a clay joint",
                         "Hydro jetting, then repair or lining at that joint"),
@@ -3415,9 +3316,9 @@ geo(PLUMB_FAMILIES, "sewer-line/overview.html",
              "laterals under those homes are clay tile or cast iron with mortared joints that "
              "roots find easily. Newer suburban stock in Beavercreek, Mason and West Chester "
              "is usually PVC and fails differently, more often from settling than from roots.",
-             "About 38% of Dayton's housing stock was built before 1940, and sewer laterals "
-             "serving that stock are typically clay tile or cast iron with jointed connections "
-             "vulnerable to root intrusion."]),
+             "If your house predates the war and still has its original lateral, roots are the "
+             "first thing we look for. It is the most common finding on that vintage of "
+             "pipe."]),
         sec("How much does sewer work cost?",
             "Sewer repair is the largest single plumbing project most homeowners will face, "
             "and the range is wide because depth, length and access change everything. Every "
@@ -3453,9 +3354,8 @@ geo(PLUMB_FAMILIES, "sewer-line/overview.html",
          "camera inspection is worth doing before buying an older house. Homes with no history "
          "of backups and modern PVC laterals rarely need routine inspection."),
         ("How fast can you get a camera in the line?",
-         "Extreme Heating, Air, Plumbing runs 90% same-day service across the Dayton and "
-         "Cincinnati metros, and an active backup is dispatched ahead of a scheduled "
-         "inspection."),
+         "Most calls are handled the same day, and an active backup goes out ahead of a "
+         "scheduled inspection."),
     ))
 
 geo(PLUMB_FAMILIES, "sump-pump/overview.html",
@@ -3463,11 +3363,9 @@ geo(PLUMB_FAMILIES, "sump-pump/overview.html",
     h1Highlight="Dayton &amp; Cincinnati",
     intro="Storms that flood basements are usually the same storms that take the power out. "
           "That is the problem a backup exists to solve.",
-    answer="Extreme Heating, Air, Plumbing repairs, replaces and installs residential sump "
-           "pumps and battery backup systems across the Dayton and Cincinnati, Ohio metros. A "
-           "typical sump pump lasts 7 to 10 years, and failures cluster during the heavy rain "
-           "events that also cause power outages. Every installation is flood-tested through a "
-           "full cycle before the visit ends.",
+    answer="A sump pump lasts 7 to 10 years and then fails during a storm, which is also when "
+           "the power goes out. We repair, replace and add battery backups, and flood-test the "
+           "pit through a full cycle before leaving.",
     callout="Storm season doesn't wait. Call {tel} before the next heavy rain tests your pump, "
             "or before <a href=\"/plumbing/emergency-plumbing\">a flooded basement</a> makes "
             "the decision for you.",
@@ -3479,9 +3377,8 @@ geo(PLUMB_FAMILIES, "sump-pump/overview.html",
              "enough to consider "
              "<a href=\"/plumbing/sump-pump/installation\">replacing before a storm "
              "season</a>, because failure is not gradual.",
-             "A residential sump pump lasts about 7 to 10 years, which is why Extreme Heating, "
-             "Air, Plumbing recommends planned replacement rather than waiting for a failure "
-             "during a storm."]),
+             "That is the argument for replacing on age rather than waiting for a warning you "
+             "will not get. Pumps stop on the night the pit is fullest."]),
         sec("Do I need a sump pump in the Dayton area?",
             "Most homes here with a full basement have one, and full basements are the norm "
             "across older Dayton neighborhoods and most of the suburban stock. A high water "
@@ -3493,9 +3390,8 @@ geo(PLUMB_FAMILIES, "sump-pump/overview.html",
             "it. Visible rust or a float that sticks. Any pump past seven years with any of "
             "those is worth replacing before the forecast turns.",
             table=tbl("Sump pump types compared.",
-                      "Extreme Heating, Air, Plumbing sizes sump pumps against the pit, the "
-                      "discharge height and the water table rather than against a horsepower "
-                      "rating on the box.",
+                      "We size against your pit, how high the discharge has to lift and how "
+                      "fast the water comes in, not against the horsepower on the box.",
                       ["Factor", "Pedestal pump", "Submersible pump", "Battery backup"],
                       [("Where the motor sits", "Above the pit on a shaft",
                         "Inside the pit, underwater", "Alongside the primary pump"),
@@ -3517,9 +3413,8 @@ geo(PLUMB_FAMILIES, "sump-pump/overview.html",
              "event that overwhelms a pit is frequently the same event that takes down the "
              "grid, and a primary pump with no electricity does nothing at all. A backup runs "
              "on its own battery and takes over automatically.",
-             "Battery backup sump pumps protect against the common case in the Dayton and "
-             "Cincinnati metros where a heavy rain event causes both basement flooding and a "
-             "power outage."]),
+             "It is the one piece of this that only matters on the worst night of the year, "
+             "which is exactly why people skip it and then regret it."]),
     ],
     sectionsTail=[
         sec("Why does my sump pump run constantly?",
@@ -3534,9 +3429,10 @@ geo(PLUMB_FAMILIES, "sump-pump/overview.html",
                  "off cleanly without short-cycling. Do it every spring before storm season. "
                  "If any part of that sequence hesitates, call {tel} and a "
                  "<a href=\"/plumbing/services\">licensed Ohio plumber</a> will look at it, "
-                 "under Ohio plumbing license #13557. Water that comes up through a floor "
-                 "drain instead is <a href=\"/plumbing/sewer-line/cleaning\">storm water "
-                 "entering the sanitary line</a>, which is a different job.")),
+                 "working " + LICENCE_LINE + ". If the water is coming up through a floor "
+                 "drain instead of the pit, that is "
+                 "<a href=\"/plumbing/sewer-line/cleaning\">storm water in the sanitary "
+                 "line</a> and a different job entirely.")),
     ],
     faqH2="What else do homeowners ask about sump pumps?",
     faq=qa(
@@ -3568,11 +3464,9 @@ geo(PLUMB_FAMILIES, "gas-line/overview.html",
     h1Highlight="Dayton &amp; Cincinnati",
     intro="If you smell gas right now, stop reading. Leave the house and call your gas utility "
           "from outside.",
-    answer="Extreme Heating, Air, Plumbing installs, repairs and pressure-tests residential "
-           "natural gas lines across the Dayton and Cincinnati, Ohio metros. Runs for ranges, "
-           "dryers, grills, garage heaters and standby generators are all covered. All gas "
-           "work is performed under Ohio plumbing license #13557 and permitted where the "
-           "jurisdiction requires it.",
+    answer="New runs for ranges, dryers, grills, garage heaters and standby generators, plus "
+           "repairs on lines already in the ground. Every job is done " + LICENCE_LINE + ", "
+           "permitted where your jurisdiction requires it, and pressure-tested at the end.",
     callout="<b>Safety first:</b> smell gas? Leave the house first, don't flip switches, then "
             "call your gas utility from outside. Call {tel} for the repair once the property "
             "is clear.",
@@ -3581,10 +3475,10 @@ geo(PLUMB_FAMILIES, "gas-line/overview.html",
             ["Gas piping is licensed work. Plumbing and HVAC contractors in Ohio are licensed "
              "at the state level through the Ohio Construction Industry Licensing Board, and "
              "many municipalities require a local contractor registration on top of that. "
-             "Extreme holds Ohio plumbing license #13557 and "
+             "We hold Ohio plumbing license #13557 and "
              "<a href=\"/services\">Ohio HVAC license #37179</a>.",
-             "Extreme Heating, Air, Plumbing performs residential gas line work in the Dayton "
-             "and Cincinnati metros under Ohio plumbing license #13557."]),
+             "Both numbers are checkable, and you should check them, on anyone who quotes you "
+             "gas work."]),
         sec("What should I do if I smell gas?",
             "Leave the building first, with everyone in it. Do not flip a light switch, unplug "
             "anything, use a phone indoors, or light a match. From outside and well away, call "
@@ -3599,31 +3493,29 @@ geo(PLUMB_FAMILIES, "gas-line/overview.html",
                       ["What's happening", "Call first", "Then call"],
                       [("Strong gas smell indoors",
                         "Leave the house, then the gas utility from outside",
-                        "Extreme, once the property is cleared"),
+                        "Us, once the property is cleared"),
                        ("Faint smell near one appliance", "The gas utility, from outside",
-                        "Extreme, for appliance connection and testing"),
+                        "Us, for appliance connection and testing"),
                        ("Hissing from a buried line outdoors",
-                        "The gas utility, from a distance", "Extreme, for the repair"),
+                        "The gas utility, from a distance", "Us, for the repair"),
                        ("Dead grass in a line over a buried gas line", "The gas utility",
-                        "Extreme, for locating and repair"),
-                       ("Pilot lights repeatedly going out", "Extreme",
-                        "Utility only if a smell is present"),
+                        "Us, for locating and repair"),
+                       ("Pilot lights repeatedly going out", "Us",
+                        "The utility, only if you can smell gas"),
                        ("<a href=\"/plumbing/gas-line/installation\">Adding a line for a new "
-                        "appliance</a>", "Extreme", "No utility call needed")])),
+                        "appliance</a>", "Us", "No utility call needed")])),
         sec("Which utility supplies natural gas here?",
             ["In the Dayton metro, natural gas comes from CenterPoint Energy Ohio, which was "
              "Vectren until it was renamed in May 2021, while electricity comes separately "
              "from AES Ohio. In the Cincinnati metro, Duke Energy Ohio supplies both gas and "
              "electricity. The two metros are structured differently, which matters when you "
              "are outside the house looking up an emergency number.",
-             "Natural gas in the Dayton metro is supplied by CenterPoint Energy Ohio, while "
-             "Duke Energy Ohio supplies both gas and electricity across the Cincinnati metro."]),
-        sec("Do I need a permit for gas line work in Ohio?",
-            "Most new gas piping requires a permit and an inspection, and the issuing "
-            "authority depends on where you live. Greene County permits Beavercreek but not "
-            "Fairborn or Xenia, and the City of Dayton runs its own plumbing inspection "
-            "separate from the county program. Extreme pulls the permit and closes out the "
-            "inspection as part of the job."),
+             "Worth putting the right one in your phone now, while nothing is wrong."]),
+        sec("Do I need a permit for gas line work?",
+            "Most new gas piping does, along with an inspection, and who issues it depends on "
+            "where you live. Greene County permits Beavercreek but not Fairborn or Xenia, and "
+            "the City of Dayton runs its own plumbing inspection separate from the county "
+            "program. We pull the permit and close out the inspection as part of the job."),
     ],
     sectionsTail=[
         sec("What can a gas line be run for?",
@@ -3636,19 +3528,18 @@ geo(PLUMB_FAMILIES, "gas-line/overview.html",
         sec("How is a gas leak found?",
             call("Electronic gas detection equipment and a pressure test on an isolated "
                  "section. The pressure test is the part that matters: a section of pipe is "
-                 "isolated, brought up to pressure, and watched, so a passing result is "
-                 "measured rather than sniffed. Every gas job Extreme completes ends with one, "
-                 "documented. Call {tel}, or "
+                 "isolated, brought up to pressure, and watched, so a pass is measured rather "
+                 "than sniffed. Every gas job we do ends with one, documented for your "
+                 "records. Call {tel}, or "
                  "<a href=\"/plumbing/emergency-plumbing\">24/7 emergency plumbing</a> if "
                  "something is happening now.")),
     ],
     faqH2="What else do homeowners ask about gas lines?",
     faq=qa(
         ("Who is licensed to install a gas line in Ohio?",
-         "Gas piping is licensed work in Ohio, regulated at the state level by the Ohio "
-         "Construction Industry Licensing Board, with local contractor registration required "
-         "by many municipalities. Extreme Heating, Air, Plumbing holds Ohio plumbing license "
-         "#13557."),
+         "Gas piping is licensed work, regulated by the Ohio Construction Industry Licensing "
+         "Board, and many municipalities want a local contractor registration on top. We hold "
+         "Ohio plumbing license #13557."),
         ("What do I do if I smell gas in my house?",
          "Leave immediately with everyone in the building. Do not touch light switches, unplug "
          "anything, or use a phone indoors. From outside, call your gas utility's emergency "
@@ -3658,8 +3549,8 @@ geo(PLUMB_FAMILIES, "gas-line/overview.html",
          "appliance's BTU demand, run with a shutoff at the connection point, pressure-tested, "
          "and permitted where required."),
         ("Do you handle the permit and the inspection?",
-         "Yes. Extreme pulls the permit, schedules the inspection and closes it out. The "
-         "issuing authority varies across this service area, which is part of why it is worth "
+         "Yes. We pull the permit, schedule the inspection and close it out. Who issues it "
+         "changes from one town to the next around here, which is part of why it is worth "
          "handing over."),
         ("How do you know a gas line is safe after a repair?",
          "Every gas job ends with a pressure test on the isolated section and an electronic "
@@ -3671,11 +3562,9 @@ geo(PLUMB_FAMILIES, "water-heater/repair.html",
     h1="Same-day water heater repair in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="No hot water this morning is a today problem. It gets triaged on the phone before "
           "anyone is dispatched.",
-    answer="Extreme Heating, Air, Plumbing repairs gas and electric water heaters across the "
-           "Dayton and Cincinnati, Ohio metros, covering heating elements, thermostats, gas "
-           "valves, thermocouples and pilot faults. A leaking tank is a replacement rather "
-           "than a repair. The company runs 90% same-day service, and no-hot-water calls are "
-           "moved up the schedule.",
+    answer="Elements, thermostats, gas valves, thermocouples, pilots that will not stay lit: "
+           "all of it repairable, usually the same day, with the common parts already on the "
+           "truck. A tank leaking from its base is the exception, and that one needs replacing.",
     callout="No hot water this morning? Call {tel}. Repairs get priority dispatch.",
     sections=[
         sec("Why do I have no hot water?",
@@ -3691,22 +3580,19 @@ geo(PLUMB_FAMILIES, "water-heater/repair.html",
              "<a href=\"/plumbing/water-treatment\">local water hardness</a>. Or the lower "
              "element on an electric unit has failed, leaving only the top of the tank "
              "heating. Both are diagnosable in one visit.",
-             "Extreme Heating, Air, Plumbing diagnoses reduced hot water capacity as either "
-             "tank scale or a failed lower heating element, both of which are checked on the "
-             "first visit."]),
+             "We check both on the first visit, because there is no way to tell them apart "
+             "from the outside and guessing wastes your morning."]),
         sec("My water heater is leaking. Is that repairable?",
             ["It depends entirely on where. Water from a fitting, the T&amp;P valve or the "
              "drain valve is a repair. Water seeping from the bottom of the tank itself is the "
              "steel shell failing, and no repair holds. Shut the cold supply valve above the "
              "unit and call, because a failing tank does not fail slowly for long.",
-             "Extreme Heating, Air, Plumbing treats water seeping from the base of a water "
-             "heater tank as a replacement, not a repair, because a failed tank shell cannot "
-             "be sealed."]),
+             "There is no patch for a failed tank shell. If someone offers you one, you are "
+             "buying a few weeks."]),
     ],
     table=tbl("When a water heater is worth repairing and when it should be replaced.",
-              "Extreme Heating, Air, Plumbing recommends replacement over repair when a water "
-              "heater is past its expected service life or when the repair quote approaches a "
-              "third of replacement cost.",
+              "Past its expected life, or with a repair quote nearing a third of what a new "
+              "one costs, and you are better off replacing it.",
               ["Factor", "Repair usually makes sense when", "Replacement usually makes sense when"],
               [("Age", "Under about 8 years old",
                 "Past 10 years, near the end of an 8 to 12 year life"),
@@ -3728,7 +3614,7 @@ geo(PLUMB_FAMILIES, "water-heater/repair.html",
             "Manufacturer warranties on tanks and parts vary by brand and by how the unit was "
             "registered, and we check yours before quoting. The repair itself is quoted flat "
             "and approved before any work starts, and it is carried out " + LICENCE_LINE + "."),
-        sec("How do I book water heater repair in Dayton or Cincinnati?",
+        sec("How do I book water heater repair?",
             call("Call {tel} or book online. If the tank is actively leaking, shut the cold "
                  "supply valve on top of the unit before you do anything else, then call. That "
                  "one turn is the difference between a wet floor and "
@@ -3739,9 +3625,8 @@ geo(PLUMB_FAMILIES, "water-heater/repair.html",
     faqH2="What else do homeowners ask when the hot water quits?",
     faq=qa(
         ("How fast can you fix my water heater?",
-         "Extreme Heating, Air, Plumbing runs 90% same-day service across the Dayton and "
-         "Cincinnati metros, and no-hot-water calls are prioritized. Common elements, "
-         "thermostats, thermocouples and gas valves are stocked on the truck."),
+         "Usually the same day. No-hot-water calls get moved up, and common elements, "
+         "thermostats, thermocouples and gas valves are already on the truck."),
         ("My water heater is leaking from the bottom. Can it be repaired?",
          "No. Water seeping from the base of the tank means the steel shell has failed, and "
          "there is no repair that holds once that happens. Shut the cold supply valve above "
@@ -3765,11 +3650,9 @@ geo(PLUMB_FAMILIES, "water-heater/installation.html",
     h1Highlight="Dayton &amp; Cincinnati",
     intro="Replacing a tank before it goes beats mopping a utility room after it does. Sized "
           "to your household, set to code, old unit hauled away.",
-    answer="Extreme Heating, Air, Plumbing installs tank and tankless water heaters in homes "
-           "across the Dayton and Cincinnati, Ohio metros, sized to a household's actual hot "
-           "water demand. Every installation is set to code, tested at each tap, and the old "
-           "unit is removed. Common tank sizes are stocked, so most replacements finish the "
-           "same day.",
+    answer="Tank or tankless, sized to what your household actually uses at its busiest. Set "
+           "to code, tested at every tap, old unit hauled away. Common sizes are on the "
+           "shelf, so most replacements finish the same day.",
     callout="Replacing before failure beats a flooded utility room. Call {tel} for honest "
             "numbers.",
     sections=[
@@ -3785,9 +3668,8 @@ geo(PLUMB_FAMILIES, "water-heater/installation.html",
              "40 gallons, three or four on 40 to 50, and five or more on 50 to 80 gallons or a "
              "tankless unit. Simultaneous showers, a large tub, or a high-flow shower head all "
              "push the number up.",
-             "Extreme Heating, Air, Plumbing sizes replacement water heaters against a "
-             "household's peak hot water demand rather than against the capacity of the unit "
-             "being removed."]),
+             "We size against that peak, not against whatever is being carried out. Plenty of "
+             "houses have been living with an undersized tank for years without knowing it."]),
         sec("Should I switch to tankless?",
             "Tankless makes sense when you are running out of hot water, when the utility room "
             "space matters, or when the existing gas and venting are already being opened up. "
@@ -3800,19 +3682,16 @@ geo(PLUMB_FAMILIES, "water-heater/installation.html",
             ["Draining and removing the old unit, checking the gas line, venting, electrical "
              "and water connections against current code, setting the new unit with a new "
              "expansion tank and shut-off where required, testing at every tap, and hauling "
-             "the old heater away. Permits are pulled where the local jurisdiction requires "
-             "one.",
-             "Every water heater installed by Extreme Heating, Air, Plumbing in the Dayton and "
-             "Cincinnati metros is set to code, tested at each tap, and leaves with the old "
-             "unit removed, " + LICENCE_LINE + "."]),
+             "the old heater away. We pull the permit where your jurisdiction requires one.",
+             "All of it " + LICENCE_LINE + ", and none of it as a line item added after the "
+             "fact."]),
     ],
     sectionsTail=[
-        sec("How long does a water heater installation take?",
-            "A straight tank-for-tank swap is usually a few hours. A tankless conversion takes "
-            "longer, because gas line sizing, venting and sometimes electrical all change. "
-            "Extreme runs 90% same-day service across the Dayton and Cincinnati metros and "
-            "stocks common tank sizes, so most replacements happen the day the quote is "
-            "approved."),
+        sec("How long does it take?",
+            "A straight tank-for-tank swap is usually a few hours. A tankless conversion runs "
+            "longer, because the gas line sizing, the venting and sometimes the electrical all "
+            "change. Common tank sizes are stocked, so most replacements happen the day you "
+            "approve the quote."),
         sec("Is financing available on a water heater replacement?",
             "Yes, on qualifying installations. A water heater rarely fails on a convenient "
             "week, so monthly options exist for exactly that reason. Current terms are on our "
@@ -3827,10 +3706,9 @@ geo(PLUMB_FAMILIES, "water-heater/installation.html",
     faqH2="What else do homeowners ask before replacing a water heater?",
     faq=qa(
         ("Can you install a water heater the same day?",
-         "Usually. Extreme Heating, Air, Plumbing stocks common tank sizes and runs 90% "
-         "same-day service across the Dayton and Cincinnati metros, so a like-for-like tank "
-         "replacement often happens the day the quote is approved. Tankless conversions take "
-         "longer because gas and venting are modified first."),
+         "Usually. Common tank sizes are stocked, so a like-for-like swap often happens the "
+         "day you approve the quote. Tankless conversions take longer, because the gas and the "
+         "venting have to be changed first."),
         ("What size water heater does a family of four need?",
          "Most four-person households land on a 40 to 50 gallon tank. If two showers run at "
          "the same time most mornings, size up rather than down, because recovery rate is what "
@@ -3853,11 +3731,9 @@ geo(PLUMB_FAMILIES, "sewer-line/repair.html",
     h1="Sewer line repair and replacement in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="You see the break on the screen before you see a number on the quote. Trenchless "
           "where the pipe allows, excavation only where it does not.",
-    answer="Extreme Heating, Air, Plumbing repairs and replaces residential sewer laterals "
-           "across the Dayton and Cincinnati, Ohio metros. Trenchless lining and pipe bursting "
-           "are used where the pipe allows, and excavation where it does not. Every repair is "
-           "camera-diagnosed before quoting and camera-verified afterward, under Ohio plumbing "
-           "license #13557.",
+    answer="This is the biggest plumbing bill most people ever face, so the camera goes down "
+           "your line first and the quote comes after the footage. Where the pipe can carry a "
+           "liner, the lawn between the access points stays put.",
     callout="Repeat backups mean the line itself is failing. Call {tel} for a "
             "<a href=\"/plumbing/sewer-line/overview\">camera inspection</a> before it "
             "collapses.",
@@ -3869,9 +3745,8 @@ geo(PLUMB_FAMILIES, "sewer-line/repair.html",
             "alone. Whether it applies depends on what the camera shows.",
             sid="trenchless",
             table=tbl("Trenchless sewer repair compared with open-cut excavation.",
-                      "Extreme Heating, Air, Plumbing repairs sewer lines trenchless wherever "
-                      "the existing pipe can carry a liner, and excavates only where the line "
-                      "has collapsed, bellied or shifted too far.",
+                      "Wherever your pipe can carry a liner, we go trenchless. We dig only "
+                      "when the line has collapsed, bellied or shifted too far to line.",
                       ["Factor", "Trenchless repair", "Open-cut excavation"],
                       [("Yard disruption",
                         "Two small access pits, lawn between them untouched",
@@ -3895,9 +3770,8 @@ geo(PLUMB_FAMILIES, "sewer-line/repair.html",
             sid="spot-or-full",
             table=tbl("When a sewer line is worth spot-repairing and when it should be "
                       "replaced.",
-                      "Extreme Heating, Air, Plumbing recommends replacing a full sewer "
-                      "lateral rather than spot-repairing it when the camera shows the same "
-                      "failure mode repeating along the run.",
+                      "If the camera shows the same failure repeating down the length of the "
+                      "run, patching one spot buys a season. That is when we say replace.",
                       ["Factor", "Spot repair usually makes sense when",
                        "Full replacement usually makes sense when"],
                       [("Number of defects", "One break or one root-intruded joint",
@@ -3921,9 +3795,8 @@ geo(PLUMB_FAMILIES, "sewer-line/repair.html",
              "<a href=\"/locations/dayton\">pre-war Dayton homes</a> have, give them an "
              "opening every few feet. Once inside, roots grow in the nutrient-rich flow and "
              "build a mass that catches everything else moving through.",
-             "Tree roots enter residential sewer laterals at pipe joints rather than through "
-             "pipe walls, which is why clay tile lines in older Dayton neighborhoods fail from "
-             "root intrusion most often."]),
+             "So the repair that actually ends it is sealing or lining the joint they came "
+             "through. Cutting the roots out just resets the clock."]),
     ],
     sectionsTail=[
         sec("How long does a sewer line repair take?",
@@ -3931,10 +3804,10 @@ geo(PLUMB_FAMILIES, "sewer-line/repair.html",
             "excavated replacement depends on depth, length and what is on top of the line, "
             "and it takes longer if a driveway or a public right-of-way is involved. Permits "
             "and utility locates come before any digging."),
-        sec("How do I get a sewer line quote in Dayton or Cincinnati?",
-            call("Call {tel} or book online for a camera inspection. The quote comes after the "
-                 "footage, not before, and you see the same screen the plumber does. Where the "
-                 "pipe is sound and only loaded, "
+        sec("How do I get a sewer line quote?",
+            call("Call {tel} or book a camera inspection online. The quote comes after the "
+                 "footage, not before, and you watch the same screen the plumber does. Where "
+                 "the pipe is sound and only loaded, "
                  "<a href=\"/plumbing/sewer-line/cleaning\">jetting</a> costs a fraction of a "
                  "repair. <a href=\"/financing-options\">Financing</a> is available on larger "
                  "sewer work.")),
@@ -3959,19 +3832,17 @@ geo(PLUMB_FAMILIES, "sewer-line/repair.html",
          "the roots came through is still open and they return. Where roots keep coming back "
          "to the same joint, sealing or lining that section is the repair that ends it."),
         ("Do I need a permit for sewer line work?",
-         "Usually yes for excavation, and a separate right-of-way permit if the work crosses a "
-         "street or tree lawn. Extreme handles the permitting and the utility locates as part "
-         "of the job."),
+         "Usually yes for excavation, plus a separate right-of-way permit if the work crosses "
+         "a street or a tree lawn. We handle the permitting and the utility locates as part of "
+         "the job."),
     ))
 
 geo(PLUMB_FAMILIES, "sewer-line/cleaning.html",
     h1="Sewer line cleaning and hydro jetting in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="A snake makes a hole. A jetter cleans the pipe. They are not the same visit.",
-    answer="Extreme Heating, Air, Plumbing cleans residential main sewer lines across the "
-           "Dayton and Cincinnati, Ohio metros using high-pressure hydro jetting. Jetting "
-           "scours the full diameter of the pipe rather than boring a hole through the "
-           "blockage. A camera pass confirms the pipe can take it beforehand, and backups "
-           "indoors are handled 24/7.",
+    answer="Hydro jetting scours the full diameter of your pipe instead of boring a hole "
+           "through the blockage, which is why it holds for years rather than months. A camera "
+           "pass confirms the pipe can take it first.",
     callout="Snaking pokes a hole; jetting cleans the pipe. Call {tel} to break the backup "
             "cycle, or <a href=\"/plumbing/emergency-plumbing\">around the clock</a> if "
             "sewage is already indoors.",
@@ -3981,8 +3852,8 @@ geo(PLUMB_FAMILIES, "sewer-line/cleaning.html",
              "and the washing machine, and keep everyone off the lowest-floor fixtures. Every "
              "gallon that goes down adds to what comes up. Then call. Sewage indoors is a "
              "health issue as well as a plumbing one and it gets dispatched around the clock.",
-             "Extreme Heating, Air, Plumbing dispatches on indoor sewage backups 24 hours a "
-             "day across the Dayton and Cincinnati metros, " + LICENCE_LINE + "."]),
+             "Someone answers at any hour for this one, and the plumber who turns up is "
+             "working " + LICENCE_LINE + "."]),
         sec("What is hydro jetting and how is it different from snaking?",
             "A cable machine bores an opening through a blockage, which restores flow and "
             "leaves the buildup on the pipe wall. Hydro jetting pushes high-pressure water "
@@ -3990,9 +3861,9 @@ geo(PLUMB_FAMILIES, "sewer-line/cleaning.html",
             "hair and stripping grease and scale. A cable restores flow, and a jetter restores "
             "the pipe.",
             table=tbl("Cable snaking and hydro jetting compared for main sewer lines.",
-                      "Extreme Heating, Air, Plumbing recommends hydro jetting rather than "
-                      "cable snaking for any main sewer line that has backed up more than once "
-                      "in a year.",
+                      "If your main line has backed up more than once in a year, jetting is "
+                      "what we will recommend. A cable restores flow; a jetter restores the "
+                      "pipe.",
                       ["Factor", "Cable snaking", "Hydro jetting"],
                       [("What it removes", "An opening through the blockage",
                         "Roots, grease and scale from the full pipe wall"),
@@ -4019,10 +3890,9 @@ geo(PLUMB_FAMILIES, "sewer-line/cleaning.html",
              "cracked clay can be damaged by high-pressure water, and in those lines the "
              "honest recommendation is cleaning by cable and planning a repair. We say that "
              "before jetting rather than after, and the footage is there to back it up.",
-             "Extreme Heating, Air, Plumbing inspects a sewer line by "
-             "<a href=\"/plumbing/sewer-line/overview\">camera inspection</a> before hydro "
-             "jetting it, because high-pressure water can damage thinned cast iron or cracked "
-             "clay pipe."]),
+             "That is the whole reason the "
+             "<a href=\"/plumbing/sewer-line/overview\">camera</a> goes in first. High-pressure "
+             "water belongs in a pipe someone has actually looked at."]),
     ],
     sectionsTail=[
         sec("Why does my basement floor drain back up when it rains?",
@@ -4033,17 +3903,16 @@ geo(PLUMB_FAMILIES, "sewer-line/cleaning.html",
             "<a href=\"/plumbing/sump-pump/repair\">A failed sump pump</a> produces the same "
             "wet basement from a different cause."),
         sec("How fast can you jet my line?",
-            call("Extreme runs 90% same-day service across the Dayton and Cincinnati metros, "
-                 "and active backups are prioritized over scheduled cleaning. Storm events "
-                 "produce clusters of these calls in the same afternoon, so a call earlier in "
-                 "the day gets a better slot. Call {tel}.")),
+            call("Most calls are handled the same day, and an active backup goes ahead of a "
+                 "scheduled cleaning. Storms produce these calls in clusters within the same "
+                 "afternoon, so calling earlier in the day gets you a better slot. Call "
+                 "{tel}.")),
     ],
     faqH2="What else do homeowners ask about jetting?",
     faq=qa(
         ("Sewage is coming up in my basement floor drain. Who do I call?",
-         call("Call a licensed plumber immediately and stop using water in the house until "
-              "they arrive. Extreme Heating, Air, Plumbing answers backup calls 24 hours a day "
-              "across the Dayton and Cincinnati metros at {tel}.")),
+         call("Call a licensed plumber now, and stop using water in the house until one "
+              "arrives. Someone answers at {tel} at any hour for this.")),
         ("How long does hydro jetting last?",
          "Years in most homes, because jetting removes the buildup instead of punching through "
          "it. Lines with continuing root intrusion or heavy grease loading do better on a "
@@ -4067,11 +3936,9 @@ geo(PLUMB_FAMILIES, "sump-pump/repair.html",
     h1="Same-day sump pump repair in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Check the breaker and the float first. Then call, before the water reaches the "
           "floor.",
-    answer="Extreme Heating, Air, Plumbing repairs residential sump pumps across the Dayton "
-           "and Cincinnati, Ohio metros. Stuck floats, failed switches, clogged intakes, "
-           "failed check valves and burned-out motors are all covered, and every repair is "
-           "flood-tested through a full cycle. The company runs 90% same-day service and "
-           "answers storm-season calls 24/7.",
+    answer="Stuck floats, failed switches, clogged intakes, dead check valves, burned-out "
+           "motors. We fix all of it, usually the same day, and flood-test the pit through a "
+           "full cycle before leaving. Storm-season calls are answered at any hour.",
     callout="A pump that's acting up will fail on the worst night. Call {tel} before the "
             "forecast turns.",
     sections=[
@@ -4080,9 +3947,8 @@ geo(PLUMB_FAMILIES, "sump-pump/repair.html",
              "and the reset is free. Then the float, because a float jammed against the pit "
              "wall or caught on the discharge pipe is the single most frequent cause of a pump "
              "that will not start. If both are fine, the switch or the motor has failed.",
-             "A jammed float switch is the most common cause of a residential sump pump that "
-             "will not start, which is why Extreme Heating, Air, Plumbing has homeowners check "
-             "it before dispatch."]),
+             "We ask people to check those two before we dispatch, because often enough it "
+             "saves them a service call entirely."]),
         sec("The pump runs but no water leaves the pit. Why?",
             "The impeller is clogged, the check valve has failed, or the discharge line is "
             "blocked or frozen. A pump that hums and moves nothing is doing the worst kind of "
@@ -4095,9 +3961,8 @@ geo(PLUMB_FAMILIES, "sump-pump/repair.html",
             "All three are repairs and all three are diagnosable on one visit."),
     ],
     table=tbl("When a sump pump is worth repairing and when it should be replaced.",
-              "Extreme Heating, Air, Plumbing recommends replacing a sump pump rather than "
-              "repairing it once the unit passes about seven years or the motor itself has "
-              "failed.",
+              "Past about seven years, or with the motor itself gone, replacing beats "
+              "repairing. The rest of the pump is the same age as the part that failed.",
               ["Factor", "Repair usually makes sense when", "Replacement usually makes sense when"],
               [("Age", "Under about 7 years", "Past 7 to 10 years, at or near end of life"),
                ("What failed", "Float, switch, check valve or a clogged intake",
@@ -4117,11 +3982,11 @@ geo(PLUMB_FAMILIES, "sump-pump/repair.html",
               eyebrow="REPAIR OR REPLACE"),
     sectionsTail=[
         sec("How fast can someone get here when the pit is filling?",
-            call("Extreme runs 90% same-day service across the Dayton and Cincinnati metros "
-                 "and <a href=\"/plumbing/emergency-plumbing\">dispatches 24 hours a day</a> "
-                 "on sump pump calls. Heavy rain produces these calls in clusters, so the "
-                 "earlier in an event you call {tel}, the better the slot. If water is already "
-                 "reaching the floor, say so on the phone.")),
+            call("Most calls are handled the same day, and we "
+                 "<a href=\"/plumbing/emergency-plumbing\">dispatch at any hour</a> on sump "
+                 "pumps. Heavy rain brings these in clusters, so the earlier in a storm you "
+                 "call {tel}, the better your slot. If water is already reaching the floor, "
+                 "say so on the phone.")),
         sec("What should I do while I wait?",
             "Move anything that matters off the basement floor. If you have a wet-dry vac or a "
             "spare utility pump, start moving water. Do not stand in water near a running pump "
@@ -4134,9 +3999,8 @@ geo(PLUMB_FAMILIES, "sump-pump/repair.html",
     faqH2="What else do homeowners ask when a pump quits?",
     faq=qa(
         ("My sump pump quit and the pit is filling. How fast can you get here?",
-         "Extreme Heating, Air, Plumbing runs 90% same-day service across the Dayton and "
-         "Cincinnati metros and dispatches on sump pump failures 24 hours a day. Heavy rain "
-         "events generate clusters of these calls, so calling early in a storm gets a better "
+         "Usually the same day, and we dispatch on pump failures at any hour. Heavy rain "
+         "brings these calls in clusters, so calling early in a storm gets you a better "
          "slot."),
         ("Why is my sump pump not turning on?",
          "Check the breaker first, then the float. A tripped breaker and a float jammed "
@@ -4163,11 +4027,9 @@ geo(PLUMB_FAMILIES, "sump-pump/installation.html",
     h1Highlight="Dayton &amp; Cincinnati",
     intro="The week after a storm is when everyone calls. The week before is when it is cheap "
           "to fix.",
-    answer="Extreme Heating, Air, Plumbing installs primary sump pumps, battery backup systems "
-           "and high-water alarms in homes across the Dayton and Cincinnati, Ohio metros. "
-           "Pumps are sized against the pit, the discharge height and the local water table "
-           "rather than a horsepower rating. A residential sump pump lasts about 7 to 10 "
-           "years.",
+    answer="Primary pumps, battery backups and high-water alarms. We size against your pit, "
+           "how high the discharge has to lift and how fast water comes in, rather than the "
+           "horsepower on the box. An oversized pump short-cycles itself to death.",
     callout="The best time to upgrade is before the water table rises. Call {tel} for honest "
             "sizing.",
     sections=[
@@ -4183,18 +4045,16 @@ geo(PLUMB_FAMILIES, "sump-pump/installation.html",
              "the pit takes in during a real rain event, how high the discharge has to lift "
              "it, and how far it runs horizontally. An oversized pump short-cycles and wears "
              "out early. An undersized one loses the race.",
-             "Extreme Heating, Air, Plumbing sizes replacement sump pumps from pit inflow, "
-             "discharge lift and run length rather than from the horsepower rating on the "
-             "unit, " + LICENCE_LINE + "."]),
+             "Those three numbers are what we work from, " + LICENCE_LINE + ". The horsepower "
+             "on the label tells you almost nothing on its own."]),
         sec("What does a sump pump installation include?",
             ["The old pump comes out, the pit is cleaned of the silt and gravel that shortens "
              "pump life, the new pump is set with a new check valve and correctly routed "
              "discharge, a high-water alarm goes in, and the whole system is flood-tested "
-             "through repeated full cycles before anyone leaves. Battery backups are tested on "
+             "through repeated full cycles before anyone leaves. Battery backups get tested on "
              "battery, not just on line power.",
-             "Every sump pump installed by Extreme Heating, Air, Plumbing is flood-tested "
-             "through full cycles, including battery backups tested on battery power, before "
-             "the visit ends."]),
+             "That last bit matters. A backup that has only ever been tested plugged in has "
+             "not been tested at all."]),
         sec("How does a battery backup sump pump work?",
             "A second pump sits above the primary in the same pit, wired to its own battery "
             "and charger. When the power fails or the primary cannot keep up, the backup "
@@ -4215,14 +4075,12 @@ geo(PLUMB_FAMILIES, "sump-pump/installation.html",
             "<a href=\"/plumbing/sewer-line/cleaning\">basement backups during heavy rain</a> "
             "and it is prohibited in most local jurisdictions. Discharge routing is part of "
             "the install, including freeze protection on the exterior run."),
-        sec("How long does a sump pump installation take?",
-            call("A straight replacement in an existing pit is typically a few hours. Adding a "
-                 "battery backup, replacing the discharge line, or cutting a new pit takes "
-                 "longer. Extreme runs 90% same-day service across the Dayton and Cincinnati "
-                 "metros, and installations are usually scheduled within a day or two of the "
-                 "quote. Call {tel}, or see "
-                 "<a href=\"/financing-options\">financing</a> on larger jobs. All work is by "
-                 "<a href=\"/plumbing/services\">licensed Ohio plumbers</a>.")),
+        sec("How long does the installation take?",
+            call("A straight replacement in an existing pit is a few hours. Adding a battery "
+                 "backup, replacing the discharge line or cutting a new pit takes longer. We "
+                 "usually schedule within a day or two of the quote. Call {tel}, or see "
+                 "<a href=\"/financing-options\">financing</a> on larger jobs. Every visit is "
+                 "a <a href=\"/plumbing/services\">licensed Ohio plumber</a>.")),
     ],
     faqH2="What else do homeowners ask before installing a pump?",
     faq=qa(
@@ -4232,10 +4090,8 @@ geo(PLUMB_FAMILIES, "sump-pump/installation.html",
          "variables change the answer enough that a number over the phone would not be "
          "honest."),
         ("How fast can you install a sump pump?",
-         "Most installations are scheduled within a day or two of the quote, and Extreme "
-         "Heating, Air, Plumbing runs 90% same-day service across the Dayton and Cincinnati "
-         "metros. The week after a major storm is the exception, when demand spikes across "
-         "both metros at once."),
+         "Most get scheduled within a day or two of the quote. The week after a major storm is "
+         "the exception, when every basement in the area calls at once."),
         ("Do I need a battery backup?",
          "If the basement is finished, or if your power goes out during storms, yes. Heavy "
          "rain events cause both the flooding and the outage, and a primary pump with no "
@@ -4255,11 +4111,9 @@ geo(PLUMB_FAMILIES, "gas-line/repair.html",
     h1Highlight="Dayton &amp; Cincinnati",
     intro="If you smell gas, leave the building and call your gas utility from outside. Call "
           "us for the repair once the property is clear.",
-    answer=["If a gas smell is present, the correct first action is to leave the building and "
-            "call the gas utility from outside. Extreme Heating, Air, Plumbing locates and "
-            "repairs residential gas leaks across the Dayton and Cincinnati, Ohio metros. All "
-            "gas work runs under Ohio plumbing license #13557 and ends with a documented "
-            "pressure test."],
+    answer=["Smell gas right now? Leave the building and call your gas utility from outside. "
+            "Come back to this page after. We locate and repair the leak once the property is "
+            "clear, and every job ends with a documented pressure test."],
     callout="<b>If you smell gas right now:</b> get everyone out, including pets. Don't touch "
             "light switches, thermostats, garage door openers or appliance controls. Don't "
             "unplug anything or use a phone indoors. From outside and well away, call your gas "
@@ -4273,8 +4127,8 @@ geo(PLUMB_FAMILIES, "gas-line/repair.html",
              "anywhere in or around the house, treat it as real. A faint smell near one "
              "appliance and a strong smell through a whole house are the same instruction: "
              "leave, then call.",
-             "Natural gas is odorless, and the rotten-egg smell people associate with it comes "
-             "from mercaptan added by the utility so that leaks can be detected."]),
+             "The smell is the safety system working. It is there so you get out, not so you "
+             "can judge how bad it is from the hallway."]),
         sec("What are the signs of a gas leak besides the smell?",
             "Hissing near a line or appliance. A patch of dead or dying grass in a line over a "
             "buried gas line, with healthy lawn either side. "
@@ -4286,8 +4140,8 @@ geo(PLUMB_FAMILIES, "gas-line/repair.html",
              "make the property safe, shut off supply at the meter if needed, and confirm the "
              "area is clear. A licensed plumber's job is to locate and repair the line "
              "afterward. They are two different calls and the order is not interchangeable.",
-             "A suspected gas leak requires two calls in order: the gas utility to make the "
-             "property safe, then a licensed plumber to locate and repair the line."]),
+             "Utility first, plumber second. Every time, no exceptions, even if you are "
+             "certain you know where the leak is."]),
         sec("How is a gas leak located and repaired?",
             "Electronic gas detection equipment narrows the location, then the affected "
             "section is isolated and pressure-tested to confirm it. Buried lines are traced "
@@ -4306,15 +4160,12 @@ geo(PLUMB_FAMILIES, "gas-line/repair.html",
             "house now carries. A line that has been repaired more than once is usually "
             "telling you that <a href=\"/plumbing/gas-line/installation\">a new run</a> is the "
             "cheaper answer."),
-        sec("How quickly can someone come out for a suspected gas leak?",
-            call("Gas calls are taken 24 hours a day and prioritized above routine work. "
-                 "Extreme runs 90% same-day service across the Dayton and Cincinnati metros, "
-                 "on {tel}, alongside "
-                 "<a href=\"/plumbing/emergency-plumbing\">24/7 emergency plumbing</a>. That "
-                 "said, the utility call comes first and it comes from outside the building, "
-                 "every time. The "
-                 "<a href=\"/plumbing/gas-line/overview\">gas line services overview</a> "
-                 "covers licensing and permits.")),
+        sec("How quickly can someone come out?",
+            call("Gas calls are answered at any hour and go ahead of routine work, on {tel}, "
+                 "alongside <a href=\"/plumbing/emergency-plumbing\">emergency plumbing</a>. "
+                 "That said, the utility call comes first and it comes from outside the "
+                 "building, every time. Licensing and permits are covered on the "
+                 "<a href=\"/plumbing/gas-line/overview\">gas line overview</a>.")),
     ],
     faqH2="What else do people ask about gas leaks?",
     faq=qa(
@@ -4345,11 +4196,9 @@ geo(PLUMB_FAMILIES, "gas-line/installation.html",
     h1="New gas line installation in {X}.", h1Highlight="Dayton &amp; Cincinnati",
     intro="Call before the patio is poured, not after. Moving a line later costs more than "
           "running it now.",
-    answer="Extreme Heating, Air, Plumbing runs new residential gas lines across the Dayton "
-           "and Cincinnati, Ohio metros. Lines are installed for ranges, dryers, outdoor "
-           "grills, fire pits, pool heaters, garage heaters and standby generators. Each run "
-           "is sized to its appliance load, permitted where required, and pressure-tested "
-           "under Ohio plumbing license #13557.",
+    answer="New runs for ranges, dryers, grills, fire pits, pool heaters, garage heaters and "
+           "standby generators. Each one is sized to everything sharing that line, permitted "
+           "where required, and pressure-tested before you use it.",
     callout="Planning a project? Call {tel} early. A right-sized line saves headaches later.",
     sections=[
         sec("Can you run a gas line to my grill?",
@@ -4365,9 +4214,9 @@ geo(PLUMB_FAMILIES, "gas-line/installation.html",
             "determines how the pipe is sized.",
             sid="projects",
             table=tbl("Common residential gas line projects and what each one involves.",
-                      "Extreme Heating, Air, Plumbing sizes each new gas run against the "
-                      "combined appliance load on that line rather than against the single "
-                      "appliance being added.",
+                      "We size against everything sharing the line, not just the appliance you "
+                      "are adding. That is the difference between a line that works and one "
+                      "that starves.",
                       ["Project", "What it usually involves", "Permit typically required"],
                       [("Range or cooktop conversion",
                         "New branch from the nearest adequate line, shutoff at the appliance",
@@ -4390,18 +4239,15 @@ geo(PLUMB_FAMILIES, "gas-line/installation.html",
              "burner output, a generator that will not hold load, or an appliance that short "
              "cycles. Sizing is a calculation across everything on the run, done before the "
              "trench.",
-             "Extreme Heating, Air, Plumbing calculates combined BTU demand across every "
-             "appliance on a gas run before sizing new pipe, so that simultaneous use does not "
-             "starve the line."]),
-        sec("Do I need a permit to install a gas line?",
-            ["Yes for most new gas piping, and the authority that issues it depends on where "
-             "you are. Greene County permits "
-             "<a href=\"/locations/beavercreek\">Beavercreek</a> while Fairborn and Xenia next "
-             "door issue their own, and the City of Dayton runs its own plumbing inspection. "
-             "Extreme pulls the permit and closes out the inspection.",
-             "Greene County's Department of Building Regulation issues permits for "
-             "Beavercreek, while Fairborn, Xenia, Cedarville and Yellow Springs issue their "
-             "own."]),
+             "We add up the BTU demand of every appliance on the line first, so that running "
+             "two of them at once does not starve either."]),
+        sec("Do I need a permit?",
+            ["For most new gas piping, yes, and who issues it depends on where you are. Greene "
+             "County permits <a href=\"/locations/beavercreek\">Beavercreek</a> while Fairborn "
+             "and Xenia next door issue their own, and the City of Dayton runs its own "
+             "plumbing inspection.",
+             "We pull it and close out the inspection either way, so which side of a township "
+             "line your house sits on is not your problem to work out."]),
     ],
     sectionsTail=[
         sec("Can you convert my range or dryer from electric to gas?",
@@ -4426,11 +4272,11 @@ geo(PLUMB_FAMILIES, "gas-line/installation.html",
          "Every gas line project is quoted flat and approved before work starts, after someone "
          "has seen the run, the distance and what the ground between looks like. Distance and "
          "access change the answer enough that a phone estimate would not be reliable."),
-        ("Do I need a permit for a gas line in Ohio?",
-         "Yes for most new gas piping, and the issuing authority varies across this service "
-         "area. Greene County permits Beavercreek while several neighboring communities issue "
-         "their own, and the City of Dayton runs its own plumbing inspection. Extreme pulls "
-         "the permit and closes out the inspection."),
+        ("Do I need a permit for a gas line?",
+         "For most new gas piping, yes, and who issues it changes from one town to the next "
+         "around here. Greene County permits Beavercreek, several neighbouring communities "
+         "issue their own, and the City of Dayton runs its own plumbing inspection. We pull it "
+         "and close it out."),
         ("Can you run a gas line to a detached garage?",
          "Yes. It is a buried exterior run with utility locates first, sized to whatever is "
          "going in the garage, with a shutoff at the appliance and a pressure test on the "

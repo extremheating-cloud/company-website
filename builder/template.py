@@ -6,6 +6,7 @@ matching the conventions of the existing service-page files.
 
 Single source of truth for phone + asset URLs lives here.
 """
+import re
 
 PHONE_TEL = "tel:18445847399"
 PHONE_DISPLAY = "(844) 584-7399"
@@ -488,8 +489,12 @@ overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
 box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:0 0 10px;font-size:11px;font-weight:800;
-letter-spacing:1.6px;text-transform:uppercase;color:var(--muted)}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
 .xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
 border-bottom:1px solid #EFECF3}
 .xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
@@ -515,9 +520,7 @@ color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
 @media (max-width:699px), (min-width:810px) and (max-width:1090px){
   .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
   .xsp-table{min-width:0;display:block;font-size:14px}
-  /* display:block on the table takes the caption's width with it, so it wraps a word
-     per line unless it is given the box back. */
-  .xsp-table caption{display:block;width:100%;padding-bottom:12px;letter-spacing:1.2px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
   .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
   clip-path:inset(50%);white-space:nowrap}
   .xsp-table tbody{display:block}
@@ -527,14 +530,15 @@ color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
   /* The row header becomes the card title. */
   .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
   font-size:15px;color:var(--ink);padding:12px 16px}
-  .xsp-table tbody td{display:flex;gap:14px;align-items:baseline;justify-content:space-between;
-  border-bottom:1px solid #F5F3F8;padding:10px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
   .xsp-table tbody tr td:last-child{border-bottom:0}
-  .xsp-table tbody td::before{content:attr(data-label);flex:0 0 38%;font-weight:800;font-size:11.5px;
-  letter-spacing:.5px;text-transform:uppercase;color:var(--purple);line-height:1.5}
-  /* Left-aligned, not right. A right-aligned value that wraps leaves a ragged left
-     edge against the label column and reads as broken rather than as a pair. */
-  .xsp-table tbody td>span{flex:1;text-align:left}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
 }
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
@@ -871,18 +875,30 @@ def table_block(t):
             f'<td role="cell" data-label="{cols[i + 1]}"><span>{c}</span></td>'
             for i, c in enumerate(cells[1:]))
         rows.append(f'<tr role="row">{first}{rest}</tr>')
+    # The title is a sub-headline ABOVE the box, not a <caption> inside it. As a
+    # caption it broke twice: in card mode the table is display:block, which took the
+    # caption's width with it and stacked the words one per line; and on desktop the
+    # wrapper's overflow clipped the left edge of any caption wider than the table.
+    # Out here it is just a line of text, so it can neither be squeezed nor clipped.
+    # It still names the table for assistive tech, via aria-labelledby rather than the
+    # caption element.
     caption = t.get("caption")
-    cap = f"<caption>{caption}</caption>" if caption else ""
+    label = ""
+    labelled = ""
+    if caption:
+        tid = "tbl-" + re.sub(r"[^a-z0-9]+", "-", re.sub(r"<[^>]+>", "", caption).lower()).strip("-")[:48]
+        label = f'<p class="xsp-tablelabel" id="{tid}">{caption}</p>'
+        labelled = f' aria-labelledby="{tid}"'
     # tabindex makes the scroll box reachable from the keyboard, which is the whole
-    # point of a scrolling container. role="region" only goes on when there is a
-    # caption to name it — an unnamed region is worse than no region.
-    region = f' role="region" aria-label="{caption}"' if caption else ""
+    # point of a scrolling container. role="region" only goes on when there is a name
+    # to give it — an unnamed region is worse than no region.
+    region = f' role="region"{labelled}' if caption else ""
     takeaway = f'<p class="xsp-takeaway">{t["takeaway"]}</p>' if t.get("takeaway") else ""
     # No inline overflow-x here any more: under 700px the CSS sets overflow:visible so
     # the cards flow, and an inline style would win over it and reinstate the scroller.
-    return (f'{takeaway}<div class="xsp-tablewrap" '
+    return (f'{takeaway}{label}<div class="xsp-tablewrap" '
             f'tabindex="0"{region}>'
-            f'<table class="xsp-table" role="table">{cap}'
+            f'<table class="xsp-table" role="table"{labelled}>'
             f"<thead><tr>{head}</tr></thead><tbody>{''.join(rows)}</tbody>"
             f"</table></div>")
 

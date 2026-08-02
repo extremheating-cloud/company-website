@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><a href="/heat-pump">Heat Pump Services</a><span class="sep">›</span><span class="cur">Installation</span></div>
       <h1 class="xsp-h1">Heat pump installation in <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs and replaces residential heat pumps across the Dayton and Cincinnati, Ohio metros, including dual-fuel systems paired with a gas furnace. Sizing and backup heat are set from a heat-loss calculation on the specific house. The company has completed 25,000+ jobs in over 20 years of local ownership.</p></div>
+      <div class="xsp-answer" id="answer"><p>We set both the capacity and the backup heat from a heat-loss calculation on your house, so the system is built around your coldest nights rather than an average one. We will price a dual-fuel setup against a straight heat pump.</p></div>
       <p class="xsp-intro">Right-sized, high-efficiency heat pumps installed clean and to code. Heat-loss sizing, backup heat configured at commissioning, and flexible financing.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Estimate</a>
@@ -477,7 +535,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">Signs a new heat pump makes sense.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>System is 12+ years old</div><div class="xsp-check"><span class="c">✓</span>Repairs are getting frequent</div><div class="xsp-check"><span class="c">✓</span>Backup heat runs constantly</div><div class="xsp-check"><span class="c">✓</span>Bills climbing year over year</div><div class="xsp-check"><span class="c">✓</span>Rooms never quite even out</div><div class="xsp-check"><span class="c">✓</span>Compressor or reversing valve failure</div></div>
   <div class="xsp-callout">Weighing a heat pump against a furnace and AC? Call <a href="tel:18445847399">(844) 584-7399</a> — we'll price both and explain the trade-offs for your home.</div>
-</div><div class="xsp-section"><h2 class="xsp-h2">How is a heat pump sized for an Ohio winter?</h2><p class="xsp-prose">Sizing starts from the home's heat loss at the coldest outdoor temperature the local design data uses, not from the tonnage on the old unit. A heat pump sized only for the cooling load will lean on backup heat all winter. One sized for heating alone will short cycle every summer. If the existing system is not dead yet, <a href="/heat-pump-repair">heat pump repair</a> may still be the better money this season.</p></div><div class="xsp-section" id="backup-heat"><h2 class="xsp-h2">What backup heat does a heat pump need?</h2><p class="xsp-prose">Every heat pump in this climate is installed with a plan for the coldest nights. There are three configurations, and which one fits depends mostly on whether natural gas is already at the house. Where a gas furnace is worth keeping, <a href="/furnace-installation">furnace installation</a> and the heat pump get quoted together as a dual-fuel system.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing configures backup heat on every heat pump installation across the Dayton and Cincinnati metros, in 1 of 3 arrangements.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Backup heat options on a residential heat pump."><table class="xsp-table"><caption>Backup heat options on a residential heat pump.</caption><thead><tr><th scope="col">Factor</th><th scope="col">Electric backup heat</th><th scope="col">Dual fuel, gas furnace backup</th><th scope="col">No backup heat</th></tr></thead><tbody><tr><th scope="row">How the backup works</th><td>Electric resistance elements sit in the air handler</td><td>A gas furnace takes over below a set outdoor temperature</td><td>The heat pump carries the whole heating load</td></tr><tr><th scope="row">Existing gas service</th><td>Not needed</td><td>Required at the house</td><td>Not needed</td></tr><tr><th scope="row">Running cost on the coldest nights</th><td>Highest of the three, electric resistance heat is expensive</td><td>Lower, the furnace carries the coldest hours</td><td>Depends entirely on the unit's rated low-temperature capacity</td></tr><tr><th scope="row">Control setup</th><td>Thermostat staging set at commissioning</td><td>A balance-point temperature set at commissioning</td><td>None</td></tr><tr><th scope="row">Upfront cost</th><td>Lowest of the three</td><td>Highest of the three</td><td>Middle of the three</td></tr><tr><th scope="row">Best fit</th><td>All-electric homes, and homes with no gas main</td><td>Homes with a gas furnace worth keeping</td><td>Well-insulated homes with a cold-climate rated unit</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Can a heat pump replace my furnace and air conditioner?</h2><p class="xsp-prose">In many homes, yes. One outdoor unit and one indoor coil handle both seasons, which is why a heat pump replaces two pieces of equipment with one. Whether it is the right call depends on the ductwork, the insulation, and whether gas is already at the house. The <a href="/heat-pump">heat pump services overview</a> carries the full system comparison.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does a heat pump installation include?</h2><p class="xsp-prose">Removal and disposal of the old equipment, the outdoor unit set and leveled, the line set and electrical, the indoor air handler or coil, refrigerant charge verified by weight and subcooling, backup heat wired and staged, and thermostat configuration. Commissioning readings are taken before the crew leaves.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">How is a heat pump sized for an Ohio winter?</h2><p class="xsp-prose">Sizing starts from the home's heat loss at the coldest outdoor temperature the local design data uses, not from the tonnage on the old unit. A heat pump sized only for the cooling load will lean on backup heat all winter. One sized for heating alone will short cycle every summer. If the existing system is not dead yet, <a href="/heat-pump-repair">heat pump repair</a> may still be the better money this season.</p></div><div class="xsp-section" id="backup-heat"><h2 class="xsp-h2">What backup heat does a heat pump need?</h2><p class="xsp-prose">Every heat pump in this climate is installed with a plan for the coldest nights. There are three configurations, and which one fits depends mostly on whether natural gas is already at the house. Where a gas furnace is worth keeping, <a href="/furnace-installation">furnace installation</a> and the heat pump get quoted together as a dual-fuel system.</p><p class="xsp-takeaway">Every heat pump we install gets its backup heat configured one of three ways, and which one you want mostly depends on whether gas is already at the house.</p><p class="xsp-tablelabel" id="tbl-backup-heat-options-on-a-residential-heat-pump">Backup heat options on a residential heat pump.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-backup-heat-options-on-a-residential-heat-pump"><table class="xsp-table" role="table" aria-labelledby="tbl-backup-heat-options-on-a-residential-heat-pump"><thead><tr><th scope="col">Factor</th><th scope="col">Electric backup heat</th><th scope="col">Dual fuel, gas furnace backup</th><th scope="col">No backup heat</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">How the backup works</th><td role="cell" data-label="Electric backup heat"><span>Electric resistance elements sit in the air handler</span></td><td role="cell" data-label="Dual fuel, gas furnace backup"><span>A gas furnace takes over below a set outdoor temperature</span></td><td role="cell" data-label="No backup heat"><span>The heat pump carries the whole heating load</span></td></tr><tr role="row"><th scope="row" role="rowheader">Existing gas service</th><td role="cell" data-label="Electric backup heat"><span>Not needed</span></td><td role="cell" data-label="Dual fuel, gas furnace backup"><span>Required at the house</span></td><td role="cell" data-label="No backup heat"><span>Not needed</span></td></tr><tr role="row"><th scope="row" role="rowheader">Running cost on the coldest nights</th><td role="cell" data-label="Electric backup heat"><span>Highest of the three, electric resistance heat is expensive</span></td><td role="cell" data-label="Dual fuel, gas furnace backup"><span>Lower, the furnace carries the coldest hours</span></td><td role="cell" data-label="No backup heat"><span>Depends entirely on the unit's rated low-temperature capacity</span></td></tr><tr role="row"><th scope="row" role="rowheader">Control setup</th><td role="cell" data-label="Electric backup heat"><span>Thermostat staging set at commissioning</span></td><td role="cell" data-label="Dual fuel, gas furnace backup"><span>A balance-point temperature set at commissioning</span></td><td role="cell" data-label="No backup heat"><span>None</span></td></tr><tr role="row"><th scope="row" role="rowheader">Upfront cost</th><td role="cell" data-label="Electric backup heat"><span>Lowest of the three</span></td><td role="cell" data-label="Dual fuel, gas furnace backup"><span>Highest of the three</span></td><td role="cell" data-label="No backup heat"><span>Middle of the three</span></td></tr><tr role="row"><th scope="row" role="rowheader">Best fit</th><td role="cell" data-label="Electric backup heat"><span>All-electric homes, and homes with no gas main</span></td><td role="cell" data-label="Dual fuel, gas furnace backup"><span>Homes with a gas furnace worth keeping</span></td><td role="cell" data-label="No backup heat"><span>Well-insulated homes with a cold-climate rated unit</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Can a heat pump replace my furnace and air conditioner?</h2><p class="xsp-prose">In many homes, yes. One outdoor unit and one indoor coil handle both seasons, which is why a heat pump replaces two pieces of equipment with one. Whether it is the right call depends on the ductwork, the insulation, and whether gas is already at the house. The <a href="/heat-pump">heat pump services overview</a> carries the full system comparison.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does the installation include?</h2><p class="xsp-prose">Removing and disposing of your old equipment, the outdoor unit set and levelled, the line set and electrical, the indoor air handler or coil, refrigerant charge verified by weight and subcooling, backup heat wired and staged, and the thermostat configured. We take commissioning readings before we leave.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
@@ -488,14 +546,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="t">Not ready to replace?</div>
   <div class="d">If the system still has years in it, a repair or a tune-up may be the better money this season. We'll tell you which case you're in.</div>
   <a href="/heat-pump-repair">Heat Pump Repair →</a>
-</div><div class="xsp-section"><h2 class="xsp-h2">How long does a heat pump replacement take?</h2><p class="xsp-prose">Most residential heat pump replacements are a single-day job, and installation usually happens within a day or two of the estimate. A dual-fuel conversion that also replaces the furnace, or a job that adds an electrical circuit, runs into a second day.</p></div><div class="xsp-section"><h2 class="xsp-h2">Can I finance a heat pump replacement?</h2><p class="xsp-prose">Financing is available on qualifying systems through GoodLeap, Synchrony, and Wright-Patt Credit Union, with payment scenarios shown alongside the written quote. Terms are on our <a href="/financing-options">HVAC financing options</a> page. The Section 25C and 25D federal tax credits both expired on 31 December 2025, so nothing on this page depends on one. A year-round system wants two seasonal visits, which the <a href="/maintenance">X-Plan maintenance membership</a> covers.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/maintenance">
+</div><div class="xsp-section"><h2 class="xsp-h2">How long does a heat pump replacement take?</h2><p class="xsp-prose">Most residential heat pump replacements are a single-day job, and installation usually happens within a day or two of the estimate. A dual-fuel conversion that also replaces the furnace, or a job that adds an electrical circuit, runs into a second day.</p></div><div class="xsp-section"><h2 class="xsp-h2">Can I finance it?</h2><p class="xsp-prose">Yes, on qualifying systems, through GoodLeap, Synchrony and Wright-Patt Credit Union, with payment scenarios shown next to the written quote. Terms are on the <a href="/financing-options">financing page</a>. One thing to know: the Section 25C and 25D federal tax credits both expired on 31 December 2025, so no number we give you leans on one. Afterwards, <a href="/maintenance">X-Plan</a> covers the two seasonal visits a year-round system wants.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Plus a 5-year warranty on repairs and priority scheduling.</div><div class="lm">Explore X-Plan →</div>
 </a></div><div>
   <div class="xsp-eyebrow">INSTALLATION QUESTIONS</div>
   <h2 class="xsp-h2">What else do homeowners ask before installing a heat pump?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
     <button type="button" aria-expanded="true"><span>Will a heat pump keep up in an Ohio winter?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">It keeps up when it is sized for the home's actual heat loss and the backup heat is configured for the coldest nights. Extreme Heating, Air, Plumbing sets both from a heat-loss calculation rather than from the size of the old system.</div>
+    <div class="a">It will, when it is sized for your home's actual heat loss and the backup heat is set up for the coldest nights. We set both from the heat-loss calculation rather than from the size of whatever is out there now.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>What is a dual-fuel system?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">A heat pump paired with a gas furnace. The heat pump handles the mild and moderate hours, and the furnace takes over below a set outdoor temperature called the balance point. The changeover is automatic.</div>

@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/plumbing/services">Plumbing</a><span class="sep">›</span><a href="/plumbing/sump-pump/overview">Sump Pump Services</a><span class="sep">›</span><span class="cur">Installation</span></div>
       <h1 class="xsp-h1">Sump pump and battery backup installation in <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs primary sump pumps, battery backup systems and high-water alarms in homes across the Dayton and Cincinnati, Ohio metros. Pumps are sized against the pit, the discharge height and the local water table rather than a horsepower rating. A residential sump pump lasts about 7 to 10 years.</p></div>
+      <div class="xsp-answer" id="answer"><p>Primary pumps, battery backups and high-water alarms. We size against your pit, how high the discharge has to lift and how fast water comes in, rather than the horsepower on the box. An oversized pump short-cycles itself to death.</p></div>
       <p class="xsp-intro">The week after a storm is when everyone calls. The week before is when it is cheap to fix.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Estimate</a>
@@ -477,7 +535,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">When installation beats another repair.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Pump is 7+ years old</div><div class="xsp-check"><span class="c">✓</span>Basement is finished</div><div class="xsp-check"><span class="c">✓</span>Power fails in storms</div><div class="xsp-check"><span class="c">✓</span>Pit too small or shallow</div><div class="xsp-check"><span class="c">✓</span>No high-water alarm</div><div class="xsp-check"><span class="c">✓</span>History of close calls</div></div>
   <div class="xsp-callout">The best time to upgrade is before the water table rises. Call <a href="tel:18445847399">(844) 584-7399</a> for honest sizing.</div>
-</div><div class="xsp-section"><h2 class="xsp-h2">When is it time to replace a sump pump instead of repairing it?</h2><p class="xsp-prose">At about seven years, regardless of how it sounds. Also when the motor or impeller has failed, when the pump cycles constantly because it is undersized, when the basement is finished and the consequence of a failure has changed, or when there is no backup and the power goes out in storms. Where the fault is a float or a check valve, <a href="/plumbing/sump-pump/repair">repairing it</a> is the cheaper call.</p></div><div class="xsp-section"><h2 class="xsp-h2">What size sump pump do I need?</h2><p class="xsp-prose">Not the biggest one on the shelf. Sizing works from three things: how much water the pit takes in during a real rain event, how high the discharge has to lift it, and how far it runs horizontally. An oversized pump short-cycles and wears out early. An undersized one loses the race.</p><p class="xsp-prose">Extreme Heating, Air, Plumbing sizes replacement sump pumps from pit inflow, discharge lift and run length rather than from the horsepower rating on the unit, under Ohio plumbing license #13557.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does a sump pump installation include?</h2><p class="xsp-prose">The old pump comes out, the pit is cleaned of the silt and gravel that shortens pump life, the new pump is set with a new check valve and correctly routed discharge, a high-water alarm goes in, and the whole system is flood-tested through repeated full cycles before anyone leaves. Battery backups are tested on battery, not just on line power.</p><p class="xsp-prose">Every sump pump installed by Extreme Heating, Air, Plumbing is flood-tested through full cycles, including battery backups tested on battery power, before the visit ends.</p></div><div class="xsp-section"><h2 class="xsp-h2">How does a battery backup sump pump work?</h2><p class="xsp-prose">A second pump sits above the primary in the same pit, wired to its own battery and charger. When the power fails or the primary cannot keep up, the backup starts on its own. Runtime depends on the battery and how often the pump has to cycle, which is why the battery is the part to check annually.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">When is it time to replace a sump pump instead of repairing it?</h2><p class="xsp-prose">At about seven years, regardless of how it sounds. Also when the motor or impeller has failed, when the pump cycles constantly because it is undersized, when the basement is finished and the consequence of a failure has changed, or when there is no backup and the power goes out in storms. Where the fault is a float or a check valve, <a href="/plumbing/sump-pump/repair">repairing it</a> is the cheaper call.</p></div><div class="xsp-section"><h2 class="xsp-h2">What size sump pump do I need?</h2><p class="xsp-prose">Not the biggest one on the shelf. Sizing works from three things: how much water the pit takes in during a real rain event, how high the discharge has to lift it, and how far it runs horizontally. An oversized pump short-cycles and wears out early. An undersized one loses the race.</p><p class="xsp-prose">Those three numbers are what we work from, under Ohio plumbing license #13557. The horsepower on the label tells you almost nothing on its own.</p></div><div class="xsp-section"><h2 class="xsp-h2">What does a sump pump installation include?</h2><p class="xsp-prose">The old pump comes out, the pit is cleaned of the silt and gravel that shortens pump life, the new pump is set with a new check valve and correctly routed discharge, a high-water alarm goes in, and the whole system is flood-tested through repeated full cycles before anyone leaves. Battery backups get tested on battery, not just on line power.</p><p class="xsp-prose">That last bit matters. A backup that has only ever been tested plugged in has not been tested at all.</p></div><div class="xsp-section"><h2 class="xsp-h2">How does a battery backup sump pump work?</h2><p class="xsp-prose">A second pump sits above the primary in the same pit, wired to its own battery and charger. When the power fails or the primary cannot keep up, the backup starts on its own. Runtime depends on the battery and how often the pump has to cycle, which is why the battery is the part to check annually.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
@@ -488,7 +546,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="t">Add a battery backup?</div>
   <div class="d">Storms that flood basements also knock out power — a backup keeps pumping when the grid doesn't.</div>
   <a href="/plumbing/sump-pump/overview">Sump Pump Overview →</a>
-</div><div class="xsp-section"><h2 class="xsp-h2">Should I add a water alarm or a second pit?</h2><p class="xsp-prose">A high-water alarm is inexpensive and tells you a pump has stopped keeping up before the water reaches the floor. A second pit is a bigger conversation and belongs to homes with genuine inflow problems rather than pump problems. We will say which one you have. The <a href="/plumbing/sump-pump/overview">sump pump services overview</a> covers the pump types side by side.</p></div><div class="xsp-section"><h2 class="xsp-h2">Where does the discharge line go?</h2><p class="xsp-prose">Away from the foundation, and not into the sanitary sewer. Storm water dumped into a sanitary line is a common cause of <a href="/plumbing/sewer-line/cleaning">basement backups during heavy rain</a> and it is prohibited in most local jurisdictions. Discharge routing is part of the install, including freeze protection on the exterior run.</p></div><div class="xsp-section"><h2 class="xsp-h2">How long does a sump pump installation take?</h2><p class="xsp-prose">A straight replacement in an existing pit is typically a few hours. Adding a battery backup, replacing the discharge line, or cutting a new pit takes longer. Extreme runs 90% same-day service across the Dayton and Cincinnati metros, and installations are usually scheduled within a day or two of the quote. Call <a href="tel:18445847399">(844) 584-7399</a>, or see <a href="/financing-options">financing</a> on larger jobs. All work is by <a href="/plumbing/services">licensed Ohio plumbers</a>.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
+</div><div class="xsp-section"><h2 class="xsp-h2">Should I add a water alarm or a second pit?</h2><p class="xsp-prose">A high-water alarm is inexpensive and tells you a pump has stopped keeping up before the water reaches the floor. A second pit is a bigger conversation and belongs to homes with genuine inflow problems rather than pump problems. We will say which one you have. The <a href="/plumbing/sump-pump/overview">sump pump services overview</a> covers the pump types side by side.</p></div><div class="xsp-section"><h2 class="xsp-h2">Where does the discharge line go?</h2><p class="xsp-prose">Away from the foundation, and not into the sanitary sewer. Storm water dumped into a sanitary line is a common cause of <a href="/plumbing/sewer-line/cleaning">basement backups during heavy rain</a> and it is prohibited in most local jurisdictions. Discharge routing is part of the install, including freeze protection on the exterior run.</p></div><div class="xsp-section"><h2 class="xsp-h2">How long does the installation take?</h2><p class="xsp-prose">A straight replacement in an existing pit is a few hours. Adding a battery backup, replacing the discharge line or cutting a new pit takes longer. We usually schedule within a day or two of the quote. Call <a href="tel:18445847399">(844) 584-7399</a>, or see <a href="/financing-options">financing</a> on larger jobs. Every visit is a <a href="/plumbing/services">licensed Ohio plumber</a>.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav js-schedule" href="#">
   <div class="t">Need plumbing help fast?</div><div class="d">Book service online and we'll get a plumber out as soon as possible.</div><div class="lm">Schedule Service →</div>
 </a></div><div>
   <div class="xsp-eyebrow">INSTALLATION QUESTIONS</div>
@@ -498,7 +556,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div class="a">Every installation is quoted flat and approved before work begins, after someone has seen the pit, the discharge run and the water table conditions. Those three variables change the answer enough that a number over the phone would not be honest.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>How fast can you install a sump pump?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Most installations are scheduled within a day or two of the quote, and Extreme Heating, Air, Plumbing runs 90% same-day service across the Dayton and Cincinnati metros. The week after a major storm is the exception, when demand spikes across both metros at once.</div>
+    <div class="a">Most get scheduled within a day or two of the quote. The week after a major storm is the exception, when every basement in the area calls at once.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Do I need a battery backup?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">If the basement is finished, or if your power goes out during storms, yes. Heavy rain events cause both the flooding and the outage, and a primary pump with no electricity does nothing at all.</div>

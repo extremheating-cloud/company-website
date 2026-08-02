@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><span class="cur">Humidifier Services</span></div>
       <h1 class="xsp-h1">Whole-home humidifier installation for <em>Ohio winters</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs and services whole-home humidifiers on residential furnaces and air handlers across the Dayton and Cincinnati, Ohio metros. The company fits bypass, fan-powered and steam models, sized to the house rather than the furnace. Target indoor humidity through an Ohio winter is 30 to 40%.</p></div>
+      <div class="xsp-answer" id="answer"><p>Static shocks, cracked trim, waking up congested. That is what an Ohio winter does to indoor air. We fit bypass, fan-powered and steam humidifiers, sized to your house, and set them to hold 30 to 40% through the heating season.</p></div>
       <p class="xsp-intro">Whole-home humidifier installation and service. End dry winter air, static shocks, and cracked wood floors.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
@@ -490,14 +548,14 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Dehumidification</span><br><span class="d">Summer moisture control for basements and whole homes.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">Why is my house so dry every winter?</h2><p class="xsp-prose">Cold outdoor air holds very little moisture, and heating it makes the relative humidity indoors drop further. A leaky house pulls more of that dry air in, so the driest houses in a Dayton January are usually the oldest ones. Nothing about the <a href="/furnace-heating">furnace</a> causes it.</p></div><div class="xsp-section"><h2 class="xsp-h2">What humidity should a house hold in winter?</h2><p class="xsp-prose">Between 30 and 40% through most of the heating season, dropping toward 30% in a hard freeze. Higher than that condenses on cold window glass and does damage inside the wall behind it, which is why a whole-home humidifier is set by outdoor temperature rather than left on one number.</p></div><div class="xsp-section"><h2 class="xsp-h2">Which whole-home humidifier type fits my furnace?</h2><p class="xsp-prose">Three types cover almost every house, and the choice comes down to how much moisture the house needs and how the heating system delivers air. Bypass units are the simplest. Steam units are the only ones that do not care whether the furnace is running.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing fits bypass, fan-powered and steam humidifiers, and matches the type to the size of the house and the kind of heating system installed.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Whole-home humidifier types compared, as Extreme Heating, Air, Plumbing sizes them for Dayton and Cincinnati homes."><table class="xsp-table"><caption>Whole-home humidifier types compared, as Extreme Heating, Air, Plumbing sizes them for Dayton and Cincinnati homes.</caption><thead><tr><th scope="col">Factor</th><th scope="col">Bypass</th><th scope="col">Fan-powered</th><th scope="col">Steam</th></tr></thead><tbody><tr><th scope="row">How it works</th><td>Furnace airflow is routed across a wet pad</td><td>A built-in fan pushes air across the wet pad</td><td>Water is boiled and the vapour is injected into the supply duct</td></tr><tr><th scope="row">Moisture output</th><td>Lowest of the three</td><td>Higher than bypass</td><td>Highest, by a wide margin</td></tr><tr><th scope="row">Needs the furnace to be running</th><td>Yes, and it needs warm supply air</td><td>Yes, though it works with less airflow</td><td>No, it makes its own heat</td></tr><tr><th scope="row">Fit with a heat pump or air handler</th><td>Poor, supply air is too cool</td><td>Workable in some systems</td><td>Best fit, and usually the only one that performs</td></tr><tr><th scope="row">Best fit</th><td>Smaller, tighter homes with a gas furnace</td><td>Average homes with a gas furnace and limited duct space</td><td>Large homes, very dry homes, and heat pump systems</td></tr><tr><th scope="row">Maintenance</th><td>Annual pad change and cleaning</td><td>Annual pad change and cleaning</td><td>Annual cylinder or canister service</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Is a whole-home humidifier better than portable units?</h2><p class="xsp-prose">For a whole house, yes. A portable unit humidifies one room, needs filling by hand, and gets turned off when it is inconvenient. A whole-home unit plumbs into the water supply, runs off the thermostat or its own control, and treats every room the ductwork reaches, which is also why <a href="/duct-cleaning">air duct cleaning</a> is worth doing first if the ducts have never been cleaned.</p></div><div>
+</div><div class="xsp-section"><h2 class="xsp-h2">Why is my house so dry every winter?</h2><p class="xsp-prose">Cold outdoor air holds very little moisture, and heating it makes the relative humidity indoors drop further. A leaky house pulls more of that dry air in, so the driest houses in a Dayton January are usually the oldest ones. Nothing about the <a href="/furnace-heating">furnace</a> causes it.</p></div><div class="xsp-section"><h2 class="xsp-h2">What humidity should a house hold in winter?</h2><p class="xsp-prose">Between 30 and 40% through most of the heating season, dropping toward 30% in a hard freeze. Higher than that condenses on cold window glass and does damage inside the wall behind it, which is why a whole-home humidifier is set by outdoor temperature rather than left on one number.</p></div><div class="xsp-section"><h2 class="xsp-h2">Which whole-home humidifier type fits my furnace?</h2><p class="xsp-prose">Three types cover almost every house, and the choice comes down to how much moisture the house needs and how the heating system delivers air. Bypass units are the simplest. Steam units are the only ones that do not care whether the furnace is running.</p><p class="xsp-takeaway">We match the type to the size of your house and the kind of heating system you have, not to whatever is on the van that day.</p><p class="xsp-tablelabel" id="tbl-whole-home-humidifier-types-compared">Whole-home humidifier types compared.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-whole-home-humidifier-types-compared"><table class="xsp-table" role="table" aria-labelledby="tbl-whole-home-humidifier-types-compared"><thead><tr><th scope="col">Factor</th><th scope="col">Bypass</th><th scope="col">Fan-powered</th><th scope="col">Steam</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">How it works</th><td role="cell" data-label="Bypass"><span>Furnace airflow is routed across a wet pad</span></td><td role="cell" data-label="Fan-powered"><span>A built-in fan pushes air across the wet pad</span></td><td role="cell" data-label="Steam"><span>Water is boiled and the vapour is injected into the supply duct</span></td></tr><tr role="row"><th scope="row" role="rowheader">Moisture output</th><td role="cell" data-label="Bypass"><span>Lowest of the three</span></td><td role="cell" data-label="Fan-powered"><span>Higher than bypass</span></td><td role="cell" data-label="Steam"><span>Highest, by a wide margin</span></td></tr><tr role="row"><th scope="row" role="rowheader">Needs the furnace to be running</th><td role="cell" data-label="Bypass"><span>Yes, and it needs warm supply air</span></td><td role="cell" data-label="Fan-powered"><span>Yes, though it works with less airflow</span></td><td role="cell" data-label="Steam"><span>No, it makes its own heat</span></td></tr><tr role="row"><th scope="row" role="rowheader">Fit with a heat pump or air handler</th><td role="cell" data-label="Bypass"><span>Poor, supply air is too cool</span></td><td role="cell" data-label="Fan-powered"><span>Workable in some systems</span></td><td role="cell" data-label="Steam"><span>Best fit, and usually the only one that performs</span></td></tr><tr role="row"><th scope="row" role="rowheader">Best fit</th><td role="cell" data-label="Bypass"><span>Smaller, tighter homes with a gas furnace</span></td><td role="cell" data-label="Fan-powered"><span>Average homes with a gas furnace and limited duct space</span></td><td role="cell" data-label="Steam"><span>Large homes, very dry homes, and heat pump systems</span></td></tr><tr role="row"><th scope="row" role="rowheader">Maintenance</th><td role="cell" data-label="Bypass"><span>Annual pad change and cleaning</span></td><td role="cell" data-label="Fan-powered"><span>Annual pad change and cleaning</span></td><td role="cell" data-label="Steam"><span>Annual cylinder or canister service</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Is a whole-home humidifier better than portable units?</h2><p class="xsp-prose">For a whole house, yes. A portable unit humidifies one room, needs filling by hand, and gets turned off when it is inconvenient. A whole-home unit plumbs into the water supply, runs off the thermostat or its own control, and treats every room the ductwork reaches, which is also why <a href="/duct-cleaning">air duct cleaning</a> is worth doing first if the ducts have never been cleaned.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
     <div><div class="t">Book in minutes</div><div class="d">Call or schedule online — we confirm your arrival window fast, with same-day service in most cases.</div></div></div><div class="xsp-step"><div class="n">02</div>
     <div><div class="t">Diagnose & quote upfront</div><div class="d">We walk you through what's wrong and your options — flat, upfront pricing you approve first.</div></div></div><div class="xsp-step"><div class="n">03</div>
     <div><div class="t">Comfort, dialed in</div><div class="d">We set target humidity by season and show you how to adjust it.</div></div></div></div>
-</div><div class="xsp-section"><h2 class="xsp-h2">Do whole-home humidifiers need yearly maintenance?</h2><p class="xsp-prose">Yes, once a year. The evaporator pad or the steam canister gets replaced, the water panel and drain get cleaned, and the humidistat gets checked. Skipping it is how a humidifier turns into a mineral-clogged box that runs water down the drain and adds nothing to the air. <a href="/maintenance">X-Plan maintenance membership</a> visits cover it.</p></div><div class="xsp-section"><h2 class="xsp-h2">Does a humidifier help with dry skin and static?</h2><p class="xsp-prose">Static shocks stop almost immediately once indoor humidity gets back above about 30%, because static needs dry air to build up. Dry skin, cracked lips and morning congestion generally ease as well. Wood floors and trim stop opening up at the seams, which is the expensive part.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book humidifier service in Dayton or Cincinnati?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online. Extreme Heating, Air, Plumbing sizes the humidifier to the house before quoting one, and handles about 90% of service calls the same day. Summer is the other half of the problem, and <a href="/indoor-air-quality-solutions">whole-home dehumidification</a> and wider <a href="/indoor-air-quality">indoor air quality services</a> are quoted the same way.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
+</div><div class="xsp-section"><h2 class="xsp-h2">Do whole-home humidifiers need yearly maintenance?</h2><p class="xsp-prose">Yes, once a year. The evaporator pad or the steam canister gets replaced, the water panel and drain get cleaned, and the humidistat gets checked. Skipping it is how a humidifier turns into a mineral-clogged box that runs water down the drain and adds nothing to the air. <a href="/maintenance">X-Plan maintenance membership</a> visits cover it.</p></div><div class="xsp-section"><h2 class="xsp-h2">Does a humidifier help with dry skin and static?</h2><p class="xsp-prose">Static shocks stop almost immediately once indoor humidity gets back above about 30%, because static needs dry air to build up. Dry skin, cracked lips and morning congestion generally ease as well. Wood floors and trim stop opening up at the seams, which is the expensive part.</p></div><div class="xsp-section"><h2 class="xsp-h2">How do I book humidifier service?</h2><p class="xsp-prose">Call <a href="tel:18445847399">(844) 584-7399</a> or schedule online. We size the humidifier to your house before quoting one, and most calls are handled the same day. Summer is the other half of this problem, so <a href="/indoor-air-quality-solutions">whole-home dehumidification</a> and wider <a href="/indoor-air-quality">air quality work</a> get quoted the same way.</p></div><div class="xsp-mbrail xsp-mb"><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
@@ -512,7 +570,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div class="a">Yes, and a steam unit is usually the right choice. Heat pumps deliver cooler supply air than a gas furnace, so a bypass humidifier has too little heat to evaporate much water and underperforms all winter.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>How often does the humidifier pad need changing?</span><span class="tog" aria-hidden="true">+</span></button>
-    <div class="a">Once a heating season for most homes, and more often on very hard water. Extreme Heating, Air, Plumbing handles the pad change and cleaning during X-Plan visits.</div>
+    <div class="a">Once a heating season for most homes, and more often on very hard water. We handle the pad change and cleaning during X-Plan visits.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Does the humidifier run in summer?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">No. The water supply gets shut off and the damper closed at the end of the heating season, then opened again in fall. Leaving it running in summer adds moisture the air conditioner then has to remove.</div>

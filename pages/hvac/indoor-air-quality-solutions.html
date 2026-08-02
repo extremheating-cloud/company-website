@@ -234,30 +234,92 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -283,10 +345,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -447,7 +505,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div>
       <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><a href="/services">Heating & Air</a><span class="sep">›</span><a href="/indoor-air-quality">Indoor Air Quality</a><span class="sep">›</span><span class="cur">Solutions</span></div>
       <h1 class="xsp-h1">Whole-home air quality solutions for <em>Dayton &amp; Cincinnati</em>.</h1>
-      <div class="xsp-answer" id="answer"><p>Extreme Heating, Air, Plumbing installs indoor air quality equipment in Dayton and Cincinnati, Ohio homes across five categories. The five categories are media filtration, UV purification, humidification, dehumidification, and fresh-air ventilation. Equipment is matched to a measured problem in the home rather than sold as a package. Results are verified with before-and-after readings.</p></div>
+      <div class="xsp-answer" id="answer"><p>Five kinds of equipment: media filtration, UV purification, humidifiers, dehumidifiers and fresh-air ventilation. Each one fixes a different problem, so we measure yours first and check the readings again afterwards.</p></div>
       <p class="xsp-intro">Filtration, UV purification, ventilation and humidity control, matched to your home's measured problem rather than sold as a package.</p>
       <div class="xsp-hero-ctas xsp-mb">
         <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
@@ -477,7 +535,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">Match the fix to the problem.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Dust & dander — media filtration</div><div class="xsp-check"><span class="c">✓</span>Odors & VOCs — carbon + ventilation</div><div class="xsp-check"><span class="c">✓</span>Microbes & mold — UV purification</div><div class="xsp-check"><span class="c">✓</span>Dry winter air — whole-home humidifier</div><div class="xsp-check"><span class="c">✓</span>Humid summers — dehumidification</div><div class="xsp-check"><span class="c">✓</span>Stale air — fresh-air ventilation</div></div>
   <div class="xsp-callout">Not sure which applies to your home? Call <a href="tel:18445847399">(844) 584-7399</a> — we diagnose before we recommend.</div>
-</div><div class="xsp-section" id="equipment"><h2 class="xsp-h2">Which air quality equipment fixes which problem?</h2><p class="xsp-prose">Every piece of equipment on this page targets one thing well and most other things badly. A UV lamp is excellent against biological growth on a cold, wet evaporator coil and does nothing for dust. A media filter is the opposite. Matching the equipment to the complaint that prompted the call is most of the work, which is where <a href="/indoor-air-quality">indoor air quality services in Dayton and Cincinnati</a> starts.</p><p class="xsp-takeaway">Extreme Heating, Air, Plumbing installs indoor air quality equipment in 5 categories across the Dayton and Cincinnati metros, each aimed at a different problem in the home.</p><div class="xsp-tablewrap" style="overflow-x:auto" tabindex="0" role="region" aria-label="Indoor air quality equipment: what each option targets."><table class="xsp-table"><caption>Indoor air quality equipment: what each option targets.</caption><thead><tr><th scope="col">Option</th><th scope="col">What it targets</th><th scope="col">Where it installs</th><th scope="col">Service interval</th></tr></thead><tbody><tr><th scope="row">1-inch pleated filter</th><td>Lint, larger dust, and coarse pollen</td><td>The return grille or the filter slot at the air handler</td><td>Changed every 1 to 3 months</td></tr><tr><th scope="row">4-inch or 5-inch media air cleaner</th><td>Fine dust, dander, and pollen, at a higher MERV without choking airflow</td><td>A cabinet added on the return side of the air handler</td><td>Changed every 6 to 12 months</td></tr><tr><th scope="row">UV lamp</th><td>Biological growth on the evaporator coil and in the drain pan</td><td>Inside the air handler, aimed at the coil</td><td>Lamp replaced about every 12 months</td></tr><tr><th scope="row">Carbon filtration</th><td>Cooking odors, smoke, and some volatile organic compounds</td><td>In the media cabinet or a dedicated section of return duct</td><td>Media replaced on the manufacturer's schedule</td></tr><tr><th scope="row">Whole-home humidifier</th><td>Dry winter air below 30% relative humidity</td><td>Mounted on or bypassed across the furnace, plumbed to a water line</td><td>Pad replaced each heating season</td></tr><tr><th scope="row">Whole-home dehumidifier</th><td>Summer humidity above 50%, and damp basements</td><td>Ducted alongside the air handler, or standalone in the basement</td><td>Filter checked twice a year</td></tr><tr><th scope="row">Fresh-air ventilation</th><td>Stale air and carbon dioxide buildup in tightly built homes</td><td>A dedicated duct from outdoors into the return</td><td>Damper and filter checked twice a year</td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Do UV lights in an HVAC system work?</h2><p class="xsp-prose">Against biological growth on the evaporator coil and in the drain pan, yes, when the lamp is sized and aimed correctly. A cooling coil is cold and wet all summer, which is exactly where mold grows in a duct system. UV does not remove dust, dander, or pollen, so a UV lamp sold as an allergy fix is being sold for the wrong job. <a href="/importance-iaq">Why indoor air quality matters</a> covers what indoor air actually carries.</p></div><div class="xsp-section"><h2 class="xsp-h2">What MERV rating can my system handle?</h2><p class="xsp-prose">The highest one the duct system can move air through. A 1-inch slot on a residential furnace generally tops out around MERV 8 to 11. Pushing MERV 13 through a 1-inch filter raises static pressure, drops airflow, and can freeze the coil in summer or trip the high limit in winter. More of this ground is covered in the <a href="/iaq-faq">indoor air quality FAQ</a>.</p><h3 class="xsp-h3">The upgrade that makes higher MERV safe</h3><p class="xsp-prose">A 4-inch or 5-inch media cabinet has far more filter surface area, so it holds a higher MERV at a lower pressure drop. That cabinet, rather than a thicker filter in the same slot, is what makes MERV 13 realistic in a house. A leaky return pulls unfiltered air in past all of it, which is why <a href="/duct-cleaning">air duct cleaning</a> and sealing come first.</p></div><div class="xsp-section"><h2 class="xsp-h2">Do I need a whole-home humidifier or a dehumidifier?</h2><p class="xsp-prose">In the Dayton and Cincinnati metros, most homes need both at different times of year. Winter heating drives indoor relative humidity below 30%, which is what causes static, cracked trim, and dry sinuses. Summer pushes basements above 50%, which is where musty smells and mold start. <a href="/humidifier">Whole-home humidifier services</a> cover the winter half.</p><h3 class="xsp-h3">The number to aim at</h3><p class="xsp-prose">Indoor relative humidity between 30% and 50% is the range that keeps mold, dust mites, and dry air problems all in check at once. Anything held above 60% for long enough feeds mold growth.</p></div><div>
+</div><div class="xsp-section" id="equipment"><h2 class="xsp-h2">Which air quality equipment fixes which problem?</h2><p class="xsp-prose">Every piece of equipment on this page targets one thing well and most other things badly. A UV lamp is excellent against biological growth on a cold, wet evaporator coil and does nothing for dust. A media filter is the opposite. Matching the equipment to the complaint that prompted the call is most of the work, which is where <a href="/indoor-air-quality">indoor air quality services in Dayton and Cincinnati</a> starts.</p><p class="xsp-takeaway">There are five categories of equipment here and each one is aimed at a different problem, which is why buying before you know the problem usually disappoints.</p><p class="xsp-tablelabel" id="tbl-indoor-air-quality-equipment-what-each-option-ta">Indoor air quality equipment: what each option targets.</p><div class="xsp-tablewrap" tabindex="0" role="region" aria-labelledby="tbl-indoor-air-quality-equipment-what-each-option-ta"><table class="xsp-table" role="table" aria-labelledby="tbl-indoor-air-quality-equipment-what-each-option-ta"><thead><tr><th scope="col">Option</th><th scope="col">What it targets</th><th scope="col">Where it installs</th><th scope="col">Service interval</th></tr></thead><tbody><tr role="row"><th scope="row" role="rowheader">1-inch pleated filter</th><td role="cell" data-label="What it targets"><span>Lint, larger dust, and coarse pollen</span></td><td role="cell" data-label="Where it installs"><span>The return grille or the filter slot at the air handler</span></td><td role="cell" data-label="Service interval"><span>Changed every 1 to 3 months</span></td></tr><tr role="row"><th scope="row" role="rowheader">4-inch or 5-inch media air cleaner</th><td role="cell" data-label="What it targets"><span>Fine dust, dander, and pollen, at a higher MERV without choking airflow</span></td><td role="cell" data-label="Where it installs"><span>A cabinet added on the return side of the air handler</span></td><td role="cell" data-label="Service interval"><span>Changed every 6 to 12 months</span></td></tr><tr role="row"><th scope="row" role="rowheader">UV lamp</th><td role="cell" data-label="What it targets"><span>Biological growth on the evaporator coil and in the drain pan</span></td><td role="cell" data-label="Where it installs"><span>Inside the air handler, aimed at the coil</span></td><td role="cell" data-label="Service interval"><span>Lamp replaced about every 12 months</span></td></tr><tr role="row"><th scope="row" role="rowheader">Carbon filtration</th><td role="cell" data-label="What it targets"><span>Cooking odors, smoke, and some volatile organic compounds</span></td><td role="cell" data-label="Where it installs"><span>In the media cabinet or a dedicated section of return duct</span></td><td role="cell" data-label="Service interval"><span>Media replaced on the manufacturer's schedule</span></td></tr><tr role="row"><th scope="row" role="rowheader">Whole-home humidifier</th><td role="cell" data-label="What it targets"><span>Dry winter air below 30% relative humidity</span></td><td role="cell" data-label="Where it installs"><span>Mounted on or bypassed across the furnace, plumbed to a water line</span></td><td role="cell" data-label="Service interval"><span>Pad replaced each heating season</span></td></tr><tr role="row"><th scope="row" role="rowheader">Whole-home dehumidifier</th><td role="cell" data-label="What it targets"><span>Summer humidity above 50%, and damp basements</span></td><td role="cell" data-label="Where it installs"><span>Ducted alongside the air handler, or standalone in the basement</span></td><td role="cell" data-label="Service interval"><span>Filter checked twice a year</span></td></tr><tr role="row"><th scope="row" role="rowheader">Fresh-air ventilation</th><td role="cell" data-label="What it targets"><span>Stale air and carbon dioxide buildup in tightly built homes</span></td><td role="cell" data-label="Where it installs"><span>A dedicated duct from outdoors into the return</span></td><td role="cell" data-label="Service interval"><span>Damper and filter checked twice a year</span></td></tr></tbody></table></div></div><div class="xsp-section"><h2 class="xsp-h2">Do UV lights in an HVAC system work?</h2><p class="xsp-prose">Against biological growth on the evaporator coil and in the drain pan, yes, when the lamp is sized and aimed correctly. A cooling coil is cold and wet all summer, which is exactly where mold grows in a duct system. UV does not remove dust, dander, or pollen, so a UV lamp sold as an allergy fix is being sold for the wrong job. <a href="/importance-iaq">Why indoor air quality matters</a> covers what indoor air actually carries.</p></div><div class="xsp-section"><h2 class="xsp-h2">What MERV rating can my system handle?</h2><p class="xsp-prose">The highest one the duct system can move air through. A 1-inch slot on a residential furnace generally tops out around MERV 8 to 11. Pushing MERV 13 through a 1-inch filter raises static pressure, drops airflow, and can freeze the coil in summer or trip the high limit in winter. More of this ground is covered in the <a href="/iaq-faq">indoor air quality FAQ</a>.</p><h3 class="xsp-h3">The upgrade that makes higher MERV safe</h3><p class="xsp-prose">A 4-inch or 5-inch media cabinet has far more filter surface area, so it holds a higher MERV at a lower pressure drop. That cabinet, rather than a thicker filter in the same slot, is what makes MERV 13 realistic in a house. A leaky return pulls unfiltered air in past all of it, which is why <a href="/duct-cleaning">air duct cleaning</a> and sealing come first.</p></div><div class="xsp-section"><h2 class="xsp-h2">Do I need a whole-home humidifier or a dehumidifier?</h2><p class="xsp-prose">In the Dayton and Cincinnati metros, most homes need both at different times of year. Winter heating drives indoor relative humidity below 30%, which is what causes static, cracked trim, and dry sinuses. Summer pushes basements above 50%, which is where musty smells and mold start. <a href="/humidifier">Whole-home humidifier services</a> cover the winter half.</p><h3 class="xsp-h3">The number to aim at</h3><p class="xsp-prose">Indoor relative humidity between 30% and 50% is the range that keeps mold, dust mites, and dry air problems all in check at once. Anything held above 60% for long enough feeds mold growth.</p></div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>
   <div class="xsp-steps"><div class="xsp-step"><div class="n">01</div>
@@ -495,7 +553,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <h2 class="xsp-h2">What else do homeowners ask about air quality equipment?</h2>
   <div class="xsp-faq"><div class="xsp-qa open">
     <button type="button" aria-expanded="true"><span>Which filter rating should I use at home?</span><span class="tog" aria-hidden="true">−</span></button>
-    <div class="a">The highest MERV the system can move air through. A 1-inch filter slot generally tops out around MERV 8 to 11. MERV 13 needs a 4-inch or 5-inch media cabinet, and Extreme Heating, Air, Plumbing measures static pressure before recommending one.</div>
+    <div class="a">The highest MERV your system can move air through. A 1-inch slot generally tops out around MERV 8 to 11. MERV 13 needs a 4-inch or 5-inch media cabinet, and we measure static pressure before recommending one.</div>
   </div><div class="xsp-qa">
     <button type="button" aria-expanded="false"><span>Do UV lights in HVAC systems really work?</span><span class="tog" aria-hidden="true">+</span></button>
     <div class="a">Against biological growth on the evaporator coil and in the drain pan, yes, when they are sized and aimed correctly. They do not remove dust, dander, or pollen, so a UV lamp is not an allergy fix on its own.</div>
