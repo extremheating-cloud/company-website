@@ -409,6 +409,30 @@ OVERVIEW_CARDS = [
 # Shared H2s. Slots 2, 3 and 7 of the seven-H2 hub outline; 3 is built per city from
 # locations.OFFICE so the distance is real rather than a promise.
 GEO_COVERED_H2 = "What heating, cooling and plumbing work do you do?"
+def geo_covered(slug=None):
+    """The 'what work do you do' answer, with each service linked.
+
+    It is a list of services, so every item in it should be a way through to that
+    service — unlinked, it names six things a reader might want and offers no route
+    to any of them. On a city page the links go to that city's own service pages
+    rather than the generic ones, which is the whole point of having 228 of them.
+
+    Every city and county slug has all six service pages (38 x 6 = 228), so the
+    slug alone is enough to build the URL; without one it falls back to the generic
+    pages, which is what the /locations hub wants."""
+    def link(text, city_svc, generic):
+        href = f"/locations/{slug}/{city_svc}" if slug and city_svc else generic
+        return f'<a href="{href}">{text}</a>'
+    return (f'{link("Furnaces", "heating", "/furnace-heating")}, '
+            f'{link("heat pumps", None, "/heat-pump")} and '
+            f'{link("air conditioners", "cooling", "/air-conditioning")}: repair, replacement '
+            f'and seasonal tune-ups. '
+            f'{link("Duct and dryer-vent cleaning", "duct-cleaning", "/duct-cleaning")}, '
+            f'{link("air quality equipment", "indoor-air-quality", "/indoor-air-quality")}, '
+            f'and {link("plumbing", "plumbing", "/plumbing/services")} from the water heater '
+            f'to the sewer line. Both trades, one number to call.')
+
+# Kept for callers that want the plain sentence with no links.
 GEO_COVERED = ("Furnaces, heat pumps and air conditioners: repair, replacement and seasonal "
                "tune-ups. Duct and dryer-vent cleaning, air quality equipment, and plumbing "
                "from the water heater to the sewer line. Both trades, one number to call.")
@@ -1216,7 +1240,7 @@ LOCAL = {
  ],
  links=[("HVAC in Centerville", "/locations/centerville"),
         ("HVAC in Dayton", "/locations/dayton"),
-        ("indoor air quality equipment", "/indoor-air-quality")],
+        ("indoor air quality equipment", "/locations/kettering/indoor-air-quality")],
  svc={
   "heating": dict(
    answer="We repair and replace furnaces and heat pumps in Kettering, about seven miles from "
@@ -1868,7 +1892,7 @@ LOCAL = {
  ],
  links=[("HVAC in Centerville", "/locations/centerville"),
         ("HVAC in Franklin", "/locations/franklin"),
-        ("indoor air quality equipment", "/indoor-air-quality")],
+        ("indoor air quality equipment", "/locations/springboro/indoor-air-quality")],
  svc={
   "heating": dict(
    answer="We repair and replace furnaces and heat pumps in Springboro, about eleven miles from "
@@ -2314,7 +2338,7 @@ def city_overview(city, slug, group):
             _cards(f"SERVICES IN {city.upper()}",
                    f"Do you serve {long}, Ohio?", cards,
                    lead=geo_serve(slug, long)),
-            _qa_section(GEO_COVERED_H2, GEO_COVERED),
+            _qa_section(GEO_COVERED_H2, geo_covered(slug)),
             _qa_section(GEO_SPEED_H2, geo_speed(slug, long)),
         ]
         for h2, body in d["sections"]:
@@ -2354,7 +2378,7 @@ def city_overview(city, slug, group):
         chips = [f"{city}-Based Techs", "90% Same-Day Service", "24/7 Emergency Line"]
         sections = [
             _cards(f"SERVICES IN {city.upper()}", f"What work is covered in {city}?", cards,
-                   lead=GEO_COVERED),
+                   lead=geo_covered(slug)),
             section("SERVICE AREA", "Which nearby communities are covered?",
                 f'<div class="xlc-towns">{towns}</div>'
                 f'<div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div>'
