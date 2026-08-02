@@ -494,7 +494,11 @@ def h1(text, highlight):
 # Sub pages carry the same three proof points on every page, so they are a default
 # here rather than repeated in every page's data. A page can still override them by
 # setting heroChips, the same key the detail pages use.
-SUB_CHIPS = ["4.9 on Google", "20+ Years Locally Owned", "24/7 Emergency Service"]
+# Kept short on purpose: the row is 344px wide, which is inside the narrowest overview
+# page's chip row, so a sub page never wraps to two lines where its own overview sits
+# on one. "20+ Years Locally Owned" and "24/7 Emergency Service" pushed it to 459px
+# and wrapped on every phone.
+SUB_CHIPS = ["4.9 on Google", "Locally Owned", "24/7 Emergency"]
 
 def chips(items):
     spans = []
