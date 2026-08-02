@@ -36,8 +36,8 @@ def detail(slug, crumb_parent, name, h1, hl, intro, chips, book_eyebrow, book_ti
 
 def sub(crumbs, h1, hl, intro, pills, sym_eyebrow, sym_h2, symptoms, callout,
         process_, decision, faq_eyebrow, faqs, book_eyebrow, book_title, book_sub,
-        sib_label, sibs, img=None, safety=False, schedule_label="Schedule Service",
-        promo="xplanSub", trust2="20+ years local"):
+        sib_label, sibs, img=None, alt=None, imgPos=None, safety=False,
+        schedule_label="Schedule Service", promo="xplanSub", trust2="20+ years local"):
     return {
         "breadcrumb": crumbs, "h1": h1, "h1Highlight": hl, "intro": intro,
         "scheduleLabel": schedule_label,
@@ -47,7 +47,7 @@ def sub(crumbs, h1, hl, intro, pills, sym_eyebrow, sym_h2, symptoms, callout,
         "process": process_, "decision": decision,
         "faqEyebrow": faq_eyebrow, "faq": faqs,
         "bookingCard": {"eyebrow": book_eyebrow, "title": book_title, "sub": book_sub, "trust2": trust2},
-        "rail": {"promos": [promo], "photo": img},
+        "rail": {"promos": [promo], "photo": img, "photoAlt": alt, "photoPos": imgPos},
         "siblings": {"label": sib_label, "items": sibs},
     }
 
@@ -56,6 +56,8 @@ def pillset(label, items, active):
         {"label": l, "href": h, "active": l == active} for l, h in items]}
 
 FURN_PILLS = [("Overview", "/furnace-heating"), ("Installation", "/furnace-installation"), ("Repair", "/furnace-repair")]
+AC_PILLS = [("Overview", "/air-conditioning"), ("Installation", "/ac-installation"), ("Repair", "/ac-repair")]
+HP_PILLS = [("Overview", "/heat-pump"), ("Installation", "/heat-pump-installation"), ("Repair", "/heat-pump-repair")]
 IAQ_PILLS = [("Overview", "/indoor-air-quality"), ("Solutions", "/indoor-air-quality-solutions"),
              ("Importance", "/importance-iaq"), ("FAQ", "/iaq-faq")]
 WH_PILLS = [("Overview", "/plumbing/water-heater/overview"), ("Repair", "/plumbing/water-heater/repair"), ("Installation", "/plumbing/water-heater/installation")]
@@ -114,8 +116,8 @@ HVAC_PAGES["heat-pump.html"] = detail(
      "Grinding, rattling, or squealing", "Blowing the wrong temperature air", "Energy bills creeping up"],
     "Noticing more than one? Small heat pump problems become compressor problems — call {tel} before it gets expensive.",
     "Repair, replace, or maintain — we handle it all.",
-    [{"title": "Heat Pump Repair", "desc": "Fast diagnostics for every make and model — approved by you before we start.", "href": "/contact"},
-     {"title": "Heat Pump Installation", "desc": "Right-sized, high-efficiency systems installed clean — with flexible financing options.", "href": "/financing-options"},
+    [{"title": "Heat Pump Repair", "desc": "Fast diagnostics for every make and model — approved by you before we start.", "href": "/heat-pump-repair"},
+     {"title": "Heat Pump Installation", "desc": "Right-sized, high-efficiency systems installed clean — with flexible financing options.", "href": "/heat-pump-installation"},
      {"title": "Heat Pump Tune-Ups", "desc": "Twice-a-year checkups keep efficiency high — included with X-Plan.", "href": "/maintenance"}],
     steps("Fixed right, guaranteed", "Clean workmanship, tested before we leave, and backed by our satisfaction guarantee."),
     "HEAT PUMP QUESTIONS",
@@ -127,7 +129,8 @@ HVAC_PAGES["heat-pump.html"] = detail(
      BRANDS_FAQ],
     [{"title": "Air Conditioning", "href": "/air-conditioning"},
      {"title": "Furnace & Heating", "href": "/furnace-heating"},
-     {"title": "Indoor Air Quality", "href": "/indoor-air-quality"}])
+     {"title": "Indoor Air Quality", "href": "/indoor-air-quality"}],
+    pills=pillset("HEAT PUMPS", HP_PILLS, "Overview"))
 
 HVAC_PAGES["duct-cleaning.html"] = detail(
     "duct-cleaning", HVAC_CRUMB, "Duct Cleaning",
@@ -153,6 +156,29 @@ HVAC_PAGES["duct-cleaning.html"] = detail(
     [{"title": "Indoor Air Quality", "href": "/indoor-air-quality"},
      {"title": "Air Conditioning", "href": "/air-conditioning"},
      {"title": "Humidifier Services", "href": "/humidifier"}])
+
+# Duct cleaning is the one service where the result is invisible until you look
+# inside the duct, so the page carries the proof: a real before/after frame from a
+# job, and the crew's own walkthrough video.
+HVAC_PAGES["duct-cleaning.html"]["media"] = [
+    {"eyebrow": "BEFORE & AFTER",
+     "h2": "See what a difference it can make.",
+     "sub": "The same run of ductwork, photographed before the crew started and after "
+            "they finished.",
+     "photo": T.cdn_asset("service/before-after-ducts.jpg"),
+     # 50% 70% is the 16:9 band that keeps both BEFORE and AFTER labels in frame; a
+     # centred crop cuts them off.
+     "photoPos": "50% 70%",
+     "photoAlt": "The same length of ductwork before and after cleaning: heavy dust "
+                 "coating the surfaces on the left, bare metal on the right",
+     "caption": "A duct run from a Dayton-area home."},
+    {"eyebrow": "HOW WE DO IT",
+     "h2": "Watch a duct cleaning, start to finish.",
+     "sub": "Truck-powered equipment, every supply and return run, and the ducts "
+            "photographed before we leave.",
+     "video": "E_cZVpgYvIw",
+     "videoTitle": "Extreme Heating - Duct Cleaning - How We Do It!"},
+]
 
 HVAC_PAGES["thermostat.html"] = detail(
     "thermostat", HVAC_CRUMB, "Thermostat Services",
@@ -831,4 +857,177 @@ PLUMB_FAMILIES["gas-line/installation.html"] = plumb_sub(
     [{"title": "Gas Line Overview", "href": "/plumbing/gas-line/overview"},
      {"title": "Gas Line Repair", "href": "/plumbing/gas-line/repair"},
      {"title": "Water Heater Services", "href": "/plumbing/water-heater/overview"}],
+    schedule_label="Schedule Estimate")
+
+# ================================================================
+# AC and heat pump sub-pages — the same Overview / Installation / Repair split the
+# furnace family already had. Before these existed, the "AC Repair" and "Heat Pump
+# Installation" cards on the two overview pages pointed at /contact and
+# /financing-options, so a reader clicking a service name landed on a form.
+# ================================================================
+AC_CRUMB_PARENT = ("Air Conditioning", "/air-conditioning")
+HP_CRUMB_PARENT = ("Heat Pump Services", "/heat-pump")
+
+HVAC_SUBS["ac-repair.html"] = sub(
+    [HVAC_CRUMB, AC_CRUMB_PARENT, ("Repair", "")],
+    "Cool air back — {X}.", "usually the same day",
+    "A dead AC in an Ohio July is an emergency. We diagnose fast, quote flat before any "
+    "work starts, and repair every make and model — with the emergency line answered 24/7.",
+    pillset("AIR CONDITIONING", AC_PILLS, "Repair"),
+    "AC NOT COOLING?", "Signs it's time to call.",
+    ["Blowing warm or room-temp air", "Outdoor unit runs, house stays hot",
+     "Ice on the refrigerant lines or coil", "Turning on and off every few minutes",
+     "Grinding, buzzing, or rattling", "Water pooling around the indoor unit"],
+    "Ice on the lines or a burning smell? Shut the system off and call {tel} — running it "
+    "that way is how a repair turns into a replacement.",
+    steps("Fixed right, tested cold",
+          "We verify the repair with gauges and a temperature split before we leave, and back "
+          "it with our satisfaction guarantee."),
+    {"title": "Repair or replace?",
+     "desc": "Under 12 years old with a minor fault, repair usually wins. Older than that, or "
+             "a failing compressor, and we'll put both numbers in front of you.",
+     "linkLabel": "AC Installation →", "href": "/ac-installation"},
+    "AC REPAIR QUESTIONS",
+    [SPEED_FAQ,
+     {"q": "Do you repair every brand?",
+      "a": "Yes — every major make and model, whoever installed it."},
+     {"q": "Will I know the price before you start?",
+      "a": "Yes. You get a flat price for the repair before any work begins, and nothing "
+           "happens until you approve it."},
+     {"q": "My AC is old — is a repair worth it?",
+      "a": "Often, yes. We'll tell you what the repair costs and what a replacement costs, "
+           "and leave the decision to you — with a free second opinion on any replacement "
+           "diagnosis."}],
+    "BOOK AC REPAIR", "Cool air, fast.", "Upfront pricing before any work begins.",
+    "AIR CONDITIONING",
+    [{"title": "Air Conditioning Overview", "href": "/air-conditioning"},
+     {"title": "AC Installation", "href": "/ac-installation"},
+     {"title": "Thermostat Services", "href": "/thermostat"}],
+    img=T.PHOTOS["acContactor"], imgPos="50% 45%",
+    alt="A worn, cobwebbed contactor found inside an air conditioner during a service call",
+    schedule_label="Schedule Repair")
+
+HVAC_SUBS["ac-installation.html"] = sub(
+    [HVAC_CRUMB, AC_CRUMB_PARENT, ("Installation", "")],
+    "A new AC, {X}.", "sized and installed right",
+    "Right-sized, high-efficiency air conditioners installed clean and to code — honest "
+    "sizing math, free replacement estimates, and flexible financing.",
+    pillset("AIR CONDITIONING", AC_PILLS, "Installation"),
+    "TIME TO REPLACE?", "Signs a new AC makes sense.",
+    ["System is 12+ years old", "Repairs are getting frequent",
+     "Still running on R-22 refrigerant", "Bills climbing year over year",
+     "Some rooms never cool down", "Compressor or coil failure"],
+    "Not sure whether to repair or replace? Call {tel} — we'll give you both numbers, no pressure.",
+    steps("Installed clean, tested cold",
+          "Line set, electrical, and charge done to code, then commissioned and walked through "
+          "before we leave.",
+          step2={"title": "Sized & quoted upfront",
+                 "desc": "A real load calculation — not a guess off the old label — with flat "
+                         "pricing and financing options."}),
+    {"title": "Repair or replace?",
+     "desc": "If the system is newer and the fault is minor, a repair is usually the better "
+             "money. We'll lay out both paths honestly.",
+     "linkLabel": "AC Repair →", "href": "/ac-repair"},
+    "INSTALLATION QUESTIONS",
+    [{"q": "How fast can you install a new AC?",
+      "a": "Usually within a day or two of your estimate — and same-week in most cases, even "
+           "in the middle of summer."},
+     {"q": "What size system do I need?",
+      "a": "That depends on your home's real heat gain, so we run a load calculation instead "
+           "of matching whatever was there before."},
+     {"q": "Is financing available?",
+      "a": "Yes — flexible monthly options on qualifying systems. We'll show you payment "
+           "scenarios along with the quote."},
+     {"q": "Do I have to replace the furnace at the same time?",
+      "a": "Not always. If your furnace is newer and the coil and blower match up, the AC can "
+           "be replaced on its own — we'll tell you honestly which case you're in."}],
+    "BOOK AN ESTIMATE", "Free replacement estimates.", "Honest numbers, no pressure.",
+    "AIR CONDITIONING",
+    [{"title": "Air Conditioning Overview", "href": "/air-conditioning"},
+     {"title": "AC Repair", "href": "/ac-repair"},
+     {"title": "Heat Pump Services", "href": "/heat-pump"}],
+    img=T.PHOTOS["ruudCondenser"], imgPos="50% 45%",
+    alt="A Ruud air conditioner installed beside a brick home",
+    schedule_label="Schedule Estimate")
+
+HVAC_SUBS["heat-pump-repair.html"] = sub(
+    [HVAC_CRUMB, HP_CRUMB_PARENT, ("Repair", "")],
+    "Heat pump repair, {X}.", "any season",
+    "A heat pump works year-round, so a fault shows up as no heat in January or no cooling "
+    "in July. We diagnose fast, price flat before any work, and repair every make and model.",
+    pillset("HEAT PUMPS", HP_PILLS, "Repair"),
+    "HEAT PUMP ACTING UP?", "Signs it's time to call.",
+    ["Blowing cool air in heating mode", "Outdoor unit iced over",
+     "Runs constantly but never catches up", "Turning on and off every few minutes",
+     "Grinding, rattling, or squealing", "Backup heat running all the time"],
+    "No heat at all, or an outdoor unit encased in ice? Call {tel} — the emergency line is "
+    "answered 24/7.",
+    steps("Fixed right, tested both ways",
+          "We confirm the system heats and cools properly before we leave, and back the repair "
+          "with our satisfaction guarantee."),
+    {"title": "Repair or replace?",
+     "desc": "A newer heat pump with a minor fault is usually worth repairing. A compressor or "
+             "reversing valve failure on an older system is where replacement starts to win.",
+     "linkLabel": "Heat Pump Installation →", "href": "/heat-pump-installation"},
+    "HEAT PUMP REPAIR QUESTIONS",
+    [SPEED_FAQ,
+     {"q": "Why is my heat pump blowing cool air in winter?",
+      "a": "A few minutes of cool air during a defrost cycle is normal. Constant cool air is "
+           "not — that usually points to refrigerant, a reversing valve, or a failed defrost "
+           "control, and it's worth a look before the backup heat runs your bill up."},
+     {"q": "Is ice on the outdoor unit a problem?",
+      "a": "A light frost that clears on its own is normal. A unit encased in ice, or one that "
+           "never clears, is not — shut it off and call us."},
+     BRANDS_FAQ],
+    "BOOK HEAT PUMP REPAIR", "Get a tech to your door.", "Upfront pricing before any work begins.",
+    "HEAT PUMPS",
+    [{"title": "Heat Pump Overview", "href": "/heat-pump"},
+     {"title": "Heat Pump Installation", "href": "/heat-pump-installation"},
+     {"title": "Furnace & Heating", "href": "/furnace-heating"}],
+    img=T.PHOTOS["acRepairGauges"], imgPos="50% 45%",
+    alt="Gauges and a meter connected to the open control panel of an outdoor unit",
+    schedule_label="Schedule Repair")
+
+HVAC_SUBS["heat-pump-installation.html"] = sub(
+    [HVAC_CRUMB, HP_CRUMB_PARENT, ("Installation", "")],
+    "One system, {X}.", "heating and cooling",
+    "Right-sized, high-efficiency heat pumps installed clean and to code — with honest sizing "
+    "math, backup heat set up properly, and flexible financing.",
+    pillset("HEAT PUMPS", HP_PILLS, "Installation"),
+    "TIME TO REPLACE?", "Signs a new heat pump makes sense.",
+    ["System is 12+ years old", "Repairs are getting frequent",
+     "Backup heat runs constantly", "Bills climbing year over year",
+     "Rooms never quite even out", "Compressor or reversing valve failure"],
+    "Weighing a heat pump against a furnace and AC? Call {tel} — we'll price both and explain "
+    "the trade-offs for your home.",
+    steps("Installed clean, commissioned",
+          "Charge verified, controls and backup heat configured, and a full walkthrough before "
+          "we leave.",
+          step2={"title": "Sized & quoted upfront",
+                 "desc": "A real load calculation, a written quote, and financing options — "
+                         "before anything is ordered."}),
+    {"title": "Not ready to replace?",
+     "desc": "If the system still has years in it, a repair or a tune-up may be the better "
+             "money this season. We'll tell you which case you're in.",
+     "linkLabel": "Heat Pump Repair →", "href": "/heat-pump-repair"},
+    "INSTALLATION QUESTIONS",
+    [{"q": "How fast can you install a heat pump?",
+      "a": "Usually within a day or two of your estimate, and same-week in most cases."},
+     {"q": "Will a heat pump keep up in an Ohio winter?",
+      "a": "We size for your home's real heat loss and set the backup heat up to cover the "
+           "coldest nights, so the system isn't relying on the heat pump alone when it can't "
+           "keep up. Dual-fuel setups pair one with a furnace for exactly that reason."},
+     {"q": "Is financing available?",
+      "a": "Yes — flexible monthly options on qualifying systems, shown with your quote."},
+     {"q": "Can a heat pump replace both my furnace and AC?",
+      "a": "In many homes, yes — one outdoor unit handles both. Whether that's the right call "
+           "depends on your ductwork, your insulation, and how your home loses heat, which is "
+           "what the load calculation tells us."}],
+    "BOOK AN ESTIMATE", "Free replacement estimates.", "Honest numbers, no pressure.",
+    "HEAT PUMPS",
+    [{"title": "Heat Pump Overview", "href": "/heat-pump"},
+     {"title": "Heat Pump Repair", "href": "/heat-pump-repair"},
+     {"title": "Air Conditioning", "href": "/air-conditioning"}],
+    img=T.PHOTOS["ruudHeatPump"], imgPos="50% 40%",
+    alt="A Ruud heat pump installed at a Dayton-area home",
     schedule_label="Schedule Estimate")

@@ -168,6 +168,14 @@ display:flex;align-items:center;justify-content:center;font-size:15px;font-weigh
 padding:0 18px 16px;max-width:620px}
 .xsp-qa.open .a{display:block}
 
+/* media block — one photo or one video, full width of the main column */
+.xsp-shot{position:relative;margin-top:20px;aspect-ratio:16 / 9;border-radius:14px;overflow:hidden;
+background:#0F172A;border:1px solid var(--rule)}
+.xsp-shot img,.xsp-shot iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.xsp-shot img{object-fit:cover}
+.xsp-mediasub{margin-top:10px;font-size:14px;line-height:1.6;font-weight:500;color:var(--body);max-width:64ch}
+.xsp-mediacap{margin-top:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
+
 /* rail photo + promos */
 .xsp-photo{height:220px;border-radius:14px;background:#F4F6F8;border:1px solid var(--rule);
 display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);
@@ -382,9 +390,12 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div></div>
   </div>
 </div>
-
+<div class="xsp-pillbar"><div class="xsp-pillbar-in">
+  <span class="xsp-pill-label">AIR CONDITIONING</span>
+  <div class="xsp-pills"><a class="xsp-pill active" href="/air-conditioning" aria-current="page">Overview</a><a class="xsp-pill" href="/ac-installation">Installation</a><a class="xsp-pill" href="/ac-repair">Repair</a></div>
+</div></div>
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/ac-repair.jpg" alt="Extreme technician servicing an air conditioner" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/ac-repair-gauges.jpg" alt="Gauges and a meter connected to an open air conditioner control panel" style="object-position:50% 45%" loading="lazy" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">IS YOUR AC ACTING UP?</div>
   <h2 class="xsp-h2">Signs it's time to call.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Blowing warm or room-temp air</div><div class="xsp-check"><span class="c">✓</span>Weak airflow in some rooms</div><div class="xsp-check"><span class="c">✓</span>Turning on and off every few minutes</div><div class="xsp-check"><span class="c">✓</span>Grinding, squealing, or rattling</div><div class="xsp-check"><span class="c">✓</span>Water or refrigerant leaks</div><div class="xsp-check"><span class="c">✓</span>Energy bills creeping up</div></div>
@@ -392,11 +403,11 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 </div><div>
   <div class="xsp-eyebrow">WHAT WE DO</div>
   <h2 class="xsp-h2">Repair, replace, or maintain — we handle it all.</h2>
-  <div class="xsp-cards3"><a class="xsp-card" href="/contact">
+  <div class="xsp-cards3"><a class="xsp-card" href="/ac-repair">
       <span class="glyphwrap"><span class="xsp-glyph"><i></i><i></i></span></span>
       <span class="txt"><span class="t">AC Repair</span><br><span class="d">Same-day diagnostics and honest repair options for every make and model — approved by you before we start.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
-    </a><a class="xsp-card" href="/financing-options">
+    </a><a class="xsp-card" href="/ac-installation">
       <span class="glyphwrap"><span class="xsp-glyph"><i></i><i></i></span></span>
       <span class="txt"><span class="t">AC Installation & Replacement</span><br><span class="d">Right-sized, high-efficiency systems installed clean — with flexible financing options.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
@@ -433,7 +444,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div class="a">Yes — every major make and model, regardless of who installed it. Our techs receive ongoing training across all common residential systems.</div>
   </div></div>
 </div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/ac-repair.jpg" alt="Extreme technician servicing an air conditioner" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/ac-repair-gauges.jpg" alt="Gauges and a meter connected to an open air conditioner control panel" style="object-position:50% 45%" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>

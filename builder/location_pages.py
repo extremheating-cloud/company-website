@@ -227,7 +227,8 @@ SERVICE_COPY = {
   decNote="Either way you get a flat quote first — and a free second opinion on any replacement diagnosis.",
   promos=["locFinanceHeat","locXplan"],
   bandT="No heat tonight?", bandS="Don't wait it out with space heaters — the emergency line is answered 24/7.",
-  photo="service/furnace-repair.jpg", photoAlt="Extreme technician servicing a furnace"),
+  photo="service/furnace-service.jpg", photoPos="50% 45%",
+  photoAlt="A Trane furnace in a basement with its control panel open for service"),
 
 "cooling": dict(
   nav="Cooling", h1="Keep your cool, {X}", hi="{CITY}",
@@ -250,7 +251,8 @@ SERVICE_COPY = {
   chkNote="Catching these early usually means a repair instead of a replacement.",
   promos=["locFinanceCool","locXplan"],
   bandT="AC quit during a heat wave?", bandS="The emergency line is answered 24/7 — nights, weekends, holidays.",
-  photo="equipment/ruud-heat-pump.jpg", photoAlt="A Ruud condenser installed at a home", photoPos="50% 40%"),
+  photo="equipment/ruud-condenser.jpg", photoPos="50% 45%",
+  photoAlt="A Ruud air conditioner installed beside a brick home"),
 
 "plumbing": dict(
   nav="Plumbing", h1="Plumbing has come to {X}", hi="{CITY}", pill="NEW IN {CITYU}",
@@ -292,7 +294,8 @@ SERVICE_COPY = {
   promos=["locSpecialTuneUp","locFinanceAging"],
   bandT="Been a few years since a tune-up?",
   bandS="No judgment — a catch-up visit now beats a breakdown in January.", bandCta="schedule",
-  photo="service/maintenance.jpg", photoAlt="Extreme technician performing a seasonal tune-up"),
+  photo="service/ac-contactor.jpg", photoPos="50% 45%",
+  photoAlt="A worn, cobwebbed contactor found inside an air conditioner during service"),
 
 "duct-cleaning": dict(
   nav="Duct Cleaning", h1="Cleaner ducts, {X}", hi="cleaner air",

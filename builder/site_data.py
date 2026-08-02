@@ -101,11 +101,15 @@ LENDERS = ["GoodLeap", "Synchrony", "Wright-Patt Credit Union"]
 # Lifted verbatim from the Framer DesktopHeader so the ported nav matches the live
 # site exactly. Rows with `chips` render a sub-row of links in the mega-menu.
 HVAC_CORE = [
-    ("Air Conditioning", "Repair, replacement &amp; tune-ups", "/air-conditioning", []),
+    ("Air Conditioning", "Repair, replacement &amp; tune-ups", "/air-conditioning",
+     [("Overview", "/air-conditioning"), ("Installation", "/ac-installation"),
+      ("Repair", "/ac-repair")]),
     ("Furnace &amp; Heating", "Repairs, installs &amp; safety checks", "/furnace-heating",
      [("Overview", "/furnace-heating"), ("Installation", "/furnace-installation"),
       ("Repair", "/furnace-repair")]),
-    ("Heat Pump", "Year-round efficiency", "/heat-pump", []),
+    ("Heat Pump", "Year-round efficiency", "/heat-pump",
+     [("Overview", "/heat-pump"), ("Installation", "/heat-pump-installation"),
+      ("Repair", "/heat-pump-repair")]),
     ("Duct Cleaning", "Airflow &amp; air balancing", "/duct-cleaning", []),
     ("Indoor Air Quality", "Filtration, UV &amp; humidity control", "/indoor-air-quality",
      [("Overview", "/indoor-air-quality"), ("Solutions", "/indoor-air-quality-solutions"),

@@ -43,7 +43,7 @@ design/     mockups and design handoff docs
 cd builder && python3 build.py
 ```
 
-Regenerates all 39 pages into `pages/`. Standard library only, no dependencies.
+Regenerates all 310 pages into `pages/`. Standard library only, no dependencies.
 
 The self-hosted site is a second target from the same generator:
 
@@ -51,7 +51,7 @@ The self-hosted site is a second target from the same generator:
 cd builder && python3 build_site.py
 ```
 
-That writes 307 pages to `site/` (gitignored — it is output, not source), each one a
+That writes 311 pages to `site/` (gitignored — it is output, not source), each one a
 full HTML document with the header, footer, meta and schema, and copies
 `assets/js/schedule.js` to `site/js/`. Serve it with any static host, or preview it
 with `python3 -m http.server 8800` from inside `site/`.

@@ -56,7 +56,7 @@ needed any.
 | `framer/schedule/OpenContactDialog.tsx` | **Delete at cutover.** Framer Override glue; the CustomEvent it wraps already works natively. Still referenced by the live Framer site, so it stays until that site is retired. |
 | `framer/homepage/*.tsx` x4 | **Port to the builder.** Hero, AboutFaqReviews, XPlan, Brands. Already CSS-in-template-literal, the same shape `template.py` uses. |
 | `builder/build.py` | Emit `index.html` so paths map to URLs on a static host. |
-| `pages/**` (306) | **No change.** Regenerated with the new shell. |
+| `pages/**` (310) | **No change.** Regenerated with the new shell. |
 | `assets/**` (107) | **No change**, but serve same-origin instead of jsDelivr — that retires the commit pins and the 12-hour branch-cache workaround. |
 
 Roughly 26 engineering hours.

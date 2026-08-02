@@ -45,7 +45,13 @@ PHOTOS = {
     "troy":         cdn_asset("locations/troy-community-event.jpg"),
     "skyline":      cdn_asset("locations/dayton-skyline-van.jpg"),
     "ruudHeatPump": cdn_asset("equipment/ruud-heat-pump.jpg"),
+    "ruudCondenser": cdn_asset("equipment/ruud-condenser.jpg"),
     "ruudInstall":  cdn_asset("equipment/ruud-install.jpg"),
+    # Real job photography, August 2026 — these replaced carried-over stock
+    "acRepairGauges":   cdn_asset("service/ac-repair-gauges.jpg"),
+    "acContactor":      cdn_asset("service/ac-contactor.jpg"),
+    "furnaceService":   cdn_asset("service/furnace-service.jpg"),
+    "furnaceRepairOpen": cdn_asset("service/furnace-repair-open.jpg"),
     "traneInstall": cdn_asset("equipment/trane-install.jpg"),
     "geWaterHeater": cdn_asset("equipment/ge-water-heater-install.jpg"),
     "team": {
@@ -227,6 +233,14 @@ display:flex;align-items:center;justify-content:center;font-size:15px;font-weigh
 .xsp-qa .a{display:none;font-size:13.5px;line-height:1.6;font-weight:500;color:var(--body);
 padding:0 18px 16px;max-width:620px}
 .xsp-qa.open .a{display:block}
+
+/* media block — one photo or one video, full width of the main column */
+.xsp-shot{position:relative;margin-top:20px;aspect-ratio:16 / 9;border-radius:14px;overflow:hidden;
+background:#0F172A;border:1px solid var(--rule)}
+.xsp-shot img,.xsp-shot iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.xsp-shot img{object-fit:cover}
+.xsp-mediasub{margin-top:10px;font-size:14px;line-height:1.6;font-weight:500;color:var(--body);max-width:64ch}
+.xsp-mediacap{margin-top:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
 
 /* rail photo + promos */
 .xsp-photo{height:220px;border-radius:14px;background:#F4F6F8;border:1px solid var(--rule);
@@ -698,6 +712,31 @@ def sibling_links(s):
     )
     return f'<div class="xsp-sibs"><div class="h">{s["label"]}</div>{links}</div>'
 
+def media_block(m):
+    """One piece of evidence in the main column — a photo or a video, full width of
+    the column at 16:9. Deliberately one per block: a photo and a video side by side
+    never share a height (a 4:3 frame next to a 16:9 player leaves a hole under the
+    shorter one), so each gets its own section and its own heading."""
+    if m.get("photo"):
+        pos = m.get("photoPos", "50% 50%")
+        shot = (f'<div class="xsp-shot"><img src="{m["photo"]}" alt="{m.get("photoAlt", "")}" '
+                f'style="object-position:{pos}" loading="lazy" decoding="async"></div>')
+    else:
+        shot = (f'<div class="xsp-shot"><iframe '
+                f'src="https://www.youtube.com/embed/{m["video"]}?rel=0&amp;modestbranding=1" '
+                f'title="{m["videoTitle"]}" loading="lazy" '
+                f'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" '
+                f'allowfullscreen></iframe></div>')
+    sub = f'<p class="xsp-mediasub">{m["sub"]}</p>' if m.get("sub") else ""
+    cap = f'<p class="xsp-mediacap">{m["caption"]}</p>' if m.get("caption") else ""
+    return f'''<div>
+  <div class="xsp-eyebrow">{m["eyebrow"]}</div>
+  <h2 class="xsp-h2">{m["h2"]}</h2>
+  {sub}
+  {shot}
+  {cap}
+</div>'''
+
 def related(rel):
     cards = "".join(
         f'''<a class="xsp-rel-card" href="{r["href"]}"><span class="t">{r["title"]}</span><span class="lm xsp-dt">Learn more →</span><span class="lm xsp-mb">→</span></a>'''
@@ -739,6 +778,8 @@ def detail_page(d, root_class):
     left = [mobile_photo(d["rail"]), checklist(d["symptoms"])]
     if d.get("whatWeDo"):
         left.append(what_we_do(d["whatWeDo"]))
+    for m in d.get("media", []):
+        left.append(media_block(m))
     left.append(process(d["process"]))
     left.append(mobile_inline_rail(d))
     left.append(faq(d["faq"], d["faqEyebrow"]))

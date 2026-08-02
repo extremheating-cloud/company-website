@@ -168,6 +168,14 @@ display:flex;align-items:center;justify-content:center;font-size:15px;font-weigh
 padding:0 18px 16px;max-width:620px}
 .xsp-qa.open .a{display:block}
 
+/* media block — one photo or one video, full width of the main column */
+.xsp-shot{position:relative;margin-top:20px;aspect-ratio:16 / 9;border-radius:14px;overflow:hidden;
+background:#0F172A;border:1px solid var(--rule)}
+.xsp-shot img,.xsp-shot iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.xsp-shot img{object-fit:cover}
+.xsp-mediasub{margin-top:10px;font-size:14px;line-height:1.6;font-weight:500;color:var(--body);max-width:64ch}
+.xsp-mediacap{margin-top:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
+
 /* rail photo + promos */
 .xsp-photo{height:220px;border-radius:14px;background:#F4F6F8;border:1px solid var(--rule);
 display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);

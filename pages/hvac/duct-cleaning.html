@@ -168,6 +168,14 @@ display:flex;align-items:center;justify-content:center;font-size:15px;font-weigh
 padding:0 18px 16px;max-width:620px}
 .xsp-qa.open .a{display:block}
 
+/* media block — one photo or one video, full width of the main column */
+.xsp-shot{position:relative;margin-top:20px;aspect-ratio:16 / 9;border-radius:14px;overflow:hidden;
+background:#0F172A;border:1px solid var(--rule)}
+.xsp-shot img,.xsp-shot iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.xsp-shot img{object-fit:cover}
+.xsp-mediasub{margin-top:10px;font-size:14px;line-height:1.6;font-weight:500;color:var(--body);max-width:64ch}
+.xsp-mediacap{margin-top:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
+
 /* rail photo + promos */
 .xsp-photo{height:220px;border-radius:14px;background:#F4F6F8;border:1px solid var(--rule);
 display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);
@@ -405,6 +413,18 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
       <span class="txt"><span class="t">Dryer Vent Cleaning</span><br><span class="d">Faster dry times and less fire risk — often same visit.</span></span>
       <span class="lm">Learn more →</span><span class="mrow">→</span>
     </a></div>
+</div><div>
+  <div class="xsp-eyebrow">BEFORE & AFTER</div>
+  <h2 class="xsp-h2">See what a difference it can make.</h2>
+  <p class="xsp-mediasub">The same run of ductwork, photographed before the crew started and after they finished.</p>
+  <div class="xsp-shot"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/before-after-ducts.jpg" alt="The same length of ductwork before and after cleaning: heavy dust coating the surfaces on the left, bare metal on the right" style="object-position:50% 70%" loading="lazy" decoding="async"></div>
+  <p class="xsp-mediacap">A duct run from a Dayton-area home.</p>
+</div><div>
+  <div class="xsp-eyebrow">HOW WE DO IT</div>
+  <h2 class="xsp-h2">Watch a duct cleaning, start to finish.</h2>
+  <p class="xsp-mediasub">Truck-powered equipment, every supply and return run, and the ducts photographed before we leave.</p>
+  <div class="xsp-shot"><iframe src="https://www.youtube.com/embed/E_cZVpgYvIw?rel=0&amp;modestbranding=1" title="Extreme Heating - Duct Cleaning - How We Do It!" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  
 </div><div>
   <div class="xsp-eyebrow">WHAT TO EXPECT</div>
   <h2 class="xsp-h2">A visit without surprises.</h2>

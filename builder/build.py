@@ -52,10 +52,10 @@ AIR_CONDITIONING = {
         "cards": [
             {"title": "AC Repair",
              "desc": "Same-day diagnostics and honest repair options for every make and model — approved by you before we start.",
-             "href": "/contact"},
+             "href": "/ac-repair"},
             {"title": "AC Installation & Replacement",
              "desc": "Right-sized, high-efficiency systems installed clean — with flexible financing options.",
-             "href": "/financing-options"},
+             "href": "/ac-installation"},
             {"title": "AC Tune-Ups & Maintenance",
              "desc": "Seasonal tune-ups that catch small issues early — included twice a year with X-Plan.",
              "href": "/maintenance"},
@@ -85,8 +85,11 @@ AIR_CONDITIONING = {
     "rail": {
         # Was a hardcoded @main URL with a ?v=2 cache-buster — the query string does
         # nothing on jsDelivr; the commit pin is what actually busts the cache.
-        "photo": T.cdn_asset("service/ac-repair.jpg"),
-        "photoAlt": "Extreme technician servicing an air conditioner",
+        # service/ac-repair.jpg was stock (and the same frame as service/maintenance.jpg);
+        # this is a real Extreme diagnostic — gauges and meter on an open condenser.
+        "photo": T.PHOTOS["acRepairGauges"],
+        "photoPos": "50% 45%",
+        "photoAlt": "Gauges and a meter connected to an open air conditioner control panel",
         "promos": ["financing", "xplan"],
     },
     "related": [
@@ -94,6 +97,7 @@ AIR_CONDITIONING = {
         {"title": "Duct Cleaning", "href": "/duct-cleaning"},
         {"title": "Indoor Air Quality", "href": "/indoor-air-quality"},
     ],
+    # pillNav is attached after `import rollout` below — the pill set lives there.
 }
 PAGES.append((os.path.join(HVAC, "air-conditioning.html"), T.detail_page, AIR_CONDITIONING, "xsp-air-conditioning"))
 
@@ -351,6 +355,11 @@ import rollout
 # maintenance.html is now built from mockup 3a below — drop the interim version
 del rollout.HVAC_PAGES["maintenance.html"]
 
+# The AC overview is authored above, before rollout is imported, so its pill nav is
+# attached here — same Overview / Installation / Repair bar the furnace and heat
+# pump families carry. PAGES holds the dict by reference, so this still lands.
+AIR_CONDITIONING["pillNav"] = rollout.pillset("AIR CONDITIONING", rollout.AC_PILLS, "Overview")
+
 # ================================================================
 # /maintenance — mockup 3a (X-Plan membership page), copy verbatim
 # ================================================================
@@ -448,6 +457,19 @@ PHOTO_OVERRIDES = {
         "photo": T.PHOTOS["ruudInstall"],
         "photoPos": "50% 55%",
         "photoAlt": "A newly installed Ruud air handler in a Dayton-area home",
+    },
+    # service/furnace-repair.jpg is stock (a technician in an unbranded blue shirt).
+    # These two are real Extreme jobs: the tidy Trane for the overview, the older
+    # unit with its burner compartment open for the repair page.
+    "HVAC Service Pages/furnace-heating.html": {
+        "photo": T.PHOTOS["furnaceService"],
+        "photoPos": "50% 45%",
+        "photoAlt": "A Trane furnace in a basement with its control panel open for service",
+    },
+    "HVAC Service Pages/furnace-repair.html": {
+        "photo": T.PHOTOS["furnaceRepairOpen"],
+        "photoPos": "50% 60%",
+        "photoAlt": "An older gas furnace opened up for repair, burner compartment exposed",
     },
 }
 

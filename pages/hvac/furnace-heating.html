@@ -168,6 +168,14 @@ display:flex;align-items:center;justify-content:center;font-size:15px;font-weigh
 padding:0 18px 16px;max-width:620px}
 .xsp-qa.open .a{display:block}
 
+/* media block — one photo or one video, full width of the main column */
+.xsp-shot{position:relative;margin-top:20px;aspect-ratio:16 / 9;border-radius:14px;overflow:hidden;
+background:#0F172A;border:1px solid var(--rule)}
+.xsp-shot img,.xsp-shot iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.xsp-shot img{object-fit:cover}
+.xsp-mediasub{margin-top:10px;font-size:14px;line-height:1.6;font-weight:500;color:var(--body);max-width:64ch}
+.xsp-mediacap{margin-top:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
+
 /* rail photo + promos */
 .xsp-photo{height:220px;border-radius:14px;background:#F4F6F8;border:1px solid var(--rule);
 display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);
@@ -387,7 +395,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
   <div class="xsp-pills"><a class="xsp-pill active" href="/furnace-heating" aria-current="page">Overview</a><a class="xsp-pill" href="/furnace-installation">Installation</a><a class="xsp-pill" href="/furnace-repair">Repair</a></div>
 </div></div>
 <div class="xsp-bodygrid">
-  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/furnace-repair.jpg" alt="A technician working inside an open gas furnace" loading="lazy" decoding="async"></div></div><div>
+  <div class="xsp-main"><div class="xsp-mbphoto xsp-mb"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/furnace-service.jpg" alt="A Trane furnace in a basement with its control panel open for service" style="object-position:50% 45%" loading="lazy" decoding="async"></div></div><div>
   <div class="xsp-eyebrow">FURNACE TROUBLE?</div>
   <h2 class="xsp-h2">Signs it's time to call.</h2>
   <div class="xsp-checks"><div class="xsp-check"><span class="c">✓</span>Blowing cold or lukewarm air</div><div class="xsp-check"><span class="c">✓</span>Short cycling on and off</div><div class="xsp-check"><span class="c">✓</span>Yellow or flickering burner flame</div><div class="xsp-check"><span class="c">✓</span>Burning or musty smells</div><div class="xsp-check"><span class="c">✓</span>Banging or scraping sounds</div><div class="xsp-check"><span class="c">✓</span>Heating bills creeping up</div></div>
@@ -436,7 +444,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div class="a">Once a year, ideally in fall before the heating season — it keeps efficiency up and catches safety issues early.</div>
   </div></div>
 </div></div>
-  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/furnace-repair.jpg" alt="A technician working inside an open gas furnace" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
+  <aside class="xsp-rail"><div class="xsp-photo"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@c83bf3b6254c9bd3dbc1bd101024085c183abd20/assets/service/furnace-service.jpg" alt="A Trane furnace in a basement with its control panel open for service" style="object-position:50% 45%" loading="lazy" decoding="async"></div><a class="xsp-promo lav" href="/financing-options">
   <div class="t">Interested in financing?</div><div class="d">Spread out the cost of a new comfort system with flexible payment options that fit your budget.</div><div class="lm">Learn More →</div>
 </a><a class="xsp-promo mint" href="/maintenance">
   <div class="t">X-Plan members save 15% on repairs</div><div class="d">Two tune-ups a year, priority scheduling, and a 5-year warranty on repairs.</div><div class="lm">Explore X-Plan →</div>
