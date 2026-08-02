@@ -128,9 +128,6 @@ max-width:1280px;margin:0 auto;padding:48px 40px 64px}
 padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff}
 .xsp-chip .st{color:var(--stars)}
 .xsp-hero-ctas{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
-.xsp-trustline{display:flex;gap:18px;margin-top:22px;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.85);flex-wrap:wrap}
-.xsp-trustline .st{color:var(--stars)}
-.xsp-trustline .di{color:var(--green)}
 
 /* booking card (hero overlap)
    align-self:end pins the card to the bottom of the hero grid so the -84px margin
@@ -494,6 +491,11 @@ def crumbs(items):
 def h1(text, highlight):
     return f'<h1 class="xsp-h1">{text.replace("{X}", f"<em>{highlight}</em>")}</h1>'
 
+# Sub pages carry the same three proof points on every page, so they are a default
+# here rather than repeated in every page's data. A page can still override them by
+# setting heroChips, the same key the detail pages use.
+SUB_CHIPS = ["4.9 on Google", "20+ Years Locally Owned", "24/7 Emergency Service"]
+
 def chips(items):
     spans = []
     for c in items:
@@ -551,7 +553,7 @@ def hero_sub(d):
         {schedule_btn(d.get("scheduleLabel", "Schedule Service"), "xsp-cta js-schedule")}
         <a class="xsp-cta-outline" href="{PHONE_TEL}">Call Now</a>
       </div>
-      <div class="xsp-trustline"><span><span class="st">★</span> 4.9 on Google</span><span>◆ 20+ years locally owned</span><span>◆ 24/7 emergency service</span></div>
+      {chips(d.get("heroChips", SUB_CHIPS))}
     </div>
   </div>
 </div>'''
@@ -739,13 +741,16 @@ def sub_page(d, root_class):
         left.append(decision_card(d["decision"]))
     left.append(mobile_inline_rail(d))
     left.append(faq(d["faq"], d["faqEyebrow"]))
-    rail_extra = booking_card(d["bookingCard"], inflow=True,
-                              schedule_label=d.get("scheduleLabel", "Schedule Service"))
-    tail = ""
+    card = booking_card(d["bookingCard"], inflow=True,
+                        schedule_label=d.get("scheduleLabel", "Schedule Service"))
+    # Photo leads the rail, above the booking card — the same order the detail pages
+    # use. At the bottom it was below the fold on most of these pages and read as an
+    # afterthought.
+    photo = ""
     if d["rail"].get("photo"):
-        tail = photo_slot("", d["rail"]["photo"], d["rail"].get("photoAlt", ""),
-                          d["rail"].get("photoPos"))
-    rail_html = f'''<aside class="xsp-rail flush">{rail_extra}{promo(d["rail"]["promos"][0])}{sibling_links(d["siblings"])}{tail}</aside>'''
+        photo = photo_slot("", d["rail"]["photo"], d["rail"].get("photoAlt", ""),
+                           d["rail"].get("photoPos"))
+    rail_html = f'''<aside class="xsp-rail flush">{photo}{card}{promo(d["rail"]["promos"][0])}{sibling_links(d["siblings"])}</aside>'''
     body = f'''{hero_sub(d)}
 {pill_nav(d["pillNav"])}
 <div class="xsp-bodygrid">
