@@ -41,6 +41,7 @@ import re
 import site_data as D
 import locations as L
 import chrome
+import template as T
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -1273,6 +1274,13 @@ def document(page, body_html):
     """
     url = page["url"]
     can = canonical(url)
+
+    # Every phone number in the page text becomes tappable. Done here rather than in
+    # each renderer because the number is written in a dozen places across five
+    # modules, and one that a copy edit leaves bare is unusable on the device most
+    # of these readers are holding. Runs on the body only — the head's JSON-LD and
+    # meta tags already carry the number in the form they need.
+    body_html = T.autolink_phone(body_html)
 
     try:
         authored = _resolve_meta(url)

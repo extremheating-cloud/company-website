@@ -836,6 +836,41 @@ def h1(text, highlight):
 # `body` is a string or a list of strings; each becomes one <p>. Copy is authored
 # with HTML entities already in place (see esc), so nothing here escapes.
 
+_PHONE_RX = re.compile(re.escape(PHONE_DISPLAY))
+
+def autolink_phone(html):
+    """Make every phone number in page text tappable.
+
+    108 of them across 101 pages were plain text — readable on a desktop, useless on
+    the phone someone is holding when their heat is out. Chasing the strings would
+    only work until the next copy edit, so this runs over the assembled body instead.
+
+    It walks tokens rather than regexing the whole document, because the number also
+    appears inside href/aria-label/title attributes, inside anchors that are already
+    links, and inside the <script> on /locations. Substituting there would produce a
+    nested anchor or broken JavaScript. Only bare text nodes, outside <a>, <script>
+    and <style>, are touched.
+    """
+    out, in_a, in_raw = [], 0, 0
+    for tok in re.split(r"(<[^>]+>)", html):
+        if tok.startswith("<"):
+            low = tok.lower()
+            if re.match(r"<a\b", low):
+                in_a += 1
+            elif low.startswith("</a"):
+                in_a = max(0, in_a - 1)
+            elif re.match(r"<(script|style)\b", low):
+                in_raw += 1
+            elif re.match(r"</(script|style)", low):
+                in_raw = max(0, in_raw - 1)
+            out.append(tok)
+        elif in_a or in_raw:
+            out.append(tok)
+        else:
+            out.append(_PHONE_RX.sub(
+                f'<a href="{PHONE_TEL}">{PHONE_DISPLAY}</a>', tok))
+    return "".join(out)
+
 def paragraphs(body, cls="xsp-prose"):
     if not body:
         return ""
