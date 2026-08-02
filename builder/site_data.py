@@ -25,13 +25,25 @@ ENTITY_PLUMBING = "Extreme Home Services LLC"
 PHONE_DISPLAY = "(844) 584-7399"
 PHONE_TEL = "tel:18445847399"
 PHONE_E164 = "+18445847399"
+EMAIL = "info@extremeheating.com"
 
-# Service areas, not storefronts, on every page except /contact.
+# Ohio state licences. These are a trust and E-E-A-T signal and belong in the footer
+# and in the LocalBusiness schema, not buried on one page.
+LICENSE_HVAC = "OH LIC #37179"
+LICENSE_PLUMBING = "OH LIC #13557"
+
+# Four offices, client-confirmed 2026-08-02. Every location routes to the same main
+# number — the client's instruction — so there is deliberately no per-office phone
+# field here. Service areas, not storefronts, on every page except /contact.
 OFFICES = [
     {"city": "Dayton", "label": "Beavercreek office",
      "street": "712 N Fairfield Rd", "locality": "Beavercreek", "region": "OH", "zip": "45434"},
     {"city": "Cincinnati", "label": "Mason office",
      "street": "5633 Tylersville Rd", "locality": "Mason", "region": "OH", "zip": "45040"},
+    {"city": "Troy", "label": "Troy office",
+     "street": "2950 Stone Cir Dr", "locality": "Troy", "region": "OH", "zip": "45373"},
+    {"city": "Waynesville", "label": "Waynesville office",
+     "street": "141 North St", "locality": "Waynesville", "region": "OH", "zip": "45068"},
 ]
 
 # Client-confirmed 2026-08-01. 8-5 is when the OFFICE is staffed; emergency service

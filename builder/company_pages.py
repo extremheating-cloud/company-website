@@ -698,9 +698,10 @@ ABOUT = {
                    "alt": "An Extreme service van with the Dayton skyline behind it"},
     "story": {
         "h2": "From one van to the whole Miami Valley.",
-        # TODO: founding-story specifics — "20+ years" is approved; add the real
-        # founding year only if the client confirms it (handoff 4a).
-        "p1": "Extreme Heating, Air, Plumbing started the way most good service companies do — one van, one toolbox, and a promise to show up when we said we would. Two decades later we cover Dayton and Cincinnati with a full team of licensed HVAC and plumbing pros.",
+        # Founding year and the Mason opening are client-confirmed (2026-08-02). Dates
+        # are worth stating plainly rather than as "two decades" — they are the kind of
+        # specific, checkable fact both readers and AI answers cite.
+        "p1": "Extreme Heating, Air, Plumbing started in 2004 the way most good service companies do — one van, one toolbox, and a promise to show up when we said we would. We opened the Mason location in 2018, and today we cover Dayton and Cincinnati with a full team of licensed HVAC and plumbing pros.",
         "p2": "The size changed. The promise didn't: upfront pricing before any work begins, techs who treat your home like their own, and a real person answering the phone — day or night.",
     },
     "values": [
@@ -780,10 +781,12 @@ def about_page(d, root_class):
   <img class="mark" src="{T.X_MARK}" alt="" style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)">
   <div class="grid">{stats}</div>
 </div>'''
-    team = "".join(
-        f'''<div>{slot_img("xco-slot slot", {"src": m["photo"], "alt": m["name"]} if m.get("photo") else None, "TECH HEADSHOT")}
-  <div class="name">{m["name"]}</div><div class="role">{m["role"]}</div></div>''' for m in d["team"])
-    team = section("MEET THE TEAM", "The faces at your door.", f'<div class="xco-team">{team}</div>')
+    # The team section is off the page until the company photo shoot (client, 2026-08-02
+    # — headshots for the whole company, then this page gets rebuilt around them). The
+    # four names that were here carried roles guessed from filenames, so publishing
+    # them was misattributing real people. Renderer and CSS stay; only the call is
+    # removed, so restoring it is one line once the photos land.
+    team = ""
     areas = "".join(
         f'''<a class="xsp-card" href="{a["href"]}">
   <span class="txt"><span class="t">{a["t"]}</span><br><span class="d">{a["d"]}</span></span>
