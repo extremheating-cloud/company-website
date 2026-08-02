@@ -460,23 +460,69 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables. The wrapper scrolls, never the page: .xsp-main is min-width:0 and
-   .xhac-svc is overflow-x:hidden, so a wide table stays inside its own box. min-width
-   keeps each column at a readable measure instead of crushing three columns into a
-   350px phone — at 390px the wrapper scrolls and every cell stays legible. */
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
-overflow-x:auto;-webkit-overflow-scrolling:touch}
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-.xsp-table caption{caption-side:top;text-align:left;padding:15px 18px 0;font-size:11px;font-weight:800;
-letter-spacing:1.8px;color:var(--muted)}
-.xsp-table th,.xsp-table td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
-.xsp-table thead th{font-weight:800;font-size:12.5px;color:var(--purple);background:var(--tint);
-border-bottom:1px solid #E0D6EA}
-.xsp-table tbody th{font-weight:800;color:var(--ink);width:26%}
+.xsp-table caption{caption-side:top;text-align:left;padding:0 0 10px;font-size:11px;font-weight:800;
+letter-spacing:1.6px;text-transform:uppercase;color:var(--muted)}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
 .xsp-table tbody td{font-weight:500;color:var(--body)}
-.xsp-table tbody tr:nth-child(even) th,.xsp-table tbody tr:nth-child(even) td{background:#FBFAFC}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  /* display:block on the table takes the caption's width with it, so it wraps a word
+     per line unless it is given the box back. */
+  .xsp-table caption{display:block;width:100%;padding-bottom:12px;letter-spacing:1.2px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  .xsp-table tbody td{display:flex;gap:14px;align-items:baseline;justify-content:space-between;
+  border-bottom:1px solid #F5F3F8;padding:10px 16px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);flex:0 0 38%;font-weight:800;font-size:11.5px;
+  letter-spacing:.5px;text-transform:uppercase;color:var(--purple);line-height:1.5}
+  /* Left-aligned, not right. A right-aligned value that wraps leaves a ragged left
+     edge against the label column and reads as broken rather than as a pair. */
+  .xsp-table tbody td>span{flex:1;text-align:left}
+}
 
 /* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
@@ -502,10 +548,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-h3{font-size:16.5px;margin-top:20px}
 .xsp-prose{font-size:14.5px}
 .xsp-takeaway{font-size:14.5px}
-.xsp-tablewrap{border-radius:12px}
-.xsp-table{min-width:520px;font-size:13px}
-.xsp-table th,.xsp-table td{padding:10px 13px}
-.xsp-table tbody th{width:32%}
 .xsp-vplay .pl{width:52px;height:52px;font-size:19px}
 .xsp-vplay .vt{font-size:13.5px}
 .xhac-svc{--xsp-anchor-offset:96px}
@@ -800,14 +842,22 @@ def table_block(t):
     table itself doesn't. The wrapper carries overflow-x inline as well as in CSS so
     a wide table can never make the page scroll sideways, and it is focusable with a
     label so it can be scrolled from the keyboard."""
+    # role="table"/"row"/"cell" are redundant on a real table and normally worth
+    # leaving off — but under 700px the CSS sets display:block on these elements,
+    # and Chrome and Firefox drop a table's implicit roles the moment it stops being
+    # display:table. Without these the cards are read as a pile of unrelated text.
     cols = list(t["columns"])
     head = "".join(f'<th scope="col">{c}</th>' for c in cols)
     rows = []
     for r in t["rows"]:
         cells = list(r)
-        first = f'<th scope="row">{cells[0]}</th>'
-        rest = "".join(f"<td>{c}</td>" for c in cells[1:])
-        rows.append(f"<tr>{first}{rest}</tr>")
+        first = f'<th scope="row" role="rowheader">{cells[0]}</th>'
+        # data-label supplies the column name as a prefix inside each stacked card;
+        # the value is wrapped so it can be right-aligned against that label.
+        rest = "".join(
+            f'<td role="cell" data-label="{cols[i + 1]}"><span>{c}</span></td>'
+            for i, c in enumerate(cells[1:]))
+        rows.append(f'<tr role="row">{first}{rest}</tr>')
     caption = t.get("caption")
     cap = f"<caption>{caption}</caption>" if caption else ""
     # tabindex makes the scroll box reachable from the keyboard, which is the whole
@@ -815,9 +865,11 @@ def table_block(t):
     # caption to name it — an unnamed region is worse than no region.
     region = f' role="region" aria-label="{caption}"' if caption else ""
     takeaway = f'<p class="xsp-takeaway">{t["takeaway"]}</p>' if t.get("takeaway") else ""
-    return (f'{takeaway}<div class="xsp-tablewrap" style="overflow-x:auto" '
+    # No inline overflow-x here any more: under 700px the CSS sets overflow:visible so
+    # the cards flow, and an inline style would win over it and reinstate the scroller.
+    return (f'{takeaway}<div class="xsp-tablewrap" '
             f'tabindex="0"{region}>'
-            f'<table class="xsp-table">{cap}'
+            f'<table class="xsp-table" role="table">{cap}'
             f"<thead><tr>{head}</tr></thead><tbody>{''.join(rows)}</tbody>"
             f"</table></div>")
 
