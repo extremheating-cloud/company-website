@@ -25,14 +25,18 @@ CSS = """
 .xh-hd{position:sticky;top:0;z-index:900;background:#5E2C7E;color:#fff;
 font-family:"Montserrat",ui-sans-serif,system-ui,sans-serif}
 .xh-hd *{box-sizing:border-box}
-.xh-hd a{color:inherit;text-decoration:none}
+.xh-hd a{text-decoration:none}
+/* Colour inheritance is scoped to the purple bar and the mobile panel. Applying it to
+   every descendant forced the white dropdown's links to render white-on-lavender. */
+.xh-bar a,.xh-panel a,.xh-callbar a{color:inherit}
 .xh-bar{max-width:1280px;margin:0 auto;padding:14px 40px;display:flex;align-items:center;
 justify-content:space-between;gap:24px}
 .xh-logo{display:flex;align-items:center;flex:none}
 .xh-logo img{height:44px;width:auto;display:block}
 
 .xh-nav{display:flex;align-items:center;gap:26px;font-weight:600;font-size:14px}
-.xh-navitem{position:relative}
+.xh-navitem{position:static}
+.xh-hd{position:sticky}
 .xh-navbtn{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:10px 0;
 color:#fff;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
 .xh-navbtn .car{font-size:9px;opacity:.6;transition:transform .18s ease}
@@ -48,26 +52,64 @@ color:#fff;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
 border-radius:10px;border:0;cursor:pointer;font-family:inherit;min-height:44px;white-space:nowrap}
 .xh-cta:hover{background:#8FD481}
 
-/* ---- mega menu ---- */
-.xh-mega{position:absolute;top:100%;left:-24px;width:min(760px,calc(100vw - 48px));
-background:#fff;color:#0F172A;border-radius:16px;box-shadow:0 24px 60px rgba(15,23,42,.28);
-padding:24px;display:none;grid-template-columns:1.4fr 1fr;gap:24px}
-.xh-navitem[data-open="true"] .xh-mega{display:grid}
-.xh-mega h3{margin:0 0 12px;font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:#5F2980}
-.xh-row{display:block;padding:10px 12px;border-radius:10px}
-.xh-row:hover{background:#F4F1F8}
-.xh-row .t{font-weight:800;font-size:14.5px;color:#0F172A}
-.xh-row .d{font-size:12.5px;color:#475569;margin-top:2px}
-.xh-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 12px}
-.xh-chip{font-size:11.5px;font-weight:700;color:#5F2980;background:#F4F1F8;border-radius:999px;
-padding:4px 10px;min-height:28px;display:inline-flex;align-items:center}
-.xh-chip:hover{background:#E8DFF0}
-.xh-alt{border-left:1px solid #E7E7EA;padding-left:24px}
-.xh-alt a{display:flex;align-items:center;justify-content:space-between;gap:8px;
-padding:9px 0;font-size:13.5px;font-weight:600;color:#475569}
-.xh-alt a:hover{color:#5F2980}
-.xh-badge{font-size:9.5px;font-weight:800;letter-spacing:1px;color:#3F852B;background:#ECF5E9;
-border-radius:999px;padding:3px 8px}
+/* ---- mega menu: full-width panel, matching the Framer desktop header ---- */
+.xh-navbtn{position:relative}
+.xh-navbtn .bar{position:absolute;left:0;right:0;bottom:-14px;height:3px;background:#6BB85C;
+transform:scaleX(0);transform-origin:center;transition:transform .15s ease;border-radius:2px}
+.xh-navbtn[aria-expanded="true"]{color:#6BB85C;font-weight:800}
+.xh-navbtn[aria-expanded="true"] .bar{transform:scaleX(1)}
+
+.xm-scrim{position:fixed;left:0;right:0;bottom:0;background:rgba(15,23,42,.45);z-index:890;display:none}
+.xh-hd[data-menu] .xm-scrim{display:block}
+.xm-shell{position:absolute;left:0;right:0;top:100%;z-index:900}
+.xm-panel{background:#fff;border-top:1px solid #E7E7EA;
+box-shadow:0 24px 60px rgba(15,23,42,.22);display:none}
+.xh-hd[data-menu="hvac"] .xm-panel[data-menu="hvac"],
+.xh-hd[data-menu="plumbing"] .xm-panel[data-menu="plumbing"]{display:block;animation:xmIn .15s ease-out both}
+@keyframes xmIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.xm-panel{animation:none!important}}
+
+.xm-grid{max-width:1280px;margin:0 auto;padding:30px 40px 34px;
+display:grid;grid-template-columns:1.1fr 1fr 340px;gap:40px}
+.xm-label{font-weight:800;font-size:10.5px;letter-spacing:1.8px;color:#94A3B8;
+padding-bottom:12px;border-bottom:1px solid #E7E7EA;margin-bottom:10px}
+.xm-row{display:flex;align-items:flex-start;gap:12px;padding:11px 10px;border-radius:10px;
+text-decoration:none;transition:background .13s ease}
+.xm-row .txt{flex:1;display:flex;flex-direction:column;gap:2px}
+.xm-row .t{font-weight:800;font-size:14px;color:#0F172A;display:flex;align-items:center;gap:8px}
+.xm-row .d{font-weight:500;font-size:11.5px;color:#475569}
+.xm-row .go{opacity:0;color:#6BB85C;font-weight:800;transition:opacity .13s ease}
+.xm-row:hover{background:#F4F1F8}
+.xm-row:hover .t{color:#5F2980}
+.xm-row:hover .go{opacity:1}
+.xm-row:focus-visible{outline:2px solid #5F2980;outline-offset:-2px}
+.xm-row.slim{padding:10px}
+.xm-glyph{position:relative;display:block;width:26px;height:26px;flex:none}
+.xm-glyph i{position:absolute;inset:9.5px 2px;border-radius:2px}
+.xm-glyph i:first-child{background:#5F2980;transform:rotate(45deg)}
+.xm-glyph i:last-child{background:#6BB85C;transform:rotate(-45deg)}
+.xm-badge{background:#EEF7EC;color:#4E9B41;font-weight:800;font-size:9.5px;letter-spacing:.6px;
+border-radius:5px;padding:3px 7px}
+.xm-chips{display:flex;flex-wrap:wrap;gap:6px;padding:2px 10px 8px 46px}
+.xm-chip{background:#F4F1F8;color:#5F2980;font-weight:700;font-size:10.5px;border-radius:6px;
+padding:5px 9px;text-decoration:none;transition:background .13s ease,color .13s ease}
+.xm-chip:hover{background:#5F2980;color:#fff}
+.xm-divider{height:1px;background:#E7E7EA;margin:12px 0}
+.xm-viewall{display:inline-block;font-weight:800;font-size:13px;color:#5F2980;
+text-decoration:none;padding:6px 10px}
+.xm-viewall:hover{color:#3F852B}
+.xm-aside{display:flex;flex-direction:column;gap:14px}
+.xm-promo{border-radius:14px;padding:18px 20px}
+.xm-promo.lav{background:#F4F1F8}
+.xm-promo.mint{background:#EEF7EC}
+.xm-promo .h{font-weight:800;font-size:15px;margin-bottom:6px}
+.xm-promo.lav .h{color:#5F2980}
+.xm-promo.mint .h{color:#3D7A33}
+.xm-promo p{font-weight:500;font-size:12.5px;line-height:1.55;color:#475569;margin:0 0 10px}
+.xm-promo a,.xm-promo button{font-weight:800;font-size:13px;color:#5F2980;text-decoration:none;
+background:none;border:0;padding:0;cursor:pointer;font-family:inherit}
+.xm-promo.mint a,.xm-promo.mint button{color:#3D7A33}
+.xm-promo a:hover,.xm-promo button:hover{text-decoration:underline}
 
 /* ---- mobile ---- */
 .xh-burger{display:none;background:none;border:0;cursor:pointer;padding:10px;
@@ -106,8 +148,9 @@ font-family:inherit;text-decoration:none}
   .xh-bar{padding:12px 24px;gap:14px}
   .xh-nav{gap:16px;font-size:13.5px}
   .xh-phone{display:none}
-  .xh-mega{left:-12px;width:min(620px,calc(100vw - 32px));grid-template-columns:1fr}
-  .xh-alt{border-left:0;border-top:1px solid #E7E7EA;padding:16px 0 0}
+  .xm-grid{grid-template-columns:1fr 1fr;gap:28px;padding:24px 24px 28px}
+  .xm-aside{grid-column:1 / -1;flex-direction:row}
+  .xm-promo{flex:1}
 }
 @media (max-width:809px){
   .xh-bar{padding:10px 16px}
@@ -187,32 +230,75 @@ font-size:12px;color:rgba(255,255,255,.55)}
 """
 
 # ---------------------------------------------------------------- header
-def _mega(label, core, additional, alt_label):
-    rows = ""
-    for title, desc, href, chips in core:
-        chip_html = ""
-        if chips:
-            chip_html = ('<div class="xh-chips">' +
-                         "".join(f'<a class="xh-chip" href="{h}">{l}</a>' for l, h in chips) +
-                         "</div>")
-        rows += (f'<a class="xh-row" href="{href}"><span class="t">{title}</span>'
-                 f'<span class="d">{desc}</span></a>{chip_html}')
-    alts = "".join(
-        f'<a href="{href}">{title}'
-        f'{f"<span class=\"xh-badge\">{badge}</span>" if badge else ""}</a>'
-        for title, href, badge in additional)
-    return f'''<div class="xh-mega" role="menu">
-      <div><h3>{label}</h3>{rows}</div>
-      <div class="xh-alt"><h3>{alt_label}</h3>{alts}</div>
+# Promo asides, verbatim from the Framer desktop header.
+PROMOS = {
+    "hvac": [
+        ("lav", "Interested in Financing?",
+         "Spread out the cost of a new comfort system with flexible payment options that fit "
+         "your budget.", "Learn More →", "/financing-options"),
+        ("mint", "X-Plan Maintenance Plan",
+         "Scheduled tune-ups, priority service, and exclusive member discounts — from "
+         "$20.75/mo.", "Explore X-Plan →", "/maintenance"),
+    ],
+    "plumbing": [
+        ("lav", "Need Plumbing Help Fast?",
+         "Same-day and emergency plumbing service across Dayton &amp; Cincinnati.",
+         "Schedule Service →", None),          # None = opens the schedule dialog
+        ("mint", "Plumbing Specials",
+         "Current offers and seasonal savings on plumbing services.",
+         "View Specials →", "/specials"),
+    ],
+}
+
+def _core_row(title, desc, href, chips):
+    chip_html = ""
+    if chips:
+        chip_html = ('<div class="xm-chips">' +
+                     "".join(f'<a class="xm-chip" href="{h}">{l}</a>' for l, h in chips) +
+                     "</div>")
+    return f'''<div><a class="xm-row" href="{href}">
+        <span class="xm-glyph" aria-hidden="true"><i></i><i></i></span>
+        <span class="txt"><span class="t">{title}</span><span class="d">{desc}</span></span>
+        <span class="go" aria-hidden="true">→</span>
+      </a>{chip_html}</div>'''
+
+def _add_row(title, href, badge):
+    b = f'<span class="xm-badge">{badge}</span>' if badge else ""
+    return (f'<a class="xm-row slim" href="{href}"><span class="txt">'
+            f'<span class="t">{title}{b}</span></span>'
+            f'<span class="go" aria-hidden="true">→</span></a>')
+
+def _aside(key):
+    out = ""
+    for cls, head, body, cta, href in PROMOS[key]:
+        action = (f'<a href="{href}">{cta}</a>' if href
+                  else f'<button class="js-schedule" type="button">{cta}</button>')
+        out += (f'<div class="xm-promo {cls}"><div class="h">{head}</div>'
+                f'<p>{body}</p>{action}</div>')
+    return f'<div class="xm-aside">{out}</div>'
+
+def _panel(key, core, additional, alt_label, viewall_label, viewall_href):
+    return f'''<div class="xm-panel" data-menu="{key}">
+      <div class="xm-grid">
+        <div>
+          <div class="xm-label">CORE SERVICES</div>
+          {"".join(_core_row(*r) for r in core)}
+        </div>
+        <div>
+          <div class="xm-label">{alt_label}</div>
+          {"".join(_add_row(*r) for r in additional)}
+          <div class="xm-divider"></div>
+          <a class="xm-viewall" href="{viewall_href}">{viewall_label}</a>
+        </div>
+        {_aside(key)}
+      </div>
     </div>'''
 
-def _nav_item(label, core, additional, alt_label, idx):
-    return f'''<div class="xh-navitem" data-mega="{idx}">
-      <button class="xh-navbtn" type="button" aria-expanded="false" aria-haspopup="true">
-        {label} <span class="car" aria-hidden="true">▼</span>
-      </button>
-      {_mega(label.upper(), core, additional, alt_label)}
-    </div>'''
+def _nav_item(label, key):
+    return f'''<button class="xh-navbtn" type="button" data-menu="{key}"
+        aria-expanded="false" aria-haspopup="true">
+      {label} <span class="car" aria-hidden="true">▼</span><span class="bar" aria-hidden="true"></span>
+    </button>'''
 
 def _panel_acc(label, core, additional):
     links = "".join(f'<a href="{h}">{t}</a>' for t, d, h, c in core)
@@ -235,8 +321,8 @@ def header(current=""):
       <img src="{LOGO_TIGHT}" alt="{D.COMPANY}">
     </a>
     <nav class="xh-nav" aria-label="Primary">
-      {_nav_item("Plumbing", D.PLUMB_CORE, D.PLUMB_ADDITIONAL, "ADDITIONAL SERVICES", 0)}
-      {_nav_item("Heating &amp; Air", D.HVAC_CORE, D.HVAC_ADDITIONAL, "ADDITIONAL SERVICES", 1)}
+      {_nav_item("Plumbing", "plumbing")}
+      {_nav_item("Heating &amp; Air", "hvac")}
       {simple}
     </nav>
     <div class="xh-actions">
@@ -246,6 +332,13 @@ def header(current=""):
     <button class="xh-burger" type="button" aria-label="Open menu" aria-expanded="false">
       <span></span>
     </button>
+  </div>
+  <div class="xm-scrim" aria-hidden="true"></div>
+  <div class="xm-shell">
+    {_panel("plumbing", D.PLUMB_CORE, D.PLUMB_ADDITIONAL, "ADDITIONAL SERVICES",
+            "View All Plumbing Services →", "/plumbing/services")}
+    {_panel("hvac", D.HVAC_CORE, D.HVAC_ADDITIONAL, "X-PLAN &amp; ADDITIONAL SERVICES",
+            "View All HVAC Services →", "/services")}
   </div>
 
   <div class="xh-panel" role="dialog" aria-modal="true" aria-label="Menu">
@@ -338,35 +431,43 @@ JS = """
   var hd = document.querySelector('.xh-hd');
   if (!hd) return;
 
-  /* --- mega menus: open on hover for pointers, on click for everyone --- */
-  var items = hd.querySelectorAll('.xh-navitem');
-  function closeAll(except){
-    items.forEach(function(it){
-      if (it === except) return;
-      it.dataset.open = 'false';
-      it.querySelector('.xh-navbtn').setAttribute('aria-expanded','false');
+  /* --- mega menus. State lives on the header root, not the nav item, because the
+         panels sit in .xm-shell outside the bar. Nesting them inside the bar meant the
+         bar's colour reset reached in and rendered the dropdown's links white on
+         white. --- */
+  var btns = hd.querySelectorAll('.xh-navbtn');
+  function setMenu(key){
+    if (key) hd.setAttribute('data-menu', key); else hd.removeAttribute('data-menu');
+    btns.forEach(function(b){
+      b.setAttribute('aria-expanded', b.dataset.menu === key ? 'true' : 'false');
     });
   }
-  items.forEach(function(it){
-    var btn = it.querySelector('.xh-navbtn');
+  function closeAll(){ setMenu(null); }
+  btns.forEach(function(btn){
     btn.addEventListener('click', function(e){
       e.preventDefault();
-      var open = it.dataset.open === 'true';
-      closeAll(it);
-      it.dataset.open = open ? 'false' : 'true';
-      btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+      setMenu(hd.getAttribute('data-menu') === btn.dataset.menu ? null : btn.dataset.menu);
     });
-    it.addEventListener('mouseenter', function(){
-      if (matchMedia('(hover:hover) and (pointer:fine)').matches){ closeAll(it); it.dataset.open='true';
-        btn.setAttribute('aria-expanded','true'); }
-    });
-    it.addEventListener('mouseleave', function(){
-      if (matchMedia('(hover:hover) and (pointer:fine)').matches){ it.dataset.open='false';
-        btn.setAttribute('aria-expanded','false'); }
+    btn.addEventListener('mouseenter', function(){
+      if (matchMedia('(hover:hover) and (pointer:fine)').matches) setMenu(btn.dataset.menu);
     });
   });
-  document.addEventListener('click', function(e){ if (!hd.contains(e.target)) closeAll(null); });
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ closeAll(null); closePanel(); } });
+  var shell = hd.querySelector('.xm-shell');
+  /* Close on leaving the bar+panel together, so moving the pointer from the button
+     down into the panel does not dismiss it. */
+  [hd.querySelector('.xh-bar'), shell].forEach(function(el){
+    if (!el) return;
+    el.addEventListener('mouseleave', function(e){
+      if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+      var to = e.relatedTarget;
+      if (to && (hd.querySelector('.xh-bar').contains(to) || (shell && shell.contains(to)))) return;
+      closeAll();
+    });
+  });
+  document.addEventListener('click', function(e){ if (!hd.contains(e.target)) closeAll(); });
+  var scrim = hd.querySelector('.xm-scrim');
+  if (scrim) scrim.addEventListener('click', closeAll);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ closeAll(); closePanel(); } });
 
   /* --- mobile panel --- */
   var panel = hd.querySelector('.xh-panel'),

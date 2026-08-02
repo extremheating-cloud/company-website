@@ -108,9 +108,15 @@ margin-top:8px;max-width:64ch}
 .xsp-band::after{content:"";display:block;height:4px;
 background:linear-gradient(90deg,var(--green),var(--purple))}
 
-/* The hero booking card is pulled -84px into the body. On the overview and hub there
-   is no rail to absorb it, so the first section crowded the card. */
-.xco-body{padding-top:96px}
+/* The booking card overhangs the hero into the section below — the treatment the
+   service pages already had, now on every location page including the overview and
+   the hub. align-self:end pins the card to the bottom of the hero grid so the -84px
+   margin actually pulls it past the edge; with align-self:start the card floated at
+   the top of a taller row and never overhung at all.
+   The body then needs clearance so nothing collides with what is hanging into it. */
+.xsp-bookcol{align-self:end}
+.xco-body{padding-top:104px}
+.xsp-bodygrid{padding-top:104px}
 
 @media (max-width:809px){
 .xsp-band-in{padding:26px 20px;flex-direction:column;align-items:flex-start;gap:16px}

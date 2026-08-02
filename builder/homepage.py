@@ -50,12 +50,30 @@ BRANDS = [("Trane", "trane.png"), ("Ruud", "ruud.png"), ("Daikin", "daikin.png")
 
 CSS = """
 /* ================================ hero ================================ */
-.hp-hero{position:relative;background:linear-gradient(150deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);
+.hp-hero{position:relative;padding-bottom:0;background:linear-gradient(150deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);
 color:#fff;overflow:hidden}
 .hp-hero-mark{position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;
 transform:rotate(-8deg);filter:brightness(0) invert(1);pointer-events:none}
 .hp-wrap{position:relative;max-width:1280px;margin:0 auto;padding:0 40px}
-.hp-hero-in{padding:56px 0 64px;max-width:720px}
+.hp-hero-grid{display:grid;grid-template-columns:1fr .95fr;gap:32px;align-items:end;
+padding:56px 0 0}
+.hp-hero-in{padding:0 0 64px;max-width:640px}
+
+/* Van column. The slash is a rotated + skewed bar behind the van — the same geometry
+   the Framer hero used, expressed as percentages so it tracks the column at any width. */
+.hp-van-col{position:relative;width:100%;align-self:end;min-height:0;
+aspect-ratio:569 / 480;max-height:480px}
+.hp-slash{position:absolute;left:-10.5%;right:-14%;bottom:20%;height:13.3%;
+background:#6BB85C;transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.hp-slash-w{position:absolute;left:-3.5%;right:-21%;bottom:17.5%;height:3.75%;
+background:#fff;opacity:.25;transform:rotate(-9deg) skewX(-16deg)}
+.hp-van{position:absolute;left:50%;bottom:20%;transform:translateX(-52%);
+width:104%;max-width:660px;filter:drop-shadow(0 24px 30px rgba(0,0,0,.35))}
+/* Mobile stage: van sits under the copy instead of beside it. */
+.hp-van-stage{display:none;position:relative;aspect-ratio:350 / 210;margin-top:22px}
+.hp-van-stage .hp-slash{left:-11.4%;right:-11.4%;bottom:25.7%;height:19%}
+.hp-van-stage .hp-van{bottom:26.7%;transform:translateX(-50%);width:100%;max-width:none;
+filter:drop-shadow(0 16px 20px rgba(0,0,0,.35))}
 .hp-badge{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,.3);
 background:rgba(255,255,255,.1);border-radius:999px;padding:8px 15px;font-size:11.5px;
 font-weight:800;letter-spacing:1.4px}
@@ -175,13 +193,17 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
 @media (max-width:1023px){
   .hp-wrap{padding:0 24px}
   .hp-cards,.hp-revs{grid-template-columns:1fr 1fr}
+  .hp-hero-grid{grid-template-columns:1fr .8fr;gap:20px}
   .hp-about{grid-template-columns:1fr;gap:28px}
   .hp-xp-grid{grid-template-columns:1fr;gap:26px}
   .hp-promise-in{padding:14px 24px}
 }
 @media (max-width:809px){
   .hp-wrap{padding:0 20px}
-  .hp-hero-in{padding:38px 0 44px}
+  .hp-hero-grid{grid-template-columns:1fr;gap:0;padding:38px 0 0}
+  .hp-hero-in{padding:0 0 8px;max-width:none}
+  .hp-van-col{display:none}
+  .hp-van-stage{display:block}
   .hp-sec{padding:44px 0}
   .hp-cards,.hp-revs,.hp-brands{grid-template-columns:1fr;gap:12px}
   .hp-stats{grid-template-columns:1fr 1fr;gap:16px}
@@ -221,7 +243,7 @@ def homepage():
 
 <section class="hp-hero">
   <img class="hp-hero-mark" src="{X_MARK}" alt="" aria-hidden="true">
-  <div class="hp-wrap"><div class="hp-hero-in">
+  <div class="hp-wrap"><div class="hp-hero-grid"><div class="hp-hero-in">
     <span class="hp-badge"><span class="dot"></span>LOCALLY OWNED · DAYTON + CINCINNATI</span>
     <h1 class="hp-h1">Trusted Team<br>for
       <span class="hp-roll"><ul>{roll}</ul></span>
@@ -237,6 +259,18 @@ def homepage():
       <span>◆ {D.YEARS_LOCAL} Years Locally Owned</span>
       <span>◆ 24/7 Emergency</span>
     </div>
+
+    <div class="hp-van-stage" aria-hidden="true">
+      <div class="hp-slash"></div>
+      <img class="hp-van" src="{VAN}" alt="">
+    </div>
+  </div>
+
+  <div class="hp-van-col">
+    <div class="hp-slash" aria-hidden="true"></div>
+    <div class="hp-slash-w" aria-hidden="true"></div>
+    <img class="hp-van" src="{VAN}" alt="Extreme service van">
+  </div>
   </div></div>
 </section>
 
