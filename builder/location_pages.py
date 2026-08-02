@@ -112,6 +112,11 @@ background:linear-gradient(90deg,var(--green),var(--purple))}
    template.py / company_pages.py, so every page type gets the same treatment. */
 
 @media (max-width:809px){
+/* The hub's hero card is the town finder, not a booking CTA. .xsp-bookcol is
+   display:none on a phone, which left /locations with no search box at all — the
+   only input on the page. Show it inline instead, the way /maintenance keeps its
+   pricing card, and drop the overhang since nothing is overhanging on mobile. */
+.xsp-bookcol.zip{display:block;margin:24px 0 0}
 .xsp-band-in{padding:26px 20px;flex-direction:column;align-items:flex-start;gap:16px}
 .xsp-band .t{font-size:21px}
 .xsp-band .btns{width:100%}
@@ -150,8 +155,16 @@ def _band(title, sub, cta="call"):
   <div class="btns">{btn}</div>
 </div></div>'''
 
-def _hero(city, crumbs, h1, hi, intro, chips, card, pill=""):
+def _hero(city, crumbs, h1, hi, intro, chips, card, pill="", card_class="", ctas=True):
+    """ctas=False is for the hub, whose card is a search tool rather than a booking
+    CTA and stays on screen at every width instead of handing off to a button pair."""
     pill_html = f'<div class="xlc-pill">{pill}</div>' if pill else ""
+    # The booking card is display:none under 810px, so without this pair a phone gets
+    # a hero with no way to book — which is what all 267 location pages used to do.
+    cta_html = f'''<div class="xsp-hero-ctas xsp-mb">
+        {T.schedule_btn("Schedule Service", "xsp-cta js-schedule")}
+        <a class="xsp-cta-outline" href="{T.PHONE_TEL}">Call {T.PHONE_DISPLAY}</a>
+      </div>''' if ctas else ""
     return f'''<div class="xsp-hero">
   <div class="xsp-hero-mark"><img src="{T.X_MARK}" alt=""></div>
   <div class="xsp-hero-grid">
@@ -160,9 +173,10 @@ def _hero(city, crumbs, h1, hi, intro, chips, card, pill=""):
       {pill_html}
       {T.h1(h1, hi)}
       <p class="xsp-intro">{intro}</p>
+      {cta_html}
       {T.chips(chips)}
     </div>
-    <div class="xsp-bookcol">{card}</div>
+    <div class="xsp-bookcol{" " + card_class if card_class else ""}">{card}</div>
   </div>
 </div>'''
 
@@ -558,7 +572,8 @@ def hub():
         "One Extreme Team, {X}", "all over southwest Ohio",
         "Heating, cooling, and plumbing across the Dayton and Cincinnati metros. Find your "
         "community below — one phone number covers them all.",
-        ["2 Metro Areas", f"{len(L.ALL)}+ Communities", "Same-Day in Most Cases"], zip_card)}
+        ["2 Metro Areas", f"{len(L.ALL)}+ Communities", "Same-Day in Most Cases"], zip_card,
+        card_class="zip", ctas=False)}
 <div class="xco-body">
   {section("SERVICE AREAS", "Two metros, one team.", "".join(metros))}
   {section("ALL COMMUNITIES", "Every place we serve.",

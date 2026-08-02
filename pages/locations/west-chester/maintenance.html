@@ -554,6 +554,11 @@ background:linear-gradient(90deg,var(--green),var(--purple))}
    template.py / company_pages.py, so every page type gets the same treatment. */
 
 @media (max-width:809px){
+/* The hub's hero card is the town finder, not a booking CTA. .xsp-bookcol is
+   display:none on a phone, which left /locations with no search box at all — the
+   only input on the page. Show it inline instead, the way /maintenance keeps its
+   pricing card, and drop the overhang since nothing is overhanging on mobile. */
+.xsp-bookcol.zip{display:block;margin:24px 0 0}
 .xsp-band-in{padding:26px 20px;flex-direction:column;align-items:flex-start;gap:16px}
 .xsp-band .t{font-size:21px}
 .xsp-band .btns{width:100%}
@@ -581,6 +586,10 @@ font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin
       
       <h1 class="xsp-h1">Tune-ups that keep <em>breakdowns away</em></h1>
       <p class="xsp-intro">Seasonal furnace and AC maintenance for West Chester homes — done right, documented for your warranty, and automatic if you're on the X-Plan.</p>
+      <div class="xsp-hero-ctas xsp-mb">
+        <a class="xsp-cta js-schedule js-schedule" href="#" role="button">Schedule Service</a>
+        <a class="xsp-cta-outline" href="tel:18445847399">Call (844) 584-7399</a>
+      </div>
       <div class="xsp-chiprow"><div class="xsp-chip">Two Seasons, Two Tune-Ups</div><div class="xsp-chip">Warranty-Valid Reports</div><div class="xsp-chip">X-Plan Member Perks</div></div>
     </div>
     <div class="xsp-bookcol"><div class="xsp-book">
