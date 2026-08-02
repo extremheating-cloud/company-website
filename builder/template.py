@@ -453,8 +453,21 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
    .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-.xsp-prose a{color:var(--purple);font-weight:700}
-.xsp-prose a:hover{color:var(--green-dark)}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
 /* The one-sentence takeaway that has to sit immediately above a table — engines lift
    it when they can't lift the table. Heavier than body copy, lighter than a heading. */
@@ -894,6 +907,18 @@ def content_section(s):
         parts.append(paragraphs(sub.get("body")))
     if s.get("table"):
         parts.append(table_block(s["table"]))
+    # An optional action row. A section whose answer IS "call or book" should end in a
+    # button, not in an underlined phone number buried mid-paragraph — the number stays
+    # in the prose because that is the sentence an AI answer lifts, but the tap target
+    # is a real button. cta: True gives the standard Schedule + Call pair; a dict gives
+    # a single custom link, e.g. {"label": "Explore X-Plan", "href": "/maintenance"}.
+    cta = s.get("cta")
+    if cta is True:
+        parts.append(f'<div class="xsp-inlinecta">{schedule_btn("Schedule Service", "xsp-cta")}'
+                     f'<a class="xsp-cta-outline" href="{PHONE_TEL}">Call {PHONE_DISPLAY}</a></div>')
+    elif isinstance(cta, dict):
+        parts.append(f'<div class="xsp-inlinecta">'
+                     f'<a class="xsp-cta" href="{cta["href"]}">{cta["label"]}</a></div>')
     sid = f' id="{s["id"]}"' if s.get("id") else ""
     return f'<div class="xsp-section"{sid}>{"".join(parts)}</div>'
 
