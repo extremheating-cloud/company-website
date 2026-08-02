@@ -1,5 +1,5 @@
 """Build service pages from data objects. Run: python3 build.py [--check]"""
-import os, sys
+import os, re, sys
 import template as T
 
 # builder/ sits one level below the repo root. The generated pages go into pages/,
@@ -15,9 +15,20 @@ import json
 _INV = json.load(open(os.path.join(os.path.dirname(__file__), "image_inventory.json")))
 
 def old_img(page_rel, idx=0):
-    """First (or nth) CDN image from the pre-redesign version of a page."""
+    """First (or nth) CDN image from the pre-redesign version of a page.
+
+    The inventory stores whole URLs, and the ones pointing at our own repo carry the
+    commit that was pinned when it was captured. Left alone, those pages ignore
+    ASSET_COMMIT entirely — they kept serving bytes from an old commit while every
+    other page moved to the new pin, so re-encoding or replacing one of those files
+    would silently do nothing. Re-pin ours; leave third-party stock URLs alone.
+    """
     imgs = _INV.get(page_rel, [])
-    return imgs[idx] if idx < len(imgs) else None
+    url = imgs[idx] if idx < len(imgs) else None
+    if url and T.ASSET_REPO in url:
+        url = re.sub(re.escape(T.ASSET_REPO) + r"@[0-9a-f]+/",
+                     f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/", url)
+    return url
 
 # ================================================================
 # /air-conditioning — mockup 2a (desktop) / 2b (mobile), copy verbatim
@@ -248,8 +259,12 @@ FURNACE_REPAIR = {
     },
     "rail": {
         "promos": ["xplanSub"],
-        "photo": old_img("HVAC Service Pages/furnace-repair.html"),
-        "photoAlt": "Extreme technician repairing a furnace",
+        # Set here, not in PHOTO_OVERRIDES: this page is appended to PAGES directly
+        # rather than through _wire_image(), so an override entry for it would never
+        # be read. The stock frame it used to carry is replaced by a real job photo.
+        "photo": T.PHOTOS["furnaceRepairOpen"],
+        "photoPos": "50% 60%",
+        "photoAlt": "An older gas furnace opened up for repair, burner compartment exposed",
     },
     "siblings": {
         "label": "FURNACE & HEATING",
@@ -459,17 +474,12 @@ PHOTO_OVERRIDES = {
         "photoAlt": "A newly installed Ruud air handler in a Dayton-area home",
     },
     # service/furnace-repair.jpg is stock (a technician in an unbranded blue shirt).
-    # These two are real Extreme jobs: the tidy Trane for the overview, the older
-    # unit with its burner compartment open for the repair page.
+    # This is a real Extreme job. (/furnace-repair gets its own photo inline above —
+    # that page never passes through _wire_image.)
     "HVAC Service Pages/furnace-heating.html": {
         "photo": T.PHOTOS["furnaceService"],
         "photoPos": "50% 45%",
         "photoAlt": "A Trane furnace in a basement with its control panel open for service",
-    },
-    "HVAC Service Pages/furnace-repair.html": {
-        "photo": T.PHOTOS["furnaceRepairOpen"],
-        "photoPos": "50% 60%",
-        "photoAlt": "An older gas furnace opened up for repair, burner compartment exposed",
     },
 }
 
