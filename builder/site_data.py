@@ -97,6 +97,8 @@ XPLAN = {
         "Both seasonal tune-ups included",
         "15% off repairs",
         "Priority scheduling",
+        # Dispatch / service-call fees ARE publishable (client, 2026-08-02). The
+        # no-advertised-rates rule covers repair and installation pricing, not these.
         "Member service calls: $77 vs $97 · $177 vs $197 after hours",
     ],
     "zeroRisk": ("100% of the investment of your X-Plan membership in consecutive years "
