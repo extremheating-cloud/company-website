@@ -40,6 +40,12 @@ justify-content:space-between;gap:24px}
 .xh-navbtn{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:10px 0;
 color:#fff;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
 .xh-navbtn .car{font-size:9px;opacity:.6;transition:transform .18s ease}
+/* NEW rides above the label, centred on it. The button is 44px tall for the tap
+   target while the text is ~17px, so the chip sits in space the row already had. */
+.xh-navbtn.has-new{position:relative}
+.xh-navbtn .xh-new{position:absolute;left:50%;top:2px;transform:translateX(-50%);
+background:#6BB85C;color:#0F172A;font-size:8.5px;font-weight:800;letter-spacing:1px;
+line-height:1;border-radius:4px;padding:3px 5px;white-space:nowrap}
 .xh-navitem[data-open="true"] .xh-navbtn .car{transform:rotate(180deg)}
 .xh-nav a.xh-link{display:inline-flex;align-items:center;min-height:44px}
 .xh-nav a.xh-link:hover,.xh-navbtn:hover{color:#8FD481}
@@ -335,18 +341,25 @@ def _panel(key, core, additional, alt_label, viewall_label, viewall_href):
       </div>
     </div>'''
 
-def _nav_item(label, key):
-    return f'''<button class="xh-navbtn" type="button" data-menu="{key}"
+def _nav_item(label, key, badge=""):
+    """badge rides above the label rather than beside it — the nav bar has room in
+    the button's top padding, and a chip on the baseline would push the row's
+    spacing around."""
+    tag = f'<span class="xh-new">{badge}</span>' if badge else ""
+    return f'''<button class="xh-navbtn{" has-new" if badge else ""}" type="button" data-menu="{key}"
         aria-expanded="false" aria-haspopup="true">
-      {label} <span class="car" aria-hidden="true">▼</span><span class="bar" aria-hidden="true"></span>
+      {tag}{label} <span class="car" aria-hidden="true">▼</span><span class="bar" aria-hidden="true"></span>
     </button>'''
 
-def _panel_acc(label, core, additional, all_label, all_href):
+def _panel_acc(label, core, additional, all_label, all_href, badge=""):
     core_links = "".join(f'<a href="{h}">{t}</a>' for t, d, h, c in core)
     add_links = "".join(f'<a href="{h}">{t}</a>' for t, h, b in additional)
+    # Inline here, not stacked as on desktop: these rows are full-width and the chip
+    # sits naturally after the label, the same way SAVE does on Specials.
+    tag = f'<span class="xh-save">{badge}</span>' if badge else ""
     return f'''<div class="xh-acc">
       <button type="button" aria-expanded="false">
-        <span>{label}</span><span class="xh-caret" aria-hidden="true">▼</span>
+        <span>{label}{tag}</span><span class="xh-caret" aria-hidden="true">▼</span>
       </button>
       <div>
         <p class="xh-mini">CORE SERVICES</p>
@@ -374,8 +387,8 @@ def header(current=""):
       <img src="{LOGO_TIGHT}" alt="{D.COMPANY}">
     </a>
     <nav class="xh-nav" aria-label="Primary">
-      {_nav_item("Plumbing", "plumbing")}
       {_nav_item("Heating &amp; Air", "hvac")}
+      {_nav_item("Plumbing", "plumbing", badge="NEW")}
       {simple}
     </nav>
     <div class="xh-actions">
@@ -388,10 +401,10 @@ def header(current=""):
   </div>
   <div class="xm-scrim" aria-hidden="true"></div>
   <div class="xm-shell">
-    {_panel("plumbing", D.PLUMB_CORE, D.PLUMB_ADDITIONAL, "ADDITIONAL SERVICES",
-            "View All Plumbing Services →", "/plumbing/services")}
     {_panel("hvac", D.HVAC_CORE, D.HVAC_ADDITIONAL, "X-PLAN &amp; ADDITIONAL SERVICES",
             "View All HVAC Services →", "/services")}
+    {_panel("plumbing", D.PLUMB_CORE, D.PLUMB_ADDITIONAL, "ADDITIONAL SERVICES",
+            "View All Plumbing Services →", "/plumbing/services")}
   </div>
 
   <div class="xh-panel" role="dialog" aria-modal="true" aria-label="Menu">
@@ -400,10 +413,10 @@ def header(current=""):
       <button class="xh-close" type="button" aria-label="Close menu">×</button>
     </div>
     <div class="xh-scroll">
-      {_panel_acc("Plumbing", D.PLUMB_CORE, D.PLUMB_ADDITIONAL,
-                  "All Plumbing Services", "/plumbing/services")}
       {_panel_acc("Heating &amp; Air", D.HVAC_CORE, D.HVAC_ADDITIONAL,
                   "All HVAC Services", "/services")}
+      {_panel_acc("Plumbing", D.PLUMB_CORE, D.PLUMB_ADDITIONAL,
+                  "All Plumbing Services", "/plumbing/services", badge="NEW")}
       <div class="xh-simple">{panel_simple}</div>
     </div>
     <div class="xh-pinned">
