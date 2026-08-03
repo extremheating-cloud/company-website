@@ -4294,3 +4294,159 @@ geo(PLUMB_FAMILIES, "gas-line/installation.html",
          "is added. A line sized for one appliance will underperform when two draw at once, "
          "and that shows up as weak burners or a generator that will not hold."),
     ))
+
+
+# ============================================================================
+# Cost-intent sections on the installation pages
+# ============================================================================
+# "How much does a new furnace cost" is the highest-intent question in the trade
+# and the one this site has never answered anywhere. It is also the question the
+# blind reader review's price-shopper persona left over.
+#
+# We do not publish installed prices, and after checking, neither does the largest
+# competitor in this market: two of geteco.com's cost pages, ~3,200 words each with
+# "Cost" in the H1 and the URL, contain zero dollar figures between them (verified
+# 2026-08-02 against the Wayback copies, their live edge now blocks us). Their 120
+# cost URLs are a keyword play, not a disclosure. So the ranking value is in the
+# page answering the question in the shape it gets asked, not in a number.
+#
+# What goes here is therefore drivers, not dollars: the things that actually move a
+# quote, each one already established elsewhere on this site, plus how to get a real
+# number. Every row below traces to approved copy on the page it sits on.
+#
+# [NEEDS: a financing payment example. /financing-options names GoodLeap, Synchrony
+#  and Wright-Patt but publishes no APR, no term and no example payment, so one
+#  cannot be written without inventing lender terms. A single "from $X/month on
+#  approved credit" is a number a customer can act on and the only concrete figure
+#  a competitor here publishes anything like.]
+#
+# All three pages already answer "what does the installation include", in more detail
+# than anything added here would, so the cost block links the reader to that answer
+# rather than restating it a second time on the same page.
+
+_COST_H2 = "How much does {thing} cost in Dayton or Cincinnati?"
+
+_COST_LEAD = (
+    "There is no honest single number, and anyone who gives you one over the phone is "
+    "guessing at your house. {lead} What we can do is tell you exactly what moves the "
+    "figure, so the quote you get makes sense instead of arriving as a surprise.")
+
+def _cost_section(thing, lead, rows, includes, anchor):  # includes: kept for the lead
+    """A cost-intent block: the question in the shape it gets asked, an honest answer,
+    the drivers in a table, and what the number covers."""
+    return [
+        {"eyebrow": "WHAT IT COSTS",
+         "id": anchor,
+         "h2": _COST_H2.format(thing=thing),
+         "body": _COST_LEAD.format(lead=lead),
+         "table": {
+             "eyebrow": "PRICE DRIVERS",
+             "caption": f"What moves the price of {thing}.",
+             "takeaway": ("Sizing and ductwork move the number more than the badge on the "
+                          "equipment does, and both are decided at the survey rather than "
+                          "over the phone."),
+             "columns": ["What we look at", "Which way it moves the price",
+                         "How you can tell before we arrive"],
+             "rows": rows,
+         }},
+    ]
+
+_FURNACE_COST = _cost_section(
+    "a new furnace",
+    "A furnace swap in a house with sound ductwork and a 96% unit already vented is a "
+    "different job from one that needs a new flue, a gas line reworked and a return "
+    "added, and those two land nowhere near each other.",
+    [
+        ("Size, from a load calculation",
+         "Both ways. Right-sizing sometimes lands smaller and cheaper than what is there",
+         "If a room has never been warm, the old unit was probably sized off the label"),
+        ("Efficiency tier",
+         "Up front, down on the gas bill. 96% AFUE and above costs more to install",
+         "A 96% unit vents in PVC out a side wall, an 80% goes up the chimney"),
+        ("Venting and condensate",
+         "Up, if you move from 80% to 96% and the flue and drain have to be rerun",
+         "Going high-efficiency for the first time means new venting, every time"),
+        ("Ductwork and return capacity",
+         "Up, when the returns cannot move what the new furnace needs",
+         "Rooms that never keep up, or a filter that whistles, both point at returns"),
+        ("Gas and electrical",
+         "Up, if the line or the circuit has to be reworked to code",
+         "Older houses more often than newer ones. We check it on the survey"),
+        ("Permit and inspection",
+         "A fixed local cost, and it varies by town more than people expect",
+         "We pull it and close it out either way. Never optional, never skipped"),
+    ],
+    "The furnace, the gas connection, the venting and the electrical, all code-compliant "
+    "and commissioned before we leave, plus the permit and the inspection, and your old "
+    "unit removed and taken away. You agree the price before any of it starts.",
+    "furnace-cost")
+
+_AC_COST = _cost_section(
+    "a new air conditioner",
+    "A straight condenser and coil swap on sound ductwork is a different job from one "
+    "that needs a new line set, a new pad and a circuit run, and the gap between them is "
+    "wide.",
+    [
+        ("Size, from a heat gain calculation",
+         "Both ways. Matching the tonnage on the old label repeats the last mistake",
+         "An oversized unit cools fast and leaves the house clammy"),
+        ("Efficiency tier",
+         "Up front, down on the summer bill",
+         "Worth pricing both when you plan to stay in the house a while"),
+        ("Ductwork and return capacity",
+         "Up, and it is the most common reason a new system underperforms",
+         "A larger system on an undersized return will disappoint you either way"),
+        ("Line set, pad and disconnect",
+         "Up, when the existing ones cannot be reused",
+         "A line set that has carried R-22 usually cannot stay for a new refrigerant"),
+        ("R-22 in the old system",
+         "Up, because none of it carries over and the whole system is replaced",
+         "R-22 has not been produced or imported in the US since 2020"),
+        ("Permit and inspection",
+         "A fixed local cost that changes from town to town",
+         "We pull it and close it out. Never optional"),
+    ],
+    "The outdoor condenser, the indoor evaporator coil, the line set connection, the "
+    "electrical whip and disconnect, and the refrigerant charge, with your old equipment "
+    "removed and taken away. Permit and inspection included. You agree the price first.",
+    "ac-cost")
+
+_HP_COST = _cost_section(
+    "a heat pump",
+    "A heat pump replacing an air conditioner on an existing furnace is a different job "
+    "from a full dual-fuel conversion with new controls, and the electrical is the part "
+    "people do not see coming.",
+    [
+        ("Size, and the balance point",
+         "Both ways. Sizing for an Ohio winter is not the same as sizing for July",
+         "The balance point is where the backup takes over. It gets set, not guessed"),
+        ("Dual-fuel or straight electric backup",
+         "Dual-fuel costs more to set up and less to run when it is properly cold",
+         "If you already have gas, dual-fuel is usually the cheaper system to live with"),
+        ("Electrical service and circuit",
+         "Up, and this is the one that surprises people on older panels",
+         "A 60 or 100 amp panel is the thing to check before you fall for a quote"),
+        ("Ductwork and return capacity",
+         "Up. A heat pump moves more air for longer than a furnace does",
+         "Ducts that were marginal on a furnace will be worse on a heat pump"),
+        ("Controls and thermostat",
+         "Up modestly. Dual-fuel needs a thermostat that can stage the two",
+         "Your existing thermostat may not be able to run the system you are buying"),
+        ("Permit and inspection",
+         "A fixed local cost, varying by town",
+         "We pull it and close it out. Never optional"),
+    ],
+    "The heat pump, the indoor coil or air handler, the line set connection, the "
+    "electrical, and the controls set up for how the system actually runs here, with the "
+    "old equipment removed. Permit and inspection included, price agreed before we start.",
+    "heat-pump-cost")
+
+for _key, _cost in (("furnace-installation.html", _FURNACE_COST),
+                    ("ac-installation.html", _AC_COST),
+                    ("heat-pump-installation.html", _HP_COST)):
+    _d = HVAC_SUBS.get(_key)
+    if not _d:
+        continue
+    # Ahead of the booking and financing questions, which is the order someone reads
+    # in: what does it cost, what does that cover, then how do I pay for it.
+    _d["sectionsTail"] = list(_cost) + list(_d.get("sectionsTail", []))
