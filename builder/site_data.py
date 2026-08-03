@@ -168,9 +168,23 @@ HOURS_SPEC = {"dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Frida
 # in writing on 2026-08-02; that supersedes the [NEEDS] flags in local-seo.md §3 and
 # geo-contract.md §7.3. Do not re-suppress them.
 #
-# Every location routes to the same main number — the client's explicit instruction —
-# so there is deliberately no per-office phone field. Do not add local DIDs here
-# without the client saying so, however much a local number would help the map pack.
+# SUPERSEDED 2026-08-03. This block used to say every location routed to the same main
+# number on the client's explicit instruction, and that no per-office phone field
+# should be added without the client saying so. The client said so, and supplied four
+# local numbers. The old rule is recorded here rather than deleted, because the reason
+# it existed still applies to anything NOT on this list: do not invent a local DID for
+# an office because it would help the map pack.
+#
+# `phone` is the local number for that premises. (844) 584-7399 stays as the sitewide
+# number and remains what every page-level CTA dials, because it is the line that is
+# actually staffed around the clock and routing every emergency through a local DID is
+# an operational change nobody has asked for. The local numbers do the job local
+# numbers are for: they sit on the office's own NAP and in its LocalBusiness node,
+# which is what a map-pack ranking reads.
+#
+# 937-431-7399 is also the number printed on the van, which is why the homepage hero
+# and the sitewide CTA appeared to disagree. They were never in conflict; nothing on
+# the site had ever named the Dayton local line.
 #
 # `metro` is the marketing region and `locality` is the city in the postal address.
 # They differ for Beavercreek (Dayton metro) and Mason (Cincinnati metro), and that gap
@@ -193,14 +207,17 @@ OFFICES = [
     {"slug": "beavercreek", "label": "Beavercreek office", "primary": True,
      "street": "712 N Fairfield Rd", "locality": "Beavercreek", "region": "OH",
      "zip": "45434", "county": "Greene", "metro": "Dayton",
+     "phone": "(937) 431-7399", "phone_e164": "+19374317399",
      "geo": None, "page": "/locations/beavercreek"},
     {"slug": "mason", "label": "Mason office", "primary": False,
      "street": "5633 Tylersville Rd", "locality": "Mason", "region": "OH",
      "zip": "45040", "county": "Warren", "metro": "Cincinnati",
+     "phone": "(513) 640-7399", "phone_e164": "+15136407399",
      "geo": None, "page": "/locations/mason"},
     {"slug": "troy", "label": "Troy office", "primary": False,
      "street": "2950 Stone Cir Dr", "locality": "Troy", "region": "OH",
      "zip": "45373", "county": "Miami", "metro": "Dayton",
+     "phone": "(937) 426-7399", "phone_e164": "+19374267399",
      "geo": None, "page": "/locations/troy"},
     {"slug": "waynesville", "label": "Waynesville office", "primary": False,
      "street": "141 North St", "locality": "Waynesville", "region": "OH",
@@ -211,6 +228,7 @@ OFFICES = [
      # one, so it carries `descriptor` and every metro-derived label skips it.
      "zip": "45068", "county": "Warren", "metro": None,
      "descriptor": "Our plumbing hub",
+     "phone": "(513) 897-2753", "phone_e164": "+15138972753",
      "geo": None, "page": "/locations/waynesville"},
 ]
 
@@ -234,6 +252,19 @@ for _o in OFFICES:
 del _o
 
 OFFICE_BY_SLUG = {o["slug"]: o for o in OFFICES}
+
+# Local number by the town the office is IN, which is how locations.OFFICE already
+# names them. Resolution lives in location_pages.py because that is where OFFICE is,
+# and OFFICE is the researched answer to "which office covers this city" rather than a
+# guess from the metro label. Springboro is the case that proves it: it is Dayton-metro
+# but dispatched from Waynesville, eleven miles away, so a metro rule would have
+# printed a number from the wrong side of the service area.
+OFFICE_PHONE_BY_TOWN = {o["locality"]: (o["phone"], "tel:" + o["phone_e164"])
+                        for o in OFFICES if o.get("phone")}
+
+def office_phone(town):
+    """(display, tel-href) for the office in `town`, or (None, None)."""
+    return OFFICE_PHONE_BY_TOWN.get(town, (None, None))
 OFFICE_PRIMARY = next(o for o in OFFICES if o["primary"])
 assert sum(1 for o in OFFICES if o["primary"]) == 1, "exactly one primary office"
 

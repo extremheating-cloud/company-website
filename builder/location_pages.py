@@ -446,6 +446,22 @@ GEO_BOOK = ("Call " + PHONE + " and you get a person, or book online in about a 
             "If it's no heat, no cooling in a heat wave, or water where it shouldn't be, call "
             "rather than booking. That goes straight to the 24/7 line.")
 
+def geo_book(slug, group):
+    """The booking answer, naming the local line for cities that have one.
+
+    The sitewide number stays first and stays the emergency route, because that is the
+    line answered at 3am. The local number is offered as the alternative for people who
+    would rather dial a number with their own area code, which is most of the reason
+    local DIDs are worth having at all.
+    """
+    disp, href = local_phone(slug, group)
+    if not disp:
+        return GEO_BOOK
+    town = (L.OFFICE.get(slug) or (None,))[0] or (
+        "Beavercreek" if group == "Dayton" else "Mason")
+    return (GEO_BOOK + f' The {town} office also takes calls direct on '
+            f'<a href="{href}">{disp}</a>.')
+
 # The six service H1 patterns for the indexed pages. The noindexed tail keeps the
 # branded H1s in SERVICE_COPY, which is part of what makes the two sets distinguishable.
 GEO_SERVICE_H1 = {
@@ -2258,6 +2274,21 @@ def _local_links(items):
     return ('<div class="xlc-rel"><div class="xsp-eyebrow purple">MORE FROM EXTREME</div>'
             f'<div class="xlc-rellinks">{links}</div></div>')
 
+def local_phone(slug, group):
+    """The local number to show on a city page, or (None, None).
+
+    OFFICE is the researched "which office covers this city" map and wins. Only the ten
+    indexed cities have an entry; for the rest the metro is the honest fallback, and a
+    city with neither gets no local number at all rather than a guessed one. Printing a
+    number that rings an office forty miles away is worse than printing none.
+    """
+    entry = L.OFFICE.get(slug)
+    if entry:
+        return D.office_phone(entry[0])
+    town = {"Dayton": "Beavercreek", "Cincinnati": "Mason"}.get(group)
+    return D.office_phone(town) if town else (None, None)
+
+
 def metro_adj(group):
     return {"Dayton": "Miami Valley", "Cincinnati": "Cincinnati-area",
             "Counties": "southwest Ohio"}[group]
@@ -2378,7 +2409,7 @@ def city_overview(city, slug, group):
             sections.append(_qa_section(h2, body))
         sections.append(T.table_section(dict(d["table"], eyebrow="WHAT WE SEE MOST",
                                              h2="Which problems come up most here?")))
-        sections.append(_qa_section(GEO_BOOK_H2, GEO_BOOK))
+        sections.append(_qa_section(GEO_BOOK_H2, geo_book(slug, group)))
         # Deliberately not "communities near {City}": the deck's own three local H2s
         # already name the city, and the contract caps that at two. The headings this
         # module owns give the budget back to the researched ones.
@@ -2425,7 +2456,7 @@ def city_overview(city, slug, group):
                 f'<div class="xlc-towns">{towns}</div>'
                 f'<div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div>'
                 f'<div style="margin-top:20px">{T.photo_slot("", hero_img, photo_alt)}</div>'),
-            _qa_section(GEO_BOOK_H2, GEO_BOOK),
+            _qa_section(GEO_BOOK_H2, geo_book(slug, group)),
             _local_links(_tail_routes(slug, group)),
         ]
 

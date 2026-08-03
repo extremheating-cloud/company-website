@@ -992,7 +992,15 @@ def n_office(o, area=None):
         "branchCode": o["id"],
         "parentOrganization": {"@id": ORG_ID},
         "url": canonical(_OFFICE_PAGES.get(o["id"]) or "/contact"),
-        "telephone": D.PHONE_E164, "email": D.EMAIL,
+        # The office's OWN local number, falling back to the sitewide line for any
+        # office that has none. This is the single highest-value place the four local
+        # numbers can sit: a LocalBusiness node whose telephone matches the number on
+        # that premises' Google Business Profile is a NAP signal, and four nodes all
+        # carrying one 844 number was the opposite of one.
+        # [NEEDS: confirm each of these matches the GBP listing for that office
+        #  exactly. GBP wins if the two disagree, and a mismatch is worse than the
+        #  844 number was.]
+        "telephone": o.get("phone_e164") or D.PHONE_E164, "email": D.EMAIL,
         "image": {"@id": LOGO_ID},
         "address": _addr(o),
         # [NEEDS: lat/lng from the GBP map pin. Do not geocode — a rooftop guess that

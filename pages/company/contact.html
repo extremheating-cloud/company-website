@@ -521,6 +521,12 @@ align-items:center;justify-content:center;font-size:12px;font-weight:700;color:v
 .xco-loc-body .addr.hrs{font-size:12.5px;margin-top:6px}
 .xco-loc-body a{display:inline-block;font-weight:800;font-size:13px;color:var(--purple);
 text-decoration:none;margin-top:10px}
+/* The local number reads as part of the address block, not as one of the two action
+   links under it, so it takes the address colour and sits tight to the hours. It is
+   still a tel: link, because on the device most of these are read on that is the
+   whole point of printing it. */
+.xco-loc-body a.tel{display:block;margin-top:6px;font-size:13.5px;color:var(--ink)}
+.xco-loc-body a.tel:hover{color:var(--purple)}
 /* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
    "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */
 .xco-loc-body a.alt{display:block;margin-top:6px}
@@ -680,6 +686,7 @@ padding:32px 36px;position:relative;overflow:hidden}
     <div class="meta">Our Dayton-area shop</div>
     <div class="addr">712 N Fairfield Rd<br>Beavercreek, OH 45434</div>
     <div class="addr hrs">Monday – Friday, 8:00 AM – 5:00 PM</div>
+    <a class="tel" href="tel:+19374317399">(937) 431-7399</a>
     <a href="https://www.google.com/maps/dir/?api=1&amp;destination=712%20N%20Fairfield%20Rd%2C%20Beavercreek%2C%20OH%2045434">Get directions →</a>
     <a href="/locations/beavercreek" class="alt">Beavercreek service area →</a>
   </div>
@@ -690,6 +697,7 @@ padding:32px 36px;position:relative;overflow:hidden}
     <div class="meta">Our Cincinnati-area shop</div>
     <div class="addr">5633 Tylersville Rd<br>Mason, OH 45040</div>
     <div class="addr hrs">Monday – Friday, 8:00 AM – 5:00 PM</div>
+    <a class="tel" href="tel:+15136407399">(513) 640-7399</a>
     <a href="https://www.google.com/maps/dir/?api=1&amp;destination=5633%20Tylersville%20Rd%2C%20Mason%2C%20OH%2045040">Get directions →</a>
     <a href="/locations/mason" class="alt">Mason service area →</a>
   </div>
@@ -700,6 +708,7 @@ padding:32px 36px;position:relative;overflow:hidden}
     <div class="meta">Our Dayton-area shop</div>
     <div class="addr">2950 Stone Cir Dr<br>Troy, OH 45373</div>
     <div class="addr hrs">Monday – Friday, 8:00 AM – 5:00 PM</div>
+    <a class="tel" href="tel:+19374267399">(937) 426-7399</a>
     <a href="https://www.google.com/maps/dir/?api=1&amp;destination=2950%20Stone%20Cir%20Dr%2C%20Troy%2C%20OH%2045373">Get directions →</a>
     <a href="/locations/troy" class="alt">Troy service area →</a>
   </div>
@@ -710,6 +719,7 @@ padding:32px 36px;position:relative;overflow:hidden}
     <div class="meta">Our plumbing hub</div>
     <div class="addr">141 North St<br>Waynesville, OH 45068</div>
     <div class="addr hrs">Monday – Friday, 8:00 AM – 5:00 PM</div>
+    <a class="tel" href="tel:+15138972753">(513) 897-2753</a>
     <a href="https://www.google.com/maps/dir/?api=1&amp;destination=141%20North%20St%2C%20Waynesville%2C%20OH%2045068">Get directions →</a>
     <a href="/locations/waynesville" class="alt">Waynesville service area →</a>
   </div>
