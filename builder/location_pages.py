@@ -14,9 +14,11 @@ street address, no "get directions", no address schema — anywhere. The two rea
 offices live on /contact and stay there.
 """
 import os
+import re
 import template as T
 import locations as L
 import site_data as D
+import city_angles
 from company_pages import section, shell, slot_img
 
 PHONE = T.PHONE_DISPLAY
@@ -2255,8 +2257,17 @@ def metro_adj(group):
             "Counties": "southwest Ohio"}[group]
 
 def fill(text, city, group):
-    return (text.replace("{CITYU}", city.upper()).replace("{CITY}", city)
-                .replace("{METRO_ADJ}", metro_adj(group)))
+    # "a {CITY}" reads "a Oakwood home" on the three towns whose names start with a
+    # vowel — Oakwood, Englewood, Xenia — because the article was written into the
+    # template before the city was known. Fixed here rather than in each string so a
+    # town added later cannot reintroduce it. Only the indefinite article moves; "the
+    # {CITY}" and every other construction is left alone.
+    out = (text.replace("{CITYU}", city.upper()).replace("{CITY}", city)
+               .replace("{METRO_ADJ}", metro_adj(group)))
+    if city[:1].upper() in "AEIOU":
+        out = re.sub(rf"\ba (?={re.escape(city)}\b)", "an ", out)
+        out = re.sub(rf"\bA (?={re.escape(city)}\b)", "An ", out)
+    return out
 
 NO_TOWN_NOTE = ('<div class="xlc-note">Don&#39;t see your town? If you&#39;re close to one '
                 'that&#39;s listed, call — if we can reach you, we will.</div>')
@@ -2467,6 +2478,14 @@ def city_service(city, slug, group, service):
     if featured:
         for h2, body in d["slots"]:
             left.append(_qa_section(h2, body))
+
+    # The rotated angle set. Sits AFTER the researched local slots on the indexed ten,
+    # so genuinely local material still reads first and this is depth underneath it;
+    # on the twenty tail cities it is the whole of the body. Four per page, chosen
+    # deterministically by slug, so no two cities carry the same set — verified in
+    # city_angles.coverage() and asserted by the build.
+    for a in city_angles.pick(slug, service, 4):
+        left.append(_qa_section(a["h2"].replace("{C}", long), a["body"]))
     sec2 = c.get("sec2") if featured else None
     # The noindexed tail drops sec2 entirely. Every one of those blocks is shared copy
     # rendered identically on 38 pages, so cutting it from the suppressed set raises the
