@@ -119,17 +119,24 @@ Listed so you can tell what is covered, not because anything is needed.
 
 Workers & Pages → Create → Pages → Connect to Git → this repo.
 
-    Build command:      python3 builder/build_site.py
-    Build output:       site
-    Root directory:     (blank)
-    Production branch:  main
+Set each field separately. They are four fields, not one value — pasting the whole
+block into "Build command" makes the shell try to run a program called `Build`, which
+fails in about a second. That happened on the first attempt.
 
-One environment variable:
+    Framework preset:        None
+    Build command:           python3 builder/build_site.py
+    Build output directory:  site
+    Root directory:          (leave blank)
+    Production branch:       main
 
-    PYTHON_VERSION = 3.11
+**Build output directory is the one that matters most.** Left blank, Cloudflare
+publishes the whole repository: the root serves README.md, and the actual site ends up
+at /site/. That also happened on the first attempt.
 
-The code is stdlib-only and version-insensitive; the pin exists so a Pages image
-upgrade cannot change the output underneath you.
+No environment variables are required. The builder is stdlib-only and uses no syntax
+newer than Python 3.6 — verified, not assumed — so whatever Python the build image
+ships with will run it. Setting PYTHON_VERSION is optional and only pins the build
+against a future image change.
 
 ## Before DNS
 
@@ -183,6 +190,14 @@ a full week of Search Console shows no coverage errors.
 
 ## Known and accepted at launch
 
+- **Cloudflare may serve its own robots.txt.** A managed Content Signals robots.txt
+  was observed overriding the one the build generates, which would drop our AI-crawler
+  policy and the sitemap reference. Check `/robots.txt` after deploying; ours begins
+  `# https://www.extremeheating.com/robots.txt`. If Cloudflare's is winning, turn the
+  managed file off under AI Crawl Control.
+- **Per-deployment preview URLs have no valid certificate.** `*.pages.dev` covers one
+  subdomain level, so `project.pages.dev` works and `hash.project.pages.dev` returns
+  ERR_SSL_VERSION_OR_CIPHER_MISMATCH. Test on the plain project URL. Not a fault.
 - **34 third-party stock images** on the plumbing pages are still hotlinked to iStock
   and Adobe. Licences are being acquired. They are the only images not on our origin
   and they break if those URLs change.
