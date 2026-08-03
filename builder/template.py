@@ -7,6 +7,10 @@ matching the conventions of the existing service-page files.
 Single source of truth for phone + asset URLs lives here.
 """
 import re
+# site_data imports nothing from the builder, so this cannot cycle. It is here so the
+# X-Plan benefit rows can read the service-call fee from the one place it is defined
+# rather than carrying a hand-typed copy of it.
+import site_data as D
 
 PHONE_TEL = "tel:18445847399"
 PHONE_DISPLAY = "(844) 584-7399"
@@ -1516,7 +1520,7 @@ XPLAN = {
         "Both seasonal tune-ups included",
         "15% off repairs",
         "Priority scheduling",
-        "Member service calls: $77 vs $97 · $177 vs $197 after hours",
+        D.SERVICE_CALL_LINE,
     ],
 }
 

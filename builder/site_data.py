@@ -98,6 +98,36 @@ HOURS_EMERGENCY = "24/7 — every day of the year"
 HOURS_STAFFED_PROSE = "Monday to Friday, 8:00 AM to 5:00 PM"   # inside a sentence
 HOURS_STAFFED_SHORT = "Mon–Fri, 8–5"                            # cards and tight rows
 
+# ---------------------------------------------------------------- service call
+# The one price the site is allowed to publish. Client, 2026-08-02: dispatch and
+# service-call fees ARE publishable; the no-advertised-rates rule covers repair and
+# installation pricing, not these. The single constraint: these numbers may appear in
+# a benefit list, a card body or an FAQ answer, NEVER in an h1, an h2 or a hero.
+#
+# They were typed by hand in three places before this. They are also the answer to the
+# question a customer is actually asking before they dial — the blind reader review
+# found eleven pages promising "a flat price before we start" and not one of them
+# naming a number, and the price shopper left the site over it.
+SERVICE_CALL = 97
+SERVICE_CALL_EMERGENCY = 197
+SERVICE_CALL_MEMBER = 77
+SERVICE_CALL_MEMBER_EMERGENCY = 177
+SERVICE_CALL_LINE = (f"Member service calls: ${SERVICE_CALL_MEMBER} vs ${SERVICE_CALL} "
+                     f"&middot; ${SERVICE_CALL_MEMBER_EMERGENCY} vs "
+                     f"${SERVICE_CALL_EMERGENCY} after hours")
+
+# The FAQ entry that puts it on the pages where someone is deciding whether to call.
+# Written as a question because that is how it gets asked, and because a Question node
+# in the FAQPage graph is what an answer engine lifts.
+SERVICE_CALL_FAQ = {
+    "q": "What does it cost to get someone out?",
+    "a": (f"${SERVICE_CALL} during business hours, ${SERVICE_CALL_EMERGENCY} nights, "
+          f"weekends and holidays. That covers the trip and the diagnosis, and you hear "
+          f"the repair price before anyone starts work, so nothing gets added after the "
+          f"fact. X-Plan members pay ${SERVICE_CALL_MEMBER} and "
+          f"${SERVICE_CALL_MEMBER_EMERGENCY}."),
+}
+
 # The machine-readable half of HOURS_STAFFED, for openingHoursSpecification. Office
 # nodes only: 24/7 emergency response is a service attribute, not premises hours, and
 # claiming the building is open at 3am is the kind of thing a GBP audit catches.
@@ -261,7 +291,7 @@ XPLAN = {
         # stripping this line; the client decision on 2026-08-02 supersedes both and it
         # stays. The one constraint that does apply: these numbers may appear in a
         # benefit list or a card body, never in an h1, an h2 or a hero.
-        "Member service calls: $77 vs $97 · $177 vs $197 after hours",
+        SERVICE_CALL_LINE,
     ],
     # Both accrual conditions have to survive any rewording: shell.n_xplan_service()
     # greps this string for "consecutive" and "$2,500" and drops the whole sentence from

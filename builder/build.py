@@ -635,7 +635,7 @@ MAINTENANCE_3A = {
             {"t": "5-year warranty on repairs",
              "d": "Five times the standard coverage on parts and labor we install."},
             {"t": "Discounted service calls",
-             "d": "$77 instead of $97 during business hours — $177 instead of $197 for emergencies."},
+             "d": f"${D.SERVICE_CALL_MEMBER} instead of ${D.SERVICE_CALL} during business hours, and ${D.SERVICE_CALL_MEMBER_EMERGENCY} instead of ${D.SERVICE_CALL_EMERGENCY} for emergencies."},
         ],
     },
     "useCases": {
@@ -821,6 +821,53 @@ PAGES.extend(privacy.pages(ROOT))
 # 267 pages from one template: the hub, 38 city overviews, and 6 service pages each.
 import location_pages
 PAGES.extend(location_pages.pages(ROOT))
+
+# ------------------------------------------------- the one published price
+# The service-call fee goes on every page where someone is deciding whether to pick up
+# the phone, which is not the same set as the pages that mention money today. Before
+# this it appeared only on /maintenance and the ten location maintenance pages, framed
+# as a membership discount — so the only visitor who could find out what a visit costs
+# was one already shopping for a membership. Eleven pages promised "a flat price before
+# we start" without a number anywhere near them.
+#
+# Injected here rather than typed into each page's data, because these dicts live
+# across build.py, rollout.py and location_pages.py and a hand-copied fee in forty
+# places is the exact drift this file exists to prevent. Appended last so it reads as
+# the closing practical question after the diagnostic ones, and it lands in an FAQ
+# answer — never an h1, h2 or hero, per the client's constraint.
+def _route_of(path):
+    url = "/" + os.path.relpath(path, PAGES_DIR).replace(os.sep, "/")
+    if url.endswith("/overview.html") and url.startswith("/locations/"):
+        url = url[: -len("/overview.html")]
+    elif url.endswith(".html"):
+        url = url[: -len(".html")]
+    for prefix in ("/hvac/", "/company/"):
+        if url.startswith(prefix):
+            url = "/" + url[len(prefix):]
+            break
+    return url or "/"
+
+def _wants_service_call_fee(url):
+    if url.startswith("/locations/"):
+        # City service pages for the trades someone calls about, not the hub.
+        return url.count("/") == 3 and url.rsplit("/", 1)[1] in (
+            "heating", "cooling", "plumbing")
+    return (url.endswith("-repair") or "/repair" in url
+            or url in ("/air-conditioning", "/furnace-heating", "/heat-pump",
+                       "/plumbing/services", "/services", "/contact"))
+
+_fee_pages = 0
+for _path, _builder, _data, _root in PAGES:
+    if not isinstance(_data, dict) or not _data.get("faq"):
+        continue
+    _url = _route_of(_path)
+    if not _wants_service_call_fee(_url):
+        continue
+    if any(D.SERVICE_CALL_FAQ["q"] == e.get("q") for e in _data["faq"]):
+        continue
+    _data["faq"] = list(_data["faq"]) + [dict(D.SERVICE_CALL_FAQ)]
+    _fee_pages += 1
+print(f"service-call fee added to {_fee_pages} pages")
 
 # ---------------------------------------------------------------- build
 def main():

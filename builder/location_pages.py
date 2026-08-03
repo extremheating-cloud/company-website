@@ -2370,7 +2370,7 @@ def city_overview(city, slug, group):
             f'<div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div>'
             f'<div style="margin-top:20px">{T.photo_slot("", hero_img, photo_alt)}</div>'))
         sections.append(T.faq([{"q": q, "a": a} for q, a in d["faq"]], "COMMON QUESTIONS",
-                              h2="Your questions, answered."))
+                              h2=f"What else do {long} homeowners ask?"))
         # The review pool carries no city attribution, so the heading makes no city
         # claim. [NEEDS: review excerpts tagged with the customer's city — tagging even
         # five per indexed metro turns the weakest block on the page into the strongest.]
@@ -2509,12 +2509,24 @@ def city_service(city, slug, group, service):
         left.append(_qa_section(
             book.replace(" in {C}", "").replace("{C}", long) if named >= 2
             else book.replace("{C}", long), GEO_SERVICE_BOOK))
-        left.append(T.faq([{"q": d["faq"][0], "a": d["faq"][1]}], "COMMON QUESTIONS",
-                          h2="Your questions, answered."))
+        # The fee belongs on the trades someone picks up the phone about. Maintenance,
+        # duct cleaning and air quality are planned work, booked without this question.
+        _qa = [{"q": d["faq"][0], "a": d["faq"][1]}]
+        if service in ("heating", "cooling", "plumbing"):
+            _qa.append(dict(D.SERVICE_CALL_FAQ))
+        left.append(T.faq(_qa, "COMMON QUESTIONS",
+                          h2=f"What else do people ask about {long}?"))
         left.append(_local_links([
             (f"{long} HVAC and plumbing services", f"/locations/{slug}"),
             ("X-Plan maintenance membership", "/maintenance")]))
     else:
+        # The tail pages are deliberately thin on local research, but "what does it
+        # cost to get someone out" is not local research — it is the same answer
+        # everywhere and it is the question standing between a reader and the phone.
+        # Withholding it here would be thinness that costs the customer something.
+        if service in ("heating", "cooling", "plumbing"):
+            left.append(T.faq([dict(D.SERVICE_CALL_FAQ)], "COMMON QUESTIONS",
+                              h2=f"What does a visit to {city} cost?"))
         left.append(_local_links(
             [(f"{city} HVAC and plumbing services", f"/locations/{slug}")]
             + _tail_routes(slug, group)))
