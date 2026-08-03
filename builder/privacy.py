@@ -270,16 +270,29 @@ SECTIONS = [
         "<b>jsDelivr — images.</b> Photographs and graphics on the site are delivered by "
         "the jsDelivr content network, which receives your IP address.",
 
-        # Held back on the deliverable's own instruction: a privacy policy that
+        # Released 2026-08-03. The inventory was held back because a policy that
         # under-names its advertising tags is worse than one that over-names them, and
-        # the live tag inventory has not been confirmed. Restore this paragraph, with
-        # each tag named, once it is.
-        "HOLD::<b>Analytics and advertising measurement.</b> Where analytics or advertising "
-        "tags are installed on a page, Extreme records that a form was opened and that a "
-        "booking was completed, along with the general device type. These events are used to "
-        "measure advertising, not to identify you by name. [NEEDS: the exact tag inventory on "
-        "the live site — confirm whether Google Analytics 4, Google Ads conversion tracking "
-        "and the Meta (Facebook) Pixel are installed, and name each one that is.]",
+        # nobody had confirmed what was actually installed. The client supplied the tags
+        # that day and they are now in builder/analytics.py; this paragraph is written
+        # from that file. If a tag is added there, add it here in the same commit.
+        "<b>Analytics and advertising measurement.</b> Every page loads Google Tag Manager, "
+        "which in turn loads Google Analytics 4 and Google Ads conversion tracking, and the "
+        "Meta (Facebook) Pixel. These record that pages were viewed, that a booking form was "
+        "opened and that a booking was completed, along with general device and location "
+        "information, and they set cookies in your browser. Google and Meta receive that "
+        "information directly. It is used to measure which advertising produces calls and "
+        "bookings, not to identify you by name.",
+
+        "<b>Call measurement.</b> Google Ads may replace the phone number shown on the site "
+        "with a forwarding number so that a call can be attributed to the advertising that "
+        "produced it. The call still reaches the same office. The local numbers listed for "
+        "each office are not replaced.",
+
+        "<b>Booking and messaging widgets.</b> Three further providers load on every page: "
+        "Broccoli and Podium, which power the on-site chat and messaging, and the "
+        "ServiceTitan online scheduler, which opens in a window on this site when you book. "
+        "Anything you type into one of those is received by that provider as well as by "
+        "Extreme. Their own privacy terms apply to what they hold.",
 
         "[NEEDS: whether Extreme sends customer names, phone numbers or email addresses to "
         "Birdeye — or any other review platform — to request a review after a job. The site "
@@ -531,9 +544,11 @@ PRIVACY_GAPS = [
     "notice saying so. It must not be linked from the sitewide footer, and the notice must "
     "not be removed, until counsel has read it and the items below are resolved.",
     "Effective date is a placeholder (August 2, 2026). Set it to the real publication date.",
-    "Live analytics and advertising tag inventory — GA4, Google Ads conversion, Meta Pixel, "
-    "anything else. The Service Providers paragraph describing them is HELD BACK until the "
-    "list is confirmed, so the page currently under-discloses rather than mis-discloses.",
+    "RESOLVED 2026-08-03: the tag inventory is confirmed and disclosed — GTM, GA4, "
+    "Google Ads with call measurement, Meta Pixel, Broccoli, Podium and the "
+    "ServiceTitan scheduler. Counsel should still review whether the advertising "
+    "tags require a consent mechanism for Ohio visitors, which is a separate "
+    "question from disclosure and is still open below.",
     "STOP/HELP keywords are NOT published, because nobody has confirmed the texting platform "
     "honors them. The clause tells customers to call the office instead. Restore the keyword "
     "sentence once the platform is confirmed.",

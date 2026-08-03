@@ -40,6 +40,7 @@ import re
 
 import site_data as D
 import locations as L
+import analytics
 import chrome
 import template as T
 
@@ -1353,10 +1354,20 @@ def document(page, body_html):
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{FONT}">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
+<!-- The tag origins. preconnect for the two that are on the critical path and
+     block nothing else; dns-prefetch for the rest, which is cheaper and enough
+     for scripts that are async or deferred. Six preconnects would be worse than
+     none: each one costs a connection the browser could have spent on content. -->
+<link rel="preconnect" href="https://www.googletagmanager.com">
+<link rel="preconnect" href="https://connect.facebook.net">
+<link rel="dns-prefetch" href="https://cdn.broccoli.com">
+<link rel="dns-prefetch" href="https://connect.podium.com">
 <style>{BASE_CSS}{chrome.CSS}</style>
 {jsonld(dict(page, title=title, description=desc), body_html)}
+{analytics.HEAD}
 </head>
 <body>
+{analytics.BODY_START}
 <a class="skip" href="#main">Skip to content</a>
 {chrome.header(page.get("nav", ""))}
 <main id="main">
