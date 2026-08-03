@@ -14,6 +14,13 @@ WHAT LOADS, AND FROM WHOM
     Podium widget           47709907-f239-...     connect.podium.com
     ServiceTitan scheduler  tenant 770617940      go.servicetitan.com  (iframe, on demand)
 
+BOOKING FLOW, decided 2026-08-03: the site keeps its own scheduling wizard. Every
+.js-schedule button opens assets/js/schedule.js, exactly as before. The ServiceTitan
+modal below is loaded but is NOT wired to any button on this site — it exists so the
+Broccoli widget can trigger it by posting {type: "OPEN_ST_SCHEDULER"} or dispatching
+the OPEN_ST_SCHEDULER event. That is deliberate. Do not "fix" the apparently dead
+listener by pointing the Schedule buttons at it.
+
 THREE THINGS WORTH KNOWING, recorded here because they are easy to forget later:
 
 1. PERFORMANCE. This is not a neutral addition. The competitor audit on 2026-08-02

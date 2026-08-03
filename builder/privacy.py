@@ -1,8 +1,9 @@
 """Privacy Policy — /privacy.
 
-*** DRAFT — NOT ATTORNEY-REVIEWED. The page renders a visible draft notice saying so.
-*** Do not remove that notice, and do not link this page from the sitewide footer,
-*** until counsel signs off and the open items in PRIVACY_GAPS are resolved.
+*** ATTORNEY-APPROVED as at 2026-08-03 and published with a real effective date. The
+*** visible draft notice has been removed on the client's instruction that counsel
+*** approved the page as it stood. PRIVACY_GAPS is retained: those items are no longer
+*** blockers, they are what a future revision should close.
 *** scratchpad/seo/privacy.md carries the full data inventory this page was written
 *** from and the client/attorney question list.
 
@@ -77,7 +78,9 @@ ENTITY_PLUMBING = TM.ENTITY_PLUMBING
 ENTITY_SCOPE = TM.ENTITY_SCOPE
 
 # PLACEHOLDER. Set this to the date the page actually publishes, after attorney review.
-EFFECTIVE = "August 2, 2026"
+# Real publication date. Counsel approved the page as it stood on 2026-08-03, so
+# this is no longer a placeholder — it is the date the approved version went live.
+EFFECTIVE = "August 3, 2026"
 
 # Address for privacy requests. Deliberately ONE address, not all four offices — a
 # request needs a single destination, and the primary office is the one the footer
@@ -543,7 +546,10 @@ PRIVACY_GAPS = [
     "ATTORNEY REVIEW — this entire page is an unreviewed draft and renders a visible draft "
     "notice saying so. It must not be linked from the sitewide footer, and the notice must "
     "not be removed, until counsel has read it and the items below are resolved.",
-    "Effective date is a placeholder (August 2, 2026). Set it to the real publication date.",
+    "RESOLVED 2026-08-03: counsel approved the page as it stood and it is published with a\n"
+    "real effective date. The items below are NOT blockers on that approval — they are the\n"
+    "open questions a future revision should close, and several of them are answers only the\n"
+    "business can give.",
     "RESOLVED 2026-08-03: the tag inventory is confirmed and disclosed — GTM, GA4, "
     "Google Ads with call measurement, Meta Pixel, Broccoli, Podium and the "
     "ServiceTitan scheduler. Counsel should still review whether the advertising "
@@ -590,7 +596,7 @@ def hero():
       <p class="xsp-intro">This policy explains what {ENTITY_SCOPE} collect when you use this
       site or schedule a visit, who it goes to, how long it is kept, and how to ask for a copy
       of it or have it deleted.</p>
-      <div class="xtm-updated">Draft &middot; effective date pending. Placeholder: {EFFECTIVE}</div>
+      <div class="xtm-updated">Effective {EFFECTIVE}</div>
     </div>
   </div>
 </div>'''
@@ -647,7 +653,6 @@ def privacy_page(d, root_class):
     body = f'''{hero()}
 <div class="xco-body">
   <div class="xtm-lead">
-    {DRAFT_NOTICE}
     {summary()}
     {contact()}
     {TM.toc(all_sections)}

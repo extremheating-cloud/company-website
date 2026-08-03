@@ -142,10 +142,9 @@ SERVICE_CALL_FAQ = {
 # best-case advertised payments, not what any given customer is offered. Keep the
 # qualifier and keep "with approved credit" attached wherever a figure appears.
 #
-# [NEEDS: whoever holds the GoodLeap / Synchrony / Wright-Patt agreements should
-#  confirm the approved advertising wording for these three. A stated monthly payment
-#  is itself a triggering term under Reg Z 1026.24, and the lenders normally supply
-#  compliant language for it. Flagged to the client 2026-08-02.]
+# Client-confirmed 2026-08-03: the wording is approved as written. The Reg Z point was
+# raised and answered. If a lender later supplies its own required language, it
+# replaces these strings rather than being appended to them.
 FINANCE_AC = 49
 FINANCE_HEAT_PUMP = 69
 FINANCE_FULL_SYSTEM = 89

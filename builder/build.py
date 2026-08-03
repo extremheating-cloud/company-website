@@ -706,8 +706,9 @@ PHOTO_OVERRIDES = {
     # This URL is not new: it is already the second image in gas-line/overview's own
     # legacy inventory and already the hero on gas-line/installation. Same licensing
     # exposure as before, no worse, and it is genuinely the right subject.
-    # [NEEDS: real gas-line photography at the shoot. This is one of the 17 hotlinked
-    #  comps due for replacement, and the whole family should go at once.]
+    # Client 2026-08-03: licences for the stock comps are being acquired, so these are
+    # no longer a licensing exposure. Replacing them with real gas-line photography at
+    # the shoot is still worth doing, but it is now a quality choice rather than a risk.
     "Plumbing Service Pages/gas-line/overview.html": {
         "photo": "https://media.istockphoto.com/id/1272276339/photo/ceiling-with-multiple-utility-lines-gas-electrical-water-internet-and-sewer.jpg?s=612x612&w=0&k=20&c=rEtMb6DNqRx5JxjmCtLb7n_ZkzGIAT8ya0Z250G7640=",
         "photoAlt": "Gas, water and electrical lines running along a basement ceiling",

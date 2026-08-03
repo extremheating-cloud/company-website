@@ -998,9 +998,10 @@ def n_office(o, area=None):
         # numbers can sit: a LocalBusiness node whose telephone matches the number on
         # that premises' Google Business Profile is a NAP signal, and four nodes all
         # carrying one 844 number was the opposite of one.
-        # [NEEDS: confirm each of these matches the GBP listing for that office
-        #  exactly. GBP wins if the two disagree, and a mismatch is worse than the
-        #  844 number was.]
+        # Client-confirmed 2026-08-03: each of these matches the Google Business
+        # Profile listing for that office. Do not change one without changing the GBP
+        # in the same sitting — GBP wins when the two disagree, and a mismatch is worse
+        # than the single 844 number ever was.
         "telephone": o.get("phone_e164") or D.PHONE_E164, "email": D.EMAIL,
         "image": {"@id": LOGO_ID},
         "address": _addr(o),

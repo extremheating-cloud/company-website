@@ -2100,7 +2100,10 @@ LOCAL = {
     "County communities do, and what a utility offers its own customers differs between them. "
     "Anyone comparing something a neighboring town's homeowner was told should check whose grid the "
     "house is actually on first."])],
-   # [NEEDS: current AES Ohio residential HVAC programme details. No figure is published here, and
+   # Client-verified 2026-08-03: Troy is on AES Ohio and does not run a municipal electric
+   # utility. That was the one agent-researched claim about a named third party still
+   # standing unconfirmed at launch.
+   # [NEEDS: current AES Ohio residential HVAC program details. No figure is published here, and
    # no trade-ally status is claimed.]
    faq=("Does the electric utility change anything about a new system in Troy?",
         "Only in what the utility itself offers. Troy is on AES Ohio, and several nearby Miami "
