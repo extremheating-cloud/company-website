@@ -1,6 +1,7 @@
 """Build service pages from data objects. Run: python3 build.py [--check]"""
 import os, re, sys
 import template as T
+import site_data as D
 
 # builder/ sits one level below the repo root. The generated pages go into pages/,
 # mirroring the site's own URL structure.
@@ -160,7 +161,7 @@ AIR_CONDITIONING = {
         {"q": "Can I replace the AC without replacing the furnace?",
          "a": "Yes, and often you should. The indoor coil has to match the new outdoor unit, so the furnace gets opened either way. If it's also near the end, doing both in one visit costs less than two jobs a few years apart."},
         {"q": "Do you offer emergency AC repair?",
-         "a": "Yes. The emergency line runs 24/7 across the Dayton and Cincinnati metros, every day of the year. The office is staffed Monday to Friday, 8:00 AM to 5:00 PM, and after that the emergency line picks up."},
+         "a": "Yes. The emergency line runs 24/7 across the Dayton and Cincinnati metros, every day of the year. The office is staffed " + D.HOURS_STAFFED_PROSE + ", and after that the emergency line picks up."},
         {"q": "Does X-Plan cover the air conditioner?",
          "a": "Yes. You get two seasonal visits a year, one of them a full AC tune-up with refrigerant charge calibration up to 1 lb included. Members also get 15% off repairs and priority scheduling."},
         {"q": "How long does an air conditioner replacement take?",
@@ -460,8 +461,7 @@ FURNACE_REPAIR = {
         {"h2": "How do I book furnace repair?",
          "body": (f'Call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> or book online. The '
                   "emergency line runs 24/7, every day of the year, and we send no-heat calls "
-                  "out ahead of routine work. The office is staffed Monday to Friday, 8:00 AM "
-                  "to 5:00 PM.")},
+                  "out ahead of routine work. The office is staffed " + D.HOURS_STAFFED_PROSE + ".")},
     ],
     "faqEyebrow": "FURNACE QUESTIONS",
     "faqH2": "What should I know before booking furnace repair?",

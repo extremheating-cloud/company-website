@@ -90,6 +90,14 @@ MASON_OPENED = 2018
 HOURS_STAFFED = "Monday – Friday, 8:00 AM – 5:00 PM"
 HOURS_EMERGENCY = "24/7 — every day of the year"
 
+# The same hours in the two other registers the site needs. They were previously typed
+# by hand wherever they were wanted, which is how three different phrasings ended up in
+# the copy. A dash range reads fine on a card and badly mid-sentence, so the prose form
+# is a real variant rather than a formatting slip — but all three derive from here now,
+# so a change to the hours cannot land on some of them and miss the rest.
+HOURS_STAFFED_PROSE = "Monday to Friday, 8:00 AM to 5:00 PM"   # inside a sentence
+HOURS_STAFFED_SHORT = "Mon–Fri, 8–5"                            # cards and tight rows
+
 # The machine-readable half of HOURS_STAFFED, for openingHoursSpecification. Office
 # nodes only: 24/7 emergency response is a service attribute, not premises hours, and
 # claiming the building is open at 3am is the kind of thing a GBP audit catches.
@@ -354,7 +362,7 @@ FOOTER_NAP = {
     "phoneHref": PHONE_TEL,
     "email": EMAIL,
     "emailHref": f"mailto:{EMAIL}",
-    "hoursStaffed": "Office staffed Mon–Fri, 8–5",
+    "hoursStaffed": f"Office staffed {HOURS_STAFFED_SHORT}",
     "hoursEmergency": "Emergencies 24/7",
     "officesLabel": "Offices",
     "offices": OFFICE_LINKS,

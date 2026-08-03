@@ -889,7 +889,7 @@ LOCAL = {
   ]),
  faq=[
   ("Where is the Beavercreek office?",
-   "712 N Fairfield Rd, Beavercreek, OH 45434. Office staff are in Monday to Friday, 8:00 AM to "
+   "712 N Fairfield Rd, Beavercreek, OH 45434. Office staff are in " + D.HOURS_STAFFED_PROSE + ", "
    "5:00 PM, and the emergency line at " + PHONE + " is answered 24/7 every day of the year."),
   ("My water changed in early 2025. Do I still need a softener?",
    "Probably not at the same setting. Greene County Sanitary Engineering took delivered hardness "
@@ -964,7 +964,7 @@ LOCAL = {
     "A seasonal visit is the natural point to check both, because the technician is already at the "
     "equipment."])],
    faq=("Can I book a tune-up at the Beavercreek office in person?",
-        "The office at 712 N Fairfield Rd is staffed Monday to Friday, 8:00 AM to 5:00 PM. Booking "
+        "The office at 712 N Fairfield Rd is staffed " + D.HOURS_STAFFED_PROSE + ". Booking "
         "by phone on " + PHONE + " or online is faster.")),
   "duct-cleaning": dict(
    answer="We clean supply ducts, returns, blower compartments and dryer vents in Beavercreek, "
@@ -1048,7 +1048,7 @@ LOCAL = {
   ]),
  faq=[
   ("Where is the Mason office?",
-   "5633 Tylersville Rd, Mason, OH 45040. It opened in 2018. Office staff are in Monday to Friday, "
+   "5633 Tylersville Rd, Mason, OH 45040. It opened in 2018. Office staff are in " + D.HOURS_STAFFED_PROSE + ", "
    "8:00 AM to 5:00 PM, and the emergency line at " + PHONE + " is answered 24/7."),
   ("My Mason house was built in the late 1990s. Is the whole system due?",
    "Often the equipment is and the ductwork is not. Houses from Mason's 1995 to 2008 build-out "

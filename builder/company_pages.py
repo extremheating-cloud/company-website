@@ -208,7 +208,7 @@ def contact_card():
     return f'''<div class="xsp-book">
   <div class="eyebrow">CONTACT US</div>
   <div class="xco-phone"><a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a></div>
-  <div class="s">Office staffed Mon–Fri, 8–5 · emergencies 24/7.</div>
+  <div class="s">Office staffed {D.HOURS_STAFFED_SHORT} · emergencies 24/7.</div>
   <div class="btns">
     {T.schedule_btn("Schedule Service")}
     {T.call_btn(f"Call {T.PHONE_DISPLAY}")}
