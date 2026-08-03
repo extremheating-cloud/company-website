@@ -2409,6 +2409,12 @@ def city_overview(city, slug, group):
             sections.append(_qa_section(h2, body))
         sections.append(T.table_section(dict(d["table"], eyebrow="WHAT WE SEE MOST",
                                              h2="Which problems come up most here?")))
+        # Overview angles go before the booking answer, so the page still closes on
+        # "how do I book" rather than trailing off into general advice. Featured cities
+        # already have their researched local sections above this; the tail had three
+        # H2s and 392 words, which was the thinnest page type on the site.
+        for a in city_angles.pick(slug, "overview", 4):
+            sections.append(_qa_section(a["h2"].replace("{C}", long), a["body"]))
         sections.append(_qa_section(GEO_BOOK_H2, geo_book(slug, group)))
         # Deliberately not "communities near {City}": the deck's own three local H2s
         # already name the city, and the contract caps that at two. The headings this
@@ -2456,6 +2462,14 @@ def city_overview(city, slug, group):
                 f'<div class="xlc-towns">{towns}</div>'
                 f'<div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div>'
                 f'<div style="margin-top:20px">{T.photo_slot("", hero_img, photo_alt)}</div>'),
+        ] + [
+            # The tail was the thinnest page type on the site: three H2s and 392 words,
+            # thinner than any service page. "Deliberately thinner than the indexed ten"
+            # was the intent and it still is, but three headings is below the line where
+            # a page is useful to the person reading it.
+            _qa_section(a["h2"].replace("{C}", long), a["body"])
+            for a in city_angles.pick(slug, "overview", 4)
+        ] + [
             _qa_section(GEO_BOOK_H2, geo_book(slug, group)),
             _local_links(_tail_routes(slug, group)),
         ]

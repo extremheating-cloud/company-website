@@ -324,8 +324,9 @@ def location_cards(d):
     lead = [
         'We work out of four Ohio shops. Beavercreek covers the Dayton side, Mason covers '
         'Cincinnati, and Troy and Waynesville fill in Miami and Warren counties between them.',
-        f'One number reaches all four: <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>. There are '
-        'no separate local lines.',
+        f'One number reaches all four: <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>, and it is '
+        'the line answered at any hour. Each shop also takes calls direct on its own local '
+        'number, listed on its card below.',
     ]
     return section("VISIT US", "Where are your offices?", cards,
                    lead=lead, sid="offices")
@@ -392,7 +393,9 @@ CONTACT = {
     "faq": [
         {"q": "What's your phone number?",
          "a": f'<a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>. One number for heating, cooling '
-              "and plumbing, and it reaches all four Ohio offices."},
+              "and plumbing, reaching all four Ohio offices, and the only line staffed around "
+              "the clock. Each office also has its own local number if you would rather dial "
+              "one in your own area code."},
         {"q": "Where is the Beavercreek office?",
          "a": f'{D.OFFICE_BY_SLUG["beavercreek"]["oneline"]}, in Greene County.'},
         {"q": "Where is the Mason office?",
@@ -1138,8 +1141,9 @@ ABOUT = {
          "a": f"More than {D.JOBS_COMPLETED_LONG.rstrip('+')} across the two metros since "
               f"{D.FOUNDED}."},
         {"q": "How do I get in touch?",
-         "a": f'<a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> reaches all four offices. '
-              '<a href="/contact">Addresses and directions</a> are on the contact page, and '
+         "a": f'<a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a> reaches all four offices and is '
+              'the line answered at any hour. Local numbers for each shop, plus '
+              '<a href="/contact">addresses and directions</a>, are on the contact page, and '
               '<a href="/referral">Extreme Rewards</a> pays you for sending someone new.'},
     ],
 }

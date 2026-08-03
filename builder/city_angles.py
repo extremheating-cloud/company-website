@@ -1205,3 +1205,185 @@ ANGLES["indoor-air-quality"] = [
          "answer to an air quality problem without looking inside your ducts first, "
          "that is worth questioning.")},
 ]
+
+# City OVERVIEW pages. A different pool from the six service pools, because these pages
+# are not about one trade: a tail overview had three H2s and 392 words, thinner than any
+# service page. These angles are the whole-home, choosing-and-process questions a
+# homeowner asks before they have decided what is even wrong, which is the job an
+# overview page is actually doing.
+#
+# Keyed as "overview" and picked the same way. Deliberately no overlap in subject with
+# the service pools: nothing here re-explains a furnace or a drain, because a reader
+# who lands on the city page and wants that is one click from the page that does it.
+ANGLES["overview"] = [
+    {"id": "ox-choosing",
+     "h2": "How do I check that a contractor is legitimate?",
+     "body": (
+         "Three things, and all three are quick. Ask for the Ohio license number and "
+         "look it up rather than taking the sticker on the van as proof. Ask whether "
+         "they carry liability insurance and workers' compensation, because if someone "
+         "is hurt in your house and the answer is no, that becomes your problem. And "
+         "ask who is actually coming: some companies subcontract the install to whoever "
+         "is available. None of those questions are rude, and the reaction you get to "
+         "asking them tells you almost as much as the answers.")},
+
+    {"id": "ox-first-visit",
+     "h2": "What actually happens on the first visit?",
+     "body": (
+         "You get an arrival window rather than a whole day. The technician diagnoses "
+         "before quoting, which means the first part of the visit is finding out what "
+         "is wrong rather than telling you what it costs. You hear the price and agree "
+         "to it before any work starts. If the answer turns out to be a decision rather "
+         "than a repair, you should get both options with what each one buys you, and "
+         "you should not be asked to decide on the spot.")},
+
+    {"id": "ox-emergency",
+     "h2": "Is this an emergency, or can it wait until Monday?",
+     "body": (
+         "Call now, whatever the hour, for: no heat when it is genuinely cold, no "
+         "cooling in a heat wave with anyone vulnerable in the house, water actively "
+         "coming in, a sewage backup, or any smell of gas. Those get worse and some of "
+         "them get expensive fast. It can usually wait for a scheduled slot if it is one "
+         "room uncomfortable, a slow drain, a noise that has not changed, or a system "
+         "that is working but not well. When you genuinely cannot tell, call and "
+         "describe it, and expect a straight answer rather than a truck.")},
+
+    {"id": "ox-before-arrival",
+     "h2": "What should I do before the technician gets here?",
+     "body": (
+         "Clear a path to the equipment, and move anything you care about out of the "
+         "way, because basements and utility closets accumulate. Put pets somewhere "
+         "else, not because anyone minds them but because doors get propped open. Have "
+         "the model and serial numbers handy if you can find them, or a photo of the "
+         "data plate. And write down what you actually noticed and when: an "
+         "intermittent fault that is not happening right now is diagnosed largely from "
+         "what you can describe.")},
+
+    {"id": "ox-permits",
+     "h2": "Who pulls the permit, and does it matter?",
+     "body": (
+         "We do, and yes. A permit means an independent inspector looks at the gas, the "
+         "venting and the electrical on work that can hurt you if it is wrong. Which "
+         "authority issues it changes from town to town around here more than people "
+         "expect, and a contractor who has only worked one county sometimes files in "
+         "the wrong place. It also matters when you sell: unpermitted work on a system "
+         "is the kind of thing that surfaces during a sale and gets negotiated against "
+         "you.")},
+
+    {"id": "ox-quotes",
+     "h2": "How do I compare three quotes that are not comparable?",
+     "body": (
+         "Put them side by side on what is actually included rather than on the number "
+         "at the bottom. Was a load calculation done, or was the size copied off the old "
+         "label. Does the price include the permit, the inspection, hauling the old "
+         "equipment away, and any duct or electrical work the job needs. What is the "
+         "warranty on parts and on labor, and who honors each. A quote that is "
+         "meaningfully cheaper is usually cheaper for a reason, and the reason is "
+         "normally one of those lines missing.")},
+
+    {"id": "ox-house-age",
+     "h2": "Does the age of the house change what I should expect?",
+     "body": (
+         "Considerably, and it is the single most useful thing you can tell us on the "
+         "phone. Pre-war housing tends to bring undersized returns from a later "
+         "conversion, galvanized supply line closing up from the inside, and cast-iron "
+         "drains. Mid-century ranches bring original ductwork sized for a smaller "
+         "system than the one that is in there now. Newer construction brings tight "
+         "shells that hold humidity, and equipment installed to a builder's budget "
+         "reaching end of life all at once across a whole street.")},
+
+    {"id": "ox-same-day",
+     "h2": "What does same-day service actually mean in practice?",
+     "body": (
+         "That about nine calls in ten get handled the day they come in, and that the "
+         "tenth is honest about it rather than promised and missed. The days it does "
+         "not hold are predictable: the first hard freeze, the first properly hot week, "
+         "and the morning after a storm, when everyone calls within the same few hours. "
+         "That is what priority scheduling is for and it is the only time it matters. "
+         "If a company promises same-day every day of the year, ask what happens on "
+         "those three days.")},
+
+    {"id": "ox-shutoffs",
+     "h2": "What should every homeowner know how to turn off?",
+     "body": (
+         "Four things, and the time to find them is not during the emergency. The main "
+         "water shutoff, usually where the line enters the basement or crawl space. The "
+         "gas shutoff at the meter, and which way it turns. The breaker for the furnace "
+         "or air handler. And the furnace switch itself, which looks like a light "
+         "switch and gets knocked off more often than anything else on this list. Find "
+         "all four this weekend and check that they actually move.")},
+
+    {"id": "ox-two-trades",
+     "h2": "Why does one company doing both trades matter?",
+     "body": (
+         "Mostly because of the problems that sit on the boundary and get passed back "
+         "and forth. A humidifier tied into the ductwork is plumbing and HVAC. A "
+         "condensate line that will not drain is both. A gas line feeding a furnace and "
+         "a water heater is both. When those are split between two companies, the "
+         "common outcome is each one telling you it is the other's job. One number for "
+         "both is less about convenience than about the diagnosis not stopping at a "
+         "boundary.")},
+
+    {"id": "ox-buying-house",
+     "h2": "We are buying here. What should we check before closing?",
+     "body": (
+         "Ages first: the data plate on the furnace, the air conditioner and the water "
+         "heater will each tell you the year, and that is three replacement decisions "
+         "with dates on them. Then ask whether the systems have service records, "
+         "because a warranty on newer equipment usually depends on them. Then look for "
+         "the things a general home inspection tends to note but not price: undersized "
+         "returns, a water heater at the end of its life, and any sign that a system "
+         "was replaced without a permit.")},
+
+    {"id": "ox-warranty",
+     "h2": "Who actually covers what when something fails?",
+     "body": (
+         "Two separate warranties, and people conflate them. The manufacturer covers "
+         "parts, usually for a set number of years and usually only if the system was "
+         "registered and has documented annual maintenance. The installer covers labor "
+         "and workmanship, for a period they set. A failed part inside the parts "
+         "warranty still means paying someone to fit it unless the labor warranty is "
+         "live too. Ask for both terms in writing at the quote stage, not after.")},
+
+    {"id": "ox-membership",
+     "h2": "Is a maintenance membership worth it, or should I just pay per visit?",
+     "body": (
+         "Do the arithmetic on your own house rather than on the brochure. Two tune-ups "
+         "a year at the published price is the baseline, and the membership adds a "
+         "reduced service call, a discount on repairs and priority scheduling. If you "
+         "have one system and it is newer, paying per visit is perfectly reasonable. If "
+         "you have two systems, or older equipment, or the kind of house where a "
+         "no-heat night is a real problem, the queue position tends to be worth more "
+         "than the discount.")},
+
+    {"id": "ox-seasonal",
+     "h2": "What is worth doing before each season?",
+     "body": (
+         "Before heating season: change the filter, clear anything stacked against the "
+         "furnace, test the carbon monoxide alarms, and disconnect the garden hoses. "
+         "Before cooling season: rinse the outdoor coil with the power off, cut back "
+         "whatever has grown within two feet of it, and pour a cup of vinegar down the "
+         "condensate line. Both of those lists take under an hour and prevent a "
+         "meaningful share of the calls we take at the start of each season.")},
+
+    {"id": "ox-landlord",
+     "h2": "We rent the place out. Does that change anything?",
+     "body": (
+         "It changes who needs to know what. Whoever holds the account should be the "
+         "person who can approve work, or every visit stalls waiting for a phone call. "
+         "It is worth agreeing in advance what a technician can proceed with without "
+         "asking, because a no-heat call at 9pm on a Friday is a bad time to discover "
+         "nobody can authorize a part. Keep the service records: they matter for the "
+         "warranty and they matter when a tenant says something was never fixed.")},
+
+    {"id": "ox-second-opinion",
+     "h2": "I have been told I need a new system. Should I get another opinion?",
+     "body": (
+         "If the recommendation arrived without a diagnosis you understood, yes. A "
+         "replacement recommendation should come with a specific reason: a cracked heat "
+         "exchanger, a failed compressor, a repair quote approaching a third of "
+         "replacement cost on a system past its expected life. Those are checkable. "
+         "What is not a reason on its own is the age of the equipment, and a second "
+         "opinion costs a service call against a decision that runs into thousands. "
+         "Anyone confident in the first answer will not mind you getting it.")},
+]

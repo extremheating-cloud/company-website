@@ -1166,7 +1166,7 @@ geo(HVAC_PAGES, "furnace-heating.html",
                        ("Comfort", "One room runs cool",
                         "Rooms never balance and the furnace runs almost constantly"),
                        ("Warranty", "Parts are still under manufacturer warranty",
-                        "Parts and labour warranties have both run out")])),
+                        "Parts and labor warranties have both run out")])),
         sec("What are the signs a furnace is failing?",
             "Cold or lukewarm air at the vents, short cycling, a yellow or flickering burner "
             "flame, burning or musty smells, banging and scraping sounds, and heating bills "
