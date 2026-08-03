@@ -65,7 +65,15 @@ def pick(slug, service, n=4):
         pool,
         key=lambda a: hashlib.sha1(
             f"{slug}|{service}|{a['id']}".encode()).hexdigest())
-    return keyed[:n]
+    # Ranking the whole pool and taking the top n is not a uniform draw over
+    # combinations, and with 30 cities against 16 angles it collided once for real:
+    # moraine and springfield drew an identical four for heating. The rotating start
+    # point breaks that. It is still a pure function of (slug, service) — no dependence
+    # on the city list, so adding a town later cannot reshuffle an existing one — and
+    # two cities now have to match on both the ranking and the offset.
+    start = int(hashlib.sha1(f"{slug}|{service}|offset".encode()).hexdigest(), 16)
+    start %= len(keyed)
+    return [keyed[(start + i) % len(keyed)] for i in range(min(n, len(keyed)))]
 
 
 def coverage(slugs, service, n=4):
@@ -192,16 +200,22 @@ ANGLES = {
              "in an Ohio January is not a call worth putting off until morning, both "
              "for the house and for the pipes in it.")},
 
-        {"id": "hx-boiler",
-         "h2": "Do you still work on boilers and radiators?",
+        # This slot used to answer "do you still work on boilers and radiators" with a
+        # yes. We do not work on boilers or geothermal, client-corrected 2026-08-03. Oil
+        # furnaces we do, and nothing on the site said so, so the honest version of this
+        # angle is more useful than the wrong one was.
+        {"id": "hx-oil",
+         "h2": "Do you work on oil furnaces?",
          "body": (
-             "Yes, and there are more of them around here than people assume, "
-             "particularly in the older housing stock closer to the river and in the "
-             "pre-war neighborhoods. A boiler is a different service call from a "
-             "furnace: circulator pumps, expansion tanks, air in the loop and zone "
-             "valves rather than blowers and burners. If your house has radiators and "
-             "someone has quoted you for duct cleaning, that is a fair reason to get a "
-             "second opinion, because there are no ducts to clean.")},
+             "Yes. There are fewer around than there once were, but plenty are still "
+             "running in the older housing here, and they are a genuinely different "
+             "service call from gas: a nozzle and electrodes rather than a burner "
+             "assembly, a filter and a pump on the fuel side, and soot that has to be "
+             "cleaned out rather than left. They want annual service more than a gas "
+             "furnace does, because a neglected oil burner sooties up and loses "
+             "efficiency long before it stops working. What we do not take on is "
+             "boilers or geothermal, so if your heat is hydronic you want a hydronic "
+             "specialist rather than us.")},
 
         {"id": "hx-two-systems",
          "h2": "Should the furnace and the air conditioner be replaced together?",
@@ -516,4 +530,145 @@ ANGLES["plumbing"] = [
          "because they can be scheduled around the rest of the work rather than "
          "holding it up. A short conversation at the drawing stage tends to save "
          "arguments at the tiling stage.")},
+]
+
+# Heating and cooling grown from 10 to 16, matching plumbing. The plumbing result is
+# why: same mechanism, same four-per-page, but a pool of 16 landed 54.8% novel against
+# heating's 48.1%. Four from 16 means two cities share about one section instead of
+# 1.6, so the pool size was carrying the difference, not the writing.
+ANGLES["heating"] += [
+    {"id": "hx-burning-smell",
+     "h2": "The vents smell like burning dust when the heat first comes on.",
+     "body": (
+         "That one is usually nothing. Dust settles on the heat exchanger over a summer "
+         "of not running, and the first few cycles in autumn burn it off. It should "
+         "fade within an hour or two of running and not come back. What is not normal "
+         "is a smell that persists past that, a sharp electrical or plastic smell at "
+         "any point, or anything like rotten eggs. The last one is the additive put "
+         "into natural gas so you can smell a leak, and it means leave the house and "
+         "call the gas utility before you call anyone else.")},
+
+    {"id": "hx-co-alarm",
+     "h2": "Where should carbon monoxide alarms actually go?",
+     "body": (
+         "One on every floor, and one within about fifteen feet of each sleeping area, "
+         "because the whole point is waking someone up. They do not need to be at floor "
+         "level; carbon monoxide mixes with air rather than sinking. Keep them a few "
+         "feet clear of the furnace itself so brief startup readings do not nuisance-"
+         "trip them. Replace the units on the date printed on the back, because the "
+         "sensor has a service life whether or not it has ever sounded. If one goes off "
+         "and then stops, treat it as real and get the furnace checked.")},
+
+    {"id": "hx-dry-air",
+     "h2": "Why is the house so dry in winter, and does a humidifier help?",
+     "body": (
+         "Cold outdoor air holds very little moisture, so every air change your house "
+         "makes in January swaps damp indoor air for dry. The furnace does not cause it, "
+         "it just moves it around. What you notice is static, dry skin, and gaps opening "
+         "in hardwood floors and trim that close again in summer. A whole-house "
+         "humidifier plumbed into the ductwork handles it more evenly than portable "
+         "units, and it wants a humidistat rather than a fixed setting, because running "
+         "too wet in a cold snap puts condensation on the inside of your windows.")},
+
+    {"id": "hx-tuneup",
+     "h2": "What actually happens during a furnace tune-up?",
+     "body": (
+         "It should be a list of measurements, not a look. Combustion analysis at the "
+         "flue, gas pressure at the manifold, temperature rise across the heat "
+         "exchanger, amp draw on the blower and the inducer, flame sensor cleaned and "
+         "its microamp signal read, safeties tested rather than assumed, and a look at "
+         "the heat exchanger itself. Ask for the numbers afterwards. A visit that "
+         "produces no readings gives you nothing to compare against next year, and "
+         "year-on-year comparison is most of what a tune-up is actually for.")},
+
+    {"id": "hx-cool-start",
+     "h2": "Why does the furnace blow cool air when it first starts?",
+     "body": (
+         "Because the burners light before the blower does, on purpose. The furnace "
+         "gives the heat exchanger thirty seconds or so to warm up before it moves air "
+         "across it, so the first air out of the vents is whatever was sitting in the "
+         "ducts. If the cool air lasts longer than a minute or two, or the blower runs "
+         "without the burners ever lighting, that is different: it usually means the "
+         "furnace tried to fire and a safety stopped it, and it will keep retrying "
+         "until it locks out.")},
+
+    {"id": "hx-closed-vents",
+     "h2": "Should I close vents in rooms I do not use?",
+     "body": (
+         "No, and it is one of the most common ways people make a system worse while "
+         "trying to save money. Your furnace moves a fixed amount of air. Closing vents "
+         "does not reduce that, it raises the pressure in the ductwork, which pushes "
+         "more air out through leaks in the ducts and makes the blower work against "
+         "itself. On a high-efficiency furnace it can raise the temperature rise enough "
+         "to trip the high limit. If some rooms genuinely need less heat, that is a "
+         "balancing job at the dampers, not at the registers.")},
+]
+
+ANGLES["cooling"] += [
+    {"id": "cx-drain",
+     "h2": "There is water on the floor near the indoor unit.",
+     "body": (
+         "Almost always the condensate drain. Cooling pulls moisture out of the air and "
+         "that water has to go somewhere, usually down a small PVC line to a floor "
+         "drain or a pump. Algae builds up in that line over a season and blocks it, "
+         "the pan overflows, and you find it as a wet patch or a ceiling stain if the "
+         "unit is upstairs. Many systems have a float switch that shuts the cooling off "
+         "rather than let the pan overflow, so an air conditioner that has stopped for "
+         "no obvious reason in humid weather is worth checking there first.")},
+
+    {"id": "cx-setback",
+     "h2": "Is it cheaper to leave the AC at one temperature all day?",
+     "body": (
+         "No. This one persists because it sounds sensible, but a house loses heat to "
+         "the outside in proportion to the difference between inside and out. Letting "
+         "the house drift up while nobody is home narrows that gap for hours and the "
+         "system spends less energy overall, even counting the longer run to pull it "
+         "back down. The one caveat is size: a setback of more than a few degrees on an "
+         "undersized system can mean it never quite catches up on the hottest days, "
+         "which is a comfort problem rather than a cost one.")},
+
+    {"id": "cx-fan-auto",
+     "h2": "Should the fan be set to AUTO or ON?",
+     "body": (
+         "AUTO for most houses, most of the time. On ON the blower runs continuously, "
+         "which does even out temperatures between rooms and keeps air moving through "
+         "the filter. The catch in a humid climate is that when the compressor stops, "
+         "moisture is still sitting on the indoor coil, and a fan that keeps running "
+         "evaporates it straight back into the house. You get a cool, clammy result and "
+         "a higher bill. If you want the air mixing benefit, a variable-speed blower on "
+         "low is the version of this that does not fight the dehumidification.")},
+
+    {"id": "cx-musty",
+     "h2": "The air smells musty when the AC starts.",
+     "body": (
+         "That smell is biological growth on a coil that stays wet, and it is common in "
+         "systems that short cycle or run with the fan permanently on. It is worth "
+         "taking seriously rather than masking, because the air carrying it is the air "
+         "the whole house breathes. The fixes go in order of cost: clear and treat the "
+         "condensate drain, clean the coil properly rather than spraying it, correct "
+         "whatever is keeping the coil wet, and only then look at UV or filtration. "
+         "Starting at the last step is how people spend money and still smell it.")},
+
+    {"id": "cx-annual-refrigerant",
+     "h2": "I am told the system needs refrigerant every year. Is that normal?",
+     "body": (
+         "No. Refrigerant is not a consumable. It runs in a sealed loop and a correctly "
+         "working system will hold the same charge for its whole life. A system that "
+         "needs topping up annually has a leak, and adding refrigerant without finding "
+         "it means paying every year for something escaping into the air. Ask for the "
+         "leak to be found and quoted. Sometimes the answer is a repair worth making "
+         "and sometimes it is a coil that costs enough to change the replacement "
+         "conversation, but either way you should be told which.")},
+
+    {"id": "cx-attic",
+     "h2": "My air handler is in the attic. Does that change anything?",
+     "body": (
+         "It changes what a small problem costs you. An attic unit sits above finished "
+         "ceilings, so a blocked condensate drain that would be a wet floor in a "
+         "basement becomes a ceiling repair instead. Attics also run far hotter than "
+         "the rest of the house, so duct leakage up there loses cooled air into the "
+         "worst possible place and the insulation on those ducts matters more than it "
+         "would elsewhere. Worth confirming there is a secondary drain pan with its own "
+         "float switch under the unit, because that is the thing standing between a "
+         "clog and your ceiling.")},
 ]

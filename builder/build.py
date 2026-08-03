@@ -697,6 +697,25 @@ def _slug(fname):
 # Pages whose legacy inventory image is replaced by real Extreme photography.
 # These win over old_img(); everything else keeps whatever the old page carried.
 PHOTO_OVERRIDES = {
+    # Both gas-line pages led with a stock photo captioned "a technician checking a
+    # boiler system in a basement". We do not work on boilers (client, 2026-08-03) and
+    # the site now says so in two places, so those pages were opening with an image of
+    # a service we decline. It was also the og:image and the schema primaryimage, so it
+    # was what got shared and what Google indexed for a gas-line query.
+    #
+    # This URL is not new: it is already the second image in gas-line/overview's own
+    # legacy inventory and already the hero on gas-line/installation. Same licensing
+    # exposure as before, no worse, and it is genuinely the right subject.
+    # [NEEDS: real gas-line photography at the shoot. This is one of the 17 hotlinked
+    #  comps due for replacement, and the whole family should go at once.]
+    "Plumbing Service Pages/gas-line/overview.html": {
+        "photo": "https://media.istockphoto.com/id/1272276339/photo/ceiling-with-multiple-utility-lines-gas-electrical-water-internet-and-sewer.jpg?s=612x612&w=0&k=20&c=rEtMb6DNqRx5JxjmCtLb7n_ZkzGIAT8ya0Z250G7640=",
+        "photoAlt": "Gas, water and electrical lines running along a basement ceiling",
+    },
+    "Plumbing Service Pages/gas-line/repair.html": {
+        "photo": "https://media.istockphoto.com/id/1272276339/photo/ceiling-with-multiple-utility-lines-gas-electrical-water-internet-and-sewer.jpg?s=612x612&w=0&k=20&c=rEtMb6DNqRx5JxjmCtLb7n_ZkzGIAT8ya0Z250G7640=",
+        "photoAlt": "Gas, water and electrical lines running along a basement ceiling",
+    },
     # The legacy heatpump.jpg is a generic stock condenser. This is an actual Ruud
     # heat pump from a job, badge legible — right equipment and right brand for the
     # one page on the site that is specifically about heat pumps.

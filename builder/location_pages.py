@@ -239,7 +239,7 @@ SERVICE_COPY = {
   cards=[("Furnace repair","Any brand, any age — diagnosed and quoted upfront before work begins."),
          ("Furnace installation","High-efficiency replacements sized to your home, not a sales quota."),
          ("Heat pumps","Heating and cooling in one system — great fit for Ohio's swing seasons."),
-         ("Boilers &amp; radiators","Older {CITY} homes included — we know the quirks."),
+         ("Oil furnaces","Fewer around than there were, still running in older {CITY} homes."),
          ("Heating tune-ups","Seasonal inspection and safety check — free twice a year on X-Plan."),
          ("Smart thermostats","Installed and configured so the schedule actually saves you money.")],
   sec2="decision",
@@ -489,7 +489,7 @@ GEO_SERVICE_BOOK = ("Call " + PHONE + " and you get a person, or book online in 
 # only thing that varies, which is the honest position: there is no local research for
 # 28 more places and inventing it is worse than omitting it.
 TAIL_VERB = {
-    "heating": "repair and replace furnaces, heat pumps and boilers",
+    "heating": "repair and replace gas, electric and oil furnaces, and heat pumps",
     "cooling": "repair and replace air conditioners, ductless systems included",
     "plumbing": "handle water heaters, drains, leaks and sewer lines",
     "maintenance": "tune up furnaces and air conditioners every season",
@@ -585,18 +585,21 @@ LOCAL = {
         ("X-Plan maintenance membership", "/maintenance")],
  svc={
   "heating": dict(
-   answer="We repair and replace furnaces, heat pumps and boilers in Dayton, including the "
+   answer="We repair and replace gas, electric and oil furnaces and heat pumps in Dayton, "
+          "including the "
           "gravity-furnace conversions and squeezed-in duct runs common in pre-1940 housing. "
           "Most get handled the same day, and we answer the no-heat line at any hour.",
    slots=[("What heating problems come with pre-war Dayton houses?", [
     "About 38.2% of Dayton's housing predates 1940. Many of those houses started on a gravity "
     "furnace with radiators and were converted to forced air later, and the conversion usually "
     "meant squeezing trunk lines into a basement joist bay that was never sized for the job. "
-    "Radiator and boiler systems are still in service across the city, and they need a technician "
-    "who has worked them rather than one who only knows sealed-combustion furnaces."])],
-   faq=("Do you still work on boilers and radiators?",
-        "Yes. Dayton has more of them than anywhere else we cover, because 38.2% of its housing "
-        "was built before 1940 and the radiators stayed put through later conversions.")),
+    "That is why one room never keeps up in so many of these houses, and why adding return "
+    "capacity fixes more of them than new equipment does. Ask for the airflow to be measured "
+    "before anyone quotes you a furnace."])],
+   faq=("Do you work on oil furnaces?",
+        "Yes. There are fewer than there once were, but they are still running in the older "
+        "housing here, and they want a technician who has actually serviced one. We do not "
+        "work on boilers or geothermal systems.")),
   "cooling": dict(
    answer="We repair and replace air conditioners in Dayton, ductless included. Houses built "
           "before 1940 usually have one central return and nothing pulling from upstairs, which "
@@ -749,18 +752,20 @@ LOCAL = {
         ("heat pump systems", "/heat-pump")],
  svc={
   "heating": dict(
-   answer="We repair and replace furnaces, boilers and heat pumps in Cincinnati. Roughly 40% of "
-          "the city's housing predates 1939, and a lot of it still runs on steam or hot-water "
-          "radiators. We answer the no-heat line at any hour.",
+   answer="We repair and replace gas, electric and oil furnaces and heat pumps in Cincinnati. "
+          "Roughly 40% of the city's housing predates 1939, so plenty of it was built with no "
+          "ductwork at all, and for those houses the answer is usually a ductless system. We "
+          "answer the no-heat line at any hour.",
    slots=[("Does Cincinnati's climate zone change the furnace size?", [
     "It can. Hamilton County sits in IECC climate zone 4A while the rest of the service area sits "
     "in 5A, and Cincinnati averages 5,364 heating degree days on the NOAA 1991 to 2020 normals. A "
     "load calculation done for a house 30 miles north can oversize the equipment here, and an "
     "oversized furnace short cycles, wears faster and heats less evenly than a correctly sized one."])],
-   faq=("My radiators are original. Is replacing them the only option?",
-        "No. Steam and hot-water systems can be repaired and rebalanced, and in Cincinnati's "
-        "pre-1939 housing they often outlast the boiler feeding them. Replacement becomes the "
-        "conversation when the boiler is finished, not when a radiator is cold.")),
+   faq=("My house has radiators and no ductwork. What are my options?",
+        "Ductless, usually. A ductless heat pump heats and cools without needing duct chases "
+        "cut into a pre-1939 house, and it can be zoned room by room. We do not service "
+        "boilers or the radiators themselves, so if the existing system needs work rather "
+        "than replacing, you want a hydronic specialist.")),
   "cooling": dict(
    answer="We repair and install air conditioning in Cincinnati, including ductless and "
           "high-velocity systems for houses with no ductwork. That covers equipment stuck in "
@@ -794,14 +799,15 @@ LOCAL = {
         "pump, no battery backup, or drainage running toward a partially buried wall. A sump pump "
         "assessment answers it, and it is a cheaper visit than a finished basement.")),
   "maintenance": dict(
-   answer="We tune up furnaces and air conditioners for Cincinnati homes, boilers and radiator "
-          "systems included, along with equipment tucked into hillside crawl spaces. X-Plan "
-          "covers two visits a year for $249.",
-   slots=[("Do boilers need a different kind of tune-up?", [
-    "Yes. A boiler service checks combustion, pressure, the expansion tank, the circulator and the "
-    "relief valve, none of which exist on a forced-air furnace. In Cincinnati that matters more "
-    "than anywhere else we work, because roughly 40% of the housing predates 1939 and a large "
-    "share of it is still hydronic."])],
+   answer="We tune up furnaces, air conditioners and heat pumps for Cincinnati homes, "
+          "including equipment tucked into hillside crawl spaces where most of the work is "
+          "getting to it. X-Plan covers two visits a year for $249.",
+   slots=[("Why does equipment in a hillside crawl space need more attention?", [
+    "Because of where it sits. A furnace or air handler in a crawl space on the low side of a "
+    "Cincinnati hillside lives with more damp than the same unit in a dry basement, and damp "
+    "is what takes out a blower motor and rusts a cabinet from the underside. Condensate "
+    "drains matter more there too, because a blocked one has nowhere good to go. It is worth "
+    "having someone actually get under there rather than service it from the hatch."])],
    faq=("Does a maintenance visit include the permit paperwork?",
         "No permit is needed for a tune-up. Permits come in on installation and replacement work, "
         "and the City of Cincinnati requires one for replacements as well as new units.")),
