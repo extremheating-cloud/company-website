@@ -1363,7 +1363,7 @@ geo(HVAC_PAGES, "duct-cleaning.html",
         sec("Is air duct cleaning actually worth the money?",
             ["Sometimes, and the honest answer depends on what is in the ducts. The EPA does "
              "not recommend cleaning ducts on a routine schedule, but it does recommend "
-             "cleaning when there is visible mould growth, vermin, or enough dust and debris "
+             "cleaning when there is visible mold growth, vermin, or enough dust and debris "
              "to be blown into the house. Those three conditions are the test.",
              "So we photograph the ducts before we start and again when we finish. You look "
              "at the pictures and decide for yourself whether the money did anything."]),
@@ -1457,7 +1457,7 @@ geo(HVAC_PAGES, "indoor-air-quality.html",
             "not just the symptom.",
     sections=[
         sec("How do I improve the air quality in my house?",
-            ["In this order: control the source, then filter, then purify. Sealing a mouldy "
+            ["In this order: control the source, then filter, then purify. Sealing a moldy "
              "crawlspace does more than any purifier will, a better filter does more than a "
              "UV lamp, and the equipment only earns its keep once the first two are handled. "
              "Anyone selling the order backwards is selling equipment.",
@@ -1499,7 +1499,7 @@ geo(HVAC_PAGES, "indoor-air-quality.html",
                        ("Allergy symptoms indoors only",
                         "Pollen, dander and dust recirculating through the system",
                         "Filtration upgrade, duct cleaning, source control"),
-                       ("Visible mould near a register or crawlspace",
+                       ("Visible mold near a register or crawlspace",
                         "Standing water or a moisture path, not an air problem",
                         "Fix the moisture source first, then treat the air")])),
         sec("What can you install?",
@@ -2548,7 +2548,7 @@ geo(HVAC_SUBS, "importance-iaq.html",
                        ("Pollen",
                         "Outdoor air entering through doors, windows, and leaky return ducts",
                         "Media filtration, plus sealing the return side of the duct system"),
-                       ("Mould and mildew spores",
+                       ("Mold and mildew spores",
                         "Damp basements, condensate pans, and humidity held above 60%",
                         "Dehumidification to 50% or below, plus fixing the water source"),
                        ("Volatile organic compounds",

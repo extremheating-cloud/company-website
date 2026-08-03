@@ -29,11 +29,11 @@ more *local*. A Montgomery reader gets zoning and a Brookville reader gets cost
 of waiting for no reason connected to their town.
 
 So the rule here is that every angle must be independently worth reading. If a
-section only exists to make a page look different from its neighbour, it is
+section only exists to make a page look different from its neighbor, it is
 padding, and padding on 234 pages is how a site earns a thin-content problem
 instead of solving one. Each angle below answers a question a homeowner in this
 market actually asks, and would earn its place on a single page with no
-neighbours at all.
+neighbors at all.
 
 The genuinely local layer sits ELSEWHERE and stays there: LOCAL[slug]["svc"]
 carries the researched permit, water and utility facts for the indexed ten, and
@@ -671,4 +671,537 @@ ANGLES["cooling"] += [
          "would elsewhere. Worth confirming there is a secondary drain pan with its own "
          "float switch under the unit, because that is the thing standing between a "
          "clog and your ceiling.")},
+]
+
+# The remaining three services, 16 each, same shape as the first three.
+#
+# Two hard constraints held in this block. Radon does not appear anywhere in the IAQ
+# pool: we do not do radon mitigation (client), and an air-quality page is exactly
+# where a reader would assume otherwise if it were mentioned at all. And the duct
+# pool opens by admitting when duct cleaning is not worth buying, because a page
+# selling duct cleaning that will not say that is the reason the whole category has
+# the reputation it does.
+ANGLES["maintenance"] = [
+    {"id": "mx-why-twice",
+     "h2": "Why twice a year rather than once?",
+     "body": (
+         "Because heating and cooling are two different machines sharing a cabinet, and "
+         "they fail at opposite ends of the year. A spring visit is about the "
+         "condenser, the refrigerant charge and the condensate drain before the first "
+         "heat wave. An autumn visit is about combustion, the heat exchanger and the "
+         "safeties before the first hard freeze. Doing one visit in between gets you "
+         "half of each at the wrong time of year. If you only ever do one, make it "
+         "autumn: a no-cool night is uncomfortable and a no-heat night can freeze "
+         "pipes.")},
+
+    {"id": "mx-worth-it",
+     "h2": "Does maintenance actually make equipment last longer?",
+     "body": (
+         "It makes early failure less likely, which is not quite the same claim and is "
+         "the honest version. Most of what shortens a system's life is airflow: a "
+         "starved return makes a furnace run hot and an air conditioner run cold, and "
+         "both stress the parts that cost the most to replace. Maintenance catches the "
+         "dirty coil, the failing capacitor and the sagging blower wheel while they are "
+         "still small. What it cannot do is make a twenty-year-old system into a new "
+         "one, and anyone promising that is selling something else.")},
+
+    {"id": "mx-warranty",
+     "h2": "Does my warranty require annual maintenance?",
+     "body": (
+         "Most manufacturer warranties do, and it is the part people find out about at "
+         "the worst moment. The parts warranty on a new system typically requires "
+         "documented annual service by a licensed contractor, and a compressor claim is "
+         "exactly when someone asks for those records. Keep the invoices, or let "
+         "whoever services it keep them for you. This is the single cheapest reason to "
+         "maintain a system that is running perfectly well and does not feel like it "
+         "needs anything.")},
+
+    {"id": "mx-diy",
+     "h2": "What can I do myself between visits?",
+     "body": (
+         "Four things, and they cover most of what goes wrong. Change the filter on a "
+         "real schedule rather than when you remember. Keep two feet clear around the "
+         "outdoor unit and rinse the coil from the inside out with a hose, power off, "
+         "once a season. Pour a cup of vinegar down the condensate drain line in "
+         "spring. And listen: a noise that is new is information, and the cheapest "
+         "repair is always the one booked in the week you first noticed something "
+         "rather than the month it finally stopped.")},
+
+    {"id": "mx-numbers",
+     "h2": "What should a tune-up leave me with?",
+     "body": (
+         "Numbers. Temperature rise across the furnace, static pressure in the "
+         "ductwork, superheat and subcooling on the air conditioner, amp draws, and a "
+         "combustion reading at the flue. Ask for them, and keep them. One year of "
+         "readings tells you the system is fine today. Three years of readings tells "
+         "you the compressor is drawing more than it used to and the refrigerant charge "
+         "is drifting, which is the difference between replacing a part in April and "
+         "replacing a system in July.")},
+
+    {"id": "mx-skip-year",
+     "h2": "I skipped a year. Does that matter?",
+     "body": (
+         "One skipped year is not a disaster, and nobody should pretend otherwise. What "
+         "it costs you is the comparison: a technician arriving with no prior readings "
+         "is looking at a snapshot rather than a trend. The two things worth checking "
+         "sooner rather than later after a gap are the condensate drain, which blocks "
+         "quietly and can overflow into a ceiling, and the flame sensor, which fouls "
+         "gradually and eventually stops the furnace lighting on the first cold night "
+         "of the year.")},
+
+    {"id": "mx-new-system",
+     "h2": "It is brand new. Does it need maintenance already?",
+     "body": (
+         "Yes, and for two reasons that have nothing to do with the equipment being "
+         "worn. The first is the warranty, which usually requires it from year one. The "
+         "second is that a new system's first year is when installation issues surface: "
+         "a charge that was slightly off, a duct connection that has worked loose, a "
+         "condensate line pitched wrong. Those are all cheap to correct early and "
+         "expensive to discover after they have been quietly stressing the system for "
+         "three summers.")},
+
+    {"id": "mx-priority",
+     "h2": "What does priority scheduling actually mean?",
+     "body": (
+         "It means you go ahead of non-members on the day everyone calls at once, which "
+         "is the only day it matters. On an ordinary Tuesday in April, everybody gets "
+         "same-day service and the distinction is invisible. On the first 95-degree "
+         "afternoon of the summer, or the morning after the first hard freeze, the "
+         "board fills before lunch. That is what the queue position is for. It is worth "
+         "understanding that plainly rather than discovering it either way in July.")},
+
+    {"id": "mx-bills",
+     "h2": "Will maintenance lower my energy bill?",
+     "body": (
+         "A little, and less than most advertising implies. A dirty condenser coil or a "
+         "clogged filter genuinely does cost you efficiency, and cleaning them recovers "
+         "it. But a well-maintained fifteen-year-old system is still a fifteen-year-old "
+         "system, and the savings are measured in percent rather than in halves. If "
+         "your bill has jumped noticeably, maintenance is the right first call to find "
+         "out why, but treat a large predicted saving with the same skepticism you "
+         "would apply to any other number quoted before the work.")},
+
+    {"id": "mx-cover",
+     "h2": "Should I cover the outdoor unit for winter?",
+     "body": (
+         "Generally no. A heat pump must not be covered at all, because it runs all "
+         "winter. An air conditioner does not need one either: the unit is built to sit "
+         "outside, and a full wrap traps moisture against the metal and gives mice "
+         "somewhere dry to nest in the wiring. If you want to keep leaves out of the "
+         "top, a piece of plywood weighted on the fan grille does that without sealing "
+         "the cabinet. Take it off before the first cooling call in spring.")},
+
+    {"id": "mx-two-systems",
+     "h2": "We have two systems. Do both need visits?",
+     "body": (
+         "Yes, and they usually need them at different times for different reasons. In "
+         "most two-system houses one serves upstairs and one down, and the upstairs "
+         "unit works considerably harder in summer while the downstairs one carries "
+         "more of the winter. They also tend to be different ages, because they rarely "
+         "fail together. Treat them as two pieces of equipment with two sets of "
+         "readings rather than one appointment, because the older one is where the next "
+         "decision is going to come from.")},
+
+    {"id": "mx-what-fails",
+     "h2": "What actually fails most, and would maintenance have caught it?",
+     "body": (
+         "Capacitors first, by a wide margin, then contactors, flame sensors and "
+         "condensate blockages. All four are cheap parts and all four are checkable, "
+         "which is the honest case for maintenance: a weak capacitor reads weak before "
+         "it fails and gets replaced during a scheduled visit rather than on an "
+         "emergency one at a different rate. What maintenance does not predict is a "
+         "compressor or a heat exchanger failing outright, and no honest inspection "
+         "will promise you it does.")},
+
+    {"id": "mx-filter-vs",
+     "h2": "If I change the filter religiously, is that enough?",
+     "body": (
+         "It is the most valuable thing you can do and it is not the whole job. The "
+         "filter protects the blower and the coil from dust, which is why a neglected "
+         "one causes so much downstream damage. What it does not touch is the outdoor "
+         "coil, the refrigerant charge, the electrical connections that loosen with "
+         "thermal cycling, the condensate path, or anything on the combustion side of a "
+         "furnace. Think of the filter as the part you own and the rest as the part "
+         "that needs instruments.")},
+
+    {"id": "mx-timing",
+     "h2": "When should I book, to avoid the rush?",
+     "body": (
+         "Late winter for the cooling visit and late summer for the heating one, which "
+         "feels a season early and is exactly the point. Book in April and you are "
+         "competing with everyone whose air conditioner just failed. Book in February "
+         "and you get the appointment window you actually want. It also means a problem "
+         "found in the tune-up gets fixed with time in hand, rather than becoming a "
+         "decision made in a hot house with a technician standing there.")},
+
+    {"id": "mx-old-system",
+     "h2": "The system is old. Is maintenance throwing good money after bad?",
+     "body": (
+         "Not if it is buying you information. On a system past fifteen years, the "
+         "purpose of a visit shifts: less about extending life and more about knowing "
+         "where you stand before winter, so a replacement is a decision you make in "
+         "September rather than one made for you in January. Ask directly for an "
+         "assessment of how much life is realistically left. A straight answer to that "
+         "is worth more than the tune-up itself.")},
+
+    {"id": "mx-records",
+     "h2": "What should I keep, and for how long?",
+     "body": (
+         "Keep the install paperwork for as long as you own the equipment: model and "
+         "serial numbers, the install date, and the warranty registration. Keep service "
+         "invoices for the life of the system, because that is the record a warranty "
+         "claim asks for. Photograph the data plate on both the indoor and outdoor "
+         "units once and keep it on your phone. When something fails on a Sunday, being "
+         "able to read the model number out over the phone is the difference between a "
+         "part on the truck and a part on order.")},
+]
+
+ANGLES["duct-cleaning"] = [
+    {"id": "dx-honest",
+     "h2": "Does duct cleaning actually do anything?",
+     "body": (
+         "Sometimes, and not always, and it is worth saying so before anyone books one. "
+         "For a normal house with a decent filter and no particular history, cleaning "
+         "the ducts is not going to transform your air or your energy bill, whatever "
+         "the mailers say. Where it genuinely earns its money is after construction or "
+         "a remodel, after any kind of pest or rodent activity, where there is visible "
+         "dust discharging from the registers, or where the system has been running "
+         "without a filter. If none of those apply, ask what the specific problem is "
+         "that cleaning is meant to solve.")},
+
+    {"id": "dx-how-know",
+     "h2": "How do I know if my ducts actually need cleaning?",
+     "body": (
+         "Take a register cover off and look, and take a photo of what you see. Some "
+         "settled dust on the bottom of the duct is normal in any house. What is not "
+         "normal is a visible layer coating the sides, debris you can identify like "
+         "drywall dust or insulation, anything that looks like nesting material, or a "
+         "smell that turns up when the system starts and fades when it stops. Ask any "
+         "contractor to show you inside your own ducts before quoting, and be wary of "
+         "one who quotes without looking.")},
+
+    {"id": "dx-proper",
+     "h2": "What does a proper duct cleaning actually involve?",
+     "body": (
+         "Negative pressure and agitation, in that order. A vacuum unit is connected to "
+         "the system so the whole duct run is under suction, and then each branch is "
+         "agitated with brushes or air whips so what is stuck to the wall lets go and "
+         "gets pulled out rather than blown further in. The furnace or air handler "
+         "cabinet, the blower wheel and the coil are part of the job, because a clean "
+         "duct feeding a filthy blower has not achieved much. Anything advertised as a "
+         "quick vacuum at each register is not this.")},
+
+    {"id": "dx-dryer",
+     "h2": "Is the dryer vent worth doing at the same time?",
+     "body": (
+         "It is the one in this category with a genuine safety case, and it is often "
+         "the more urgent of the two. Lint accumulates in the duct run rather than in "
+         "the trap, and a restricted dryer vent is both a fire risk and the reason a "
+         "load takes three cycles to dry. The signs are clothes still damp on a normal "
+         "cycle, the outside of the dryer running hot, or a flap outside that no longer "
+         "opens properly. Long runs and runs with several elbows need it more often "
+         "than short straight ones.")},
+
+    {"id": "dx-frequency",
+     "h2": "How often should ducts be cleaned?",
+     "body": (
+         "There is no calendar answer, and any company giving you a fixed interval is "
+         "guessing at your house. Condition drives it: pets, smokers, allergies, "
+         "recent construction, and whether the system has been run without a filter all "
+         "change the answer far more than time does. For most houses with none of "
+         "those, the honest interval is longer than the industry advertises. Look "
+         "inside a register every couple of years and let what you see decide it.")},
+
+    {"id": "dx-allergies",
+     "h2": "Will cleaning the ducts help my allergies?",
+     "body": (
+         "It can help, and it is rarely the whole answer, so it is worth setting the "
+         "expectation before the money. Most household allergens are generated and "
+         "circulated continuously rather than stored in ductwork, so cleaning removes a "
+         "reservoir rather than the source. If allergies are the actual problem, "
+         "filtration and humidity control usually move the needle further, and the "
+         "sequence that makes sense is to fix the source first, improve the filtration "
+         "second, and clean the ducts if there is a reason specific to your system.")},
+
+    {"id": "dx-mold",
+     "h2": "There is something that looks like mold in the ductwork.",
+     "body": (
+         "Stop and identify it before anyone cleans it. Growth in ductwork means "
+         "moisture is getting in, and cleaning without fixing the moisture buys you a "
+         "few months. The usual sources are an air conditioner coil that never dries "
+         "out, a condensate problem, uninsulated metal duct sweating in a humid crawl "
+         "space, or duct board that got wet. Cleaning is part of the answer, but the "
+         "part that matters is finding out where the water is coming from, and that is "
+         "a different conversation from a cleaning quote.")},
+
+    {"id": "dx-remodel",
+     "h2": "We are remodeling. Before or after?",
+     "body": (
+         "After, and it is one of the clearest cases for doing it at all. Drywall dust "
+         "is fine, abrasive and gets everywhere, and a system running during "
+         "construction pulls it straight into the return and distributes it through the "
+         "house. If work is starting, cover the returns and change the filter far more "
+         "often than usual while it is going on. Then clean once the dust-producing "
+         "work is finished rather than partway through, or you will be paying for it "
+         "twice.")},
+
+    {"id": "dx-airflow",
+     "h2": "Will cleaning improve my airflow?",
+     "body": (
+         "Only if the restriction is actually dust, which it usually is not. Weak "
+         "airflow is far more often undersized returns, crushed flex duct, closed "
+         "dampers, a dirty blower wheel or a filter too dense for the system. A blower "
+         "wheel caked with dust genuinely does move less air and does get better after "
+         "cleaning. Duct walls with a dusting on them do not restrict much. If airflow "
+         "is the complaint, ask for static pressure to be measured, because that "
+         "number tells you where the restriction really is.")},
+
+    {"id": "dx-sanitizer",
+     "h2": "Should I have the ducts sanitized or fogged?",
+     "body": (
+         "Be careful with this one. Spraying a biocide or a sealant into ductwork is "
+         "sold as an add-on far more often than it is genuinely warranted, and you are "
+         "putting a chemical into the path that feeds every room in your house. If "
+         "there is confirmed growth, the answer is finding the moisture and removing "
+         "the growth mechanically. Ask what specifically is being applied, why it is "
+         "needed in your case, and what the label says about occupied spaces. A vague "
+         "answer to any of those is your answer.")},
+
+    {"id": "dx-rodents",
+     "h2": "Something has been living in the ductwork.",
+     "body": (
+         "Then cleaning is genuinely warranted, and it is not the first step. The entry "
+         "point has to be found and closed first, or you are cleaning a duct that gets "
+         "reoccupied. Nesting material, droppings and the smell that comes with them do "
+         "belong out of a system that blows into bedrooms, and this is the scenario "
+         "where duct cleaning is unambiguously worth the money. Expect the job to "
+         "include the return side, which is usually where they get in.")},
+
+    {"id": "dx-newhouse",
+     "h2": "We just bought the house. Is it worth doing now?",
+     "body": (
+         "It is one of the better times, for a reason that is more about information "
+         "than dust. Nobody can tell you how the previous owners ran the system, "
+         "whether the filter was changed, whether there was ever a pet or a smoker, or "
+         "whether anything was built or demolished with the system running. Opening it "
+         "up answers all of that, and a look inside a couple of registers before you "
+         "commit to the full job will usually tell you whether it needs doing at all.")},
+
+    {"id": "dx-before-after",
+     "h2": "What should I ask to see afterwards?",
+     "body": (
+         "Before and after photographs of the same locations, including inside the "
+         "trunk lines and the blower compartment rather than only the register boots. "
+         "Any company doing this properly expects to be asked and will have them. Two "
+         "photographs of a register cover prove very little. This is the simplest "
+         "protection against paying for the version of this job that consists of a "
+         "vacuum at each vent and an invoice, which is common enough in this trade to "
+         "be worth guarding against.")},
+
+    {"id": "dx-sealing",
+     "h2": "Is duct sealing different from duct cleaning?",
+     "body": (
+         "Completely, and sealing is usually the one that saves money. Cleaning removes "
+         "what is inside the ducts. Sealing closes the joints and seams that are "
+         "leaking conditioned air into an attic, a crawl space or a wall cavity, which "
+         "in a typical house is a meaningful share of what you paid to heat and cool. "
+         "If your goal is a lower bill or rooms that never keep up, sealing and airflow "
+         "are the conversation. If your goal is what is coming out of the registers, "
+         "cleaning is.")},
+
+    {"id": "dx-registers",
+     "h2": "Can I just clean the vents myself?",
+     "body": (
+         "You can, and it is worth doing, as long as you know what it does and does "
+         "not achieve. Pulling the register covers, washing them, and vacuuming as far "
+         "into the boot as the hose reaches removes the dust you can see and the pet "
+         "hair that collects right at the opening. What you cannot reach is the trunk "
+         "line, the branch runs and the blower, which is where anything that actually "
+         "matters accumulates. Treat it as housekeeping rather than as a substitute.")},
+
+    {"id": "dx-smell",
+     "h2": "There is a smell when the system starts up.",
+     "body": (
+         "The smell usually identifies itself. Dusty and hot for the first hour of "
+         "heating season is normal. Musty on the cooling side points at a wet coil or a "
+         "blocked condensate drain rather than at the ducts. Sharp and chemical, or "
+         "anything like rotten eggs, means stop and call rather than investigate. A "
+         "smell that is genuinely coming from the ductwork tends to be constant "
+         "whenever air moves, not just at startup, and that distinction is worth making "
+         "before paying to clean anything.")},
+]
+
+ANGLES["indoor-air-quality"] = [
+    {"id": "ix-what-matters",
+     "h2": "What actually affects the air in a house?",
+     "body": (
+         "Four things, roughly in order: moisture, ventilation, filtration and source "
+         "control. Humidity that sits too high grows things and too low irritates "
+         "everything. Ventilation decides whether what you generate indoors gets "
+         "diluted or accumulates. Filtration catches particles, and only particles. "
+         "Source control means the cooking, the cleaning products, the attached garage "
+         "and the pets that put things into the air in the first place. Most air "
+         "quality money gets spent on the third one when the answer was one of the "
+         "other three.")},
+
+    {"id": "ix-purifiers",
+     "h2": "Do air purifiers actually work?",
+     "body": (
+         "The ones that move enough air through a good enough filter do, within the "
+         "room they are in. That last part is where expectations go wrong: a portable "
+         "unit sized for a bedroom does very little for a house. Whole-house media "
+         "filtration built into the ductwork treats everything the system circulates, "
+         "which is a different scale of job. Look for how much air a unit actually "
+         "moves rather than the room size printed on the box, and be skeptical of "
+         "anything whose main claim is ozone or ions.")},
+
+    {"id": "ix-uv",
+     "h2": "What do UV lights in the ductwork actually do?",
+     "body": (
+         "Two quite different jobs get sold under one name. A coil light aimed at the "
+         "evaporator keeps growth off a surface that is wet for half the year, and that "
+         "one has a straightforward case: it keeps a coil clean and it keeps the musty "
+         "smell down. An air-stream light is meant to treat organizms as they pass, and "
+         "air moves quickly, so contact time is short and the benefit is much harder to "
+         "demonstrate. If someone is quoting UV, ask which of the two it is and what it "
+         "is being asked to fix.")},
+
+    {"id": "ix-humidity-high",
+     "h2": "The house feels damp even with the AC running.",
+     "body": (
+         "Cooling removes moisture only while the coil is cold and air is moving across "
+         "it. An oversized system satisfies the thermostat in short bursts and never "
+         "runs long enough to dehumidify, which is how a house ends up cool and clammy. "
+         "Above about 60% relative humidity you get the conditions for dust mites and "
+         "mold regardless of how clean the house is. The fix is sometimes a "
+         "dehumidifier and is often correcting why the system short cycles, so measure "
+         "the humidity before buying equipment for it.")},
+
+    {"id": "ix-humidity-low",
+     "h2": "Everything is static and the wood floors are gapping.",
+     "body": (
+         "That is winter dryness, and it is a real air quality problem rather than an "
+         "inconvenience. Cold outdoor air carries almost no moisture, so every air "
+         "change in January leaves the house drier. Below about 30% relative humidity "
+         "you get static, cracked skin, irritated airways and gaps opening in flooring "
+         "and trim. A whole-house humidifier on a humidistat handles it more evenly "
+         "than portable units. Do not simply run it high: too much moisture in a cold "
+         "snap condenses on windows and inside exterior walls.")},
+
+    {"id": "ix-merv",
+     "h2": "Is a higher MERV filter always better?",
+     "body": (
+         "No, and this is the most common way people make things worse while trying to "
+         "help. A denser filter catches more, and it also restricts more air, and a "
+         "system designed around a one-inch filter can be starved by a high-MERV one "
+         "dropped into the same slot. Starved airflow means a furnace running hot and "
+         "an air conditioner freezing its coil. If you want serious filtration, the "
+         "answer is a thicker media cabinet with far more surface area, not a denser "
+         "filter in the existing gap.")},
+
+    {"id": "ix-ventilation",
+     "h2": "Can a house be too airtight?",
+     "body": (
+         "It can be too airtight without deliberate ventilation, which is not the same "
+         "as saying tight houses are bad. A leaky old house ventilates by accident, "
+         "expensively and unevenly. A tight modern one holds humidity, cooking "
+         "byproducts and everything else indoors until something removes them on "
+         "purpose. That is what mechanical fresh air is for, and it is why newer houses "
+         "sometimes feel stuffy despite being far better built. The answer is "
+         "controlled ventilation rather than deliberately making the shell leak.")},
+
+    {"id": "ix-co",
+     "h2": "What is the difference between CO and CO2 in a house?",
+     "body": (
+         "Carbon monoxide is the dangerous one and comes from incomplete combustion: "
+         "furnaces, water heaters, fireplaces, a car in an attached garage. It has no "
+         "smell and it needs alarms. Carbon dioxide is what people exhale, and while it "
+         "is not toxic at household levels, a room where it climbs is a room that is "
+         "not being ventilated, so it is a useful proxy for stale air. Alarms are for "
+         "the first. The second is a ventilation question rather than a safety one.")},
+
+    {"id": "ix-allergies",
+     "h2": "What actually helps with allergies at home?",
+     "body": (
+         "In rough order of effect: keep humidity between about 35 and 50%, upgrade to "
+         "real media filtration sized for the system rather than a denser one-inch "
+         "filter, deal with the source where you can, and only then look at added "
+         "equipment. Bedrooms matter more than the rest of the house because of how "
+         "many hours are spent in them. Nothing here is dramatic on its own, and the "
+         "combination usually is, which is the opposite of how air quality equipment "
+         "tends to be sold.")},
+
+    {"id": "ix-cooking",
+     "h2": "Does cooking really affect indoor air that much?",
+     "body": (
+         "More than most people expect, particularly with gas. Cooking puts fine "
+         "particles and combustion byproducts straight into the room, and a range hood "
+         "that recirculates through a charcoal filter rather than venting outside does "
+         "very little about it. Use the hood every time and check that it actually "
+         "vents outdoors. If it does not, opening a window while cooking does more than "
+         "any purifier will, and it costs nothing.")},
+
+    {"id": "ix-basement",
+     "h2": "The basement smells musty and it is spreading upstairs.",
+     "body": (
+         "Basements run cooler, so humid summer air condenses down there, and anything "
+         "the air handler pulls in gets distributed to the whole house. Measure the "
+         "relative humidity before doing anything else. Above about 60% the answer is "
+         "dehumidification and finding where the water is coming from, not air "
+         "freshening. Check the obvious sources first: grading and downspouts outside, "
+         "an uninsulated cold-water line sweating, and a condensate drain that is "
+         "discharging where it should not.")},
+
+    {"id": "ix-pets",
+     "h2": "We have pets. What actually helps?",
+     "body": (
+         "Filtration does real work here, because pet dander is a particle and "
+         "particles are exactly what filters catch. A proper media cabinet is worth far "
+         "more than a denser one-inch filter, and it also needs changing more often "
+         "than the box says in a house with animals. Beyond that, the return grille is "
+         "worth vacuuming regularly, because that is where hair collects, and a "
+         "restricted return causes more problems than the hair itself ever would.")},
+
+    {"id": "ix-testing",
+     "h2": "Is it worth testing the air, and for what?",
+     "body": (
+         "Two measurements are cheap and genuinely useful: relative humidity and "
+         "particulate. A basic hygrometer in a couple of rooms tells you more about "
+         "your house than most paid assessments, because humidity drives so much of "
+         "the rest. Beyond that, be careful what you are being sold. Broad "
+         "contaminant panels tend to produce a list of things present in every house at "
+         "levels nobody can interpret, and the result is usually a quote rather than an "
+         "answer.")},
+
+    {"id": "ix-newbuild",
+     "h2": "Our house is new. Why does the air feel worse?",
+     "body": (
+         "Because it is tight and because it is new, and those are two separate "
+         "effects. A well-sealed shell holds indoor moisture and cooking byproducts "
+         "instead of leaking them away, so anything generated indoors stays longer. "
+         "New materials also off-gas for months: flooring, cabinets, paint, adhesives "
+         "and furniture. Ventilation is the answer to both, and in a new house that "
+         "usually means using the mechanical ventilation that is already installed "
+         "rather than adding equipment.")},
+
+    {"id": "ix-whole-vs-portable",
+     "h2": "Whole-house or portable? Which is the better buy?",
+     "body": (
+         "It depends whether the problem is a room or a house. A portable unit in a "
+         "bedroom is a reasonable, cheap answer to one person's sleep. It is not a "
+         "house solution, and buying five of them is worse value than doing it once in "
+         "the ductwork. The catch with whole-house is that it only treats air while the "
+         "system is running, so if yours cycles rarely in mild weather, a "
+         "variable-speed blower on low changes what the equipment can actually do.")},
+
+    {"id": "ix-ducts-cross",
+     "h2": "Would cleaning the ducts fix this?",
+     "body": (
+         "Occasionally, and less often than it is sold for. Ductwork holds a reservoir "
+         "of settled dust rather than generating anything, so cleaning helps most where "
+         "there is a specific reason: construction dust, pest activity, or visible "
+         "debris blowing from registers. For ordinary air quality complaints, humidity "
+         "and filtration usually move further. If someone quotes duct cleaning as the "
+         "answer to an air quality problem without looking inside your ducts first, "
+         "that is worth questioning.")},
 ]
