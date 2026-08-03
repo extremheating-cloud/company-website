@@ -15,7 +15,10 @@ X_MARK = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/x-mark.png"
 LOGO_WHITE = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/logo-white.png"
 VAN = T.cdn_asset("brand/van.png")
 
-ROTATING = ["Furnaces", "AC Units", "Water Heaters", "Heat Pumps"]
+# Reverted to the original wording at the client's request. The rewrite traded a
+# line that reads well for one that named services, and the client's call was that
+# the original was worth more than the ranking difference.
+ROTATING = ["Repairs", "Installs", "Tune-Ups", "Plumbing"]
 
 HVAC_SERVICES = [
     ("Cooling", "AC repair, replacement, and tune-ups.", "/air-conditioning"),
@@ -244,21 +247,17 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
   .hp-hero-grid{grid-template-columns:1fr;gap:0;padding:38px 0 0}
   .hp-hero-in{padding:0 0 8px;max-width:none}
   /* The shared clamp bottoms out at 34px on a phone, which left the headline
-     smaller than the buttons under it.
-     Two numbers, and each is doing a different job. 12vw sets it on a phone. The
-     72px cap sets it on everything between a large phone and the 810px breakpoint,
-     where 12vw would otherwise run away — that band is where the old 46px cap left
-     the headline looking undersized against a wide column.
-     The cap is what changed, not the vw, and the reason is measured. The rotating
-     word is nowrap, so the longest of them sets the floor for the whole hero. At
-     390px, 11vw already renders "Water Heaters" at 357px into 357px of available
-     width — exactly flush. Any vw above 11 clips on a phone.
-     The old 46px cap bound from about 420px upward, which is the whole band between
-     a large phone and the 810px breakpoint, and it was leaving a 46px headline in a
-     700px-wide column. 72px is what that band wanted; the vw keeps phones safe.
-     To go bigger on a phone the rotating list has to lose "Water Heaters" — that one
-     word is the entire constraint. Re-measure if it changes. */
-  .hp-h1{font-size:min(11vw,72px)}
+     smaller than the buttons under it. Both numbers below are measured at 320px, the
+     narrowest viewport still in use.
+     The binding line is "Trusted Team", not the rotating word. The roll's widest
+     ("Plumbing") needs 175px of the 280px available, while "Trusted Team" needs 272px
+     at 12vw and wraps onto two lines just past that, which reads badly. 11.5vw puts
+     it at 261px, so there is real margin rather than a single pixel.
+     The 72px cap is the half that mattered. The old 46px cap bound from about 420px
+     upward, which is the whole band between a large phone and the 810px breakpoint,
+     and it left a 46px headline sitting in a 700px-wide column.
+     Re-measure both if the headline or the rotating list changes. */
+  .hp-h1{font-size:min(11.5vw,72px)}
   .hp-van-col{display:none}
   .hp-van-stage{display:block}
   .hp-sec{padding:44px 0}
@@ -319,7 +318,7 @@ def homepage():
   <img class="hp-hero-mark" src="{X_MARK}" alt="" aria-hidden="true">
   <div class="hp-wrap"><div class="hp-hero-grid"><div class="hp-hero-in">
     <span class="hp-badge"><span class="dot"></span><span class="hp-dt">LOCALLY OWNED · DAYTON + CINCINNATI</span><span class="hp-mb">DAYTON + CINCINNATI · 24/7</span></span>
-    <h1 class="hp-h1">We repair <br>and install
+    <h1 class="hp-h1">Trusted Team <br>for
       <span class="hp-roll"><ul>{roll}</ul></span>
     </h1>
     <p class="hp-lede hp-dt">Heating, cooling and plumbing across Dayton and Cincinnati. About 90%
