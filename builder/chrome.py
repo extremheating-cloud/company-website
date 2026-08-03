@@ -178,9 +178,15 @@ font-weight:700;font-size:12px;color:rgba(255,255,255,.82)}
 .xh-callbar{position:fixed;left:0;right:0;bottom:0;z-index:940;display:none;gap:10px;
 padding:10px 16px calc(10px + env(safe-area-inset-bottom));
 background:rgba(58,26,78,.97);backdrop-filter:blur(8px);border-top:1px solid rgba(255,255,255,.14)}
+/* nowrap is load-bearing, not cosmetic. flex:1 was splitting the bar down the middle,
+   which on a 320px screen is 139px a side — enough for "Schedule Online" (needs 102)
+   but not for "Call (844) 584-7399" (needs 154), so the phone number wrapped onto a
+   second line. With nowrap the flex items' default min-width:auto floors each button
+   at its content width, so Call takes its 154 and Schedule gives up the slack it was
+   never using. Measured, not guessed. */
 .xh-callbar a,.xh-callbar button{flex:1;display:inline-flex;align-items:center;
 justify-content:center;min-height:48px;border-radius:12px;font-weight:800;font-size:15px;
-border:0;cursor:pointer;font-family:inherit;text-decoration:none}
+border:0;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap}
 .xh-callbar .call{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28)}
 .xh-callbar .sched{background:#6BB85C;color:#0F172A}
 /* Set by the header script while the mobile menu is open; the panel has its own
@@ -202,6 +208,16 @@ border:0;cursor:pointer;font-family:inherit;text-decoration:none}
   .xh-logo img{height:38px}
   .xh-callbar{display:flex}
   body{padding-bottom:68px}
+}
+/* Narrowest phones still in use (iPhone SE, 320px). Measured there: the two labels
+   need 154 + 114 = 268px of content, and the default 32px of bar padding plus a 10px
+   gap leaves 278 — it fits, but by ten pixels, which is not a margin. Tightening the
+   chrome rather than shrinking the type keeps both buttons at their 48px tap target
+   and the number at full size, which is the one thing on screen someone is trying to
+   read when the heat is out. */
+@media (max-width:359px){
+  .xh-callbar{padding-left:12px;padding-right:12px;gap:8px}
+  .xh-callbar a,.xh-callbar button{font-size:14.5px}
 }
 @media (prefers-reduced-motion:reduce){.xh-hd *{transition:none!important}}
 
