@@ -15,7 +15,7 @@ X_MARK = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/x-mark.png"
 LOGO_WHITE = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/logo-white.png"
 VAN = T.cdn_asset("brand/van.png")
 
-ROTATING = ["Repairs", "Installs", "Tune-Ups", "Plumbing"]
+ROTATING = ["Furnaces", "Air Conditioners", "Water Heaters", "Heat Pumps"]
 
 HVAC_SERVICES = [
     ("Cooling", "AC repair, replacement, and tune-ups.", "/air-conditioning"),
@@ -33,18 +33,27 @@ PLUMBING_SERVICES = [
     ("Gas Line", "Safe installation and repair for gas piping.", "/plumbing/gas-line/overview"),
     ("Water Treatment", "Filtration and conditioning for cleaner water.", "/plumbing/water-treatment"),
 ]
+# These were the last four answers on the site still written in the pre-voice-pass
+# register: "receive ongoing training" where /about gives the actual license numbers,
+# and one answer that named the company in the third person. The facts were always
+# available — they were just being described instead of stated.
 FAQS = [
     ("Are your technicians licensed and insured?",
-     "Yes. Our HVAC technicians are fully licensed and insured, and receive ongoing training to "
-     "deliver safe, high-quality service in every home."),
+     f"Yes. HVAC work runs under Ohio license {D.LICENSE_HVAC.replace('OH LIC ', '')} and plumbing "
+     f"under {D.LICENSE_PLUMBING.replace('OH LIC ', '')}, both insured. Every tech is drug-tested "
+     "and background-checked before they set foot in your house."),
     ("Do you offer free estimates?",
-     "Yes — we provide free estimates for system replacements, new installations, and major repair projects."),
+     "Yes, on system replacements, new installations and major repair work. A diagnostic visit on a "
+     "system that has already failed is a service call rather than an estimate, and you hear that "
+     "price before we come out."),
     ("Do you offer financing options?",
-     "We partner with trusted lenders to offer convenient monthly payment options on qualifying "
-     "equipment and repair work."),
+     "Yes, on qualifying equipment and repair work. The lender sets the rate and the term, so what "
+     "you're offered depends on your credit rather than on us. Applying takes a few minutes and "
+     "does not commit you to the work."),
     ("Which areas do you serve?",
-     "Extreme Heating, Air, Plumbing serves homeowners across Dayton, Cincinnati, Troy, Tipp City, "
-     "and surrounding Miami Valley communities."),
+     "Dayton, Cincinnati, Troy, Tipp City and the Miami Valley communities around them, out of four "
+     "offices. If you're not sure whether your town is in range, check the locations page or just "
+     "call and ask."),
 ]
 BRANDS = [("Trane", "trane.png"), ("Ruud", "ruud.png"), ("Daikin", "daikin.png")]
 
@@ -297,13 +306,14 @@ def homepage():
   <img class="hp-hero-mark" src="{X_MARK}" alt="" aria-hidden="true">
   <div class="hp-wrap"><div class="hp-hero-grid"><div class="hp-hero-in">
     <span class="hp-badge"><span class="dot"></span><span class="hp-dt">LOCALLY OWNED · DAYTON + CINCINNATI</span><span class="hp-mb">DAYTON + CINCINNATI · 24/7</span></span>
-    <h1 class="hp-h1">Trusted Team<br>for
+    <h1 class="hp-h1">We repair <br>and install
       <span class="hp-roll"><ul>{roll}</ul></span>
     </h1>
-    <p class="hp-lede hp-dt">Fast repairs, full system replacements, routine maintenance, and
-    dependable plumbing help — delivered by a team your neighbors already trust.</p>
-    <p class="hp-lede hp-mb">Fast repairs, replacements, maintenance, and plumbing help from a team
-    your neighbors trust.</p>
+    <p class="hp-lede hp-dt">Heating, cooling and plumbing across Dayton and Cincinnati. About 90%
+    of calls get handled the same day, you hear the price before anyone starts, and at 2am the
+    emergency line is answered by a person.</p>
+    <p class="hp-lede hp-mb">Dayton and Cincinnati. About 90% of calls handled the same day, and
+    at 2am someone still answers.</p>
     <div class="hp-cta-row">
       <button class="hp-btn hp-btn-green js-schedule" type="button">Schedule Service&nbsp;&nbsp;→</button>
       <a class="hp-btn hp-btn-ghost" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
@@ -345,9 +355,9 @@ def homepage():
   <div class="hp-head-row">
     <div>
       <div class="hp-eyebrow">OUR HVAC SERVICES</div>
-      <h2 class="hp-h2">Comfort solutions for every season of the year.</h2>
-      <p class="hp-sub">Explore our major heating, cooling, air quality, and maintenance services
-      designed to keep your home comfortable year-round.</p>
+      <h2 class="hp-h2">What kind of HVAC work do you need?</h2>
+      <p class="hp-sub">Repair, replacement, tune-ups and air quality. Pick whichever one sounds like
+      your problem. If none of them do, call and describe it and we'll work out which it is.</p>
     </div>
     <a class="hp-more" href="/services">View All HVAC Services →</a>
   </div>
@@ -358,9 +368,9 @@ def homepage():
   <div class="hp-head-row">
     <div>
       <div class="hp-eyebrow">OUR PLUMBING SERVICES</div>
-      <h2 class="hp-h2">Reliable help for your home plumbing systems.</h2>
-      <p class="hp-sub">Explore our major drain, water heater, and leak detection services designed
-      to keep your home's plumbing running reliably.</p>
+      <h2 class="hp-h2">Do you handle plumbing too?</h2>
+      <p class="hp-sub">Drains, water heaters, leaks, sump pumps and gas lines, booked through the
+      same number as the furnace. Plumbing {D.LICENSE_PLUMBING}.</p>
     </div>
     <a class="hp-more" href="/plumbing/services">View All Plumbing Services →</a>
   </div>
@@ -371,11 +381,10 @@ def homepage():
   <div class="hp-about">
     <div>
       <div class="hp-eyebrow">ABOUT EXTREME</div>
-      <h2 class="hp-h2">{D.TAGLINE}</h2>
-      <p class="hp-sub">For over two decades, the Extreme Team has helped homeowners across Dayton,
-      Cincinnati, and the Miami Valley stay comfortable in every season. From emergency repairs to
-      full system replacements, we're known for honest recommendations, precise workmanship, and
-      friendly, no-pressure service.</p>
+      <h2 class="hp-h2">Locally owned since {D.FOUNDED}.</h2>
+      <p class="hp-sub">Same owners the whole time, four offices between Dayton and Cincinnati, and
+      both trades on one phone number. Every tech is drug-tested and background-checked before they
+      set foot in your house. {D.LICENSES_LINE}.</p>
       <div class="hp-stats">{stats}</div>
       <div class="hp-cta-row"><a class="hp-btn hp-btn-green" href="/about">About Us&nbsp;&nbsp;→</a></div>
     </div>
@@ -391,8 +400,8 @@ def homepage():
 <section class="hp-sec alt"><div class="hp-wrap">
   <div class="hp-eyebrow">EQUIPMENT WE INSTALL</div>
   <h2 class="hp-h2">The brands we stand behind.</h2>
-  <p class="hp-sub">We install and service Trane, Ruud, and Daikin systems — and we repair every
-  major brand, whoever put it in.</p>
+  <p class="hp-sub">We install and service Trane, Ruud and Daikin systems, and we repair every major brand,
+  whoever put it in.</p>
   <div class="hp-brands">{brands}</div>
 </div></section>
 
@@ -402,7 +411,7 @@ def homepage():
     <div class="hp-xp-grid">
       <div>
         <div class="eyebrow">X-PLAN MEMBERSHIP</div>
-        <h2>The smart way to protect your home's comfort &amp; savings.</h2>
+        <h2>Two tune-ups a year, and you stop waiting behind everyone else.</h2>
         <div class="hp-zri">
           <div class="lab">ZERO RISK INVESTMENT</div>
           <p>{D.XPLAN["zeroRisk"]}</p>
@@ -426,18 +435,17 @@ def homepage():
 
 <section class="hp-sec alt"><div class="hp-wrap">
   <div class="hp-eyebrow">CUSTOMER REVIEWS</div>
-  <h2 class="hp-h2">See what homeowners say about the Extreme Team.</h2>
-  <p class="hp-sub">Real feedback from families across Dayton, Cincinnati, and the Miami Valley —
-  pulled directly from our Google Reviews.</p>
+  <h2 class="hp-h2">What do customers actually say?</h2>
+  <p class="hp-sub">Straight from our Google profile, {D.GOOGLE_RATING} across Dayton, Cincinnati and
+  the Miami Valley.</p>
   <div class="hp-revs">{revs}</div>
 </div></section>
 
 <section class="hp-sec"><div class="hp-wrap">
   <div class="hp-faq">
     <div class="hp-eyebrow">FAQ</div>
-    <h2 class="hp-h2">Your questions, answered.</h2>
-    <p class="hp-sub">Answers to the most common questions our customers ask. If you don't see what
-    you're looking for, our team is always happy to help.</p>
+    <h2 class="hp-h2">Questions we get asked most.</h2>
+    <p class="hp-sub">If yours isn't here, call and ask. Someone picks up.</p>
     {faqs}
   </div>
 </div></section>
