@@ -42,6 +42,7 @@ DAYTON = [
     ("springfield", "Springfield"),
     ("troy", "Troy"),
     ("vandalia", "Vandalia"),
+    ("waynesville", "Waynesville"),
     ("west-carrollton", "West Carrollton"),
     ("xenia", "Xenia"),
 ]
@@ -143,6 +144,7 @@ OFFICE = {
     "centerville":  ("Beavercreek",  None,                  "about nine miles northeast"),
     "huber":        ("Beavercreek",  None,                  "about twelve miles southeast"),
     "springboro":   ("Waynesville",  None,                  "about eleven miles southeast"),
+    "waynesville":  ("Waynesville",  "141 North St",        None),
     "west-chester": ("Mason",        None,                  "about seven miles east"),
 }
 
@@ -163,6 +165,7 @@ TAIL_LINKS = {
     "tipp":            ["huber", "troy"],
     "springfield":     ["troy"],
     "franklin":        ["springboro"],
+    "waynesville":     ["springboro"],
     "lebanon":         ["mason", "springboro"],
     "fairfield":       ["west-chester"],
     "middletown":      ["west-chester"],
@@ -177,7 +180,7 @@ TAIL_LINKS = {
 COUNTY_CITIES = {
     "montgomery-county": ["dayton", "kettering", "centerville", "huber"],
     "greene-county":     ["beavercreek", "xenia"],
-    "warren-county":     ["mason", "springboro", "lebanon", "franklin"],
+    "warren-county":     ["mason", "springboro", "lebanon", "franklin", "waynesville"],
     "butler-county":     ["west-chester", "fairfield", "middletown"],
     "hamilton-county":   ["cincinnati", "blue-ash", "sharonville"],
     "miami-county":      ["troy", "tipp"],
@@ -196,6 +199,9 @@ COUNTY_CITIES = {
 #                    if the two pages ever appear together, shoot a second frame.
 HERO_OVERRIDES = {                           # slug -> assets/cities/<name>.jpg
     "west-carrollton": "wc",
+    # Stand-in, and the alt text says so rather than claiming the frame is the
+    # village. [NEEDS: a photo of Waynesville, or of the office on North St.]
+    "waynesville":     "warren-county",
     "hamilton-county": "cincinnati",
 }
 

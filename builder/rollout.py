@@ -1615,7 +1615,7 @@ geo(HVAC_PAGES, "maintenance.html",
         sec("How do I join?",
             call("Call {tel} or sign up online, and we schedule the first visit on the same "
                  "call. After that we book both seasonal visits for you, so the membership "
-                 "does not depend on you remembering it. Send us a neighbour and there is "
+                 "does not depend on you remembering it. Send us a neighbor and there is "
                  "<a href=\"/referral\">Extreme Rewards</a> too.")),
     ],
     faqH2="What else do members ask about X-Plan?",
@@ -1669,7 +1669,7 @@ geo(HVAC_PAGES, "inspection.html",
                         "Not typically, the standards exclude disassembly",
                         "Yes, with the cabinet opened"),
                        ("Combustion and carbon monoxide testing", "Not typically",
-                        "Yes, with a combustion analyser"),
+                        "Yes, with a combustion analyzer"),
                        ("Refrigerant charge and pressures",
                         "Not typically, gauges are not attached",
                         "Yes, measured at the service ports"),
@@ -4274,7 +4274,7 @@ geo(PLUMB_FAMILIES, "gas-line/installation.html",
          "access change the answer enough that a phone estimate would not be reliable."),
         ("Do I need a permit for a gas line?",
          "For most new gas piping, yes, and who issues it changes from one town to the next "
-         "around here. Greene County permits Beavercreek, several neighbouring communities "
+         "around here. Greene County permits Beavercreek, several neighboring communities "
          "issue their own, and the City of Dayton runs its own plumbing inspection. We pull it "
          "and close it out."),
         ("Can you run a gas line to a detached garage?",

@@ -393,7 +393,7 @@ SECTIONS = [
         "work at your address.",
 
         "<b>Requests that never became a job.</b> [NEEDS: how long Extreme keeps schedule "
-        "requests that were cancelled or never completed. State a period here — an indefinite "
+        "requests that were canceled or never completed. State a period here — an indefinite "
         "retention answer is a liability, and \"as long as necessary\" is not an answer a "
         "customer can act on.]",
 
@@ -540,7 +540,7 @@ PRIVACY_GAPS = [
     "Birdeye: whether customer contact details are sent to a review platform after a job. "
     "The site cites 1,595 Birdeye reviews, so this flow probably exists and is undisclosed.",
     "Call recording and call tracking on " + D.PHONE_DISPLAY + ".",
-    "Retention periods: cancelled/unbooked requests, the Formspree submission archive, and "
+    "Retention periods: canceled/unbooked requests, the Formspree submission archive, and "
     "uploaded photos on Cloudinary.",
     "Response-time commitment for access and deletion requests (45 days is the common "
     "statutory window).",
@@ -566,7 +566,7 @@ PRIVACY_GAPS = [
 
 def hero():
     return f'''<div class="xsp-hero sub">
-  <div class="xsp-hero-mark"><img src="{T.X_MARK}" alt=""></div>
+  {T.hero_mark()}
   <div class="xsp-hero-grid nocard">
     <div>
       {T.crumbs([("Home", "/"), ("Privacy", "")])}

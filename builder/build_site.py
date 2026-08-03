@@ -323,7 +323,11 @@ def write_redirects(routes):
              "# is a zone Redirect Rule, not a line in this file.",
              ""]
     for src, dst in REDIRECTS:
-        lines.append(f"{src.ljust(width)}{dst}  301")
+        # ljust is a no-op once a source runs past `width`, which silently glued three
+        # long legacy paths to their destination and made those lines parse as two
+        # fields — so three URLs 404ed instead of redirecting. The separator has to be
+        # unconditional; the padding is only cosmetic.
+        lines.append(f"{src.ljust(width - 1)} {dst}  301")
     with open(os.path.join(SITE, "_redirects"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
     return len(REDIRECTS)
@@ -568,7 +572,7 @@ Offices: {offices}
 Office hours: {D.HOURS_STAFFED}. Emergency service: {D.HOURS_EMERGENCY}.
 Service area: {len(L.ALL)} communities and counties across the Dayton and Cincinnati, Ohio metros.
 Trades: heating, cooling, indoor air quality, and residential plumbing.
-Licences: HVAC {D.LICENSE_HVAC}; plumbing {D.LICENSE_PLUMBING}.
+Licenses: HVAC {D.LICENSE_HVAC}; plumbing {D.LICENSE_PLUMBING}.
 Legal entities: {D.ENTITY_HVAC.replace("&amp;", "&")} (HVAC), {D.ENTITY_PLUMBING} (plumbing).
 Pricing: a flat number, quoted before we start.
 """
@@ -727,8 +731,12 @@ def main():
     # --- favicons ---
     # Served same-origin rather than from the CDN: the browser requests /favicon.ico
     # on every page load whether or not it is declared, and it was 404ing on all 307.
+    # og-default.jpg rides along here for the same reason: shell.py names it at the
+    # site root, and it was 404ing on the handful of pages that render no content
+    # image of their own — so those pages shared with no preview card at all.
     for src_name, dest_name in (("logo-icon.ico", "favicon.ico"),
-                                ("apple-touch-icon.png", "apple-touch-icon.png")):
+                                ("apple-touch-icon.png", "apple-touch-icon.png"),
+                                ("og-default.jpg", "og-default.jpg")):
         src = os.path.join(ROOT, "assets", "brand", src_name)
         if os.path.exists(src):
             shutil.copy2(src, os.path.join(SITE, dest_name))

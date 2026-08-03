@@ -1,7 +1,7 @@
 """Location pages — design_handoff_location_pages (screens 5h, 5a-5g).
 
 One template, 38 cities, 267 pages. Copy is verbatim from the mockup; the only
-things that vary per city are the name, the metro, the neighbour-town list and the
+things that vary per city are the name, the metro, the neighbor-town list and the
 hero photo. Everything else is shared, which is exactly how the handoff asks for it
 ("Build as a template, not 40 pages").
 
@@ -16,6 +16,7 @@ offices live on /contact and stay there.
 import os
 import template as T
 import locations as L
+import site_data as D
 from company_pages import section, shell, slot_img
 
 PHONE = T.PHONE_DISPLAY
@@ -149,7 +150,8 @@ font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin
 def _stat_panel(stats):
     inner = "".join(f'<div><div class="n">{n}</div><div class="cap">{c}</div></div>'
                     for n, c in stats)
-    return (f'<div class="xco-stats"><img class="mark" src="{T.X_MARK}" alt="" '
+    return (f'<div class="xco-stats"><img class="mark" src="{T.X_MARK}" alt=""'
+            f'{T.dim_attrs(T.X_MARK)} loading="lazy" decoding="async" '
             f'style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;'
             f'transform:rotate(-8deg);filter:brightness(0) invert(1)">'
             f'<div class="grid">{inner}</div></div>')
@@ -180,7 +182,7 @@ def _hero(city, crumbs, h1, hi, intro, chips, card, pill="", card_class="", ctas
         <a class="xsp-cta-outline" href="{T.PHONE_TEL}">Call {T.PHONE_DISPLAY}</a>
       </div>''' if ctas else ""
     return f'''<div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="{T.X_MARK}" alt=""></div>
+  {T.hero_mark()}
   <div class="xsp-hero-grid">
     <div>
       {T.crumbs(crumbs)}
@@ -495,7 +497,7 @@ TAIL_VERB = {
 TAIL_SCOPE = {
     "heating": "Any brand, any age, diagnosed and quoted before we start.",
     "cooling": "Repairs, replacements and seasonal tune-ups, all priced before we start.",
-    "plumbing": "Our plumbers are licensed in Ohio, licence #13557.",
+    "plumbing": "Our plumbers are licensed in Ohio, license #13557.",
     "maintenance": "You get a written report and photos for your warranty records.",
     "duct-cleaning": "A camera goes into your ductwork before we quote anything.",
     "indoor-air-quality": "We measure humidity, particulates and ventilation before "
@@ -566,7 +568,7 @@ LOCAL = {
    "than over the phone."),
   ("My upstairs is always ten degrees off. Is that fixable without new equipment?",
    "Often, yes. In pre-1940 housing the usual cause is return air, not the furnace. Adding a "
-   "return path upstairs or rebalancing what is already there fixes a lot of two-storey houses "
+   "return path upstairs or rebalancing what is already there fixes a lot of two-story houses "
    "that were about to get a new system they did not need."),
   ("Who do I call for a plumbing permit in the City of Dayton?",
    "The city, not the county. Public Health, Dayton &amp; Montgomery County runs plumbing "
@@ -697,7 +699,7 @@ LOCAL = {
    "Inspections requires a permit for new and replacement units, plus furnace add-ons, "
    "pre-fabricated fireplaces, wood stoves, metal chimney alterations and duct rework. Work has to "
    "comply with the Cincinnati Zoning Code, the Residential Code of Ohio and the Ohio Mechanical "
-   "Code. The permit centre is at 805 Central Ave, Suite 500. A quote that comes in noticeably low "
+   "Code. The permit center is at 805 Central Ave, Suite 500. A quote that comes in noticeably low "
    "is worth a second look for exactly this reason."]),
  ],
  table=dict(
@@ -782,7 +784,7 @@ LOCAL = {
     "fine without a softener. It is not soft enough to ignore, and water heater scale still shows "
     "up on a ten-year-old tank."]),
     ("Who issues plumbing permits in Cincinnati?", [
-    "The City of Cincinnati Department of Buildings &amp; Inspections, from the permit centre at "
+    "The City of Cincinnati Department of Buildings &amp; Inspections, from the permit center at "
     "805 Central Ave, Suite 500. Work has to comply with the Cincinnati Zoning Code and the "
     "Residential Code of Ohio."])],
    faq=("My basement is a walk-out and it floods in heavy rain. Is that a plumbing job?",
@@ -823,7 +825,7 @@ LOCAL = {
     "radiator housing the options are filtration built into ductless heads, standalone units sized "
     "per room, and a ducted energy recovery ventilator run independently of the heating system for "
     "fresh air. Humidity is usually the bigger win in these houses, because a hillside basement and "
-    "a hot-water system produce very different moisture behaviour from a forced-air ranch."])],
+    "a hot-water system produce very different moisture behavior from a forced-air ranch."])],
    faq=("My hillside basement smells musty every summer. What fixes that?",
         "Usually dehumidification plus drainage, not filtration. Cincinnati's walk-out and partially "
         "buried foundations hold moisture against the wall, and a whole-home dehumidifier addresses "
@@ -929,7 +931,7 @@ LOCAL = {
     "Greene County inspections book through the iWorQ portal up to 3pm the previous working day. "
     "That sets the rhythm on a replacement job: the install happens, the inspection is booked the "
     "afternoon before, and the schedule works backwards from there. Fairborn and Xenia next door "
-    "are outside the county programme and run on their own timing, which is a common source of "
+    "are outside the county program and run on their own timing, which is a common source of "
     "confusion for homeowners comparing quotes across town lines."])],
    faq=("Do you cover Beavercreek Township as well as the city?",
         "Yes, along with Xenia Township and parts of Sugarcreek Township, all dispatched from the "
@@ -951,7 +953,7 @@ LOCAL = {
    faq=("I am on a well in Greene County. Did my water change in 2025?",
         "No. The softening happened at the county treatment plant, so private wells still draw "
         "untreated groundwater. Well households need their own treatment decision and should ignore "
-        "advice written for county-supplied neighbours.")),
+        "advice written for county-supplied neighbors.")),
   "maintenance": dict(
    answer="We tune up furnaces and air conditioners in Beavercreek, from the office at 712 N "
           "Fairfield Rd, and every visit ends with a written report and photos. X-Plan covers "
@@ -1185,10 +1187,10 @@ LOCAL = {
    "Two houses a few streets apart can need different softener advice for that reason alone."]),
   # [NEEDS: confirmed delivered hardness for the Montgomery County and Dayton regional supply.]
   ("Do plumbers have to register with the City of Kettering?", [
-   "Yes, on top of the state licence. Sub-trades are regulated by the Ohio Construction Industry "
+   "Yes, on top of the state license. Sub-trades are regulated by the Ohio Construction Industry "
    "Licensing Board, and Kettering additionally requires plumbers to register with the city. "
    "Kettering is also one of only four Montgomery County cities that runs its own plumbing "
-   "inspection rather than using the county programme.",
+   "inspection rather than using the county program.",
    "Building and mechanical permits go through the Access Kettering portal, and a permit is required "
    "to erect, install, enlarge, alter, repair, remove, convert or replace mechanical, gas, electrical "
    "or plumbing systems. Work done without one is subject to a stop-work order, a notice of "
@@ -1228,8 +1230,8 @@ LOCAL = {
    "decision, not the other way round."),
   ("Does Kettering require its own plumbing permit?",
    "Yes. Kettering is one of four Montgomery County cities that runs its own plumbing inspection "
-   "rather than the county programme, and plumbers must register with the city as well as holding a "
-   "state licence."),
+   "rather than the county program, and plumbers must register with the city as well as holding a "
+   "state license."),
   ("What happens if work is done in Kettering without a permit?",
    "The city can issue a stop-work order and a notice of violation, charge double permit fees, and "
    "require the work to be torn out. We pull permits as part of the job."),
@@ -1272,7 +1274,7 @@ LOCAL = {
   "plumbing": dict(
    answer="We handle water heaters, drains, leaks and sewer lines in Kettering. This is one of "
           "only four Montgomery County cities that runs its own plumbing inspection instead of "
-          "the county programme. We answer the emergency line at any hour.",
+          "the county program. We answer the emergency line at any hour.",
    slots=[("Which water supply covers a Kettering address?", [
     "Most of the city runs on the Montgomery County and Dayton regional supply, but small parts of "
     "Kettering are Greene County Sanitary Engineering customers and went through the January to "
@@ -1354,7 +1356,7 @@ LOCAL = {
    "Centerville does not."]),
   ("Who inspects plumbing work in Centerville?", [
    "The city does. Centerville is one of only four Montgomery County cities excluded from the Public "
-   "Health, Dayton &amp; Montgomery County plumbing programme, alongside Dayton, Oakwood and "
+   "Health, Dayton &amp; Montgomery County plumbing program, alongside Dayton, Oakwood and "
    "Kettering. So a Centerville plumbing permit is a city permit."]),
   # [NEEDS: which authority issues residential building and mechanical permits in Centerville. The
   # health department exclusion only tells us about plumbing; do not assume the city handles both.]
@@ -1388,7 +1390,7 @@ LOCAL = {
    "structure. That visit happens before any number gets put on paper."),
   ("Does Centerville issue its own plumbing permit?",
    "Yes. Centerville is one of four Montgomery County cities excluded from the county's plumbing "
-   "inspection programme, so plumbing permits come from the city."),
+   "inspection program, so plumbing permits come from the city."),
   ("Did Centerville water get softer in 2025?",
    "Only for the parts of the city supplied by Greene County Sanitary Engineering. Those addresses "
    "went from 27 grains per gallon to about 8 between January and March 2025. The rest of "
@@ -1442,7 +1444,7 @@ LOCAL = {
     "does not."]),
     ("Who inspects plumbing in Centerville?", [
     "The city. Public Health, Dayton &amp; Montgomery County excludes Centerville, Dayton, Oakwood "
-    "and Kettering from its county plumbing programme, so a Centerville plumbing permit is a city "
+    "and Kettering from its county plumbing program, so a Centerville plumbing permit is a city "
     "permit."])],
    faq=("How do I find out which water utility serves my Centerville address?",
         "The bill answers it fastest. Greene County Sanitary Engineering customers saw hardness drop "
@@ -1501,7 +1503,7 @@ LOCAL = {
    "first replaced in the late 1990s and 2000s. That cohort is reaching end of life more or less "
    "together.",
    "Beckett Ridge, Olde West Chester, Wetherington, Maud, Port Union, Pisgah and Tylersville are all "
-   "inside the same pattern, so a technician who has worked one subdivision recognises the next one."]),
+   "inside the same pattern, so a technician who has worked one subdivision recognizes the next one."]),
   ("Which utility supplies water in West Chester?", [
    "Butler County Water &amp; Sewer, not Greater Cincinnati Water Works and not the City of Mason. "
    "Butler County reports total hardness of 131 mg/L, about 7.7 grains per gallon, across a system "
@@ -1525,7 +1527,7 @@ LOCAL = {
   rows=[
    ("Second repair on the same system this season",
     "Late 1990s or 2000s equipment at end of life", "Repair or replace assessment", "Plan ahead"),
-   ("Neighbours all replacing systems the same year",
+   ("Neighbors all replacing systems the same year",
     "Subdivision built out 1980 to 2000 with equipment installed together",
     "Replacement planning visit", "Plan ahead"),
    ("Replacement job waiting on paperwork",
@@ -1573,7 +1575,7 @@ LOCAL = {
     "dedicated application and addendum for HVAC replacement, which keeps a straight equipment swap "
     "out of the general construction queue. Planning a replacement before the first cold week rather "
     "than during it is the practical consequence."])],
-   faq=("Why do my neighbours all seem to need a furnace at the same time?",
+   faq=("Why do my neighbors all seem to need a furnace at the same time?",
         "Because the houses were built at the same time. West Chester grew from 23,553 residents in "
         "1980 to 54,895 in 2000, so a large group of houses received equipment inside a narrow "
         "window and is reaching end of life together.")),
@@ -1674,7 +1676,7 @@ LOCAL = {
    "and it will be over-softening and burning salt until someone adjusts it."]),
   # [NEEDS: completion year of the Rip Rap Road softening project.]
   ("What does a plumbing permit cost in Huber Heights?", [
-   "Huber Heights uses the county programme rather than running its own inspection, so plumbing "
+   "Huber Heights uses the county program rather than running its own inspection, so plumbing "
    "permits go to Public Health, Dayton &amp; Montgomery County at the Reibold Building, 117 S Main "
    "Street, Dayton. Its published fees are $45 for a new installation permit, $30 for a replacement "
    "installation permit, $14 per fixture or device, and $50 for sewer and water.",
@@ -1691,7 +1693,7 @@ LOCAL = {
            "builder, a date range and a floor plan.",
   columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
-   ("Same fault the neighbour had last winter",
+   ("Same fault the neighbor had last winter",
     "Shared floor plan and equipment layout across Huber Homes stock", "Heating assessment",
     "Book this week"),
    ("Original equipment closet too small for a swap",
@@ -1742,7 +1744,7 @@ LOCAL = {
     "who has worked several hundred of them knows the layout before opening anything."])],
    faq=("Have you worked on a house like mine?",
         "In Huber Heights, very likely the exact plan. 10,707 single-family houses here came from "
-        "one builder between 1956 and 1992, so the floor plans repeat across whole neighbourhoods.")),
+        "one builder between 1956 and 1992, so the floor plans repeat across whole neighborhoods.")),
   "cooling": dict(
    answer="We repair and replace air conditioners in Huber Heights, about twelve miles from the "
           "Beavercreek office, in the brick homes built between 1956 and 1992 and the newer "
@@ -1754,7 +1756,7 @@ LOCAL = {
     "accurate quote and a revised one."])],
    # [NEEDS: tech confirmation on whether original Huber systems were sized for a later A/C add-on.
    # The paragraph above is deliberately general because that answer is missing.]
-   faq=("My neighbour had the same fault last summer. Is that a coincidence?",
+   faq=("My neighbor had the same fault last summer. Is that a coincidence?",
         "Probably not. Huber Heights houses share builder, date range and floor plan, so equipment "
         "ages and fails in patterns across a street rather than at random.")),
   "plumbing": dict(
@@ -1818,7 +1820,7 @@ LOCAL = {
 
 # ---------------------------------------------------------------- 9. Springboro
 "springboro": dict(
- alt="A newer two-storey neighbourhood in Springboro, Ohio",
+ alt="A newer two-story neighborhood in Springboro, Ohio",
  answer="We cover Springboro from the Waynesville office, about eleven miles southeast. "
         "Heating, cooling and plumbing for a city that sits in two counties, Warren and "
         "Montgomery. Most get handled the same day, and the emergency line never closes.",
@@ -1841,8 +1843,8 @@ LOCAL = {
   # [NEEDS: the supplier and delivered hardness for the Montgomery County portion of Springboro.]
   ("What is different about newer Springboro housing?", [
    "Springboro's growth is concentrated in the 1990s through the 2010s, so the stock is newer, "
-   "larger and more often two storeys than anything else in the Dayton service area. Bigger "
-   "two-storey houses have a stack effect that a single system fights all year, which is why zoning "
+   "larger and more often two stories than anything else in the Dayton service area. Bigger "
+   "two-story houses have a stack effect that a single system fights all year, which is why zoning "
    "and second-system conversations come up here far more than they do in Kettering or Dayton.",
    "Tighter modern construction also changes the ventilation question: these houses hold humidity "
    "and indoor air pollutants better than a 1950s ranch does, which is an argument for mechanical "
@@ -1851,12 +1853,12 @@ LOCAL = {
  ],
  table=dict(
   caption="Common problems in Springboro, Ohio homes and what to book",
-  takeaway="Springboro's recurring problems come from two things: newer two-storey houses, and a "
+  takeaway="Springboro's recurring problems come from two things: newer two-story houses, and a "
            "county line running through the middle of the city.",
   columns=["What you're seeing", "Likely cause", "Service to book", "Urgency"],
   rows=[
    ("Upstairs runs hot while downstairs runs cold",
-    "Stack effect in a larger two-storey house on one system",
+    "Stack effect in a larger two-story house on one system",
     "Zoning or second-system assessment", "Plan ahead"),
    ("Humidity stays high indoors in summer", "Tighter modern construction holding moisture",
     "Dehumidification assessment", "Book this month"),
@@ -1879,7 +1881,7 @@ LOCAL = {
   ("Did Springboro water get softer?",
    "On the Warren County side, yes. Warren County Water &amp; Sewer finished nanofiltration "
    "softening in 2022 and cut hardness by roughly 55%, to about 8 grains per gallon."),
-  ("My two-storey house never balances. Do I need two systems?",
+  ("My two-story house never balances. Do I need two systems?",
    "Not always. Springboro's larger 1990s through 2010s houses often respond to zoning an existing "
    "system rather than adding a second one. Which one makes sense depends on the ductwork, and that "
    "is a survey, not a phone call."),
@@ -1896,24 +1898,24 @@ LOCAL = {
  svc={
   "heating": dict(
    answer="We repair and replace furnaces and heat pumps in Springboro, about eleven miles from "
-          "the Waynesville office, including the larger two-storey houses built across the city "
+          "the Waynesville office, including the larger two-story houses built across the city "
           "from the 1990s on. We answer the no-heat line at any hour, every day.",
-   slots=[("Why does a two-storey Springboro house never balance?", [
+   slots=[("Why does a two-story Springboro house never balance?", [
     "Stack effect. Warm air rises through a taller building envelope, so a single system fighting it "
     "heats the upper floor while the lower floor calls for more. Springboro's growth is concentrated "
-    "in the 1990s through the 2010s, which produced more two-storey houses than anywhere else on the "
+    "in the 1990s through the 2010s, which produced more two-story houses than anywhere else on the "
     "Dayton side. Zoning an existing system usually costs less than a second system and solves the "
     "same complaint, and which one applies depends on the ductwork."])],
-   faq=("Do I need two furnaces for a two-storey house?",
+   faq=("Do I need two furnaces for a two-story house?",
         "Not usually. Zoning dampers on an existing system solve most Springboro balance complaints. "
         "A second system makes sense when the duct layout cannot be zoned or when a large addition "
         "changed the load.")),
   "cooling": dict(
    answer="We repair and replace air conditioners in Springboro, about eleven miles from the "
-          "Waynesville office. Larger two-storey houses here typically run hot upstairs and cold "
+          "Waynesville office. Larger two-story houses here typically run hot upstairs and cold "
           "downstairs on a single system. Most calls get handled the same day.",
    slots=[("What fixes hot upstairs and cold downstairs?", [
-    "Rarely a bigger condenser. In Springboro's larger two-storey housing the complaint comes from "
+    "Rarely a bigger condenser. In Springboro's larger two-story housing the complaint comes from "
     "stack effect and duct balance rather than capacity, and oversizing makes it worse by short "
     "cycling and removing less humidity. Zoning, damper adjustment and return placement address it "
     "directly, and a survey of the existing ductwork decides which combination applies."])],
@@ -2003,7 +2005,7 @@ LOCAL = {
   ("Who supplies electricity to a Troy house?", [
    "AES Ohio. Troy does not run a municipal electric utility, even though several nearby Miami "
    "County communities do. It is worth checking whose grid a house is actually on before applying "
-   "anything a neighbouring town's homeowner was told about their own utility."]),
+   "anything a neighboring town's homeowner was told about their own utility."]),
   # [NEEDS: confirm CenterPoint Energy Ohio supplies natural gas to Troy.]
   # The research also carried a Troy radon figure. Struck in full: Extreme does not perform radon
   # mitigation, and publishing the number invites work the company does not do.
@@ -2039,7 +2041,7 @@ LOCAL = {
    "construction, plumbing, electrical and mechanical work."),
   ("Who supplies electricity in Troy?",
    "AES Ohio. Troy does not have a municipal electric utility, unlike several nearby Miami County "
-   "communities, which matters when checking what a utility programme actually covers."),
+   "communities, which matters when checking what a utility program actually covers."),
   ("Where does Troy's drinking water come from?",
    "The City of Troy runs its own municipal system, pumping up to 4 million gallons a day from the "
    "Great Miami Buried Valley Aquifer through 116 miles of water main."),
@@ -2072,7 +2074,7 @@ LOCAL = {
    slots=[("Who supplies electricity in Troy, and why does it matter?", [
     "AES Ohio. Troy does not run a municipal electric utility, even though several nearby Miami "
     "County communities do, and what a utility offers its own customers differs between them. "
-    "Anyone comparing something a neighbouring town's homeowner was told should check whose grid the "
+    "Anyone comparing something a neighboring town's homeowner was told should check whose grid the "
     "house is actually on first."])],
    # [NEEDS: current AES Ohio residential HVAC programme details. No figure is published here, and
    # no trade-ally status is claimed.]
@@ -2193,7 +2195,7 @@ def _cross(city_slug, city, kind):
                 lm=f"{city} Duct Cleaning →", href=f"/locations/{city_slug}/duct-cleaning")
 
 # ---------------------------------------------------------------- per-city data
-def neighbours(slug, group, n=10):
+def neighbors(slug, group, n=10):
     """The other towns in the same metro. This is the one genuinely per-city block on
     the page, and the handoff names it as what keeps these from being find-replace.
 
@@ -2285,6 +2287,15 @@ def _tail_answer(slug, city, group):
     a wrong drive time is a broken promise rather than a thin page.]"""
     if group == "Counties":
         return _county_answer(slug, city)
+    # A town that holds one of the four offices is not a page with no fact base — the
+    # address is the fact, and it is client-confirmed. It gets named rather than being
+    # given the same sentence as a town we only drive to.
+    office = L.OFFICE.get(slug)
+    if office and office[1]:
+        return (f"Yes, and {city} is one of the four towns we work out of. The office is at "
+                f"{office[1]}, so heating, cooling, air quality and plumbing all start from "
+                "inside the village. One number books any of it, and someone answers the "
+                "emergency line at any hour.")
     return (f"Yes, we cover {city}. Heating, cooling, air quality and plumbing all book through "
             "one number, most calls get handled the same day, and someone answers the emergency "
             "line at any hour.")
@@ -2292,7 +2303,7 @@ def _tail_answer(slug, city, group):
 
 def _tail_routes(slug, group):
     """Upward and sideways links out of a noindexed page: the indexed metro parent plus
-    one or two indexed neighbours. This is the reason these pages are kept at all."""
+    one or two indexed neighbors. This is the reason these pages are kept at all."""
     metro = ("dayton" if group == "Dayton" else
              "cincinnati" if group == "Cincinnati" else None)
     names = dict(L.ALL)
@@ -2317,7 +2328,7 @@ def city_overview(city, slug, group):
         cards.append((label, f(desc), f"/locations/{slug}/{s}", pill))
     towns = "".join(
         f'<div class="xlc-town"><span class="c">✓</span>'
-        f'<a href="/locations/{ns}">{nn}</a></div>' for ns, nn in neighbours(slug, group))
+        f'<a href="/locations/{ns}">{nn}</a></div>' for ns, nn in neighbors(slug, group))
     hero_img = T.cdn_asset(L.hero(slug))
 
     if featured:
@@ -2330,7 +2341,12 @@ def city_overview(city, slug, group):
         photo_alt = d["alt"]
         intro = ("Local techs who know " + metro_adj(group) + " homes, one number for both "
                  "trades, and most calls handled the same day.")
-        chips = [f"{city}-Based Techs", "90% Same-Day Service", "24/7 Emergency Line"]
+        # "{city}-Based Techs" was false on every city but the three that hold an
+        # office — Kettering's badge said "Kettering-Based Techs" while its own body
+        # copy said the work runs out of Beavercreek. The claim stays only where it
+        # is true; everywhere else the chip falls back to a proof point that is.
+        chips = [(f"{city} Office" if slug in D.OFFICE_BY_SLUG else "Locally Owned"),
+                 "90% Same-Day Service", "24/7 Emergency Line"]
         sections = [
             # H2 1 doubles as the heading over the service card grid, so the grid stops
             # being an unlabelled block under a slogan. The slogan the grid used to
@@ -2372,10 +2388,19 @@ def city_overview(city, slug, group):
         # because the research does not exist for these places.
         h1, hi = "Heating, air &amp; plumbing — {X}", f"right here in {city}"
         answer = _tail_answer(slug, city, group)
-        photo_alt = f"A residential street in {city}, Ohio"
+        # The stand-in photo (see locations.HERO_OVERRIDES) must not be captioned as
+        # the town it is not.
+        photo_alt = ("Warren County, Ohio, where the Waynesville office sits"
+                     if slug == "waynesville" else
+                     f"A residential street in {city}, Ohio")
         intro = (f"Local techs who know {metro_adj(group)} homes. One number, and most "
                  "calls handled the same day.")
-        chips = [f"{city}-Based Techs", "90% Same-Day Service", "24/7 Emergency Line"]
+        # "{city}-Based Techs" was false on every city but the three that hold an
+        # office — Kettering's badge said "Kettering-Based Techs" while its own body
+        # copy said the work runs out of Beavercreek. The claim stays only where it
+        # is true; everywhere else the chip falls back to a proof point that is.
+        chips = [(f"{city} Office" if slug in D.OFFICE_BY_SLUG else "Locally Owned"),
+                 "90% Same-Day Service", "24/7 Emergency Line"]
         sections = [
             _cards(f"SERVICES IN {city.upper()}", f"What work is covered in {city}?", cards,
                    lead=geo_covered(slug)),

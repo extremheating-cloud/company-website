@@ -631,7 +631,7 @@ def script(root_class):
       // nothing to scroll — scrollIntoView has to cross the frame boundary to move
       // the parent page. A plain hash jump never does that (the anchor just sets the
       // hash and nothing moves), and "smooth" does not cross the boundary either —
-      // it silently no-ops. Instant is the behaviour that works in an embed, in a
+      // it silently no-ops. Instant is the behavior that works in an embed, in a
       // scrollable iframe, and standalone.
       //
       // The site header is position:sticky;top:0, so landing flush with the top hides
@@ -1446,6 +1446,7 @@ def hub_hero(d):
   {hero_mark()}
   <div class="xsp-hubhero-grid">
     <div>
+      {crumbs(d["breadcrumb"]) if d.get("breadcrumb") else ""}
       <span class="xsp-hub-pill"><span class="dot"></span>{d["eyebrow"]}</span>
       {h1(d["h1"], d["h1Highlight"])}
       {answer_block(d)}
@@ -1530,7 +1531,7 @@ def xplan_panel(detail=False):
     chips = "".join(f'<span class="chip">{c}</span>' for c in XPLAN["chips"])
     return f'''<div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="{CDN}/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
+    <img class="mark" src="{CDN}/logo-white.png" alt="" aria-hidden="true" width="502" height="207" loading="lazy" decoding="async">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -1548,7 +1549,7 @@ def xplan_panel(detail=False):
 def specials_panel():
     return f'''<div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <div class="xsp-xplan">
-    <img class="mark" src="{CDN}/logo-white.png" alt="" aria-hidden="true" width="502" height="207">
+    <img class="mark" src="{CDN}/logo-white.png" alt="" aria-hidden="true" width="502" height="207" loading="lazy" decoding="async">
     <div>
       <div class="eyebrow">PLUMBING SPECIALS</div>
       <h2>Current offers on repairs and installs.</h2>

@@ -26,7 +26,7 @@ CSS = """
 font-family:"Montserrat",ui-sans-serif,system-ui,sans-serif}
 .xh-hd *{box-sizing:border-box}
 .xh-hd a{text-decoration:none}
-/* Colour inheritance is scoped to the purple bar and the mobile panel. Applying it to
+/* Color inheritance is scoped to the purple bar and the mobile panel. Applying it to
    every descendant forced the white dropdown's links to render white-on-lavender. */
 .xh-bar a,.xh-panel a,.xh-callbar a{color:inherit}
 .xh-bar{max-width:1280px;margin:0 auto;padding:14px 40px;display:flex;align-items:center;
@@ -394,7 +394,7 @@ def header(current=""):
     return f'''<header class="xh-hd">
   <div class="xh-bar">
     <a class="xh-logo" href="/" aria-label="{D.COMPANY} — home">
-      <img src="{LOGO_TIGHT}" alt="{D.COMPANY}">
+      <img src="{LOGO_TIGHT}" alt="{D.COMPANY}"{T.dim_attrs(LOGO_TIGHT)}>
     </a>
     <nav class="xh-nav" aria-label="Primary">
       {_nav_item("Heating &amp; Air", "hvac")}
@@ -419,7 +419,7 @@ def header(current=""):
 
   <div class="xh-panel" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="xh-panel-bar">
-      <a class="xh-logo" href="/"><img src="{LOGO_TIGHT}" alt="{D.COMPANY}"></a>
+      <a class="xh-logo" href="/"><img src="{LOGO_TIGHT}" alt="{D.COMPANY}"{T.dim_attrs(LOGO_TIGHT)}></a>
       <button class="xh-close" type="button" aria-label="Close menu">×</button>
     </div>
     <div class="xh-scroll">
@@ -467,7 +467,7 @@ def _core_only(items):
     service pages are noindexed would be spending ~311 links on a dead end. It answers
     to whichever name that module settles on (`is_core`, `CORE`, or the `FEATURED` set
     shell.py already reads), and until one of them lands it returns the full list,
-    which is the behaviour that shipped before. A footer that is too generous is a
+    which is the behavior that shipped before. A footer that is too generous is a
     missed opportunity; a footer that silently empties itself is a broken site.
     """
     is_core = getattr(L, "is_core", None)
@@ -487,10 +487,12 @@ def _office_links():
 
     These are premises, not service areas, and they are the only location pages
     carrying a postal address. Sitewide links are what keeps them the first thing
-    reachable from anywhere on the site. Offices with no location page yet are
-    filtered out upstream in site_data.OFFICE_LINKS rather than linked into a 404."""
+    reachable from anywhere on the site. An office with no location page yet is still
+    named here — it is a real premises and the rest of the site counts it — it just
+    renders as text rather than being linked into a 404."""
     return " · ".join(
-        f'<a href="{href}">{name}</a>' for name, href in D.FOOTER_NAP["offices"])
+        f'<a href="{href}">{name}</a>' if href else f'<span>{name}</span>'
+        for name, href in D.FOOTER_NAP["offices"])
 
 def footer():
     """Rendered on every page, so every link here costs ~311 links of boilerplate.
@@ -506,7 +508,7 @@ def footer():
         f'<a href="{u}" target="_blank" rel="noopener">{n}</a>' for n, u in D.SOCIAL)
     return f'''<footer class="xf">
   <div class="xf-accent"></div>
-  <img class="xf-mark" src="{X_MARK}" alt="" aria-hidden="true">
+  <img class="xf-mark" src="{X_MARK}" alt="" aria-hidden="true"{T.dim_attrs(X_MARK)} loading="lazy" decoding="async">
   <div class="xf-wrap">
     <div class="xf-cta">
       <div>
@@ -521,7 +523,7 @@ def footer():
 
     <div class="xf-grid">
       <div class="xf-col xf-brand">
-        <img class="xf-logo" src="{LOGO_TIGHT}" alt="{D.COMPANY}">
+        <img class="xf-logo" src="{LOGO_TIGHT}" alt="{D.COMPANY}"{T.dim_attrs(LOGO_TIGHT)} loading="lazy" decoding="async">
         <p class="xf-blurb">Locally owned, and we have been working on homes across the Miami
         Valley and Greater Cincinnati for over 20 years.</p>
         <div class="xf-247"><span class="dot"></span>We answer 24/7 · 7 days a week</div>
@@ -551,11 +553,10 @@ def footer():
     <div class="xf-bottom">
       <div>{D.FOOTER_LEGAL}</div>
       <div class="links">
-        <!-- TODO (legal): no privacy policy exists yet, so the link is omitted rather
-             than shipped as a 404. This needs writing: the schedule form collects name,
-             email, phone and address, and uploads customer photos to Cloudinary, so
-             there is real personal data being handled. Add the route, then restore
-             <a href="/privacy">Privacy</a> here. -->
+        <!-- The route exists now (builder/privacy.py) and the client asked for it to be
+             published, so the link is restored. The page carries a visible draft notice
+             until counsel signs off — see privacy.PRIVACY_GAPS. -->
+        <a href="/privacy">Privacy</a>
         <a href="/terms">Terms</a>
       </div>
     </div>
@@ -576,7 +577,7 @@ JS = """
 
   /* --- mega menus. State lives on the header root, not the nav item, because the
          panels sit in .xm-shell outside the bar. Nesting them inside the bar meant the
-         bar's colour reset reached in and rendered the dropdown's links white on
+         bar's color reset reached in and rendered the dropdown's links white on
          white. --- */
   var btns = hd.querySelectorAll('.xh-navbtn');
   function setMenu(key){
@@ -680,7 +681,7 @@ JS = """
 })();
 
 /* --- FAQ accordions ------------------------------------------------------
-   The generated pages carry this behaviour inside their embed script, and the
+   The generated pages carry this behavior inside their embed script, and the
    self-hosted shell strips that script because the rest of it is iframe
    plumbing (see shell._strip_embed). Without a handler here every answer but
    the first stays shut on every page. Delegated from the document so it covers

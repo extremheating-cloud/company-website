@@ -118,9 +118,11 @@ HOURS_SPEC = {"dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Frida
 # [NEEDS: GBP pin lat/long, all four offices.] Schema emitters must skip `geo` while
 # it is None rather than substituting anything.
 #
-# `page` is None where no location page exists yet. Waynesville has no entry in
-# locations.py, so it is an office with zero pages — see the handoff note for
-# locations.py.
+# `page` is None where no location page exists yet. All four offices have one now:
+# Waynesville was added to locations.py as a city page, and the footer names all four
+# regardless — an office without a page renders as text rather than being dropped,
+# which is what previously made the footer advertise three offices while /about,
+# /contact and /locations all said four.
 OFFICES = [
     {"slug": "beavercreek", "label": "Beavercreek office", "primary": True,
      "street": "712 N Fairfield Rd", "locality": "Beavercreek", "region": "OH",
@@ -142,7 +144,7 @@ OFFICES = [
      # decision, so it waits for the client rather than being inferred from a map.
      # [NEEDS: how Waynesville is presented — Dayton, Cincinnati, or Warren County.]
      "zip": "45068", "county": "Warren", "metro": None,
-     "geo": None, "page": None},
+     "geo": None, "page": "/locations/waynesville"},
 ]
 
 # Derived, so no page module has to rebuild an address string by hand. Every consumer
@@ -171,7 +173,11 @@ assert sum(1 for o in OFFICES if o["primary"]) == 1, "exactly one primary office
 # Sitewide footer line under the primary NAP. Four full addresses on 311 pages reads as
 # stuffing and muddies which office is primary; four links does the same job for the
 # crawler and none of the damage.
-OFFICE_LINKS = [(o["locality"], o["page"]) for o in OFFICES if o["page"]]
+# All four, including any without a location page — those carry href None and the
+# footer renders them as plain text. Filtering them out instead left the footer
+# advertising three offices while /about, /contact and /locations all said four,
+# which is a NAP inconsistency a crawler and a customer both notice.
+OFFICE_LINKS = [(o["locality"], o["page"]) for o in OFFICES]
 
 SOCIAL = [
     ("Facebook", "https://www.facebook.com/ExtremeHeatingDayton"),

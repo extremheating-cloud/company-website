@@ -83,7 +83,7 @@ animation-iteration-count:1!important;transition-duration:.01ms!important;scroll
 def _strip_embed(html):
     """The generated pages are Framer embeds: a <section class="xhac-svc"> carrying its
     own <style> and <script>. For the standalone site we keep all of it — the CSS and
-    behaviour are the same — but the anchor script's cross-frame handling is dead
+    behavior are the same — but the anchor script's cross-frame handling is dead
     weight without an iframe, so it is removed rather than left to no-op."""
     html = re.sub(r'\n?\s*<script>\s*\(\(\) => \{\s*const root = document\.currentScript'
                   r'.*?</script>', "", html, flags=re.S)
@@ -336,6 +336,8 @@ CORE = {
  "Send us a friend: they save $250 on a new heating, cooling or plumbing system or $100 on anything else, and you get whatever they saved."),
 "/terms": (["Terms of Service & Limited Warranty"],
  "The terms and limited warranty covering our estimates, invoices and work, as Extreme Heating & Cooling LLC and Extreme Home Services LLC."),
+"/privacy": (["Privacy Policy"],
+ "What we collect when you book a visit, who it goes to, how long we keep it, and how to ask us to delete it. Written from what the site actually does."),
 
 # --- HVAC detail ---
 "/air-conditioning": (["Air Conditioning Services in {M}"],
@@ -532,8 +534,9 @@ SCHEMA_LOGO_H = int(getattr(D, "SCHEMA_LOGO_H", 180))
 # Social preview. Pages fall back to their own primary image, which is a real photo and
 # a better card than a letterboxed logo; this is the site-level default for the handful
 # of pages that render no content image.
-# [NEEDS: a 1200x630 og-default.jpg. assets/brand/ has none — van.png and logo-white.png
-#  are both the wrong aspect ratio.]
+# assets/brand/og-default.jpg is a real 1200x630 card now, composited from the brand
+# files that were already here (logo-white, van, x-mark) on the brand purple. It is
+# copied to the site root by build_site.py alongside the favicons.
 OG_DEFAULT = getattr(D, "OG_IMAGE", "/og-default.jpg")
 
 # Keyed by YouTube id. A video not in this registry is NOT marked up: a VideoObject
@@ -887,9 +890,9 @@ def _maps_link(o):
 
 
 def _licences():
-    return [{"@type": "PropertyValue", "name": "Ohio HVAC contractor licence",
+    return [{"@type": "PropertyValue", "name": "Ohio HVAC contractor license",
              "propertyID": "OH-HVAC", "value": D.LICENSE_HVAC.split("#")[-1]},
-            {"@type": "PropertyValue", "name": "Ohio plumbing contractor licence",
+            {"@type": "PropertyValue", "name": "Ohio plumbing contractor license",
              "propertyID": "OH-PLUMBING", "value": D.LICENSE_PLUMBING.split("#")[-1]}]
 
 

@@ -652,7 +652,12 @@ MAINTENANCE_3A = {
     "value": {
         "h2": "Most members come out ahead in year one.",
         "stats": [
-            {"n": "2×", "cap": "tune-ups included — booked separately they'd cost more than the membership."},
+            # The old caption claimed two tune-ups booked separately cost more than the
+            # membership. They do not: /specials sells a tune-up at $79, so two is $158
+            # against a $249 membership. The claim was wrong by $91 on our own price
+            # list. What the tune-ups are actually worth is $158, and the membership
+            # earns the rest back through the other three benefits — so say that.
+            {"n": "2×", "cap": "tune-ups a year, spring and fall, worth $158 on their own."},
             {"n": "15%", "cap": "off one mid-size repair usually covers the rest."},
             {"n": "$20", "cap": "off every service call, emergencies included, when the timing is worst."},
         ],
@@ -733,7 +738,7 @@ IMAGE_ALTS = {
     "dirty-duct.jpg": "The inside of an air duct heavily coated with dust",
     "air-quality.jpg": ("Breakdown of indoor air pollutants: 35% particulate, "
                         "34% bioaerosols, 31% volatile organic compounds"),
-    "sale.jpg": "A for-sale sign in the front yard of a two-storey house",
+    "sale.jpg": "A for-sale sign in the front yard of a two-story house",
     "smart-thermostat.jpg": "A smart thermostat set from a phone app",
     "a-pipe-clogged": "Two cut sections of drain pipe, both clogged solid with grease",
     "worried-man-calling-plumber": "A man phoning for help under a leaking sink",
@@ -803,6 +808,14 @@ PAGES.extend(referral.pages(ROOT))
 # ---------------- Terms of Service & Limited Warranty — Other pages/ ----------------
 import terms
 PAGES.extend(terms.pages(ROOT))
+
+# ---------------- Privacy Policy — Other pages/ ----------------
+# Published on the client's explicit instruction. The page still renders its own
+# DRAFT / PENDING ATTORNEY REVIEW notice, and privacy.PRIVACY_GAPS still lists what
+# counsel has to resolve; neither is removed here. Publishing it also clears the one
+# live broken internal link on the site — /terms pointed at /privacy and 404ed.
+import privacy
+PAGES.extend(privacy.pages(ROOT))
 
 # ---------------- Location pages (5h, 5a-5g) — pages/locations/ ----------------
 # 267 pages from one template: the hub, 38 city overviews, and 6 service pages each.

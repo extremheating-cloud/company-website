@@ -17,7 +17,7 @@ Rewritten 2026-08-02 against scratchpad/seo/copy-company.md and local-seo.md §4
     the Framer site this replaces. Addresses live in ONE place now: site_data.
 
 Facts come from site_data.py, which is the source of truth. Do not type an
-address, a phone number, a licence number or a price into this file.
+address, a phone number, a license number or a price into this file.
 """
 import os
 import template as T
@@ -190,7 +190,10 @@ def prose_section(eyebrow, h2, body, sid=None):
 # approved proof tokens. The approved wording is "90% same-day service"; anything
 # looser reads as a guarantee the dispatcher cannot keep.
 T.PROMOS["contactCall"] = dict(cls="lav", t="Need help right now?",
-    d="Skip the form and call. A real person answers, day or night.",
+    # "Skip the form" pointed at a form that is not on the page — /contact books
+    # through the scheduling wizard, and there is no <form> element anywhere on it.
+    # The real alternative being offered is not typing it all out.
+    d="Rather not type it all out? A real person answers, day or night.",
     lm=f"Call {T.PHONE_DISPLAY} →", href=T.PHONE_TEL)
 T.PROMOS["contactXplan"] = dict(cls="mint", t="X-Plan members skip the line",
     d="Priority scheduling, two tune-ups a year, and 15% off repairs.",
@@ -215,7 +218,7 @@ def contact_card():
 
 def contact_hero(d):
     return f'''<div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="{T.X_MARK}" alt=""></div>
+  {T.hero_mark()}
   <div class="xsp-hero-grid">
     <div>
       {T.crumbs(d["breadcrumb"])}
@@ -257,7 +260,7 @@ def book_cards(d):
 def slot_img(cls, photo, label, style=""):
     """A fixed-height photo box that renders either a placeholder or a real image.
     photo is a dict: {src, alt, pos?}. pos is object-position — the boxes here are
-    wide and short, so a photo whose subject isn't dead centre needs it."""
+    wide and short, so a photo whose subject isn't dead center needs it."""
     st = f' style="{style}"' if style else ""
     if not photo:
         return f'<div class="{cls}"{st} data-photo-slot>{label}</div>'
@@ -544,7 +547,7 @@ def apply_card():
 
 def financing_hero(d):
     return f'''<div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="{T.X_MARK}" alt=""></div>
+  {T.hero_mark()}
   <div class="xsp-hero-grid">
     <div>
       {T.crumbs(d["breadcrumb"])}
@@ -914,7 +917,7 @@ SPECIALS = {
 
 def specials_hero(d):
     return f'''<div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="{T.X_MARK}" alt=""></div>
+  {T.hero_mark()}
   <div class="xsp-hero-grid nocard">
     <div>
       {T.crumbs(d["breadcrumb"])}
@@ -1121,7 +1124,7 @@ ABOUT = {
 
 def about_hero(d):
     return f'''<div class="xsp-hero">
-  <div class="xsp-hero-mark"><img src="{T.X_MARK}" alt=""></div>
+  {T.hero_mark()}
   <div class="xsp-hero-grid xco-hero-grid-400">
     <div>
       {T.crumbs(d["breadcrumb"])}
@@ -1177,7 +1180,7 @@ def about_page(d, root_class):
     stats = "".join(
         f'<div><div class="n">{s["n"]}</div><div class="cap">{s["cap"]}</div></div>' for s in d["stats"])
     stats = f'''<div class="xco-stats">
-  <img class="mark" src="{T.X_MARK}" alt="" style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)">
+  <img class="mark" src="{T.X_MARK}" alt=""{T.dim_attrs(T.X_MARK)} loading="lazy" decoding="async" style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)">
   <div class="grid">{stats}</div>
 </div>'''
     # The team section is off the page until the company photo shoot (client, 2026-08-02

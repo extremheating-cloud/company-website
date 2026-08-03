@@ -1,0 +1,976 @@
+<section class="xhac-svc xsp-privacy">
+  <style>
+.xhac-svc{--purple:#542770;--purple-light:#5E2C7E;--purple-dark:#3A1A4E;--green:#6BB85C;
+--green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
+--ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
+--stars:#F6A723;
+/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
+   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
+   CLS on this site is fonts, not images. An unknown family name is skipped by the
+   browser, so this is inert until shell.py declares it. */
+font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+color:var(--ink);width:100%;overflow-x:hidden;
+/* The embed is a bare <section>. Framer's page supplies the white behind it, but
+   standalone — a local preview, or anyone opening the file — whatever is behind
+   shows through, and on a dark-mode browser that is black under dark text.
+   Own the background so the embed renders correctly anywhere. color-scheme keeps
+   form controls light too, or the ZIP input renders dark-on-dark. */
+background:#fff;color-scheme:light}
+.xhac-svc *{box-sizing:border-box;margin:0}
+.xsp-wrap{max-width:1280px;margin:0 auto;padding:0 40px}
+.xsp-dt{}
+.xsp-mb{display:none !important}
+
+/* Where in-page anchor links land. The site header is position:sticky;top:0, so a
+   section scrolled flush to the viewport top slides underneath it. scroll-margin-top
+   is honoured by scrollIntoView — including across the embed iframe boundary — and
+   pushes the landing point down by this much. TUNE THIS ONE VALUE if the header
+   height changes: it should be header height + ~20px of breathing room. */
+.xhac-svc{--xsp-anchor-offset:112px}
+.xhac-svc [id]{scroll-margin-top:var(--xsp-anchor-offset)}
+
+/* buttons */
+.xsp-btn-green{display:flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;width:100%;
+box-shadow:0 6px 18px rgba(107,184,92,.35);transition:background .15s ease,color .15s ease}
+.xsp-btn-green:hover{background:var(--green-dark);color:#fff}
+.xsp-btn-purple{display:flex;align-items:center;justify-content:center;background:var(--purple);
+color:#fff;font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;width:100%;margin-top:10px;
+transition:background .15s ease}
+.xsp-btn-purple:hover{background:#3E1C54}
+.xsp-cta{display:inline-flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:0;font-family:inherit;white-space:nowrap;
+transition:background .15s ease}
+.xsp-cta:hover{background:var(--green-hover)}
+.xsp-cta-outline{display:inline-flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.45);
+color:#fff;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;min-height:44px;
+text-decoration:none;background:transparent;white-space:nowrap;transition:border-color .15s,color .15s}
+.xsp-cta-outline:hover{border-color:var(--green);color:var(--green)}
+
+/* hero */
+.xsp-hero{background:linear-gradient(180deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);position:relative;color:#fff}
+.xsp-hero-mark{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.xsp-hero-mark img{position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;
+transform:rotate(-8deg);filter:brightness(0) invert(1)}
+.xsp-hero-grid{position:relative;display:grid;grid-template-columns:1fr 360px;gap:48px;
+max-width:1280px;margin:0 auto;padding:48px 40px 64px}
+.xsp-hero-grid.nocard{grid-template-columns:1fr;padding-bottom:48px}
+.xsp-crumbs{font-size:12px;font-weight:700;color:rgba(255,255,255,.7)}
+.xsp-crumbs a{color:rgba(255,255,255,.7);text-decoration:none}
+.xsp-crumbs a:hover{color:var(--green-hover)}
+.xsp-crumbs .cur{color:var(--green)}
+.xsp-crumbs .sep{margin:0 7px;opacity:.6}
+.xsp-h1{margin-top:14px;font-style:italic;font-weight:900;font-size:46px;line-height:1.08;letter-spacing:-1px;color:#fff}
+.xsp-h1 em{font-style:italic;color:var(--green)}
+.xsp-hero.sub .xsp-h1{font-size:42px}
+.xsp-intro{margin-top:16px;max-width:520px;font-size:15.5px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.82)}
+.xsp-chiprow{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.xsp-chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;
+padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff}
+.xsp-chip .st{color:var(--stars)}
+.xsp-hero-ctas{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+
+/* booking card (hero overlap)
+   align-self:end pins the card to the bottom of the hero grid so the -84px margin
+   actually pulls it past the edge and it hangs over the section below. With
+   align-self:start the card floated at the top of a taller row and the negative
+   margin did nothing — which is why the service pages never overhung. Every page
+   that renders a .xsp-bookcol also renders a body section below it, so the
+   clearance on .xsp-bodygrid / .xco-body is unconditional. */
+.xsp-bookcol{position:relative;margin-bottom:-84px;align-self:end}
+.xsp-book{background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(15,23,42,.25);padding:24px;color:var(--ink)}
+.xsp-book.inflow{box-shadow:0 12px 30px rgba(84,39,112,.12);border:1px solid var(--rule)}
+.xsp-book .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-dark)}
+.xsp-book .t{font-weight:800;font-size:18px;margin-top:8px}
+.xsp-book .s{font-size:13px;font-weight:500;color:var(--body);margin-top:6px;line-height:1.5}
+.xsp-book .btns{margin-top:16px}
+.xsp-book .trust{display:flex;align-items:center;justify-content:center;gap:14px;border-top:1px solid var(--rule);
+margin-top:16px;padding-top:14px;font-size:12px;font-weight:700;color:var(--body)}
+.xsp-book .trust .st{color:var(--stars)}
+.xsp-book .trust .bar{color:#D8D5DE}
+
+/* pill sub-nav */
+.xsp-pillbar{background:#fff;border-bottom:1px solid var(--rule)}
+.xsp-pillbar-in{max-width:1280px;margin:0 auto;padding:14px 40px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.xsp-pill-label{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-pills{display:flex;gap:8px;flex-wrap:wrap}
+.xsp-pill{border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:700;text-decoration:none;
+color:var(--purple);background:var(--tint);min-height:32px;display:inline-flex;align-items:center;
+transition:background .15s,color .15s}
+.xsp-pill:hover{background:#E9E2F1}
+.xsp-pill.active{background:var(--purple);color:#fff;font-weight:800}
+
+/* body grid */
+.xsp-bodygrid{display:grid;grid-template-columns:1fr 360px;gap:48px;max-width:1280px;margin:0 auto;padding:56px 40px}
+/* Only the pages whose hero carries a booking card need clearance for it — the sub
+   pages put that card in the rail instead, and padding them too would just open a
+   48px hole. Scoped with :has() so no generator has to remember to flag it; a browser
+   without :has() falls back to the plain 56px, which is what shipped before. */
+.xhac-svc:has(.xsp-bookcol) .xsp-bodygrid{padding-top:104px}
+.xsp-main{display:flex;flex-direction:column;gap:48px;min-width:0}
+.xsp-rail{padding-top:64px;display:flex;flex-direction:column;gap:16px;align-self:start}
+.xsp-rail.flush{padding-top:0}
+.xsp-eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-dark)}
+.xsp-eyebrow.purple{color:var(--purple)}
+.xsp-h2{margin-top:10px;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px;color:var(--ink)}
+
+/* checklist */
+.xsp-checks{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-top:20px}
+.xsp-check{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700;color:var(--body)}
+.xsp-check .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.xsp-callout{margin-top:20px;background:var(--green-tint);border-radius:12px;padding:14px 18px;
+font-size:13px;font-weight:600;color:var(--promo-green);line-height:1.55}
+.xsp-callout a{color:var(--promo-green);font-weight:800;text-decoration:none}
+.xsp-callout.safety{background:var(--ink);color:rgba(255,255,255,.85)}
+.xsp-callout.safety b{color:var(--green-hover)}
+.xsp-callout.safety a{color:#fff;font-weight:800}
+
+/* what-we-do cards */
+.xsp-cards3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-card{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff;display:flex;
+flex-direction:column;gap:8px;text-decoration:none;transition:box-shadow .18s,border-color .18s,transform .18s}
+.xsp-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);border-color:#D8CCE4;transform:translateY(-2px)}
+.xsp-card .t{font-weight:800;font-size:16.5px;color:var(--ink)}
+.xsp-card .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-card .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:2px}
+.xsp-card:hover .lm{color:var(--green-dark)}
+.xsp-glyph{position:relative;display:block;width:30px;height:30px;flex:none}
+.xsp-glyph i{position:absolute;inset:11px 2px;border-radius:2px;display:block}
+.xsp-glyph i:first-child{background:var(--purple);transform:rotate(45deg)}
+.xsp-glyph i:last-child{background:var(--green);transform:rotate(-45deg)}
+
+/* process */
+.xsp-steps{display:flex;flex-direction:column;gap:22px;margin-top:20px}
+.xsp-step{display:flex;gap:0}
+.xsp-step .n{flex:0 0 44px;font-style:italic;font-weight:900;font-size:25px;color:var(--purple)}
+.xsp-step .t{font-weight:800;font-size:15px}
+.xsp-step .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px;max-width:560px}
+
+/* decision card */
+.xsp-decision{border:1px solid var(--rule);border-radius:16px;padding:20px 22px;background:#fff}
+.xsp-decision .t{font-weight:800;font-size:16.5px}
+.xsp-decision .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px;max-width:620px}
+.xsp-decision a{display:inline-flex;align-items:center;margin-top:12px;border:2px solid var(--purple);
+color:var(--purple);font-weight:800;font-size:13.5px;padding:10px 18px;border-radius:10px;min-height:40px;
+text-decoration:none;transition:background .15s,color .15s}
+.xsp-decision a:hover{background:var(--purple);color:#fff}
+
+/* faq */
+.xsp-faq{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.xsp-qa{border:1px solid var(--rule);border-radius:14px;background:#fff;overflow:hidden}
+.xsp-qa button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+padding:16px 18px;background:none;border:0;cursor:pointer;font-family:inherit;text-align:left;
+font-weight:700;font-size:15px;color:var(--ink);min-height:44px}
+.xsp-qa .tog{width:26px;height:26px;flex:none;border-radius:50%;background:var(--tint);color:var(--purple);
+display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;transition:background .15s,color .15s}
+.xsp-qa.open .tog{background:var(--purple);color:#fff}
+.xsp-qa .a{display:none;font-size:13.5px;line-height:1.6;font-weight:500;color:var(--body);
+padding:0 18px 16px;max-width:620px}
+.xsp-qa.open .a{display:block}
+
+/* media block — one photo or one video, full width of the main column */
+.xsp-shot{position:relative;margin-top:20px;aspect-ratio:16 / 9;border-radius:14px;overflow:hidden;
+background:#0F172A;border:1px solid var(--rule)}
+.xsp-shot img,.xsp-shot iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.xsp-shot img{object-fit:cover}
+.xsp-mediasub{margin-top:10px;font-size:14px;line-height:1.6;font-weight:500;color:var(--body);max-width:64ch}
+.xsp-mediacap{margin-top:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
+
+/* rail photo + promos */
+.xsp-photo{height:220px;border-radius:14px;background:#F4F6F8;border:1px solid var(--rule);
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);
+letter-spacing:1px;overflow:hidden}
+.xsp-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.xsp-promo{border-radius:14px;padding:18px 20px;display:block;text-decoration:none}
+.xsp-promo.lav{background:var(--tint)}
+.xsp-promo.mint{background:var(--green-tint)}
+.xsp-promo .t{font-weight:800;font-size:15px;color:var(--purple)}
+.xsp-promo.mint .t{color:var(--promo-green)}
+.xsp-promo .d{font-size:12.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px}
+.xsp-promo .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:10px}
+.xsp-promo.mint .lm{color:var(--promo-green)}
+.xsp-promo:hover .lm{text-decoration:underline}
+.xsp-sibs{border:1px solid var(--rule);border-radius:14px;padding:18px 20px;background:#fff}
+.xsp-sibs .h{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-sibs a{display:flex;align-items:center;justify-content:space-between;padding:10px 0;
+font-size:13.5px;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:1px solid #F1F0F4;min-height:40px}
+.xsp-sibs a:last-child{border-bottom:0;padding-bottom:0}
+.xsp-sibs a:hover{color:var(--purple)}
+.xsp-sibs .ar{color:var(--purple);font-weight:800}
+
+/* emergency band */
+
+/* related strip */
+.xsp-rel{background:var(--soft)}
+.xsp-rel-in{max-width:1280px;margin:0 auto;padding:44px 40px}
+.xsp-rel-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
+.xsp-rel-card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(15,23,42,.05);
+text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-shadow .18s,transform .18s}
+.xsp-rel-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.xsp-rel-card .t{font-weight:800;font-size:15px;color:var(--ink)}
+.xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
+.xsp-rel-card:hover .lm{color:var(--green-dark)}
+
+/* ---------------------- GEO content model ----------------------
+   Four pieces the copy needs and the old template had nowhere to put: the
+   answer-first block, real H2/H3 body sections, decision tables, and a visible
+   last-updated line. */
+
+/* The answer-first block sits in the hero copy column, directly under the H1.
+   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
+   rule. Size and weight carry it, and the deck below steps down so the order of
+   importance reads correctly. Anything boxed here would look like an aside and get
+   read as one. */
+.xsp-answer{margin-top:18px;max-width:640px}
+.xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
+.xsp-answer p + p{margin-top:10px}
+.xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
+
+/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
+   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
+.xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
+/* Contextual links in body copy. These are the site's internal-linking backbone — 139
+   of them across the service pages — so they stay inline in the sentence where their
+   anchor text means something, rather than becoming buttons. A 1px underline set off
+   the baseline reads as a link without the heavy default rule cutting through the
+   descenders. */
+.xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
+text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
+.xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
+/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
+   still tappable, but it is not competing with the contextual links around it — the
+   button under the section is the thing meant to be pressed. */
+.xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
+.xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
+/* The action row that closes a section whose answer is "call or book". */
+.xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+
+/* The one-sentence takeaway that has to sit immediately above a table — engines lift
+   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
+.xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
+
+/* Decision tables.
+   Desktop: a purple header band, a tinted row-header column, hairline rules and a
+   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
+   as a stray label floating over the header row.
+   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
+   390px scroller means reading one column at a time and losing the row you were on;
+   as cards, each row is a self-contained "Factor: value, value, value" block. The
+   markup stays a real <table> — only `display` changes — and table_block() adds the
+   ARIA roles back, because display:block strips a table's implicit roles from the
+   accessibility tree in Chrome and Firefox. */
+.xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
+overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
+.xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
+/* The table's title, sitting above the box as a sub-headline. Sentence case at
+   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
+   ones are a wall of capitals. */
+.xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
+color:var(--ink);max-width:68ch}
+.xsp-tablelabel + .xsp-tablewrap{margin-top:0}
+.xsp-table th,.xsp-table td{padding:13px 16px;text-align:left;vertical-align:top;
+border-bottom:1px solid #EFECF3}
+.xsp-table thead th{font-weight:800;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;
+color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
+.xsp-table thead th:first-child{border-top-left-radius:13px}
+.xsp-table thead th:last-child{border-top-right-radius:13px}
+.xsp-table tbody th{font-weight:800;color:var(--ink);width:24%;background:#FAF8FC}
+.xsp-table tbody td{font-weight:500;color:var(--body)}
+.xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
+@media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
+
+/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
+   comparison is still readable on a tablet and only breaks down on a phone.
+   The wrapper drops its border and shadow so the CARDS carry the styling — a card
+   inside a card reads as a mistake. Column headers move into each cell via
+   data-label, which table_block() writes. */
+/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
+   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
+   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
+   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
+   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
+   hidden and the column is full width, so the table fits and stays a table. */
+@media (max-width:699px), (min-width:810px) and (max-width:1090px){
+  .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .xsp-table{min-width:0;display:block;font-size:14px}
+  .xsp-tablelabel{font-size:15.5px;margin-top:18px}
+  .xsp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  clip-path:inset(50%);white-space:nowrap}
+  .xsp-table tbody{display:block}
+  .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .xsp-table tbody tr:last-child{margin-bottom:0}
+  /* The row header becomes the card title. */
+  .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
+  font-size:15px;color:var(--ink);padding:12px 16px}
+  /* Label above value, not beside it. Side by side looks tidy while column names are
+     short ("Single-stage") and falls apart when they are not — "Replacement usually
+     makes sense when" wraps to three lines against a one-line value and the pair
+     stops reading as a pair. Stacked handles any length. */
+  .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
+  .xsp-table tbody tr td:last-child{border-bottom:0}
+  .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
+  font-weight:800;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+  .xsp-table tbody td>span{display:block}
+}
+
+/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
+.xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
+
+/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
+   play; this is the poster, and the player replaces it on click. */
+.xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
+background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
+text-align:center}
+.xsp-vplay .pl{width:62px;height:62px;border-radius:50%;background:var(--green);color:var(--ink);
+display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;
+box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.xsp-vplay:hover .pl{background:var(--green-hover);transform:scale(1.06)}
+.xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
+.xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
+
+/* ------------------------- mobile (2b stacking) ------------------------- */
+@media (max-width:809px){
+.xsp-answer{max-width:none}
+.xsp-answer p{font-size:16px;line-height:1.5}
+.xsp-answer + .xsp-intro{font-size:13.5px}
+.xsp-h3{font-size:16.5px;margin-top:20px}
+.xsp-prose{font-size:14.5px}
+.xsp-takeaway{font-size:14.5px}
+.xsp-vplay .pl{width:52px;height:52px;font-size:19px}
+.xsp-vplay .vt{font-size:13.5px}
+.xhac-svc{--xsp-anchor-offset:96px}
+.xsp-dt{display:none !important}
+.xsp-mb{display:revert !important}
+.xsp-wrap,.xsp-pillbar-in,.xsp-rel-in{padding-left:20px;padding-right:20px}
+.xsp-hero-grid{grid-template-columns:1fr;gap:0;padding:32px 20px 44px}
+.xsp-h1{font-size:34px;letter-spacing:-.5px}
+.xsp-hero.sub .xsp-h1{font-size:32px}
+.xsp-intro{font-size:14px}
+.xsp-hero-ctas{flex-direction:column;gap:14px}
+.xsp-hero-ctas.xsp-mb{display:flex !important;flex-direction:column;gap:14px}
+.xsp-hero-ctas .xsp-cta,.xsp-hero-ctas .xsp-cta-outline{width:100%}
+.xsp-chiprow{gap:8px;justify-content:center}
+.xsp-chip{padding:7px 10px;font-size:11px;border-radius:10px}
+.xsp-bookcol{display:none}
+.xsp-bodygrid{grid-template-columns:1fr;gap:40px;padding:40px 20px 48px}
+/* the hero card is display:none here, so there is nothing to clear */
+.xhac-svc:has(.xsp-bookcol) .xsp-bodygrid{padding-top:40px}
+.xsp-rail{display:none}
+.xsp-h2{font-size:24px;letter-spacing:-.4px}
+.xsp-checks{grid-template-columns:1fr;gap:10px}
+.xsp-cards3{grid-template-columns:1fr;gap:0;margin-top:12px}
+.xsp-card{flex-direction:row;align-items:center;gap:12px;border:0;border-radius:0;
+border-bottom:1px solid #F1F0F4;padding:13px 0;background:transparent}
+.xsp-card:hover{box-shadow:none;transform:none}
+.xsp-card .xsp-glyph{width:26px;height:26px}
+.xsp-card .glyphwrap{flex:none}
+.xsp-card .txt{flex:1}
+.xsp-card .t{font-size:14.5px}
+.xsp-card .d{font-size:11.5px;line-height:1.45}
+.xsp-card .lm{display:none}
+.xsp-card .mrow{display:block;color:var(--purple);font-weight:800}
+.xsp-step .d{font-size:13px}
+.xsp-rel-grid{grid-template-columns:1fr;gap:0;margin-top:10px}
+.xsp-rel-card{flex-direction:row;align-items:center;justify-content:space-between;border-radius:0;
+box-shadow:none;background:transparent;padding:13px 0;border-bottom:1px solid #F1F0F4}
+.xsp-rel-card:hover{box-shadow:none;transform:none}
+.xsp-mbrail.xsp-mb{display:flex !important;flex-direction:column;gap:14px}
+}
+@media (min-width:810px){
+.xsp-card .mrow{display:none}
+}
+
+.xsp-hubhero-grid{position:relative;display:grid;grid-template-columns:1fr .9fr;gap:48px;align-items:center;
+max-width:1280px;margin:0 auto;padding:48px 40px 72px}
+.xsp-hub-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.3);
+background:rgba(255,255,255,.1);border-radius:999px;padding:7px 14px;font-size:11.5px;font-weight:800;
+letter-spacing:2px;color:#fff}
+.xsp-hub-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.xsp-hubhero-grid .xsp-h1{font-size:44px}
+.xsp-hub-photo{position:relative;min-height:280px}
+.xsp-hub-photo .slashw{position:absolute;left:2%;right:-6%;bottom:26px;height:14px;background:#fff;opacity:.25;
+transform:rotate(-9deg) skewX(-16deg)}
+.xsp-hub-photo .slash{position:absolute;left:-6%;right:-2%;bottom:34px;height:44px;background:var(--green);
+transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.xsp-hub-photo .ph{position:relative;height:280px;border-radius:20px;overflow:hidden;background:#F4F6F8;
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px}
+.xsp-hub-photo .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.xsp-xplan-detail{list-style:none;margin:16px 0 0;padding:0;display:grid;
+grid-template-columns:1fr 1fr;gap:8px 22px}
+.xsp-xplan-detail li{display:flex;gap:9px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.9)}
+.xsp-xplan-detail li .c{width:17px;height:17px;flex:none;border-radius:50%;background:var(--green);
+color:var(--ink);font-size:10px;font-weight:800;display:grid;place-items:center}
+@media (max-width:809px){.xsp-xplan-detail{grid-template-columns:1fr}}
+.xsp-cut{position:relative;height:84px;background:#fff;clip-path:polygon(0 62%,100% 0,100% 100%,0 100%)}
+.xsp-promise{background:#fff;padding:6px 0 26px}
+.xsp-promise-in{max-width:1280px;margin:0 auto;padding:0 40px;display:flex;justify-content:space-between;
+align-items:center;gap:20px;flex-wrap:wrap}
+.xsp-promise-label{font-size:12px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
+.xsp-promise-items{display:flex;gap:26px;flex-wrap:wrap}
+.xsp-promise-items span{font-size:12.5px;font-weight:700;color:var(--body)}
+.xsp-promise-items .di{color:var(--green)}
+.xsp-hubsec{background:#fff;padding:44px 0 56px}
+.xsp-hubsec.soft{background:var(--soft)}
+.xsp-hubsec-in{max-width:1280px;margin:0 auto;padding:0 40px}
+.xsp-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-notsure{background:var(--tint);border:0;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px;
+text-decoration:none;transition:box-shadow .18s,transform .18s}
+.xsp-notsure:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.xsp-notsure .t{font-weight:800;font-size:16.5px;color:var(--purple)}
+.xsp-notsure .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-notsure .lm{font-weight:800;font-size:13px;color:var(--purple);margin-top:2px}
+.xsp-badge{display:inline-block;background:var(--green-tint);color:var(--green-dark);font-weight:800;
+font-size:9.5px;letter-spacing:.6px;border-radius:5px;padding:3px 7px;margin-left:8px;vertical-align:middle}
+a.xsp-xplan{text-decoration:none;cursor:pointer;transition:box-shadow .18s,transform .18s}
+a.xsp-xplan:hover{box-shadow:0 18px 44px rgba(84,39,112,.35);transform:translateY(-2px)}
+.xsp-xplan{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;padding:40px 44px;
+color:#fff;position:relative;overflow:hidden;display:grid;grid-template-columns:1.1fr auto;gap:32px;align-items:center}
+.xsp-xplan .mark{position:absolute;right:-40px;bottom:-46px;width:300px;opacity:.06;pointer-events:none;
+filter:brightness(0) invert(1)}
+.xsp-xplan .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-hover)}
+.xsp-xplan h2{margin-top:10px;font-style:italic;font-weight:900;font-size:30px;letter-spacing:-.5px;color:#fff}
+.xsp-xplan .chips{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
+.xsp-xplan .chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:999px;
+padding:8px 14px;font-size:12.5px;font-weight:700}
+.xsp-xplan .price{position:relative;text-align:right}
+.xsp-xplan .amt{font-style:italic;font-weight:900;font-size:34px}
+.xsp-xplan .per{font-size:15px;font-weight:700;opacity:.85;font-style:normal}
+.xsp-xplan .alt{font-size:13px;font-weight:700;color:rgba(255,255,255,.75);margin-top:4px}
+.xsp-xplan .xsp-cta{margin-top:14px}
+.xsp-cross{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.xsp-cross .xsp-promo .t{font-size:16.5px}
+@media (max-width:809px){
+.xsp-hubhero-grid{grid-template-columns:1fr;gap:28px;padding:32px 20px 52px}
+.xsp-hubhero-grid .xsp-h1{font-size:34px}
+.xsp-hub-photo{min-height:0}
+.xsp-hub-photo .ph{height:200px}
+.xsp-cut{height:44px;clip-path:polygon(0 55%,100% 0,100% 100%,0 100%)}
+.xsp-promise-in{padding:0 20px}
+.xsp-promise-items{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px}
+.xsp-hubsec-in{padding:0 20px}
+.xsp-grid3,.xsp-grid4{grid-template-columns:1fr;gap:10px;margin-top:14px}
+.xsp-xplan{grid-template-columns:1fr;padding:28px 22px;border-radius:20px}
+.xsp-xplan .price{text-align:left}
+.xsp-cross{grid-template-columns:1fr}
+}
+
+.xsp-bookcol.pricing .price-row{display:flex;align-items:baseline;gap:8px;margin-top:10px}
+.xsp-bookcol.pricing .amt{font-style:italic;font-weight:900;font-size:38px;color:var(--ink)}
+.xsp-bookcol.pricing .per{font-weight:700;font-size:14px;color:var(--body)}
+.xsp-bookcol.pricing .alt{font-size:13px;font-weight:600;color:var(--body);margin-top:4px}
+.xsp-benefits{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.xsp-benefit{border:1px solid var(--rule);border-radius:16px;padding:18px;background:#fff;display:flex;gap:12px}
+.xsp-benefit .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.xsp-benefit .t{font-weight:800;font-size:15px;color:var(--ink)}
+.xsp-benefit .d{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xsp-usecases{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xsp-usecase{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff;display:flex;
+flex-direction:column;gap:8px}
+.xsp-usecase .t{font-weight:800;font-size:16.5px;color:var(--ink)}
+.xsp-usecase .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body)}
+.xsp-value{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
+padding:36px 40px;color:#fff;margin-top:20px}
+.xsp-value .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--green-hover)}
+.xsp-value h3{margin-top:10px;font-style:italic;font-weight:900;font-size:26px;letter-spacing:-.5px;color:#fff}
+.xsp-value .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;margin-top:22px}
+.xsp-value .n{font-style:italic;font-weight:900;font-size:26px;color:#fff}
+.xsp-value .cap{font-size:12.5px;line-height:1.5;font-weight:500;color:rgba(255,255,255,.75);margin-top:6px}
+.xsp-joinband{background:var(--ink)}
+.xsp-joinband-in{max-width:1280px;margin:0 auto;padding:20px 40px;display:flex;align-items:center;
+justify-content:space-between;gap:24px;flex-wrap:wrap}
+.xsp-joinband b{font-weight:800;font-size:15px;color:#fff}
+.xsp-joinband span{font-size:13px;font-weight:500;color:rgba(255,255,255,.6)}
+@media (max-width:809px){
+.xsp-bookcol.pricing{display:block !important;margin:28px 0 0}
+.xsp-benefits,.xsp-usecases{grid-template-columns:1fr;gap:12px}
+.xsp-value{padding:26px 22px;border-radius:20px}
+.xsp-value .stats{grid-template-columns:1fr;gap:18px}
+.xsp-joinband-in{padding:20px;flex-direction:column;align-items:flex-start;gap:12px}
+}
+
+/* ------------------------- company pages (4a-4d) ------------------------- */
+.xco-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.xco-bcard{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff}
+.xco-bcard .t{font-weight:800;font-size:16.5px;margin-top:12px}
+.xco-bcard .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-bcard .xsp-cta{margin-top:14px;font-size:14px;padding:12px 18px}
+.xco-bcard .plink{display:inline-block;font-weight:800;font-size:14px;color:var(--purple);
+text-decoration:none;margin-top:16px;min-height:44px;display:inline-flex;align-items:center}
+.xco-bcard .plink:hover{color:var(--green-dark)}
+.xco-phone{font-style:italic;font-weight:900;font-size:27px;letter-spacing:-.5px;margin-top:8px}
+.xco-phone a{color:var(--ink);text-decoration:none}
+.xco-loc{border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#fff}
+.xco-loc-img{height:160px;background:#F4F6F8;border-bottom:1px solid var(--rule);display:flex;
+align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px}
+.xco-loc-img img{width:100%;height:100%;object-fit:cover;display:block}
+.xco-loc-body{padding:18px}
+.xco-loc-body .t{font-weight:800;font-size:16.5px}
+.xco-loc-body .meta{font-size:12px;font-weight:700;color:var(--body);margin-top:2px}
+.xco-loc-body .addr{font-size:13px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+.xco-loc-body .addr.hrs{font-size:12.5px;margin-top:6px}
+.xco-loc-body a{display:inline-block;font-weight:800;font-size:13px;color:var(--purple);
+text-decoration:none;margin-top:10px}
+/* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
+   "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */
+.xco-loc-body a.alt{display:block;margin-top:6px}
+.xco-loc-body a:hover{color:var(--green-dark)}
+/* A card with no exterior photograph (Troy, Waynesville) has no image box at all. It
+   still has to line up with the two that do, so the body carries the shortfall. */
+.xco-loc:not(:has(.xco-loc-img)) .xco-loc-body{padding-top:22px}
+.xco-hours{border:1px solid var(--rule);border-radius:16px;margin-top:20px;overflow:hidden}
+.xco-hours .row{display:flex;justify-content:space-between;gap:16px;padding:14px 20px;
+border-bottom:1px solid var(--rule)}
+.xco-hours .row:last-child{border-bottom:0}
+.xco-hours .row span:first-child{font-weight:700;font-size:14px}
+.xco-hours .row span:last-child{font-weight:600;font-size:14px;color:var(--body);text-align:right}
+.xco-hours .row.em{background:var(--green-tint)}
+.xco-hours .row.em span{font-weight:800;color:var(--promo-green)}
+.xco-body{max-width:1280px;margin:0 auto;padding:56px 40px;display:flex;flex-direction:column;gap:48px}
+/* Clearance for the hero booking card, which hangs into this section — only on the
+   pages that actually render one (see .xsp-bookcol in template.py). */
+.xhac-svc:has(.xsp-bookcol) .xco-body{padding-top:104px}
+.xco-split{display:grid;grid-template-columns:1fr 360px;gap:48px}
+.xco-heroslot{width:100%;height:250px;border-radius:16px;background:rgba(255,255,255,.08);
+border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
+font-size:12px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:1px;overflow:hidden}
+.xco-heroslot img{width:100%;height:100%;object-fit:cover;display:block}
+.xco-hero-grid-400{grid-template-columns:1fr 400px;align-items:center}
+.xco-ccard{border:1px solid var(--rule);border-radius:16px;padding:18px;background:#fff}
+.xco-ccard .c{width:18px;height:18px;border-radius:50%;background:var(--green);color:#fff;
+font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.xco-ccard .t{font-weight:800;font-size:15px;margin-top:10px}
+.xco-ccard .d{font-size:13px;line-height:1.5;font-weight:500;color:var(--body);margin-top:4px}
+.xco-lchips{display:flex;align-items:center;gap:10px;margin-top:22px;flex-wrap:wrap}
+.xco-lchips .lab{font-size:10.5px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,.5)}
+.xco-lchips .chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);
+border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;color:#fff}
+.xco-fine{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);margin-top:14px}
+.xco-coupons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.xco-coupon{border:1.5px dashed #C4B5D4;border-radius:16px;padding:20px;display:flex;flex-direction:column}
+.xco-coupon .pill{align-self:flex-start;background:var(--tint);color:var(--purple);font-size:10px;
+font-weight:800;letter-spacing:1.5px;border-radius:999px;padding:5px 10px}
+.xco-coupon .val{font-style:italic;font-weight:900;font-size:34px;letter-spacing:-1px;margin-top:12px}
+.xco-coupon .val .per{font-size:16px;letter-spacing:0}
+.xco-coupon .t{font-weight:800;font-size:15.5px;margin-top:2px}
+.xco-coupon .d{font-size:13px;line-height:1.5;font-weight:500;color:var(--body);margin-top:4px;flex:1}
+.xco-coupon .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;
+margin-top:16px;padding-top:14px;border-top:1px solid #EDEAF2}
+.xco-coupon .lbl{font-size:11.5px;font-weight:700;color:var(--muted)}
+.xco-claim{display:inline-flex;align-items:center;justify-content:center;background:var(--green);
+color:var(--ink);font-weight:800;font-size:13px;padding:10px 16px;border-radius:10px;min-height:40px;
+text-decoration:none;cursor:pointer;white-space:nowrap;transition:background .15s ease}
+.xco-claim:hover{background:var(--green-hover)}
+.xco-finenote{font-size:11.5px;line-height:1.6;font-weight:600;color:var(--muted);margin-top:24px}
+.xco-mail{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:16px;
+padding:22px;position:relative;overflow:hidden;color:#fff}
+.xco-mail .t{font-weight:800;font-size:16px}
+.xco-mail .d{font-size:12.5px;line-height:1.55;font-weight:500;color:rgba(255,255,255,.75);margin-top:6px}
+.xco-mail form{display:flex;gap:8px;margin-top:14px}
+.xco-mail input{flex:1;min-width:0;background:#fff;border:0;border-radius:10px;padding:12px 14px;
+font-size:13px;font-weight:600;color:var(--ink);font-family:inherit}
+.xco-mail button{background:var(--green);color:var(--ink);font-weight:800;font-size:13px;
+padding:12px 16px;border-radius:10px;border:0;cursor:pointer;font-family:inherit}
+.xco-story{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.xco-story p{margin-top:16px;font-size:14.5px;line-height:1.65;font-weight:500;color:var(--body)}
+.xco-story p + p{margin-top:12px}
+.xco-slot{width:100%;border-radius:16px;background:#F4F6F8;border:1px solid var(--rule);
+display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+color:var(--muted);letter-spacing:1px;overflow:hidden}
+.xco-slot img{width:100%;height:100%;object-fit:cover;display:block}
+.xco-vals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.xco-vals .xco-ccard .xsp-glyph{width:26px;height:26px}
+.xco-vals .xco-ccard .t{margin-top:12px}
+.xco-stats{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
+padding:32px 36px;position:relative;overflow:hidden}
+.xco-stats .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;position:relative}
+.xco-stats .n{font-style:italic;font-weight:900;font-size:30px;color:#fff}
+.xco-stats .n .st{color:var(--stars)}
+.xco-stats .cap{font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px}
+.xco-team{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.xco-team .slot{height:230px;border-radius:14px}
+.xco-team .name{font-weight:800;font-size:14px;margin-top:10px}
+.xco-team .role{font-size:12.5px;font-weight:600;color:var(--body)}
+@media (max-width:809px){
+.xco-2col{grid-template-columns:1fr;gap:12px;margin-top:16px}
+.xco-hours .row{padding:13px 16px}
+.xco-body{padding:40px 20px 48px;gap:40px}
+.xhac-svc:has(.xsp-bookcol) .xco-body{padding-top:40px}
+.xco-split{grid-template-columns:1fr;gap:40px}
+.xco-hero-grid-400{grid-template-columns:1fr}
+.xco-heroslot{height:200px;margin-top:24px}
+.xco-coupons{grid-template-columns:1fr;gap:12px}
+.xco-story{grid-template-columns:1fr;gap:20px}
+.xco-story .xco-slot{height:200px}
+.xco-vals{grid-template-columns:1fr;gap:12px}
+.xco-stats{padding:26px 22px;border-radius:20px}
+.xco-stats .grid{grid-template-columns:1fr 1fr;gap:18px}
+.xco-team{grid-template-columns:1fr 1fr;gap:12px}
+.xco-team .slot{height:180px}
+}
+
+/* ------------------------------- /terms ------------------------------- */
+.xsp-terms .xsp-h1,.xsp-terms .xsp-h2,.xsp-terms .xtm-h3{font-weight:800}
+.xsp-terms .xsp-eyebrow{color:#3F852B}
+.xsp-terms .xsp-crumbs .cur{color:var(--green-hover)}
+.xsp-terms .xsp-crumbs a{display:inline-block;padding:15px 6px;margin:-15px -6px}
+.xsp-terms :focus-visible{outline:3px solid #61BC47;outline-offset:2px}
+
+.xtm-updated{margin-top:16px;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.75)}
+.xtm-lead{max-width:820px}
+.xtm-lead p{font-size:15px;line-height:1.7;font-weight:500;color:var(--body);margin-top:14px}
+
+/* summary card */
+.xtm-summary{background:var(--tint);border-radius:16px;padding:26px 30px;margin-top:24px}
+.xtm-summary .k{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--purple)}
+.xtm-summary h2{margin-top:8px;font-style:italic;font-weight:800;font-size:26px;
+letter-spacing:-.4px;color:var(--purple)}
+.xtm-summary p{margin-top:12px;font-size:14.5px;line-height:1.65;font-weight:500;color:var(--ink);
+max-width:760px}
+.xtm-summary ul{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-direction:column;gap:9px}
+.xtm-summary li{display:flex;gap:10px;font-size:14px;line-height:1.6;font-weight:500;color:var(--ink)}
+.xtm-summary li .b{width:7px;height:7px;border-radius:50%;background:var(--green);flex:none;margin-top:8px}
+.xtm-note{margin-top:16px;background:#fff;border-radius:12px;padding:14px 16px;font-size:13px;
+line-height:1.65;font-weight:500;color:var(--body)}
+.xtm-note b{color:var(--ink);font-weight:800}
+
+/* contact strip */
+.xtm-contact{border:1px solid var(--rule);border-radius:16px;padding:20px 24px;margin-top:20px;
+display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:#fff}
+.xtm-contact .t{font-weight:800;font-size:16.5px}
+.xtm-contact .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
+
+/* legal sections */
+.xtm-sec{margin-top:34px;scroll-margin-top:var(--xsp-anchor-offset)}
+.xtm-h3{font-size:19px;letter-spacing:-.2px;color:var(--ink);
+padding-bottom:10px;border-bottom:2px solid var(--green)}
+.xtm-sec p{margin-top:12px;font-size:14.5px;line-height:1.75;font-weight:500;color:var(--body);
+max-width:78ch}
+.xtm-sec p b{color:var(--ink);font-weight:800}
+.xtm-sec ul{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-direction:column;gap:8px}
+.xtm-sec li{display:flex;gap:10px;font-size:14.5px;line-height:1.7;font-weight:500;color:var(--body);
+max-width:78ch}
+.xtm-sec li .b{width:6px;height:6px;border-radius:50%;background:var(--green);flex:none;margin-top:9px}
+.xtm-sec li b{color:var(--ink);font-weight:800}
+
+/* the two program blocks get a tinted rail so they read as additions */
+.xtm-prog{border-left:4px solid var(--green);padding-left:22px}
+
+/* jump nav */
+.xtm-toc{border:1px solid var(--rule);border-radius:16px;padding:20px 24px;margin-top:24px;background:#fff}
+/* --muted (#94A3B8) is only 2.56:1 on white and fails AA as a label; --body clears it. */
+.xtm-toc .k{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--body)}
+.xtm-toc ol{margin:12px 0 0;padding-left:20px;columns:2;column-gap:32px}
+.xtm-toc li{font-size:13.5px;line-height:1.9;font-weight:600}
+.xtm-toc a{color:var(--purple);text-decoration:none}
+.xtm-toc a:hover{color:var(--green-dark);text-decoration:underline}
+
+@media (max-width:809px){
+.xtm-summary{padding:22px 20px}
+.xtm-summary h2{font-size:21px}
+.xtm-sec{margin-top:28px}
+.xtm-h3{font-size:17.5px}
+.xtm-prog{padding-left:16px;border-left-width:4px}
+.xtm-toc ol{columns:1}
+.xtm-contact{padding:18px 20px}
+}
+
+/* ------------------------------ /privacy ------------------------------ */
+/* The draft notice. Loud on purpose: this page carries legal weight it has not
+   earned yet, and a reader has to know that before the first clause. Remove this
+   block and DRAFT_NOTICE together, not separately. */
+.xpv-draft{border:2px solid #B4342A;background:#FDF3F2;border-radius:16px;
+padding:20px 24px;margin-top:24px}
+.xpv-draft .k{font-size:11.5px;font-weight:800;letter-spacing:2px;color:#B4342A}
+.xpv-draft p{margin-top:10px;font-size:14px;line-height:1.65;font-weight:600;color:var(--ink);
+max-width:78ch}
+.xpv-draft p + p{margin-top:8px}
+@media (max-width:809px){.xpv-draft{padding:18px 20px}}
+</style>
+<div class="xsp-hero sub">
+  <div class="xsp-hero-mark"><img src="https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website@033972506c03489eec477421491916a718bcfabc/assets/brand/x-mark.png" alt="" aria-hidden="true" width="420" height="446"></div>
+  <div class="xsp-hero-grid nocard">
+    <div>
+      <div class="xsp-crumbs"><a href="/">Home</a><span class="sep">›</span><span class="cur">Privacy</span></div>
+      <div class="xsp-eyebrow" style="color:#8FD481;margin-top:14px">PRIVACY &amp; YOUR DATA</div>
+      <h1 class="xsp-h1">Privacy Policy</h1>
+      <p class="xsp-intro">This policy explains what Extreme Heating &amp; Cooling LLC and Extreme Home Services LLC collect when you use this
+      site or schedule a visit, who it goes to, how long it is kept, and how to ask for a copy
+      of it or have it deleted.</p>
+      <div class="xtm-updated">Draft &middot; effective date pending. Placeholder: August 2, 2026</div>
+    </div>
+  </div>
+</div>
+<div class="xco-body">
+  <div class="xtm-lead">
+    <div class="xpv-draft">
+  <div class="k">DRAFT &mdash; PENDING ATTORNEY REVIEW</div>
+  <p>This Privacy Policy is a <b>draft prepared for review by Extreme Heating &amp; Cooling LLC and Extreme Home Services LLC's attorney</b>.
+  It has not been reviewed or approved by counsel, and it should not be relied on as a final
+  statement of Extreme Heating &amp; Cooling LLC and Extreme Home Services LLC's privacy practices.</p>
+  <p>It describes what this website does today, written by reading the site's own code. Several
+  points are still being confirmed, including retention periods, the site's analytics and
+  advertising tags, and how text-message preferences are handled. The effective date shown below
+  is a placeholder until the reviewed version is published.</p>
+  <p>Questions in the meantime go to <a href="mailto:info@extremeheating.com">info@extremeheating.com</a> or
+  <a href="tel:18445847399">(844) 584-7399</a>.</p>
+</div>
+    <div class="xtm-summary">
+  <div class="k">THE SHORT VERSION</div>
+  <h2>What Extreme collects, and what happens to it.</h2>
+  <p>Extreme asks for what it needs to get a technician to the right address with the right
+  parts, and nothing more. This page names every outside company involved rather than
+  describing them generically, so you can see exactly where what you type ends up.</p>
+  <ul><li><span class="b"></span><span>Booking a visit means giving Extreme your name, mobile number, service address and the details of the job. Email is optional.</span></li><li><span class="b"></span><span>Photos you upload are stored by Cloudinary, and anyone who has the link can open them, so upload only what you are comfortable sharing.</span></li><li><span class="b"></span><span>What you type into the address field is sent to Google, or to Komoot when Google is unavailable, to suggest matching addresses.</span></li><li><span class="b"></span><span>Extreme does not sell your personal information, and never shares mobile numbers for anyone else's marketing.</span></li><li><span class="b"></span><span>You can ask for a copy of your information, ask for it to be corrected, or ask for it to be deleted.</span></li><li><span class="b"></span><span>Financing applications are submitted on the lender's website and are covered by the lender's privacy policy, not this one.</span></li></ul>
+  <div class="xtm-note"><b>Note:</b> This site does not take payment card numbers, bank
+  account numbers or Social Security numbers, and it does not process payments. Please don't
+  enter any of them in the notes field.</div>
+</div>
+    <div class="xtm-contact">
+  <div>
+    <div class="t">Questions About Your Information</div>
+    <div class="d">Ask for a copy, a correction, or a deletion, by phone or by email.</div>
+  </div>
+  <a class="xsp-cta" href="tel:18445847399">Call (844) 584-7399</a>
+</div>
+    <div class="xtm-toc">
+  <div class="k">ON THIS PAGE</div>
+  <ol><li><a href="#who-this-covers">Who This Policy Covers</a></li><li><a href="#information-we-collect">Information Extreme Collects</a></li><li><a href="#how-we-use">How Extreme Uses It</a></li><li><a href="#service-providers">Service Providers Extreme Uses</a></li><li><a href="#other-sharing">When Else Extreme Shares Information</a></li><li><a href="#text-messages">Calls and Text Messages</a></li><li><a href="#cookies">Cookies, Local Storage and Analytics</a></li><li><a href="#retention">How Long Extreme Keeps It</a></li><li><a href="#your-choices">Your Choices, and How to Request Deletion</a></li><li><a href="#security">How Extreme Protects It</a></li><li><a href="#children">Children's Privacy</a></li><li><a href="#other-sites">Other Companies' Websites</a></li><li><a href="#changes">Changes to This Policy</a></li><li><a href="#contact-us">How to Contact Extreme</a></li></ol>
+</div>
+  </div>
+  <div><div class="xtm-sec" id="who-this-covers">
+  <h3 class="xtm-h3">Who This Policy Covers</h3>
+  <p><b>The companies.</b> This Privacy Policy applies to extremeheating.com and to the information collected by Extreme Heating &amp; Cooling LLC and Extreme Home Services LLC. In this policy, "Extreme" means both companies. Heating and cooling work is performed by Extreme Heating &amp; Cooling LLC; plumbing work is performed by Extreme Home Services LLC. The two share this website, one phone number and one scheduling system, so one policy covers both.</p><p><b>Where Extreme operates.</b> Extreme is an Ohio business serving homeowners in the Dayton and Cincinnati metro areas. Information collected through this site is stored and processed in the United States.</p><p><b>What this policy does not cover.</b> This policy covers this website and the requests you send through it. It does not cover other companies' websites you reach from here, including lender sites, review sites and social media, each of which has its own privacy policy.</p>
+</div><div class="xtm-sec" id="information-we-collect">
+  <h3 class="xtm-h3">Information Extreme Collects</h3>
+  <p><b>What you enter to schedule a visit.</b> Your first and last name, your mobile number, your email address if you choose to give one, and the service address where the work will happen. You also tell Extreme how you would like to be reached, whether you have used Extreme before, what service you need and the follow-up answers you select, the day and arrival window you would like, and your acknowledgement of the booking terms shown to you before you confirm.</p><p><b>Optional details about your home.</b> The details step is skippable. If you complete it, Extreme collects the property type, whether you own or rent, the approximate age of the system or the home, and where the outdoor unit sits. These help route the right technician with the right parts.</p><p><b>Anything you type in the notes field.</b> The notes box is free text and goes to Extreme exactly as you write it. Please don't put payment card numbers, bank details, Social Security numbers or health information there. Extreme does not need any of it to schedule a visit.</p><p><b>Photos you upload.</b> You may attach up to five photos of the problem. Photos are uploaded to Cloudinary, Extreme's image host, and Extreme receives a web link to each one. <b>Those links are public: anyone who has the link can open the photo.</b> Photos taken inside a home often show more than the equipment, so upload only what you are comfortable sharing. Photos are optional, and every request can be booked without them.</p><p><b>What you type in the address field.</b> To suggest matching Ohio addresses, what you type into the service-address field is sent to an address lookup service as you type it, once you have entered at least three characters. See <a href="#service-providers">Service Providers</a> for who that is.</p><p><b>What your browser sends automatically.</b> Like most websites, this site and the services that deliver parts of it receive your IP address, your browser and device type, the pages you view, the page that referred you, and the date and time.</p><p><b>Advertising click identifiers.</b> If you arrive from a Google Ads click, the site saves that click's identifier in your browser's local storage so a booking can later be matched back to the ad that produced it. It stays in your browser until you clear your site data and is not linked to you by name unless you go on to book.</p><p><b>What this site does not collect.</b> This site does not take payment card numbers, bank account numbers or Social Security numbers, and it does not process payments or credit applications. Financing applications are submitted on the lender's own website, under the lender's privacy policy. See the Financing section of the <a href="/terms#financing">Terms</a>.</p>
+</div><div class="xtm-sec" id="how-we-use">
+  <h3 class="xtm-h3">How Extreme Uses It</h3>
+  <p><b>To do the work you asked for.</b> Scheduling the visit, routing the right technician, confirming the appointment, reaching you if something changes, performing the work, and following up afterward.</p><p><b>To prepare before arriving.</b> The issue you select, the details you give about your home, and any photos you upload are used to understand the problem before a technician arrives so the right parts are on the truck.</p><p><b>To keep your service record.</b> Estimates, invoices, work performed and warranty coverage, so Extreme can honor the Limited Warranty in the <a href="/terms#limited-warranty">Terms</a> and answer questions about past work.</p><p><b>To administer the programs you join.</b> <a href="/maintenance">X-Plan membership</a> and <a href="/referral">Extreme Rewards</a> referral credit, under the terms published on the <a href="/terms">Terms</a> page.</p><p><b>To understand the website.</b> Which pages and which ads lead to booked visits, so the site and the advertising spend can be improved. This is measured in aggregate, not to build a profile of you.</p><p><b>To meet legal obligations and protect people.</b> Tax and business records, responding to lawful requests, investigating fraud or misuse, and enforcing the <a href="/terms">Terms</a>.</p>
+</div><div class="xtm-sec" id="service-providers">
+  <h3 class="xtm-h3">Service Providers Extreme Uses</h3>
+  <p>Extreme uses a small number of outside companies to run the website and the scheduling form. Each one receives only what it needs to do its job. They are named here rather than described generically, because you deserve to know exactly where what you type actually goes.</p><p><b>Formspree — form delivery.</b> When you submit the schedule form, everything you entered, together with the links to any photos, is sent through Formspree, which delivers it to Extreme's inbox and keeps a copy in Extreme's Formspree account.</p><p><b>Cloudinary — photo hosting.</b> Photos you attach are uploaded directly from your browser to Cloudinary and stored there. Extreme receives a link to each one. As noted above, those links are publicly accessible to anyone who has them.</p><p><b>Google — address suggestions, fonts and video.</b> Google's Maps and Places service returns the address suggestions in the service-address field, and receives what you type there. Google Fonts serves the site's typeface on every page, and embedded YouTube videos load from Google when a page containing one is opened. Google receives your IP address in each case, and may set cookies if you play a video. Google's use of that information is governed by Google's own privacy policy.</p><p><b>Komoot — backup address suggestions.</b> If Google's address service is unavailable, the site falls back to Photon, a free geocoder operated by Komoot and built on OpenStreetMap data. The same address text is sent there instead.</p><p><b>jsDelivr — images.</b> Photographs and graphics on the site are delivered by the jsDelivr content network, which receives your IP address.</p>
+</div><div class="xtm-sec" id="other-sharing">
+  <h3 class="xtm-h3">When Else Extreme Shares Information</h3>
+  <p><b>With the people doing the work.</b> Your name, address, phone number and the job details go to the technician assigned to your visit and to the office staff scheduling and invoicing it.</p><p><b>When you direct it.</b> If you ask Extreme to coordinate with a landlord, a property manager, a home warranty company or an insurer, Extreme shares what is needed for that purpose.</p><p><b>When the law requires it.</b> To comply with a subpoena, court order or other lawful request, to establish or defend a legal claim, or where Extreme believes in good faith that disclosure is necessary to prevent harm.</p><p><b>If the business changes hands.</b> If Extreme is sold, merged or reorganized, customer records may transfer as part of that transaction. This policy would continue to apply to the information transferred until it is replaced by a policy you are notified of.</p><p><b>What Extreme does not do.</b> Extreme does not sell your personal information, and does not give your name, phone number, email address or service address to other companies for their own marketing.</p>
+</div><div class="xtm-sec" id="text-messages">
+  <h3 class="xtm-h3">Calls and Text Messages</h3>
+  <p><b>Why Extreme needs your mobile number.</b> The number you give when you book is how Extreme confirms the appointment, tells you when the technician is on the way, and reaches you if the schedule changes. Choosing Call, Text or Email tells Extreme which you prefer.</p><p><b>Message rates.</b> Message and data rates may apply. Message frequency varies with your appointment.</p><p><b>Stopping messages.</b> Call the office at <a href="tel:18445847399">(844) 584-7399</a> at any time and ask to be taken off text messages, and Extreme will stop sending them. Stopping texts does not cancel a scheduled visit: call the office to change or cancel an appointment.</p><p><b>Mobile numbers are never shared for marketing.</b> Extreme does not sell or share mobile numbers, or consent to receive text messages, with any third party for that party's marketing purposes.</p>
+</div><div class="xtm-sec" id="cookies">
+  <h3 class="xtm-h3">Cookies, Local Storage and Analytics</h3>
+  <p><b>What this site stores on your device.</b> The site saves advertising click identifiers in your browser's local storage, as described above, so that a booking can be attributed to the ad that produced it. Clearing your browsing data removes them.</p><p><b>Cookies set by others.</b> Services embedded in the site can set their own cookies, most commonly Google, when an embedded YouTube video is played, and any analytics or advertising tags installed on the page. Extreme does not control those cookies.</p><p><b>Your browser controls.</b> Every major browser lets you block or delete cookies and clear local storage, and most offer a private browsing mode. Blocking them will not stop you from booking a visit.</p><p><b>Do Not Track.</b> Browsers vary in how they send Do Not Track signals and there is no common standard for honoring them, so this site does not respond to them.</p>
+</div><div class="xtm-sec" id="retention">
+  <h3 class="xtm-h3">How Long Extreme Keeps It</h3>
+  <p><b>Service records.</b> Records of work performed — estimates, invoices, equipment installed and warranty coverage — are kept for as long as needed to honor warranties, meet tax and accounting obligations, and answer questions about past work at your address.</p><p><b>Deletion on request.</b> Whatever the periods above, you can ask Extreme to delete your information sooner, and Extreme will do so except where a record must be kept for warranty, tax, accounting or legal reasons. See <a href="#your-choices">Your Choices</a>.</p>
+</div><div class="xtm-sec" id="your-choices">
+  <h3 class="xtm-h3">Your Choices, and How to Request Deletion</h3>
+  <p><b>What you can ask for.</b> You can ask Extreme for a copy of the information it holds about you, ask for it to be corrected, ask for photos you uploaded to be deleted, ask to stop receiving marketing email or text messages, or ask for your information to be deleted altogether. Extreme honors these requests from any customer, wherever you live.</p><p><b>How to ask.</b> Email <a href="mailto:info@extremeheating.com">info@extremeheating.com</a> with "Privacy Request" in the subject line, call <a href="tel:18445847399">(844) 584-7399</a>, or write to Extreme Heating &amp; Cooling LLC, 712 N Fairfield Rd, Beavercreek, OH 45434. Please include the name, phone number and service address used when you booked, so the right record can be found. That is the only reason Extreme asks for it, and it is not used for anything else.</p><p><b>What Extreme may have to keep.</b> Some records cannot be deleted on request: invoices and tax records, records supporting an active warranty, and anything Extreme is required to retain by law or needs to establish or defend a legal claim. Extreme will tell you if that applies to your request.</p><p><b>No penalty for asking.</b> Extreme will not refuse service, charge a different amount, or provide a different level of service because you exercised any of these choices.</p><p><b>A note on the third parties above.</b> Deleting your information from Extreme's records does not by itself delete copies held by Google, Meta or other advertising services from their own tracking. Those are controlled through your browser and through your account settings with those companies.</p>
+</div><div class="xtm-sec" id="security">
+  <h3 class="xtm-h3">How Extreme Protects It</h3>
+  <p><b>Reasonable safeguards.</b> The website is served over an encrypted connection, and form submissions and photo uploads travel over encrypted connections to the providers named above. Access to customer records inside Extreme is limited to staff who need it to do their jobs.</p><p><b>No guarantee.</b> No website or method of transmitting information over the internet is completely secure. Extreme cannot guarantee absolute security, and any information you send is sent at your own risk.</p><p><b>What not to send.</b> Please do not email or type payment card numbers, bank account numbers or Social Security numbers into the notes field or any other part of this site. Extreme will never ask for them there.</p>
+</div><div class="xtm-sec" id="children">
+  <h3 class="xtm-h3">Children's Privacy</h3>
+  <p><b>This site is for adults.</b> Extreme's services are sold to homeowners and property owners. This website is not directed to children, and Extreme does not knowingly collect personal information from anyone under 13.</p><p><b>If it happens anyway.</b> If you believe a child under 13 has given Extreme personal information, contact <a href="mailto:info@extremeheating.com">info@extremeheating.com</a> or call <a href="tel:18445847399">(844) 584-7399</a> and it will be deleted.</p><p><b>Photos of a home.</b> A photo a customer uploads of a leak or a furnace may incidentally show other members of the household. Extreme uses those photos only to diagnose and prepare for the work requested, and deletes them on request like any other information.</p>
+</div><div class="xtm-sec" id="other-sites">
+  <h3 class="xtm-h3">Other Companies' Websites</h3>
+  <p>This site links to websites Extreme does not control, including <a href="/financing-options">financing lenders</a>, review platforms, manufacturer sites and social media pages. Following one of those links takes you out of this policy's scope. Anything you enter there is collected by that company, under its own privacy policy, not this one. That is especially true of financing: a credit application is submitted on the lender's site and Extreme never sees what you enter there.</p>
+</div><div class="xtm-sec" id="changes">
+  <h3 class="xtm-h3">Changes to This Policy</h3>
+  <p>Extreme may update this policy as the website, the services it uses, or the law change. The current version is always posted here with its effective date at the top of the page. Continuing to use the site after an update means the updated policy applies.</p>
+</div><div class="xtm-sec" id="contact-us">
+  <h3 class="xtm-h3">How to Contact Extreme</h3>
+  <p><b>By phone.</b> <a href="tel:18445847399">(844) 584-7399</a>. The office is staffed Monday – Friday, 8:00 AM – 5:00 PM, and the emergency line is answered 24/7.</p><p><b>By email.</b> <a href="mailto:info@extremeheating.com">info@extremeheating.com</a>, with "Privacy Request" in the subject line.</p><p><b>By mail.</b> Extreme Heating &amp; Cooling LLC / Extreme Home Services LLC, 712 N Fairfield Rd, Beavercreek, OH 45434.</p><p><b>Office addresses.</b> All four Extreme Heating, Air, Plumbing offices, and directions to each, are on the <a href="/contact">contact page</a>.</p>
+</div></div>
+</div>
+
+  <script>
+    (() => {
+      const root = document.currentScript.closest(".xhac-svc");
+      if (!root) return;
+      root.querySelectorAll("a[href]").forEach((a) => {
+        const h = a.getAttribute("href") || "";
+        if (h && !h.startsWith("#") && !h.startsWith("tel:")) {
+          // Default off-site links to _top so they escape the embed iframe instead
+          // of loading a full site inside a content-sized frame. A link that already
+          // declares a target (the lender application uses _blank) keeps its own.
+          if (!a.getAttribute("target")) a.setAttribute("target", "_top");
+          if (!a.getAttribute("rel")) a.setAttribute("rel", "noopener");
+        }
+      });
+      // In Framer the embed iframe is sized to its content, so this document has
+      // nothing to scroll — scrollIntoView has to cross the frame boundary to move
+      // the parent page. A plain hash jump never does that (the anchor just sets the
+      // hash and nothing moves), and "smooth" does not cross the boundary either —
+      // it silently no-ops. Instant is the behavior that works in an embed, in a
+      // scrollable iframe, and standalone.
+      //
+      // The site header is position:sticky;top:0, so landing flush with the top hides
+      // the section heading underneath it. Measure the real header at jump time and
+      // clear it; --xsp-anchor-offset in the CSS is the fallback for when the parent
+      // can't be read.
+      // How far below the viewport top an anchored section should land: enough to
+      // clear the site's sticky header. Measured off the real header when the parent
+      // is readable; --xsp-anchor-offset in the CSS is the fallback.
+      const landingOffset = () => {
+        try {
+          const pw = window.parent;
+          if (pw && pw !== window && pw.document) {
+            let node = pw.document.elementFromPoint(Math.round(pw.innerWidth / 2), 4);
+            let headerH = 0, hops = 0;
+            while (node && hops++ < 12) {
+              const cs = pw.getComputedStyle(node);
+              if (cs.position === "sticky" || cs.position === "fixed") {
+                const r = node.getBoundingClientRect();
+                if (r.top <= 1 && r.height > 0 && r.height < pw.innerHeight * 0.5) {
+                  headerH = Math.max(headerH, r.height);
+                }
+              }
+              node = node.parentElement;
+            }
+            if (headerH) return Math.round(headerH + 20);
+          }
+        } catch (err) {}
+        const v = parseInt(getComputedStyle(document.documentElement)
+          .getPropertyValue("--xsp-anchor-offset"), 10);
+        return isNaN(v) ? 112 : v;
+      };
+
+      const jumpTo = (target) => {
+        if (!target) return;
+        const offset = landingOffset();
+        // scrollIntoView cannot be trusted to cross the embed boundary correctly.
+        // Measured in a content-sized iframe under a sticky header: the browser
+        // scrolls the parent to (target's Y *within this document*) - offset and
+        // never adds the iframe's own offsetTop in the parent, so every anchor
+        // lands short by exactly however far down the page the embed sits. Compute
+        // the absolute position and drive the parent's scroll directly instead.
+        try {
+          const pw = window.parent;
+          const fe = window.frameElement;
+          if (pw && pw !== window && fe) {
+            const frameTop = fe.getBoundingClientRect().top + (pw.scrollY || pw.pageYOffset || 0);
+            const targetTop = target.getBoundingClientRect().top + (window.scrollY || 0);
+            pw.scrollTo(0, Math.max(0, Math.round(frameTop + targetTop - offset)));
+            if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+            try { target.focus({ preventScroll: true }); } catch (err) {}
+            return;
+          }
+        } catch (err) {}
+        // Standalone, or a parent we're not allowed to read: scrollIntoView is
+        // correct here because there is only one scrolling box involved.
+        target.style.scrollMarginTop = offset + "px";
+        target.scrollIntoView({ behavior: "auto", block: "start" });
+        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+        try { target.focus({ preventScroll: true }); } catch (err) {}
+      };
+
+      root.querySelectorAll('a[href^="#"]').forEach((a) => {
+        const id = (a.getAttribute("href") || "").slice(1);
+        if (!id) return;
+        a.addEventListener("click", (e) => {
+          const target = document.getElementById(id);
+          if (!target) return;
+          e.preventDefault();
+          jumpTo(target);
+        });
+      });
+
+      // Deep links from another page (/terms#financing) land the hash on the PARENT
+      // url — this document never sees it, and the parent has no element with that
+      // id because the section lives in here. Read the parent's hash on load and, if
+      // it names something inside this embed, run the same jump an in-page anchor
+      // would. Without this a cross-page anchor silently lands at the top of the page.
+      try {
+        let hash = window.location.hash;
+        if (!hash && window.parent !== window) hash = window.parent.location.hash || "";
+        const id = decodeURIComponent(hash.replace(/^#/, ""));
+        const target = id ? document.getElementById(id) : null;
+        if (target) {
+          // Framer is still laying out (and loading images) when this runs, so the
+          // first jump can land short. Repeat once the layout settles, then stop —
+          // and abandon it the moment the reader scrolls, so we never yank the page
+          // out from under someone who has started reading.
+          let userMoved = false;
+          const release = () => { userMoved = true; };
+          ["wheel", "touchstart", "keydown"].forEach((evt) => {
+            window.addEventListener(evt, release, { once: true, passive: true });
+            try { window.parent.addEventListener(evt, release, { once: true, passive: true }); } catch (err) {}
+          });
+          const settle = (delay) => setTimeout(() => { if (!userMoved) jumpTo(target); }, delay);
+          requestAnimationFrame(() => requestAnimationFrame(() => jumpTo(target)));
+          settle(250);
+          settle(800);
+        }
+      } catch (err) {}
+
+      root.querySelectorAll(".js-schedule").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          try {
+            if (window.parent && window.parent !== window) {
+              window.parent.dispatchEvent(new window.parent.CustomEvent("open-contact-dialog"));
+              return;
+            }
+          } catch (err) {}
+          window.dispatchEvent(new CustomEvent("open-contact-dialog"));
+        });
+      });
+      // Video facade: swap the poster button for the real player on click, with
+      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
+      // youtube.com until this runs.
+      root.querySelectorAll(".js-video").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-video");
+          const title = btn.getAttribute("data-title") || "";
+          if (!id) return;
+          const f = document.createElement("iframe");
+          f.setAttribute("src",
+            "https://www.youtube.com/embed/" + id + "?rel=0&modestbranding=1&autoplay=1");
+          f.setAttribute("title", title);
+          f.setAttribute("allow",
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+          f.setAttribute("allowfullscreen", "");
+          btn.replaceWith(f);
+        });
+      });
+      root.querySelectorAll(".xsp-faq").forEach((faq) => {
+        faq.querySelectorAll(".xsp-qa > button").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const row = btn.parentElement;
+            const wasOpen = row.classList.contains("open");
+            faq.querySelectorAll(".xsp-qa").forEach((r) => {
+              r.classList.remove("open");
+              r.querySelector("button").setAttribute("aria-expanded", "false");
+              r.querySelector(".tog").textContent = "+";
+            });
+            if (!wasOpen) {
+              row.classList.add("open");
+              btn.setAttribute("aria-expanded", "true");
+              row.querySelector(".tog").textContent = "−";
+            }
+          });
+        });
+      });
+      const inIframe = window.parent && window.parent !== window;
+      const sendSize = () => {
+        try {
+          if (inIframe) window.parent.postMessage(
+            { type: "embed-resize", height: Math.ceil(root.getBoundingClientRect().height), source: "xhac-svc" }, "*");
+        } catch (e) {}
+      };
+      if ("ResizeObserver" in window) new ResizeObserver(sendSize).observe(root);
+      window.addEventListener("load", sendSize);
+      sendSize();
+    })();
+  </script>
+</section>

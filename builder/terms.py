@@ -263,7 +263,7 @@ def sec(anchor, title, paras, prog=False):
 
 def hero():
     return f'''<div class="xsp-hero sub">
-  <div class="xsp-hero-mark"><img src="{T.X_MARK}" alt=""></div>
+  {T.hero_mark()}
   <div class="xsp-hero-grid nocard">
     <div>
       {T.crumbs([("Home", "/"), ("Terms", "")])}
