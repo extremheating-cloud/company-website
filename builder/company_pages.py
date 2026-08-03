@@ -748,9 +748,21 @@ def financing_page(d, root_class):
         T.mobile_photo(d["rail"]),
         check_cards("WHY FINANCE", "Can I finance a new furnace or AC?", d["why"],
                     sid="why",
-                    lead=["Yes. New furnaces, air conditioners, heat pumps, water heaters and "
-                          "the bigger repairs all qualify. The money comes from the lender "
-                          "rather than from us, so approval, rate and term are theirs to set."]),
+                    # The three advertised payments belong here, on the page someone
+                    # opens specifically to find out whether they can afford this. The
+                    # page previously said "the lender sets the rate" four times and
+                    # never named a single figure, which is what the blind reader
+                    # review's price shopper walked away from. No rate and no term
+                    # appear, here or anywhere — see site_data.FINANCE_* on why.
+                    lead=[f"Yes. An air conditioner starts "
+                          f"{D.finance_line(D.FINANCE_AC, 'an AC')}, a heat pump "
+                          f"{D.finance_line(D.FINANCE_HEAT_PUMP, 'a heat pump')}, and a "
+                          f"furnace and air conditioner replaced together "
+                          f"{D.finance_line(D.FINANCE_FULL_SYSTEM, 'a full system')}.",
+                          "Those are the best-case advertised payments rather than a quote "
+                          "for your house. Water heaters and the bigger repairs qualify too. "
+                          "The money comes from the lender rather than from us, so approval, "
+                          "rate and term are theirs to set."]),
         checks_only("WHAT QUALIFIES", "What kind of work qualifies for financing?",
                     d["qualifies"], sid="qualifies",
                     lead=["Anything big enough that writing one check would sting: "

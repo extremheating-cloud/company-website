@@ -128,6 +128,34 @@ SERVICE_CALL_FAQ = {
           f"${SERVICE_CALL_MEMBER_EMERGENCY}."),
 }
 
+# ---------------------------------------------------------------- financing
+# Client-approved advertised payments, 2026-08-02, given verbatim as "as low as $49 a
+# month for an A/C, $69 for Heat Pump, or $89 a month for a full system".
+#
+# NO APR, NO TERM, AND NO FINANCE CHARGE APPEARS ANYWHERE ON THIS SITE, and none may
+# be added here. Publishing a rate is lender advertising and is not ours to do. The
+# three lenders set the rate and the term per application; the site says exactly that
+# and stops. If someone later asks for "just the APR from the brochure", the answer is
+# no — it goes on the lender's own application page, not on ours.
+#
+# "As low as" is doing real work in these strings, not softening them: these are the
+# best-case advertised payments, not what any given customer is offered. Keep the
+# qualifier and keep "with approved credit" attached wherever a figure appears.
+#
+# [NEEDS: whoever holds the GoodLeap / Synchrony / Wright-Patt agreements should
+#  confirm the approved advertising wording for these three. A stated monthly payment
+#  is itself a triggering term under Reg Z 1026.24, and the lenders normally supply
+#  compliant language for it. Flagged to the client 2026-08-02.]
+FINANCE_AC = 49
+FINANCE_HEAT_PUMP = 69
+FINANCE_FULL_SYSTEM = 89
+FINANCE_QUALIFIER = "with approved credit"
+
+def finance_line(amount, thing):
+    """One written form for an advertised payment, so the qualifier can never be
+    dropped from one page and kept on another."""
+    return f"as low as ${amount} a month {FINANCE_QUALIFIER}"
+
 # The machine-readable half of HOURS_STAFFED, for openingHoursSpecification. Office
 # nodes only: 24/7 emergency response is a service attribute, not premises hours, and
 # claiming the building is open at 3am is the kind of thing a GBP audit catches.

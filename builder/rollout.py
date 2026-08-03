@@ -1,5 +1,6 @@
 """Step-5 rollout — remaining pages as data objects (README copy formulas)."""
 import template as T
+import site_data as D
 
 TEL, PH = T.PHONE_TEL, T.PHONE_DISPLAY
 
@@ -2092,9 +2093,11 @@ geo(HVAC_SUBS, "ac-installation.html",
             "pad stretches it out. If you are open to it, price a "
             "<a href=\"/heat-pump-installation\">heat pump</a> alongside at the same time."),
         sec("Can I finance it?",
-            "Yes, on qualifying systems, through GoodLeap, Synchrony and Wright-Patt Credit "
-            "Union. You see payment scenarios next to the written quote, before anything is "
-            "ordered. Terms and current offers are on the "
+            "Yes, and a new air conditioner starts " + D.finance_line(D.FINANCE_AC, "an AC") +
+            ". That is the best-case advertised payment rather than a quote for your house. "
+            "Three lenders look at the application, GoodLeap, Synchrony and Wright-Patt Credit "
+            "Union, and they set the rate and the term rather than us. You see the payment "
+            "options next to the written quote, before anything is ordered. More on the "
             "<a href=\"/financing-options\">financing page</a>."),
         sec("How do I book an estimate?",
             call("Call {tel} or book online. Replacement estimates are free, and one visit "
@@ -2118,9 +2121,6 @@ geo(HVAC_SUBS, "ac-installation.html",
          "Usually not. R-22 is no longer produced, so a system that leaks it becomes "
          "progressively more expensive to keep charged. Once an R-22 system needs a "
          "refrigerant repair, replacement is almost always the better money."),
-        ("Is financing available on a new air conditioner?",
-         "Yes, on qualifying systems, through GoodLeap, Synchrony, and Wright-Patt Credit "
-         "Union. Payment options are shown with the written quote rather than after it."),
     ))
 
 geo(HVAC_SUBS, "furnace-installation.html",
@@ -2177,10 +2177,12 @@ geo(HVAC_SUBS, "furnace-installation.html",
             "<a href=\"/heat-pump-installation\">heat pump</a> is worth pricing beside another "
             "gas furnace while you are deciding."),
         sec("Can I finance it?",
-            "Yes, on qualifying systems, through GoodLeap, Synchrony and Wright-Patt Credit "
-            "Union. You see payment scenarios with the written quote, before anything is "
-            "ordered. Current terms are on the "
-            "<a href=\"/financing-options\">financing page</a>."),
+            "Yes. A furnace and air conditioner replaced together start " +
+            D.finance_line(D.FINANCE_FULL_SYSTEM, "a full system") + ", which is the best-case "
+            "advertised payment for the pair rather than a quote for your house. GoodLeap, "
+            "Synchrony and Wright-Patt Credit Union set the rate and the term rather than us, "
+            "and you see the payment options with the written quote, before anything is "
+            "ordered. More on the <a href=\"/financing-options\">financing page</a>."),
         sec("How do I book an estimate?",
             call("Call {tel} or book online. Estimates are free, and the visit covers the "
                  "heat-loss calculation, a written quote and financing options, with no "
@@ -2205,9 +2207,6 @@ geo(HVAC_SUBS, "furnace-installation.html",
          "Not always. The furnace and the indoor coil share a cabinet, so replacing both at "
          "once avoids paying twice for the same labor. If the air conditioner is newer and the "
          "coil matches the new blower, the furnace can be replaced on its own."),
-        ("Is financing available on a new furnace?",
-         "Yes, on qualifying systems, through GoodLeap, Synchrony, and Wright-Patt Credit "
-         "Union. Payment options are shown with the written quote."),
     ))
 
 geo(HVAC_SUBS, "heat-pump-repair.html",
@@ -2373,8 +2372,10 @@ geo(HVAC_SUBS, "heat-pump-installation.html",
             "also replaces the furnace, or a job that adds an electrical circuit, runs into a "
             "second day."),
         sec("Can I finance it?",
-            "Yes, on qualifying systems, through GoodLeap, Synchrony and Wright-Patt Credit "
-            "Union, with payment scenarios shown next to the written quote. Terms are on the "
+            "Yes, and a heat pump starts " + D.finance_line(D.FINANCE_HEAT_PUMP, "a heat pump") +
+            ", the best-case advertised payment rather than a quote for your house. GoodLeap, "
+            "Synchrony and Wright-Patt Credit Union set the rate and the term rather than us, "
+            "with payment options shown next to the written quote. More on the "
             "<a href=\"/financing-options\">financing page</a>. One thing to know: the Section "
             "25C and 25D federal tax credits both expired on 31 December 2025, so no number we "
             "give you leans on one. Afterwards, <a href=\"/maintenance\">X-Plan</a> covers the "
@@ -2398,9 +2399,6 @@ geo(HVAC_SUBS, "heat-pump-installation.html",
          "Usually within a day or two of the estimate. Most residential replacements are "
          "completed in a single day, and a dual-fuel conversion that also replaces the furnace "
          "runs into a second."),
-        ("Is financing available on a heat pump?",
-         "Yes, on qualifying systems, through GoodLeap, Synchrony, and Wright-Patt Credit "
-         "Union. Payment options are shown with the written quote."),
     ))
 
 geo(HVAC_SUBS, "indoor-air-quality-solutions.html",
