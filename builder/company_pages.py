@@ -292,9 +292,12 @@ def location_card(o):
     citation-matching services flag."""
     photo = OFFICE_PHOTOS.get(o["slug"])
     img = slot_img("xco-loc-img", photo, "") if photo else ""
-    # metro is None for Waynesville on purpose — the client has not said whether it is
-    # presented as Dayton, Cincinnati or Warren County, so nothing is guessed.
-    metro = f'<div class="meta">Our {o["metro"]}-area shop</div>' if o.get("metro") else ""
+    # Most offices describe themselves by metro. Waynesville is not a metro shop — the
+    # client's answer to "how is it presented" was that it is the plumbing hub — so it
+    # carries an explicit descriptor instead. An office with neither still renders
+    # nothing rather than a guessed region.
+    label = o.get("descriptor") or (f'Our {o["metro"]}-area shop' if o.get("metro") else "")
+    metro = f'<div class="meta">{label}</div>' if label else ""
     page = (f'<a href="{o["page"]}" class="alt">{o["locality"]} service area →</a>'
             if o.get("page") else "")
     return f'''<div class="xco-loc">

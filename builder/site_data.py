@@ -138,12 +138,13 @@ OFFICES = [
      "geo": None, "page": "/locations/troy"},
     {"slug": "waynesville", "label": "Waynesville office", "primary": False,
      "street": "141 North St", "locality": "Waynesville", "region": "OH",
-     # metro is None, not guessed. Waynesville sits between the two metros — Warren
-     # County is Cincinnati's MSA, but the shop serves the Dayton side of it — and the
-     # client has not said which way it is presented. A metro label is a marketing
-     # decision, so it waits for the client rather than being inferred from a map.
-     # [NEEDS: how Waynesville is presented — Dayton, Cincinnati, or Warren County.]
+     # metro stays None, and that is now a decision rather than a gap. Waynesville sits
+     # between the two metros (Warren County is Cincinnati's MSA, but the shop serves
+     # the Dayton side of it), and the client's answer was that it is not presented as
+     # either: it is the plumbing hub. The office has a trade identity, not a regional
+     # one, so it carries `descriptor` and every metro-derived label skips it.
      "zip": "45068", "county": "Warren", "metro": None,
+     "descriptor": "Our plumbing hub",
      "geo": None, "page": "/locations/waynesville"},
 ]
 
