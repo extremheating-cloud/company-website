@@ -2051,9 +2051,13 @@ geo(HVAC_SUBS, "ac-installation.html",
             "insulation, window area and orientation, ceiling height, and duct condition. "
             "Matching the tonnage on the old label repeats whatever mistake was made last "
             "time. An oversized system short cycles, and a Dayton summer still feels clammy at "
-            "the set temperature. Whether to fix or "
-            "<a href=\"/ac-repair#repair-or-replace\">repair or replace an air conditioner</a> "
-            "is decided before any of this.",
+            # This sentence had been folded around the link phrase until it read
+            # "whether to fix or repair or replace" and stopped meaning anything. The
+            # link stays; the sentence is built around it now instead of through it.
+            "the set temperature. Sizing only matters once you have settled the earlier "
+            "question, which is whether to "
+            "<a href=\"/ac-repair#repair-or-replace\">repair or replace the air conditioner</a> "
+            "at all.",
             h3s=[("Why oversizing costs comfort",
                   "An oversized air conditioner cools the thermostat fast and shuts off before "
                   "it has pulled moisture out of the air. The house hits the set temperature "
