@@ -501,22 +501,25 @@ LOGO_ID = canonical("/") + "#logo"
 # LocalBusiness with no address, which is the actual misrepresentation.
 OFFICE_ON_SERVICE_AREA_PAGES = True
 
-# 4.9 across 1,595 reviews (Birdeye, client-confirmed 2026-08-02). These two numbers
-# move together. A ratingValue with no count is what Google discards outright, which is
-# what the previous block did on all 311 pages — the 4.9 counted for nothing.
+# NO aggregateRating. Removed deliberately on 2026-08-03, client-approved — do not
+# reinstate it without the same conversation.
 #
-# site_data carries the count twice: REVIEW_COUNT ("1,595") is the display string and
-# REVIEW_COUNT_N (1595) the integer. Only the integer is valid here — "1,595" with a
-# thousands separator is a parse error and takes the whole aggregateRating down with
-# it — so the digits are extracted rather than trusted, whichever constant is present.
-REVIEW_COUNT = re.sub(r"\D", "", str(getattr(D, "REVIEW_COUNT_N", None)
-                                     or getattr(D, "REVIEW_COUNT", "1595")))
-RATING_VALUE = str(D.GOOGLE_RATING).strip()
-if not (REVIEW_COUNT.isdigit() and int(REVIEW_COUNT) > 0
-        and re.fullmatch(r"[1-5](\.\d)?", RATING_VALUE)):
-    _warn(f"aggregateRating dropped: ratingValue={RATING_VALUE!r} "
-          f"reviewCount={REVIEW_COUNT!r} will not parse. Both must be bare numbers.")
-    RATING_VALUE = None
+# Google's review-snippet guidelines exclude reviews an organisation collects about
+# itself and marks up on its own pages. The 4.9 is real, and it stayed on the site as
+# visible copy; what came off is the machine-readable claim, which is the part that
+# earns a manual action. The rating was on 318 pages, it was self-serving by
+# definition, and a manual action would take the whole rich-result eligibility of the
+# domain with it, not just the stars.
+#
+# It is also a competitive read rather than a purely defensive one. Of the five
+# competitors audited on 2026-08-02, Butler, Logan and McAfee emit none, Five Star
+# emits almost no schema at all, and Eco Plumbers carry it on 529 pages with four
+# contradictory values that do not match their own on-page widgets. Carrying it made
+# us the most exposed party in a six-way field for a signal three of them had already
+# decided to live without.
+#
+# The visible "4.9 from 1,595 reviews" copy is untouched and stays. A customer reading
+# a number on a page is not the same thing as asserting it to a crawler.
 
 # Founded 2004; the Mason office opened 2018 (client-confirmed 2026-08-02).
 FOUNDING_YEAR = str(getattr(D, "FOUNDED", "2004"))
@@ -922,7 +925,7 @@ def xplan_offers():
             offer("monthly", D.XPLAN["monthly"].lstrip("$"), "MON")]
 
 
-def n_org(rating=True, offers_=True):
+def n_org(offers_=True):
     node = {
         "@type": "Organization", "@id": ORG_ID, "name": _t(D.COMPANY),
         # The "&" variant never appears in rendered copy; it exists in the wild and is
@@ -959,12 +962,6 @@ def n_org(rating=True, offers_=True):
             _emergency_cp()],
         "knowsAbout": list(KNOWS_ABOUT),
     }
-    if rating and RATING_VALUE:
-        # ratingValue with no count is what Google discards outright. Both numbers are
-        # bare, and worstRating is stated rather than left to the 1-5 default.
-        node["aggregateRating"] = {
-            "@type": "AggregateRating", "ratingValue": RATING_VALUE,
-            "reviewCount": REVIEW_COUNT, "bestRating": "5", "worstRating": "1"}
     if offers_:
         node["makesOffer"] = xplan_offers()
     return node
@@ -1164,7 +1161,7 @@ def jsonld(page, body_html):
     xplan = url == "/maintenance" or url.endswith("/maintenance")
 
     # A rating on a legal page describes nothing, and makesOffer on /terms is noise.
-    g = [n_logo(), n_org(rating=(pt != "legal"), offers_=xplan), n_website()]
+    g = [n_logo(), n_org(offers_=xplan), n_website()]
 
     # --- which office(s) --------------------------------------------------
     if pt in ("home", "locations-hub") or url == "/contact":
