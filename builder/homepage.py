@@ -244,8 +244,21 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
   .hp-hero-grid{grid-template-columns:1fr;gap:0;padding:38px 0 0}
   .hp-hero-in{padding:0 0 8px;max-width:none}
   /* The shared clamp bottoms out at 34px on a phone, which left the headline
-     smaller than the buttons under it. */
-  .hp-h1{font-size:min(11vw,46px)}
+     smaller than the buttons under it.
+     Two numbers, and each is doing a different job. 12vw sets it on a phone. The
+     72px cap sets it on everything between a large phone and the 810px breakpoint,
+     where 12vw would otherwise run away — that band is where the old 46px cap left
+     the headline looking undersized against a wide column.
+     The cap is what changed, not the vw, and the reason is measured. The rotating
+     word is nowrap, so the longest of them sets the floor for the whole hero. At
+     390px, 11vw already renders "Water Heaters" at 357px into 357px of available
+     width — exactly flush. Any vw above 11 clips on a phone.
+     The old 46px cap bound from about 420px upward, which is the whole band between
+     a large phone and the 810px breakpoint, and it was leaving a 46px headline in a
+     700px-wide column. 72px is what that band wanted; the vw keeps phones safe.
+     To go bigger on a phone the rotating list has to lose "Water Heaters" — that one
+     word is the entire constraint. Re-measure if it changes. */
+  .hp-h1{font-size:min(11vw,72px)}
   .hp-van-col{display:none}
   .hp-van-stage{display:block}
   .hp-sec{padding:44px 0}

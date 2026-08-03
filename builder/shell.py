@@ -946,6 +946,11 @@ def n_org(rating=True, offers_=True):
         "sameAs": list(getattr(D, "SAME_AS", None)
                        or [u for _n, u in D.SOCIAL]),
         "areaServed": COUNTIES_SERVED,
+        # The one price the site publishes is the service call, so this is grounded in
+        # something the pages actually state rather than a guess at an average ticket.
+        # Google reads priceRange as a rough band, not a quote. Eco Plumbers carry it
+        # and we carried nothing.
+        "priceRange": "$$",
         "identifier": _licences(),
         "contactPoint": [
             {"@type": "ContactPoint", "contactType": "customer service",
