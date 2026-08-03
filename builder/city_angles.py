@@ -197,7 +197,7 @@ ANGLES = {
          "body": (
              "Yes, and there are more of them around here than people assume, "
              "particularly in the older housing stock closer to the river and in the "
-             "pre-war neighbourhoods. A boiler is a different service call from a "
+             "pre-war neighborhoods. A boiler is a different service call from a "
              "furnace: circulator pumps, expansion tanks, air in the loop and zone "
              "valves rather than blowers and burners. If your house has radiators and "
              "someone has quoted you for duct cleaning, that is a fair reason to get a "
@@ -279,7 +279,7 @@ ANGLES = {
          "h2": "Upstairs is hot and downstairs is cold. Do I need a second system?",
          "body": (
              "Not always, and it is worth exhausting the cheaper answers first. Heat "
-             "rises, so a two-storey house on one system fights that all summer. Before "
+             "rises, so a two-story house on one system fights that all summer. Before "
              "anyone quotes a second system, the questions are whether the upstairs "
              "returns can move enough air, whether the supply runs to the far bedrooms "
              "are the right size, and whether the ductwork can be zoned. Zoning an "
@@ -333,3 +333,187 @@ ANGLES = {
              "than before it.")},
     ],
 }
+
+# Plumbing gets a pool of 16 rather than 10, because it started worst: 0.551 Jaccard,
+# 29.1% novel, and a 61.2% boilerplate floor on a 373-word median page. Four picked
+# from 16 means two cities share ~1.0 section on average against heating's ~1.6, and
+# the added words drop the boilerplate share at the same time. Both levers, one change.
+ANGLES["plumbing"] = [
+    {"id": "px-hardwater",
+     "h2": "Is the water here hard enough to matter?",
+     "body": (
+         "Yes, across most of this area, and it is the reason so many water heaters "
+         "fail early around here. Hard water leaves scale on the heating element and in "
+         "the tank bottom, which insulates the burner from the water and makes the "
+         "heater work longer for the same hot shower. You see it first on fixtures and "
+         "glassware, then in a heater that takes longer to recover. Softening is worth "
+         "pricing on its own merits, but the honest first step is finding out your "
+         "actual grains per gallon rather than assuming, because it varies by supplier "
+         "and some of them changed in the last few years.")},
+
+    {"id": "px-wh-age",
+     "h2": "How long should a water heater last?",
+     "body": (
+         "Eight to twelve years on a tank, longer on a tankless. What matters more than "
+         "the number is how it fails: a heater at the end of its life usually goes by "
+         "leaking from the tank itself, and a tank leak is not repairable. That is why "
+         "it is worth knowing the age before it happens. The date is in the serial "
+         "number on the label, and a photo of that label is a two-minute job that turns "
+         "a future emergency into a planned replacement. If yours is in a finished "
+         "basement or over living space, plan earlier rather than later.")},
+
+    {"id": "px-tankless",
+     "h2": "Is a tankless water heater worth it?",
+     "body": (
+         "It depends on the house more than on the technology. Tankless gives you hot "
+         "water that does not run out and takes up far less room, and it lasts longer "
+         "than a tank. Against that, it usually needs a larger gas line and different "
+         "venting, so the install is a bigger job than a straight tank swap. It also "
+         "wants descaling on a schedule in water as hard as ours, and skipping that is "
+         "how people end up disappointed. If you are replacing in an emergency with no "
+         "hot water in the house, a tank is usually the faster answer.")},
+
+    {"id": "px-drain-repeat",
+     "h2": "The same drain clogs every few months. Why?",
+     "body": (
+         "Because clearing a clog and fixing the cause are two different jobs. A cable "
+         "punches a hole through the blockage and the water runs again, which is the "
+         "right answer at 11pm. But if the same line backs up on a schedule, something "
+         "structural is doing it: grease built up on the pipe wall, a belly where the "
+         "line has settled, roots at a joint, or a fitting that was never right. A "
+         "camera down the line answers it in one visit and stops you paying for the "
+         "same drain three times a year.")},
+
+    {"id": "px-roots",
+     "h2": "Can tree roots really get into a sewer line?",
+     "body": (
+         "Routinely, and older neighborhoods see it most because the mature trees and "
+         "the clay tile sewer lines arrived together. Roots do not break into a sound "
+         "pipe. They find a joint that is already weeping and grow toward the water, "
+         "then thicken until the line catches paper and grease. The signs are more than "
+         "one fixture backing up at once, gurgling from a toilet when the washer "
+         "drains, and a lawn that is greener in a line across the yard. Cutting them "
+         "clears it; whether the line then needs lining or replacing is a camera "
+         "question, not a phone one.")},
+
+    {"id": "px-sump",
+     "h2": "How do I know the sump pump will work when I need it?",
+     "body": (
+         "Test it rather than trusting it, because a sump pump sits idle for months and "
+         "then has one job. Pour a bucket of water into the pit slowly and watch: the "
+         "float should rise, the pump should start, the water should drop, and it should "
+         "shut off cleanly without chattering. Do that in early spring and again before "
+         "winter. The two failures worth planning for are a stuck float, which is "
+         "cheap, and a power cut during the storm that needed the pump, which is what "
+         "battery backup exists for.")},
+
+    {"id": "px-frozen",
+     "h2": "Which pipes actually freeze, and what stops it?",
+     "body": (
+         "The ones on exterior walls, in crawl spaces, in unheated garages, and the "
+         "hose bibs outside. A pipe rarely bursts where it froze; the ice blocks the "
+         "line and the pressure builds between that block and a closed tap, so the "
+         "split happens somewhere else entirely. On a hard freeze, open the cabinet "
+         "doors under sinks on outside walls and let a pencil-width trickle run from "
+         "the furthest tap. Disconnect hoses in autumn, because a hose left on a bib is "
+         "the single most common frozen-pipe call we take.")},
+
+    {"id": "px-pressure",
+     "h2": "The water pressure has dropped. Where do I start?",
+     "body": (
+         "First work out whether it is the whole house or one fixture, because that "
+         "splits the problem in half. One fixture is almost always an aerator or a "
+         "cartridge, and both are small jobs. Whole house points at the pressure "
+         "regulator, a partly closed main valve, or galvanized supply pipe that has "
+         "corroded closed from the inside over decades. That last one is common in "
+         "pre-war houses and it is progressive, so pressure that has been slowly "
+         "falling for years is telling you something different from pressure that "
+         "dropped last week.")},
+
+    {"id": "px-galvanized",
+     "h2": "My house has old galvanized pipe. Does it all have to go?",
+     "body": (
+         "Not necessarily all at once. Galvanized supply line rusts from the inside, so "
+         "the bore narrows over decades until flow suffers and the water runs brown "
+         "after the house has sat empty. Whether it wants full repiping or a partial "
+         "depends on how much has already been replaced by previous owners, which is "
+         "usually more than people expect. A look at the exposed runs in the basement "
+         "tells you a lot for free. Where repiping is the right answer, it is worth "
+         "doing before a remodel rather than after.")},
+
+    {"id": "px-leak-hidden",
+     "h2": "The water bill jumped and nothing looks wet. What now?",
+     "body": (
+         "Read the meter with everything in the house off. If it is still moving, you "
+         "have a leak on the pressurised side and it is running somewhere you cannot "
+         "see, usually under a slab, behind a wall, or in the line between the meter "
+         "and the house. Before assuming the worst, rule out the toilets: a flapper "
+         "that is not seating will run silently and waste more water than most people "
+         "believe. Put a few drops of food coloring in the tank and wait twenty "
+         "minutes without flushing. Color in the bowl means you found it.")},
+
+    {"id": "px-shutoff",
+     "h2": "Do you know where your main shutoff is?",
+     "body": (
+         "It is the single most useful thing to know before you need it, and most "
+         "people find out during the emergency. In this area it is usually where the "
+         "line enters the basement or crawl space, often near the front of the house "
+         "and close to the meter. Find it now, turn it to confirm it actually moves, "
+         "and turn it back. A valve that has not been operated in twenty years can "
+         "seize, and discovering that with water coming through a ceiling is a much "
+         "worse time to learn it than a Saturday afternoon.")},
+
+    {"id": "px-disposal",
+     "h2": "What should never go down the garbage disposal?",
+     "body": (
+         "Grease first, and it is not close. It goes down warm and liquid and cools "
+         "into a solid on the pipe wall a few feet along, then catches everything after "
+         "it. After that: coffee grounds, eggshells, pasta and rice, and anything "
+         "fibrous like celery or onion skins. A disposal that hums without turning is "
+         "usually jammed rather than dead, and there is a hex socket on the underside "
+         "for exactly that. If it is silent, check the reset button before assuming it "
+         "needs replacing.")},
+
+    {"id": "px-toilet-running",
+     "h2": "A toilet that runs on and off by itself. Serious?",
+     "body": (
+         "It is called phantom flushing and it means water is escaping from the tank "
+         "into the bowl, so the fill valve keeps topping it up. The culprit is nearly "
+         "always the flapper, which hardens with age and stops sealing, and it is one "
+         "of the cheapest parts in the house. It is worth fixing quickly rather than "
+         "living with, because it runs continuously and quietly, and a running toilet "
+         "shows up on the water bill at a scale that surprises people who assumed it "
+         "was just a noise.")},
+
+    {"id": "px-backflow",
+     "h2": "Why does a plumber care about my outside taps and irrigation?",
+     "body": (
+         "Because of backflow. If pressure in the main drops, water can be pulled "
+         "backwards out of a hose left in a pool, a bucket, or an irrigation line, and "
+         "into the drinking water. That is why hose bibs have vacuum breakers and why "
+         "irrigation systems need a backflow device, and why some of them are required "
+         "to be tested. It is not a sales conversation, it is a code one, and it is "
+         "worth knowing what you have before a home sale puts it on someone's list.")},
+
+    {"id": "px-gas-smell",
+     "h2": "What should I do if I smell gas?",
+     "body": (
+         "Leave, then call from outside. Do not switch anything on or off, including "
+         "lights, and do not use the phone indoors, because a switch contact is an "
+         "ignition source. Once you are out, call the gas utility's emergency line "
+         "first: they will come and make it safe at no charge, and they will do it "
+         "faster than anyone else. Call us after that for the repair. This is the one "
+         "plumbing situation where the right first call is not to a plumber, and "
+         "anyone who tells you otherwise is wrong.")},
+
+    {"id": "px-remodel",
+     "h2": "We are remodeling. When should the plumber be involved?",
+     "body": (
+         "Earlier than most people ask. Once a wall is open you can see what is behind "
+         "it, and decisions about moving a stack, upsizing a supply run or replacing "
+         "the last of the old pipe cost a fraction of what they cost after the drywall "
+         "is back. It is also when permits and inspections are cheapest to handle, "
+         "because they can be scheduled around the rest of the work rather than "
+         "holding it up. A short conversation at the drawing stage tends to save "
+         "arguments at the tiling stage.")},
+]

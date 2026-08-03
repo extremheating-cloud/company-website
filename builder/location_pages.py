@@ -552,7 +552,7 @@ LOCAL = {
    ("Basement smells musty after a system change",
     "Condensate draining into a block or stone foundation", "Plumbing visit", "Book this week"),
    ("Drain backs up repeatedly on one fixture",
-    "Galvanised or cast-iron branch line common in pre-war stock",
+    "Galvanized or cast-iron branch line common in pre-war stock",
     "Drain clearing with a camera check", "Book this week"),
    ("No heat, and the house is dropping", "Ignition, control board or gas valve failure",
     "Emergency heating call", "Call 24/7 now"),
@@ -617,7 +617,7 @@ LOCAL = {
           "we pull it. We answer the line at any hour.",
    slots=[("What is in Dayton's water supply?", [
     "The City of Dayton Department of Water draws from the Great Miami Buried Valley Aquifer and "
-    "softens with lime at the plant. Pre-war houses in the city still have galvanised and "
+    "softens with lime at the plant. Pre-war houses in the city still have galvanized and "
     "cast-iron branch lines, which is why a drain that keeps clogging in the same spot usually "
     "needs a camera rather than another snake."]),
     # [NEEDS: delivered hardness from the City of Dayton Water Quality Report.]
@@ -626,7 +626,7 @@ LOCAL = {
     "county but excludes Dayton, Centerville, Oakwood and Kettering. So your permit comes from "
     "the city, and we pull it as part of the job."])],
    faq=("The same drain clogs every few months. Why?",
-        "In Dayton's pre-war housing that pattern usually means a galvanised or cast-iron branch "
+        "In Dayton's pre-war housing that pattern usually means a galvanized or cast-iron branch "
         "line that has corroded down to a narrow channel. A camera inspection shows it in a few "
         "minutes and turns a recurring call into one repair.")),
   "maintenance": dict(
