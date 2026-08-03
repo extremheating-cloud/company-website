@@ -1,7 +1,12 @@
 # Migration: off Framer to a self-hosted static site
 
-Status as of 2026-08-01. Analysis is done and the decision is made — build it. No port
-code written yet; this file records what was measured so none of it is re-derived.
+**Status 2026-08-03: the port is done and the site is built. What remains is the DNS
+cutover, which is the runbook at the bottom of this file.**
+
+The analysis below is from 2026-08-01 and is kept as written, because it records what
+was measured and why the decision was made. Do not re-derive it. Where a line has
+since been actioned it is marked DONE rather than edited, so the original reasoning
+stays legible.
 
 Full write-up, including the launch plan and hosting recommendation:
 <https://claude.ai/code/artifact/3a572da6-bc8f-457c-ae26-25f8e6c8629c>
@@ -57,9 +62,9 @@ needed any.
 | `framer/homepage/*.tsx` x4 | **Port to the builder.** Hero, AboutFaqReviews, XPlan, Brands. Already CSS-in-template-literal, the same shape `template.py` uses. |
 | `builder/build.py` | Emit `index.html` so paths map to URLs on a static host. |
 | `pages/**` (310) | **No change.** Regenerated with the new shell. |
-| `assets/**` (107) | **No change**, but serve same-origin instead of jsDelivr — that retires the commit pins and the 12-hour branch-cache workaround. |
+| `assets/**` (107) | **DONE 2026-08-03.** Same-origin, jsDelivr retired. The commit pin became `ASSET_VERSION` as a `?v=` query, doing the same cache-busting job; `_headers` now caches assets immutable for a year because of it. |
 
-Roughly 26 engineering hours.
+Roughly 26 engineering hours. **All of the above is complete.**
 
 ## Output layout
 
@@ -67,19 +72,121 @@ Emit the standalone site to a **new `site/` directory** and leave `pages/` as th
 Framer embeds. Both stay buildable from the same source during the transition, so
 nothing breaks before cutover.
 
-## Where to pick up
+## Where to pick up — all done
 
-1. `builder/shell.py` — the document wrapper. Start here; everything else hangs off it.
-2. Merge the three footers (easiest, already HTML — see the diffs above).
-3. Port the header. The nav data is at the top of `DesktopHeader.tsx` as
-   `HVAC_CORE`, `HVAC_ADDITIONAL`, `PLUMB_CORE`, `PLUMB_ADDITIONAL` — lift verbatim.
-4. Homepage sections from the four `framer/homepage/*.tsx` files.
-5. Wire `build.py` to emit `site/`, then serve locally and compare against Framer.
+1. ~~`builder/shell.py` — the document wrapper.~~ Done.
+2. ~~Merge the three footers.~~ Done.
+3. ~~Port the header.~~ Done, including the mega-menu.
+4. ~~Homepage sections from the four `framer/homepage/*.tsx` files.~~ Done.
+5. ~~Wire `build.py` to emit `site/`.~~ Done. 320 pages, 136 indexable, 169 redirects.
 
 ## Decisions already made
 
 - Host on **Cloudflare Pages**. Not a VPS — a static site gains nothing from a server
-  someone has to patch.
-- Serve assets same-origin, drop jsDelivr.
+  someone has to patch. **Still the plan.**
+- Serve assets same-origin, drop jsDelivr. **Done 2026-08-03.**
 - The client declined the interim fix (setting `<h1>` and schema inside Framer) in
   favour of doing the migration directly.
+
+---
+
+# Cutover runbook
+
+Written 2026-08-03. Everything under "Already handled" is done and verified. Everything
+after it needs a dashboard or a DNS record and cannot be done from this repo.
+
+## Already handled in the build
+
+Listed so you can tell what is covered, not because anything is needed.
+
+- **Builds clean from a fresh clone.** Verified by cloning to an empty directory and
+  building: output byte-identical to a local build, 320 pages. No untracked file is
+  required.
+- **No dependencies.** Every builder module is stdlib-only — verified by walking the
+  AST of every import. Nothing to install, no lockfile.
+- **`_redirects`** — all 169 rules, in the format Pages reads.
+- **`_headers`** — hashed CSS/JS and versioned images immutable for a year, HTML
+  must-revalidate, plus `X-Content-Type-Options` and `Referrer-Policy`.
+- **Preview deployments cannot be indexed.** Pages builds every branch to a public
+  `*.pages.dev` URL, and a second crawlable copy of a 320-page site competes with the
+  real one. The build reads `CF_PAGES_BRANCH`: on any branch but `main` it writes a
+  blanket-disallow `robots.txt` and adds `X-Robots-Tag: noindex, nofollow`. Inert
+  locally and on any other host. Tested both ways.
+- **All images same-origin**, so the repo can be private.
+- **`site/` is gitignored** and built by Pages rather than committed.
+
+## Build settings
+
+Workers & Pages → Create → Pages → Connect to Git → this repo.
+
+    Build command:      python3 builder/build_site.py
+    Build output:       site
+    Root directory:     (blank)
+    Production branch:  main
+
+One environment variable:
+
+    PYTHON_VERSION = 3.11
+
+The code is stdlib-only and version-insensitive; the pin exists so a Pages image
+upgrade cannot change the output underneath you.
+
+## Before DNS
+
+1. **Deploy and open the `*.pages.dev` URL.** Walk the homepage, one service page, one
+   city page, `/contact`, `/privacy`.
+2. **Confirm the interactive parts.** Schedule button opens the wizard. Podium and
+   Broccoli widgets appear. GTM, GA4, Ads and the Meta Pixel fire.
+3. **Check the generated files** on the preview: `/robots.txt`, `/sitemap.xml`,
+   `/llms.txt`, and follow one of the 169 redirects.
+4. **Confirm the preview is not indexable** — its `/robots.txt` should say
+   `Disallow: /`. If it does not, Pages is treating that branch as production.
+
+## DNS cutover
+
+5. **Lower TTL first** to 5 minutes, a few hours ahead, so rollback is fast.
+6. **Add both custom domains** to the Pages project: `www.extremeheating.com` and
+   `extremeheating.com`.
+7. **Create the apex → www Redirect Rule.** The one thing that cannot live in this
+   repo: Pages `_redirects` cannot match on hostname.
+
+       If    hostname equals    extremeheating.com
+       Then  Static redirect to https://www.extremeheating.com/${uri.path}
+             Status 301, Preserve query string ON
+
+   Every canonical, the sitemap and llms.txt point at `www`. Without this the apex
+   serves a duplicate of the whole site.
+
+## After
+
+8. **Spot-check ten redirects live**, especially
+   `/locations/<city>/furnace-heating → /heating`. Those rank today and 404 on Framer.
+9. **Search Console.** Submit `https://www.extremeheating.com/sitemap.xml`. Skip
+   "Change of address" — the domain is not changing.
+10. **Re-run Lighthouse on the live domain.** Every performance figure we hold is from
+    localhost, and the site now carries GTM, GA4, Google Ads, Meta Pixel, Broccoli,
+    Podium and ServiceTitan. A competitor scores 22/100 on performance because of the
+    last two vendors specifically. If it has dropped hard, the levers are deferring
+    Podium until interaction and moving tags into GTM rather than loading them
+    alongside it.
+11. **Confirm caching.** `curl -I` a CSS file and an image; both should return
+    `cache-control: public, max-age=31536000, immutable`.
+12. **Check Google Ads number swapping** on the live domain. It matches the exact
+    string `(844) 584-7399`; the four local office numbers are deliberately not
+    swapped.
+
+## Rollback
+
+Keep Framer live but unpointed for a week. If something is wrong, revert the DNS
+records; at a 5-minute TTL you are back within ten minutes. Do not cancel Framer until
+a full week of Search Console shows no coverage errors.
+
+## Known and accepted at launch
+
+- **34 third-party stock images** on the plumbing pages are still hotlinked to iStock
+  and Adobe. Licences are being acquired. They are the only images not on our origin
+  and they break if those URLs change.
+- **No `geo` coordinates** in the LocalBusiness schema, pending the GBP map pins.
+- **20 dead legacy URLs want `410 Gone`**, which `_redirects` cannot express. They are
+  deliberately absent rather than redirected to the homepage, because a blanket
+  redirect reads as a soft 404.

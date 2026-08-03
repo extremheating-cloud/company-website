@@ -424,10 +424,38 @@ Sitemap: {sitemap}
 # {llms}
 """
 
+# Cloudflare Pages builds every branch and every pull request to its own public
+# *.pages.dev URL. Those are crawlable, and a full copy of a 320-page site sitting on
+# a second indexable hostname competes with the real one — the exact duplicate-content
+# problem the noindex tail and the canonical host exist to avoid.
+#
+# CF_PAGES_BRANCH is set by Pages during a build and by nothing else, so this is inert
+# locally and on any other host. Production keeps the real robots.txt; every other
+# branch gets a blanket disallow. Belt and braces with the X-Robots-Tag header below,
+# because robots.txt disallow stops the crawl but not necessarily the indexing of a
+# URL someone links to.
+PREVIEW_ROBOTS = """# Preview deployment ({branch}). Not the production site.
+# The live site is https://www.extremeheating.com/
+User-agent: *
+Disallow: /
+"""
+
+def is_preview():
+    branch = os.environ.get("CF_PAGES_BRANCH")
+    return bool(branch) and branch != PRODUCTION_BRANCH
+
+PRODUCTION_BRANCH = os.environ.get("PRODUCTION_BRANCH", "main")
+
 def write_robots():
+    if is_preview():
+        text = PREVIEW_ROBOTS.format(branch=os.environ.get("CF_PAGES_BRANCH"))
+        print(f"  ! preview branch {os.environ['CF_PAGES_BRANCH']!r}: "
+              "robots.txt disallows everything")
+    else:
+        text = ROBOTS.format(sitemap=D.canonical("/sitemap.xml"),
+                             llms=D.canonical("/llms.txt"))
     with open(os.path.join(SITE, "robots.txt"), "w", encoding="utf-8") as f:
-        f.write(ROBOTS.format(sitemap=D.canonical("/sitemap.xml"),
-                              llms=D.canonical("/llms.txt")))
+        f.write(text)
 
 # ---------------------------------------------------------------- llms.txt
 # Ship it, but with the expectations set correctly: no major consumer AI engine has
@@ -644,10 +672,15 @@ def write_headers():
 
 # HTML must revalidate: prices and phone numbers live in it.
 /*
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate{preview_noindex}
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 """
+    # A preview build also refuses indexing at the header level. robots.txt stops the
+    # crawl; X-Robots-Tag is what stops a URL being indexed because something linked
+    # to it.
+    text = text.format(preview_noindex=(
+        "\n  X-Robots-Tag: noindex, nofollow" if is_preview() else ""))
     with open(os.path.join(SITE, "_headers"), "w", encoding="utf-8") as f:
         f.write(text)
 
