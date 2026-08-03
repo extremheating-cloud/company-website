@@ -15,7 +15,7 @@ X_MARK = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/x-mark.png"
 LOGO_WHITE = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/logo-white.png"
 VAN = T.cdn_asset("brand/van.png")
 
-ROTATING = ["Furnaces", "Air Conditioners", "Water Heaters", "Heat Pumps"]
+ROTATING = ["Furnaces", "AC Units", "Water Heaters", "Heat Pumps"]
 
 HVAC_SERVICES = [
     ("Cooling", "AC repair, replacement, and tune-ups.", "/air-conditioning"),
@@ -119,7 +119,7 @@ font-weight:800;letter-spacing:1.4px}
 line-height:1.06;letter-spacing:-1.2px}
 .hp-roll{display:inline-block;height:1.06em;overflow:hidden;vertical-align:bottom}
 .hp-roll ul{list-style:none;margin:0;padding:0;animation:hp-roll 9s infinite}
-.hp-roll li{height:1.06em;color:#6BB85C}
+.hp-roll li{height:1.06em;color:#6BB85C;white-space:nowrap}
 @keyframes hp-roll{0%,18%{transform:translateY(0)}25%,43%{transform:translateY(-1.06em)}
 50%,68%{transform:translateY(-2.12em)}75%,93%{transform:translateY(-3.18em)}100%{transform:translateY(-4.24em)}}
 @media (prefers-reduced-motion:reduce){.hp-roll ul{animation:none}}
@@ -382,9 +382,10 @@ def homepage():
     <div>
       <div class="hp-eyebrow">ABOUT EXTREME</div>
       <h2 class="hp-h2">Locally owned since {D.FOUNDED}.</h2>
-      <p class="hp-sub">Same owners the whole time, four offices between Dayton and Cincinnati, and
-      both trades on one phone number. Every tech is drug-tested and background-checked before they
-      set foot in your house. {D.LICENSES_LINE}.</p>
+      <p class="hp-sub">Four shops between Dayton and Cincinnati, and one number whether it's
+      the furnace or the water heater. Whoever knocks on your door has been drug-tested and
+      background-checked. And if the honest answer is that you don't need what you called us
+      about, that's the answer you'll get.</p>
       <div class="hp-stats">{stats}</div>
       <div class="hp-cta-row"><a class="hp-btn hp-btn-green" href="/about">About Us&nbsp;&nbsp;→</a></div>
     </div>
