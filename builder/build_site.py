@@ -635,9 +635,12 @@ def write_headers():
 /assets/js/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Images are not content-hashed, so a day, not a year.
+# Images now carry ?v=ASSET_VERSION, which changes the URL whenever the assets are
+# republished, so they can be cached as hard as the hashed files. This is the whole
+# reason the version query survived the move off jsDelivr: without it a replaced photo
+# would sit behind this TTL in every returning visitor's browser.
 /assets/*
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=31536000, immutable
 
 # HTML must revalidate: prices and phone numbers live in it.
 /*

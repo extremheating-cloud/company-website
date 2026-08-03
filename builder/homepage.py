@@ -11,8 +11,8 @@ import site_data as D
 import template as T
 from reviews import REVIEWS
 
-X_MARK = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/x-mark.png"
-LOGO_WHITE = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/logo-white.png"
+X_MARK = T.cdn_asset("brand/x-mark.png")
+LOGO_WHITE = T.cdn_asset("brand/logo-white.png")
 VAN = T.cdn_asset("brand/van.png")
 
 # Reverted to the original wording at the client's request. The rewrite traded a

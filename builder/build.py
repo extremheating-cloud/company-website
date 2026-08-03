@@ -27,8 +27,12 @@ def old_img(page_rel, idx=0):
     imgs = _INV.get(page_rel, [])
     url = imgs[idx] if idx < len(imgs) else None
     if url and T.ASSET_REPO in url:
-        url = re.sub(re.escape(T.ASSET_REPO) + r"@[0-9a-f]+/",
-                     f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/", url)
+        # Ours: rewrite the captured jsDelivr URL to the same-origin path. The
+        # inventory stores whole URLs with whatever commit was pinned when it was
+        # captured, so without this these pages would keep pointing at jsDelivr after
+        # everything else moved. Third-party stock URLs are left exactly as they are.
+        rel = re.sub(r"^.*?/assets/", "", url.split("?")[0])
+        url = T.cdn_asset(rel)
     return url
 
 # ================================================================

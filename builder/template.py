@@ -18,27 +18,40 @@ PHONE_DISPLAY = "(844) 584-7399"
 # Everything the live site loads comes from this repo's own assets/ folder, served
 # by jsDelivr. One repo, one place to look.
 #
-# ASSET_COMMIT pins what the site serves. jsDelivr caches the branch-to-commit
-# resolution for 12 hours on top of a 7-day browser cache, so replacing a file in
-# place does NOT change what visitors get — measured 2026-07-31: `@main` kept
-# returning old bytes, a `?v=` query string did nothing, and the purge API reported
-# "finished" while still serving the old commit. Pinning to a commit is the only
-# thing that takes effect immediately.
+# SAME-ORIGIN AS OF 2026-08-03. Every image used to be served from jsDelivr against a
+# pinned commit of this repo. That worked, and it carried two costs worth removing
+# before launch: the repo had to stay public forever, and a jsDelivr outage took out
+# all 2,244 images on the site at once. It also cost a whole extra origin — a DNS
+# lookup and a TLS handshake that had to complete before the first image could start
+# downloading. Cloudflare Pages is a global CDN too, so serving from our own origin is
+# not slower; it is one fewer connection and it reuses the HTTP/2 connection the HTML
+# already came down.
 #
-# AFTER PUSHING new or changed assets: set ASSET_COMMIT to the new commit SHA and
-# rebuild. `git rev-parse HEAD` gives it. "main" works but can serve stale files
-# for up to 12 hours.
+# ASSET_VERSION is what ASSET_COMMIT used to be, doing the same job for the same
+# reason. Files under assets/ are not content-hashed, so without a version in the URL
+# a replaced photo would sit in browser caches behind the long immutable TTL in
+# _headers. The query string changes the URL, which is what actually busts a cache.
+#
+# AFTER PUSHING new or changed assets: bump ASSET_VERSION and rebuild. `git rev-parse
+# --short HEAD` is the convention, but any value that changes will do.
+ASSET_VERSION = "0339725"
+
+# Kept because image_inventory.json stores whole jsDelivr URLs captured from the old
+# site, and old_img() rewrites them against this prefix. Nothing new should use it.
 ASSET_REPO   = "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website"
-ASSET_COMMIT = "033972506c03489eec477421491916a718bcfabc"
 
-def cdn_asset(relpath, commit=None):
-    """URL for anything under assets/. relpath is repo-relative below assets/,
-    e.g. "team/tyler-hardy.jpg". Filenames are lowercase-hyphen with no spaces, so
-    nothing needs percent-encoding — keep it that way."""
-    return f"{ASSET_REPO}@{commit or ASSET_COMMIT}/assets/{relpath}"
+def cdn_asset(relpath, version=None):
+    """Same-origin URL for anything under assets/. relpath is repo-relative below
+    assets/, e.g. "team/tyler-hardy.jpg". Filenames are lowercase-hyphen with no
+    spaces, so nothing needs percent-encoding — keep it that way.
 
-CDN = f"{ASSET_REPO}@{ASSET_COMMIT}/assets/brand"
-X_MARK = f"{CDN}/x-mark.png"
+    Name kept as cdn_asset despite no longer naming a CDN: it is called from six
+    modules and the rename is churn without a reader benefit. It is still a CDN, it
+    is just ours now."""
+    return f"/assets/{relpath}?v={version or ASSET_VERSION}"
+
+CDN = "/assets/brand"
+X_MARK = cdn_asset("brand/x-mark.png")
 
 # ---------------------------------------------------------------- photography
 # Named handles for the real Extreme photography, so pages refer to a subject
@@ -1535,7 +1548,7 @@ def xplan_panel(detail=False):
     chips = "".join(f'<span class="chip">{c}</span>' for c in XPLAN["chips"])
     return f'''<div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <a class="xsp-xplan js-schedule" href="#" role="button" aria-label="Join X-Plan — schedule service">
-    <img class="mark" src="{CDN}/logo-white.png" alt="" aria-hidden="true" width="502" height="207" loading="lazy" decoding="async">
+    <img class="mark" src="{cdn_asset('brand/logo-white.png')}" alt="" aria-hidden="true" width="502" height="207" loading="lazy" decoding="async">
     <div>
       <div class="eyebrow">X-PLAN MAINTENANCE</div>
       <h2>Never think about tune-ups again.</h2>
@@ -1553,7 +1566,7 @@ def xplan_panel(detail=False):
 def specials_panel():
     return f'''<div class="xsp-hubsec"><div class="xsp-hubsec-in">
   <div class="xsp-xplan">
-    <img class="mark" src="{CDN}/logo-white.png" alt="" aria-hidden="true" width="502" height="207" loading="lazy" decoding="async">
+    <img class="mark" src="{cdn_asset('brand/logo-white.png')}" alt="" aria-hidden="true" width="502" height="207" loading="lazy" decoding="async">
     <div>
       <div class="eyebrow">PLUMBING SPECIALS</div>
       <h2>Current offers on repairs and installs.</h2>

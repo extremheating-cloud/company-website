@@ -1111,7 +1111,22 @@ def n_video(can, vid, title):
             "inLanguage": "en-US"}
 
 
+def abs_img(src):
+    """Absolute URL for an image src.
+
+    Images became same-origin on 2026-08-03, so read_image() now returns paths like
+    /assets/service/x.jpg?v=0339725. og:image and schema contentUrl both REQUIRE an
+    absolute URL — a relative one is silently ignored by Facebook and dropped by
+    Google's structured-data parser, which would have taken every social preview and
+    every ImageObject on the site down without anything visibly breaking on the page.
+    Third-party stock URLs are already absolute and pass through untouched."""
+    if not src:
+        return src
+    return canonical(src) if src.startswith("/") else src
+
+
 def n_image(can, src, alt):
+    src = abs_img(src)
     return {"@type": "ImageObject", "@id": can + "#primaryimage",
             "url": src, "contentUrl": src, "caption": alt,
             "representativeOfPage": True}
@@ -1323,7 +1338,7 @@ def document(page, body_html):
     # site-level default, whose dimensions are known.
     img_src, img_alt = read_image(body_html)
     if img_src:
-        og_image = (f'<meta property="og:image" content="{_esc(img_src)}">\n'
+        og_image = (f'<meta property="og:image" content="{_esc(abs_img(img_src))}">\n'
                     f'<meta property="og:image:alt" content="{_esc(img_alt or title)}">\n')
     else:
         og_image = (f'<meta property="og:image" content="{canonical(OG_DEFAULT)}">\n'
@@ -1354,7 +1369,6 @@ def document(page, body_html):
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{FONT}">
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
 <!-- The tag origins. preconnect for the two that are on the critical path and
      block nothing else; dns-prefetch for the rest, which is cheaper and enough
      for scripts that are async or deferred. Six preconnects would be worse than

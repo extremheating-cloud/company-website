@@ -16,9 +16,9 @@ import site_data as D
 import template as T
 import locations as L
 
-LOGO = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/logo-white.png"
-LOGO_TIGHT = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/logo-white-tight.png"
-X_MARK = f"{T.ASSET_REPO}@{T.ASSET_COMMIT}/assets/brand/x-mark.png"
+LOGO = T.cdn_asset("brand/logo-white.png")
+LOGO_TIGHT = T.cdn_asset("brand/logo-white-tight.png")
+X_MARK = T.cdn_asset("brand/x-mark.png")
 
 CSS = """
 /* ============================== header ============================== */
