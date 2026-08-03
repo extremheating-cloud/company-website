@@ -652,7 +652,32 @@ def write_sitemap(written):
         if must not in indexable:
             raise SystemExit(f"ABORT: {must} is not in the sitemap.")
 
-    urls = "".join(f"<url><loc>{D.canonical(u)}</loc></url>" for u in indexable)
+    # <lastmod> from the same ledger shell.py stamps dateModified from, so the sitemap
+    # and the schema on the page can never claim two different dates for one URL. The
+    # ledger is keyed on a content hash, so a date only moves when the page's own
+    # content actually changed — a rebuild that changes nothing leaves every date
+    # alone, which is the property that makes lastmod worth sending at all. A sitemap
+    # that restamps today on all 136 URLs every deploy teaches Google to ignore it.
+    ledger = getattr(shell, "DATES", None)
+    if ledger is None:
+        try:
+            import json
+            with open(os.path.join(HERE, "content_dates.json"), encoding="utf-8") as f:
+                ledger = json.load(f)
+        except (OSError, ValueError):
+            ledger = {}
+
+    def _lastmod(u):
+        rec = ledger.get(u) or {}
+        d = rec.get("modified") or rec.get("published")
+        return f"<lastmod>{d}</lastmod>" if d else ""
+
+    missing = [u for u in indexable if not _lastmod(u)]
+    if missing:
+        print(f"  ! {len(missing)} indexable URLs have no date in the ledger, "
+              f"e.g. {missing[:3]}")
+    urls = "".join(f"<url><loc>{D.canonical(u)}</loc>{_lastmod(u)}</url>"
+                   for u in indexable)
     with open(os.path.join(SITE, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>'
                 f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>')
