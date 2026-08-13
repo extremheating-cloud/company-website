@@ -1154,7 +1154,11 @@ ABOUT = {
             ("Aaron Matthew", "Operations Coordinator", "aaron-matthew"),
             ("Samantha Desaro", "Office Coordinator", "samantha-desaro"),
             ("David Engelbrink", "Inventory Coordinator", "david-engelbrink"),
-            ("Aleasha King", "CSR", "aleasha-king"),
+            # "CSR" is what the trade calls this and what a homeowner does not. The tile
+            # is read by someone deciding whether to let us in the house, so it says the
+            # job. It fits: 20 characters against "Operations Coordinator"'s 22, which is
+            # what the grid was sized for.
+            ("Aleasha King", "Customer Service Rep", "aleasha-king"),
         ]),
         ("Comfort Advisors", [
             ("Joe Richardson", "Comfort Advisor", "joe-richardson"),
