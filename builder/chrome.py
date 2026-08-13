@@ -270,11 +270,22 @@ box-shadow:0 2px 10px rgba(107,184,92,.28)}
 
   /* Lift the chat launcher clear of the dock. The dock's top edge is 76px off the
      bottom (12 inset + 64 tall), so 88 leaves a 12px gap, matching the daylight the
-     dock keeps from the footer. --exc-launcher-bottom is the widget's own hook for
-     this, added in the 2026-08-13 build at our request, which is why nothing here
-     reaches into the shadow tree to position it any more. */
+     dock keeps from the footer.
+
+     Both halves of this are load-bearing, and the second is a workaround, not a belt
+     and braces. --exc-launcher-bottom is the widget's own hook, added 2026-08-13 at
+     our request, and on a phone it does nothing: they wrote
+
+         .launcher                         { bottom: calc(var(--exc-launcher-bottom,20px) + …) }
+         .wrap[data-fullscreen] .launcher  { bottom: calc(16px + …) }
+
+     and the fullscreen rule out-specifies the token on the only layout where the
+     token matters. Same defect as the .fine one we reported, third time now. So the
+     token is set for when they fix it, and ::part carries it until they do, because
+     the outer document wins the shadow cascade on specificity ties and beats it. */
   extreme-chat{--exc-launcher-bottom:calc(88px + env(safe-area-inset-bottom));
     --exc-launcher-right:12px}
+  extreme-chat::part(launcher){bottom:calc(88px + env(safe-area-inset-bottom));right:12px}
 
   /* Positioning is a token; "get out of the way right now" is not, so these two stay
      on ::part(). A modal owns the screen or it doesn't. Both states are mobile-only,
@@ -294,6 +305,7 @@ box-shadow:0 2px 10px rgba(107,184,92,.28)}
   .xh-callbar{left:8px;right:8px;gap:6px;padding:6px}
   .xh-callbar .call svg{display:none}
   extreme-chat{--exc-launcher-right:8px}
+  extreme-chat::part(launcher){right:8px}
 }
 @media (prefers-reduced-motion:reduce){.xh-hd *{transition:none!important}}
 
