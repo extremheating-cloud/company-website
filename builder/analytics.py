@@ -11,7 +11,7 @@ WHAT LOADS, AND FROM WHOM
     Google Ads              AW-974361798          googletagmanager.com
     Meta Pixel              1116748220634990      connect.facebook.net
     Broccoli widget         c5182eae-968f-...     cdn.broccoli.com
-    Podium widget           47709907-f239-...     connect.podium.com
+    Podium widget           REMOVED 2026-08-13, replaced by FollowUp Pro chat
     ServiceTitan scheduler  tenant 770617940      go.servicetitan.com  (iframe, on demand)
     FollowUp Pro chat       (A2P opt-in path 2)   followup-pro-37ed6.web.app
 
@@ -29,8 +29,8 @@ THREE THINGS WORTH KNOWING, recorded here because they are easy to forget later:
    it specifically to "6.1 MB of third-party JS from broccoli.com and ServiceTitan" —
    the same two vendors as below. Their LCP is 7.75 to 9.70 s. Ours was 3.42 s before
    this. Measure after launch rather than assuming; the mitigations that do not cost
-   any tracking are already applied here (async on everything that allows it, defer on
-   Podium, ServiceTitan loaded only when someone opens it).
+   any tracking are already applied here (async on everything that allows it, and
+   ServiceTitan loaded only when someone opens it).
 
 2. DOUBLE COUNTING. GTM can fire GA4 itself, and gtag.js for G-GCH0RVQ88Y loads
    directly below as well. If a GA4 tag also exists inside the GTM container, every
@@ -111,6 +111,23 @@ src="https://www.facebook.com/tr?id=1116748220634990&ev=PageView&noscript=1"
 <!-- End Meta Pixel Code -->
 """
 
+# PODIUM: REMOVED 2026-08-13, after the FollowUp Pro widget was confirmed working on
+# the live site. Two chat launchers on one page is a bad experience, and a carrier
+# reviewer who sees a second widget has two opt-in flows to reconcile and can reject the
+# A2P campaign on the ambiguity alone.
+#
+# THIS COMMENT IS THE WHOLE ROLLBACK. Aaron's fallback if FollowUp Pro underperforms is
+# to put Podium back, so the embed is kept here verbatim rather than only in git history.
+# To restore: paste the line below back into BODY_START, directly after the Broccoli
+# script, and rebuild. Then put back the three things that were removed with it —
+# the dns-prefetch in shell.py, and the two provider lists in privacy.py.
+#
+# <script defer src="https://connect.podium.com/widget.js#ORG_TOKEN=47709907-f239-4a8c-8ec9-3f273c4f629b" id="podium-widget" data-organization-api-token="47709907-f239-4a8c-8ec9-3f273c4f629b"></script>
+#
+# It lives in a Python comment, not an HTML one: a commented-out script tag still ships
+# connect.podium.com in the page source of all 319 pages, which is dead weight and is
+# exactly the kind of thing a reviewer reading source would ask about.
+
 # Everything that goes immediately after <body>. The GTM noscript iframe has to be
 # first inside body per Google's own instruction.
 BODY_START = """
@@ -123,7 +140,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   src="https://cdn.broccoli.com/c5182eae-968f-47b1-acb0-be2459d2e4c5.js"
 ></script>
 
-<script defer src="https://connect.podium.com/widget.js#ORG_TOKEN=47709907-f239-4a8c-8ec9-3f273c4f629b" id="podium-widget" data-organization-api-token="47709907-f239-4a8c-8ec9-3f273c4f629b"></script>
 
 <!-- FollowUp Pro chat widget. This is opt-in path 2 in the A2P 10DLC registration,
      so it has to be on EVERY page: the registration says "available on every page of

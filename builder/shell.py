@@ -1376,7 +1376,6 @@ def document(page, body_html):
 <link rel="preconnect" href="https://www.googletagmanager.com">
 <link rel="preconnect" href="https://connect.facebook.net">
 <link rel="dns-prefetch" href="https://cdn.broccoli.com">
-<link rel="dns-prefetch" href="https://connect.podium.com">
 <style>{BASE_CSS}{chrome.CSS}</style>
 {jsonld(dict(page, title=title, description=desc), body_html)}
 {analytics.HEAD}

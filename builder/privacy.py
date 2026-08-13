@@ -292,10 +292,21 @@ SECTIONS = [
         "each office are not replaced.",
 
         "<b>Booking and messaging widgets.</b> Three further providers load on every page: "
-        "Broccoli and Podium, which power the on-site chat and messaging, and the "
-        "ServiceTitan online scheduler, which opens in a window on this site when you book. "
+        "Broccoli, which powers on-site messaging, FollowUp Pro, which powers the chat "
+        "window in the corner of the page, and the ServiceTitan online scheduler, which "
+        "opens in a window on this site when you book. "
         "Anything you type into one of those is received by that provider as well as by "
         "Extreme. Their own privacy terms apply to what they hold.",
+
+        # FollowUp Pro is the only one of the three that takes a name and a mobile number
+        # before it will do anything, and it is the A2P opt-in path, so what it keeps and
+        # why is stated rather than left to the sentence above.
+        "<b>The chat window.</b> Before you can send a chat message, FollowUp Pro asks for "
+        "your name and mobile number and shows you, above the send button, what you are "
+        "agreeing to. Sending the message is the agreement. FollowUp Pro stores your number, "
+        "the time you sent it, and the exact wording you were shown, which is the record "
+        "Extreme has to be able to produce if you ever ask whether you agreed to be texted. "
+        "Reply STOP to any text to end it.",
 
         "[NEEDS: whether Extreme sends customer names, phone numbers or email addresses to "
         "Birdeye — or any other review platform — to request a review after a job. The site "
@@ -556,7 +567,7 @@ PRIVACY_GAPS = [
     "open questions a future revision should close, and several of them are answers only the\n"
     "business can give.",
     "RESOLVED 2026-08-03: the tag inventory is confirmed and disclosed — GTM, GA4, "
-    "Google Ads with call measurement, Meta Pixel, Broccoli, Podium and the "
+    "Google Ads with call measurement, Meta Pixel, Broccoli, FollowUp Pro and the "
     "ServiceTitan scheduler. Counsel should still review whether the advertising "
     "tags require a consent mechanism for Ohio visitors, which is a separate "
     "question from disclosure and is still open below.",
