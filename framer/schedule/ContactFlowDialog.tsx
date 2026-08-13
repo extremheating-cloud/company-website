@@ -8,6 +8,20 @@ import * as React from "react"
 
 type StepIdx = 0 | 1 | 2 | 3
 
+/* SMS consent, A2P 10DLC. This wording is the approved text from the requirements
+ * doc and is stored verbatim alongside the number and a timestamp as the TCPA
+ * record. If it changes here it changes in the campaign registration too, so treat
+ * it the way the widget's disclosure is treated: do not reword it locally.
+ *
+ * Note the wizard already asks Call / Text / Email as a *preference*. A preference
+ * is not consent, and the phone placeholder already promises "we text your
+ * confirmation here", so before this the site was announcing texts with no
+ * disclosure attached to them at all. */
+const SMS_CONSENT_TEXT =
+    "Yes, text me about my service request at the number above. Consent is not a " +
+    "condition of purchase. Msg & data rates may apply, message frequency varies. " +
+    "Reply HELP for help or STOP to opt out. See our Privacy Policy and Terms."
+
 type FormState = {
     service?: "heatingCooling" | "plumbing" | "quote" | "xplan"
     hvacIssue?: string
@@ -794,6 +808,11 @@ export default function ContactFlowDialog() {
     const [email, setEmail] = React.useState("")
     const [address, setAddress] = React.useState("")
     const [feeOk, setFeeOk] = React.useState(false)
+    // SMS consent for A2P 10DLC. MUST default to false: a pre-ticked consent box is
+    // rejection code 30925 by itself. Deliberately NOT part of stepComplete — consent
+    // is not a condition of purchase, so the wizard submits either way and the
+    // customer simply does not get texted.
+    const [smsOk, setSmsOk] = React.useState(false)
     const [submitting, setSubmitting] = React.useState(false)
 
     const [addrSuggestions, setAddrSuggestions] = React.useState<
@@ -1027,6 +1046,12 @@ export default function ContactFlowDialog() {
         fd.set("Phone Number", formatPhone(phoneDigits))
         if (email.trim()) fd.set("Email", email.trim())
         fd.set("Service Address", address.trim())
+        fd.set("SMS Consent", smsOk ? "YES" : "NO")
+        if (smsOk) {
+            fd.set("SMS Consent Timestamp", new Date().toISOString())
+            fd.set("SMS Consent Page", window.location.href)
+            fd.set("SMS Consent Text", SMS_CONSENT_TEXT)
+        }
         if (data.previousCustomer)
             fd.set("Previous Customer", data.previousCustomer)
         if (data.preferredContact)
@@ -2142,6 +2167,70 @@ export default function ContactFlowDialog() {
                                                 e.stopPropagation()
                                             }
                                         />
+                                        {/* SMS consent. Sits DIRECTLY beneath the
+                                            mobile field, which is where a reviewer
+                                            looks for it and where it is legible as
+                                            applying to that number. Unchecked by
+                                            default and never gates submission. */}
+                                        <div className="xw-sms">
+                                            <button
+                                                type="button"
+                                                className="xw-sms-btn"
+                                                role="checkbox"
+                                                aria-checked={smsOk}
+                                                aria-describedby="xw-sms-copy"
+                                                onClick={() =>
+                                                    setSmsOk((v) => !v)
+                                                }
+                                            >
+                                                <span
+                                                    className={
+                                                        "box" +
+                                                        (smsOk ? " on" : "")
+                                                    }
+                                                    aria-hidden="true"
+                                                >
+                                                    {smsOk ? "\u2713" : ""}
+                                                </span>
+                                            </button>
+                                            <label
+                                                id="xw-sms-copy"
+                                                className="xw-sms-copy"
+                                                onClick={() =>
+                                                    setSmsOk((v) => !v)
+                                                }
+                                            >
+                                                Yes, text me about my service
+                                                request at the number above.
+                                                Consent is not a condition of
+                                                purchase. Msg &amp; data rates
+                                                may apply, message frequency
+                                                varies. Reply HELP for help or
+                                                STOP to opt out. See our{" "}
+                                                <a
+                                                    href="https://www.extremeheating.com/privacy"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
+                                                >
+                                                    Privacy Policy
+                                                </a>{" "}
+                                                and{" "}
+                                                <a
+                                                    href="https://www.extremeheating.com/terms"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
+                                                >
+                                                    Terms
+                                                </a>
+                                                .
+                                            </label>
+                                        </div>
                                         <input
                                             className="xw-input"
                                             type="email"
@@ -2713,6 +2802,27 @@ const XW_CSS = `
 .xw-fee .box.on{ background:${T.selGreen}; border-color:${T.selGreen} }
 .xw-fee.xw-free{ border:1px solid ${T.qpCard}; background:${T.tint} }
 .xw-fee.xw-free .amt{ color:${T.chipGreen} }
+
+/* SMS consent. Reuses the fee checkbox's box geometry so the two read as the same
+   control, but the copy is legal text rather than a label: smaller, muted, and
+   allowed to wrap to several lines. The whole label toggles, which is what people
+   expect from a checkbox, while the two links stopPropagation so tapping Privacy
+   Policy opens it instead of silently ticking the box. */
+.xw-sms{ display:flex; align-items:flex-start; gap:9px; margin-top:10px }
+.xw-sms-btn{
+  border:none; background:none; padding:0; margin:0; cursor:pointer; flex-shrink:0;
+  line-height:0; margin-top:1px;
+}
+.xw-sms .box{
+  width:20px; height:20px; border-radius:6px; border:2px solid ${T.dashed}; display:grid;
+  place-items:center; color:#fff; font-size:12px; flex-shrink:0;
+}
+.xw-sms .box.on{ background:${T.selGreen}; border-color:${T.selGreen} }
+.xw-sms-btn:focus-visible .box{ outline:2px solid ${T.deepPurple}; outline-offset:2px }
+.xw-sms-copy{
+  font:400 11.5px/1.5 ${FONT}; color:${T.muted}; cursor:pointer; margin:0;
+}
+.xw-sms-copy a{ color:${T.linkGreen}; text-decoration:underline }
 
 /* footer */
 .xw-footer{
