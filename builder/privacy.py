@@ -357,16 +357,21 @@ SECTIONS = [
         "<b>Message rates.</b> Message and data rates may apply. Message frequency varies "
         "with your appointment.",
 
-        # The published version of this clause normally opens with "Reply STOP to any text
-        # to stop receiving them, or HELP for help." That sentence is NOT here, because
-        # nobody has confirmed the texting platform honors those keywords, and publishing
-        # them when they do not work is worse than not publishing them. Calling the office
-        # is a route that demonstrably works. Add the keyword sentence back the day the
-        # platform is confirmed.
-        "<b>Stopping messages.</b> Call the office at "
+        # The keyword sentence is restored 2026-08-12. It was held back because nobody
+        # had confirmed the texting platform honored STOP and HELP, and publishing
+        # keywords that do not work is worse than not publishing them. A2P 10DLC
+        # registration settles it: STOP and HELP handling is mandatory on a registered
+        # campaign, so the platform honors them by rule rather than by hope.
+        #
+        # This is one of exactly two places on the site where the texting number is
+        # rendered as readable text rather than behind a Text Us button. Regulatory: an
+        # opt-out instruction has to name the number it applies to. See
+        # site_data.SMS_DISPLAY for the other one and the reasoning.
+        "<b>Stopping messages.</b> Reply STOP to any text message from "
+        f"{D.SMS_DISPLAY} to opt out immediately, or call the office at "
         f"<a href=\"{T.PHONE_TEL}\">{T.PHONE_DISPLAY}</a> at any time and ask to be taken off "
-        "text messages, and Extreme will stop sending them. Stopping texts does not cancel a "
-        "scheduled visit: call the office to change or cancel an appointment.",
+        "text messages. Reply HELP to any text for assistance. Stopping texts does not "
+        "cancel a scheduled visit: call the office to change or cancel an appointment.",
 
         "<b>Mobile numbers are never shared for marketing.</b> Extreme does not sell or "
         "share mobile numbers, or consent to receive text messages, with any third party for "

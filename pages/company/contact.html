@@ -526,6 +526,11 @@ text-decoration:none;margin-top:10px}
    still a tel: link, because on the device most of these are read on that is the
    whole point of printing it. */
 .xco-loc-body a.tel{display:block;margin-top:6px;font-size:13.5px;color:var(--ink)}
+/* The readable call/text line. Reads as part of the contact block, not as a
+   CTA — it is there to be read, including by a carrier reviewer. */
+.xco-sms{margin-top:8px;font-size:14px;font-weight:600;color:var(--ink)}
+.xco-sms a{color:var(--purple);text-decoration:none}
+.xco-sms a:hover{text-decoration:underline}
 .xco-loc-body a.tel:hover{color:var(--purple)}
 /* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
    "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */
@@ -643,9 +648,17 @@ padding:32px 36px;position:relative;overflow:hidden}
   <div class="eyebrow">CONTACT US</div>
   <div class="xco-phone"><a href="tel:18445847399">(844) 584-7399</a></div>
   <div class="s">Office staffed Mon–Fri, 8–5 · emergencies 24/7.</div>
+  <!-- THE line the A2P reviewer has to be able to read. One plainly readable
+       statement that a specific number accepts texts, on the page a reviewer opens
+       first. Do not turn this into a button; the href of a button is not something a
+       human reviewer can be relied on to inspect, and without this sentence opt-in
+       path 1 in the registration ("published on our website") is simply false. -->
+  <div class="xco-sms">Call <a href="tel:18445847399">(844) 584-7399</a>
+    &middot; Text <a href="sms:+19377447148">(937) 744-7148</a></div>
   <div class="btns">
     <a class="xsp-btn-green js-schedule" href="#" role="button">Schedule Service</a>
     <a class="xsp-btn-purple" href="tel:18445847399">Call (844) 584-7399</a>
+    <a class="xsp-cta-outline js-text" href="sms:+19377447148" aria-label="Text us at (937) 744-7148">Text Us</a>
   </div>
   <div class="trust"><span><span class="st">★</span> 4.9 from 1,595 reviews</span><span class="bar">|</span><span>20+ years local</span></div>
 </div></div>

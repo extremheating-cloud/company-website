@@ -59,6 +59,11 @@ text-decoration:none;margin-top:10px}
    still a tel: link, because on the device most of these are read on that is the
    whole point of printing it. */
 .xco-loc-body a.tel{display:block;margin-top:6px;font-size:13.5px;color:var(--ink)}
+/* The readable call/text line. Reads as part of the contact block, not as a
+   CTA — it is there to be read, including by a carrier reviewer. */
+.xco-sms{margin-top:8px;font-size:14px;font-weight:600;color:var(--ink)}
+.xco-sms a{color:var(--purple);text-decoration:none}
+.xco-sms a:hover{text-decoration:underline}
 .xco-loc-body a.tel:hover{color:var(--purple)}
 /* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
    "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */
@@ -215,9 +220,17 @@ def contact_card():
   <div class="eyebrow">CONTACT US</div>
   <div class="xco-phone"><a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a></div>
   <div class="s">Office staffed {D.HOURS_STAFFED_SHORT} · emergencies 24/7.</div>
+  <!-- THE line the A2P reviewer has to be able to read. One plainly readable
+       statement that a specific number accepts texts, on the page a reviewer opens
+       first. Do not turn this into a button; the href of a button is not something a
+       human reviewer can be relied on to inspect, and without this sentence opt-in
+       path 1 in the registration ("published on our website") is simply false. -->
+  <div class="xco-sms">Call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>
+    &middot; Text <a href="{D.SMS_HREF}">{D.SMS_DISPLAY}</a></div>
   <div class="btns">
     {T.schedule_btn("Schedule Service")}
     {T.call_btn(f"Call {T.PHONE_DISPLAY}")}
+    {T.text_btn()}
   </div>
   <div class="trust"><span><span class="st">★</span> {D.GOOGLE_RATING} from {D.REVIEW_COUNT} reviews</span><span class="bar">|</span><span>{D.YEARS_LOCAL} years local</span></div>
 </div>'''

@@ -25,6 +25,7 @@ the source file are listed in TERMS_GAPS for the client and their attorney.
 """
 import os
 import template as T
+import site_data as D
 import company_pages as CP
 
 TERMS_CSS = """
@@ -169,6 +170,31 @@ EXISTING_SECTIONS = [
     ]),
     ("indemnification", "Indemnification", [
         "Customer agrees to indemnify Extreme from any claims, judgments, damages, fees, costs, expenses, losses, or liabilities arising from or directly related to Customer's violation of these Terms, including collection costs and reasonable attorney fees.",
+    ]),
+    # Added 2026-08-12 for A2P 10DLC. This page's URL is submitted as the campaign's
+    # terms of service and carried no SMS content at all, which is one of the things a
+    # carrier reviewer checks. Copy is the approved text from the requirements doc and
+    # should be treated the same way as the widget disclosure: if it changes, the
+    # registration changes with it.
+    #
+    # The texting number is deliberately NOT a Text Us button here. Legal pages stay
+    # clean of CTAs, and a reviewer reading this section needs the number as text.
+    ("text-message-program", "Text Message Program", [
+        "By providing your mobile number and opting in, you agree to receive text "
+        "messages from Extreme Heating, Air &amp; Plumbing about your service request, "
+        "appointment, and scheduled work. Consent is not a condition of purchase.",
+
+        "Message frequency varies by conversation and appointment, typically 2&ndash;6 "
+        "messages per service request. Message and data rates may apply.",
+
+        f"Reply STOP at any time to opt out. Reply HELP for assistance, or contact us "
+        f"at {D.SMS_DISPLAY}.",
+
+        "Carriers are not liable for delayed or undelivered messages.",
+
+        "We do not sell or share mobile numbers or SMS consent with third parties for "
+        "their marketing purposes. See our <a href=\"/privacy\">Privacy Policy</a> for "
+        "details.",
     ]),
 ]
 

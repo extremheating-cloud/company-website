@@ -526,6 +526,11 @@ text-decoration:none;margin-top:10px}
    still a tel: link, because on the device most of these are read on that is the
    whole point of printing it. */
 .xco-loc-body a.tel{display:block;margin-top:6px;font-size:13.5px;color:var(--ink)}
+/* The readable call/text line. Reads as part of the contact block, not as a
+   CTA — it is there to be read, including by a carrier reviewer. */
+.xco-sms{margin-top:8px;font-size:14px;font-weight:600;color:var(--ink)}
+.xco-sms a{color:var(--purple);text-decoration:none}
+.xco-sms a:hover{text-decoration:underline}
 .xco-loc-body a.tel:hover{color:var(--purple)}
 /* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
    "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */

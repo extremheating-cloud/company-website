@@ -13,6 +13,7 @@ WHAT LOADS, AND FROM WHOM
     Broccoli widget         c5182eae-968f-...     cdn.broccoli.com
     Podium widget           47709907-f239-...     connect.podium.com
     ServiceTitan scheduler  tenant 770617940      go.servicetitan.com  (iframe, on demand)
+    FollowUp Pro chat       (A2P opt-in path 2)   followup-pro-37ed6.web.app
 
 BOOKING FLOW, decided 2026-08-03: the site keeps its own scheduling wizard. Every
 .js-schedule button opens assets/js/schedule.js, exactly as before. The ServiceTitan
@@ -123,6 +124,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 ></script>
 
 <script defer src="https://connect.podium.com/widget.js#ORG_TOKEN=47709907-f239-4a8c-8ec9-3f273c4f629b" id="podium-widget" data-organization-api-token="47709907-f239-4a8c-8ec9-3f273c4f629b"></script>
+
+<!-- FollowUp Pro chat widget. This is opt-in path 2 in the A2P 10DLC registration,
+     so it has to be on EVERY page: the registration says "available on every page of
+     https://www.extremeheating.com" and a homepage-only widget makes that false.
+     It renders in a shadow root on <extreme-chat>, so site CSS cannot reach in and it
+     cannot leak out. Nothing renders or hits the network until a visitor sends
+     something, so a bounce costs nothing.
+     Do not fork this script or self-host a modified build: the consent disclosure it
+     shows is quoted character for character in the registration and stored verbatim
+     as the TCPA record. Changes go through FollowUp Pro. -->
+<script src="https://followup-pro-37ed6.web.app/chat-widget.js"
+        data-endpoint="https://us-central1-followup-pro-37ed6.cloudfunctions.net"
+        data-phone="+18445847399"
+        data-phone-display="(844) 584-7399"
+        defer></script>
 
 <script>
 (function () {

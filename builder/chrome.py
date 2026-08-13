@@ -171,6 +171,9 @@ background:#6BB85C;color:#0F172A;font-weight:800;font-size:15.5px;font-family:in
 .xh-pinned .call{width:100%;min-height:48px;display:flex;align-items:center;
 justify-content:center;border:1.5px solid rgba(255,255,255,.45);border-radius:12px;
 color:#fff;font-weight:800;font-size:15px;text-decoration:none}
+.xh-pinned .text{width:100%;min-height:48px;display:flex;align-items:center;
+justify-content:center;border:1.5px solid rgba(255,255,255,.45);border-radius:12px;
+color:#fff;font-weight:800;font-size:15px;text-decoration:none}
 .xh-pinned .trust{display:flex;align-items:center;justify-content:center;gap:8px;
 font-weight:700;font-size:12px;color:rgba(255,255,255,.82)}
 .xh-pinned .trust .s{color:#F6A723;letter-spacing:1px}
@@ -448,6 +451,7 @@ def header(current=""):
     <div class="xh-pinned">
       <button class="cta js-schedule" type="button">Schedule Service</button>
       <a class="call" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
+      <a class="text" href="{D.SMS_HREF}" aria-label="{D.SMS_ARIA}">Text Us</a>
       <div class="trust"><span class="s">★★★★★</span> {D.GOOGLE_RATING} on Google · 24/7 emergency</div>
     </div>
   </div>
@@ -534,6 +538,7 @@ def footer():
       <div class="xf-cta-btns">
         <button class="xf-btn-green js-schedule" type="button">Schedule Service&nbsp;&nbsp;→</button>
         <a class="xf-btn-outline" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
+        <a class="xf-btn-outline" href="{D.SMS_HREF}" aria-label="{D.SMS_ARIA}">Text Us</a>
       </div>
     </div>
 

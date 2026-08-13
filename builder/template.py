@@ -1037,6 +1037,20 @@ def schedule_btn(label, cls="xsp-btn-green"):
 def call_btn(label, cls="xsp-btn-purple"):
     return f'<a class="{cls}" href="{PHONE_TEL}">{label}</a>'
 
+def text_btn(cls="xsp-cta-outline"):
+    """The Text Us button. One builder, used everywhere, so the label, the href and the
+    accessible name cannot drift apart on 320 pages.
+
+    The number is NOT painted on the page here — that happens in exactly two places
+    (see site_data.SMS_DISPLAY). It lives in aria-label so a screen reader still gets
+    it, which is also what makes the button honest: "Text Us" alone tells a blind user
+    nothing about where the message goes.
+
+    Bare sms: with no body=. iOS and Android disagree on ?body= vs &body= and a
+    malformed one opens an empty composer with no recipient on some handsets."""
+    return (f'<a class="{cls} js-text" href="{D.SMS_HREF}" '
+            f'aria-label="{D.SMS_ARIA}">Text Us</a>')
+
 def booking_card(bc, inflow=False, schedule_label="Schedule Service"):
     flow = " inflow" if inflow else ""
     return f'''<div class="xsp-book{flow}">

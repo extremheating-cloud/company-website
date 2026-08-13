@@ -67,6 +67,39 @@ PHONE_TEL = "tel:18445847399"
 PHONE_E164 = "+18445847399"
 EMAIL = "info@extremeheating.com"
 
+# ---------------------------------------------------------------- SMS / A2P
+# The business texting number. NOT the main line and never a substitute for it:
+# PHONE_DISPLAY is the voice number and stays every page's primary CTA.
+#
+# WHY THIS EXISTS. The A2P 10DLC campaign was rejected on 2026-08-12, error 30909,
+# because the carrier's reviewer opened the site looking for proof that consumers had
+# agreed to be texted and found none. The registration claimed the texting number was
+# published here; it was not, and the site never said any number accepted texts.
+#
+# THE DISPLAY RULE, and it is not a style preference. This number renders as literal
+# readable text in exactly TWO places:
+#
+#   /contact   "Call (844) 584-7399 · Text (937) 744-7148"
+#   /privacy   the opt-out sentence, which must name the number it applies to
+#
+# Everywhere else it is a Text Us button with no number painted on the page. The
+# reviewer needs one plainly readable line — an href is not something they can be
+# relied on to inspect — and the aria-label keeps the number available to screen
+# readers without putting it in the visual design on 320 pages.
+#
+# Formatting is (937) 744-7148 everywhere, matching the registration character for
+# character. A reviewer comparing the two should not have to normalise anything.
+SMS_DISPLAY = "(937) 744-7148"
+SMS_E164 = "+19377447148"
+
+# Bare sms: with no body=. iOS and Android disagree on ?body= vs &body=, and a
+# malformed one opens an empty composer with no recipient on some handsets. Losing the
+# prefilled text is cheaper than losing the recipient.
+SMS_HREF = f"sms:{SMS_E164}"
+
+# One written form so the label and the accessible name cannot drift apart.
+SMS_ARIA = f"Text us at {SMS_DISPLAY}"
+
 # Ohio state licences. These are a trust and E-E-A-T signal and belong in the footer
 # and in the LocalBusiness schema, not buried on one page. Until the About page's team
 # section comes back after the photo shoot, the licences and the founding year are
