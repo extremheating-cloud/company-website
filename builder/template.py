@@ -286,6 +286,15 @@ transition:background .15s ease}
 color:#fff;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;min-height:44px;
 text-decoration:none;background:transparent;white-space:nowrap;transition:border-color .15s,color .15s}
 .xsp-cta-outline:hover{border-color:var(--green);color:var(--green)}
+/* Text Us inside a light card. .xsp-cta-outline is the HERO outline — white border,
+   white text — and rendered white-on-white in the booking card, which is how it got
+   caught. Same geometry as .xsp-btn-purple so the three buttons read as one stack;
+   outlined rather than filled so Call stays visibly the primary action. */
+.xsp-btn-text{display:flex;align-items:center;justify-content:center;background:transparent;
+color:var(--purple);font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
+text-decoration:none;cursor:pointer;border:1.5px solid var(--rule);font-family:inherit;width:100%;
+margin-top:10px;transition:border-color .15s ease,background .15s ease}
+.xsp-btn-text:hover{border-color:var(--purple);background:#F7F5FA}
 
 /* hero */
 .xsp-hero{background:linear-gradient(180deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);position:relative;color:#fff}
@@ -1037,7 +1046,7 @@ def schedule_btn(label, cls="xsp-btn-green"):
 def call_btn(label, cls="xsp-btn-purple"):
     return f'<a class="{cls}" href="{PHONE_TEL}">{label}</a>'
 
-def text_btn(cls="xsp-cta-outline"):
+def text_btn(cls="xsp-btn-text"):
     """The Text Us button. One builder, used everywhere, so the label, the href and the
     accessible name cannot drift apart on 320 pages.
 
