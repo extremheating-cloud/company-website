@@ -140,6 +140,105 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         data-phone-display="(844) 584-7399"
         defer></script>
 
+<!-- Extreme skin for the chat widget.
+     The widget ships a generic look that does not speak the rest of the site's
+     language, and on a phone it is the only surface a visitor sees full screen.
+     This restyles it. What it does NOT do is fork the script: the build above is
+     the vendor's, byte for byte, from their CDN. No DOM is added, moved or
+     relabeled, no text is edited, and the consent disclosure — quoted verbatim in
+     the A2P registration and stored as the TCPA record — is untouched. This is one
+     <style> element appended to the widget's open shadow root, so deleting this
+     block reverts the widget to the vendor's own appearance and nothing else.
+     If FollowUp Pro renames their internal classes, these rules stop matching and
+     it reverts on its own. That is the intended failure mode.
+
+     Two of the rules below are fixing the vendor's bugs rather than their taste,
+     and both are worth reporting upstream:
+       1. .fine (the consent paragraph) asks for 12px slate in their own stylesheet
+          and never gets it, because .card p is one point more specific and wins at
+          14px in full ink. That is why the disclosure renders as the largest block
+          in the form. We apply their intent, a half step larger than they asked.
+       2. Nothing in the fullscreen phone layout accounts for the safe area, so on
+          a notched iPhone the header sits under the status bar and the footer under
+          the home indicator. -->
+<script>
+(function () {
+  var CSS = `
+/* header ------------------------------------------------------------------
+   The subtitle is 48 characters and .hdr-id gets 254px at a 390px width, so two
+   lines was never avoidable. Two tidy lines read as deliberate; what read as
+   broken was the status dot centering itself against a two-line block. */
+.hdr{padding:13px 10px 13px 16px;gap:8px}
+.hdr-title{font-size:15.5px;font-weight:800;letter-spacing:-.02em}
+.hdr-sub{align-items:flex-start;font-size:11.5px;line-height:1.35;gap:7px}
+.hdr-sub .dot{margin-top:4px;box-shadow:0 0 0 3px rgba(97,188,71,.22)}
+.hdr-btn{width:40px;height:40px;border-radius:10px}
+.wrap[data-fullscreen="true"] .hdr{padding-top:calc(13px + env(safe-area-inset-top))}
+
+/* one surface, not two -----------------------------------------------------
+   The gate form was a bordered, shadowed, gradient-topped card sitting on a
+   background one shade off from it, which on a full-screen phone panel is a
+   container drawn twice. The header already carries a green gradient rule 20px
+   above the card's, so the card's is redundant as well as fussy. The cloud
+   backdrop stays, because behind message bubbles that contrast does real work. */
+.log{padding:14px 14px 8px}
+.card{border:0;border-radius:16px;padding:16px 15px;box-shadow:0 2px 14px rgba(15,23,42,.08)}
+.card::before{display:none}
+.card h3{font-size:17px;font-weight:800;letter-spacing:-.02em;margin:0 0 6px}
+.card p{font-size:14px;line-height:1.5;margin:0 0 14px}
+
+/* fields in the site's shape: 12px radius, not 4. 16px type on the inputs is
+   load-bearing and stays — anything smaller and iOS zooms the page on focus. */
+.fld{margin:0 0 12px}
+.fld label{font-size:12px;font-weight:700;letter-spacing:.01em;color:var(--exc-slate);margin:0 0 5px}
+.fld input,.fld textarea,.composer textarea{border-radius:12px;border:1.5px solid var(--exc-border);padding:12px 13px}
+.fld textarea{min-height:82px;line-height:1.5}
+
+/* the disclosure. Secondary, never buried: #64748B on white is 4.76:1, which
+   clears AA, and the links keep a real underline and full brand purple. */
+.card p.fine{font-size:12.5px;line-height:1.55;color:var(--exc-slate);margin:0 0 14px}
+.card p.fine a{color:var(--exc-purple);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+
+/* CTA in the site's weight and radius */
+.card-actions{margin-top:2px}
+.btn{font-size:15.5px;font-weight:800;letter-spacing:0;border-radius:12px;min-height:48px;
+box-shadow:0 2px 12px rgba(95,41,128,.26)}
+
+/* the bottom was three stacked full-width strips competing for one corner */
+.lock{font-size:12.5px;font-weight:700;color:var(--exc-slate);padding:12px}
+.lock svg{width:15px;height:15px;stroke:var(--exc-slate)}
+.composer{padding:10px 12px}
+.send{width:46px;height:46px}
+.foot{font-size:11.5px;padding:0 14px 12px}
+.foot a{font-weight:700}
+.wrap[data-fullscreen="true"] .foot{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+
+/* bubbles pick up the site's radius */
+.bub{font-size:14.5px;border-radius:14px}
+`;
+  var ID = "exc-extreme-skin";
+  function skin() {
+    var host = document.querySelector("extreme-chat");
+    if (!host || !host.shadowRoot) return false;
+    if (host.shadowRoot.getElementById(ID)) return true;
+    var s = document.createElement("style");
+    s.id = ID;
+    s.textContent = CSS;
+    // Appended last so it wins on order wherever specificity ties. Where it does
+    // not tie, the selectors above are written to out-specify, not to shout with
+    // !important — that would also override the vendor's own state rules for
+    // errors, disabled buttons and focus.
+    host.shadowRoot.appendChild(s);
+    return true;
+  }
+  if (skin()) return;
+  // The widget script is deferred, so the element usually is not there yet.
+  var mo = new MutationObserver(function () { if (skin()) mo.disconnect(); });
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+  setTimeout(function () { mo.disconnect(); }, 20000);
+})();
+</script>
+
 <script>
 (function () {
   function openSTScheduler() {
