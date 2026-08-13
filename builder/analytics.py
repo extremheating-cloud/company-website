@@ -147,7 +147,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
      the vendor's, byte for byte, from their CDN. No DOM is added, moved or
      relabeled, no text is edited, and the consent disclosure — quoted verbatim in
      the A2P registration and stored as the TCPA record — is untouched. This is one
-     <style> element appended to the widget's open shadow root, so deleting this
+     stylesheet appended to the widget's open shadow root, so deleting this
+     (do not write that tag name literally in this comment — the shared-CSS
+     extractor matches style tags with a regex that does not skip comments, and
+     a phantom opener swallows the hero CSS on every page)
      block reverts the widget to the vendor's own appearance and nothing else.
      If FollowUp Pro renames their internal classes, these rules stop matching and
      it reverts on its own. That is the intended failure mode.
