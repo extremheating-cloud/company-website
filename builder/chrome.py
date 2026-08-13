@@ -178,6 +178,22 @@ color:#fff;font-weight:800;font-size:15px;text-decoration:none}
 font-weight:700;font-size:12px;color:rgba(255,255,255,.82)}
 .xh-pinned .trust .s{color:#F6A723;letter-spacing:1px}
 
+/* --------------------------- chat widget theme ---------------------------
+   The widget renders in a shadow root, so these are the only styles of ours that
+   reach it: custom properties pierce the boundary, and every one below is a
+   documented token with a default, so setting them is configuration rather than
+   override. We used to append a whole stylesheet into the shadow root instead.
+   That is gone as of 2026-08-13 — FollowUp Pro shipped the fixes it was patching
+   around, including the .card p / .fine specificity bug that kept the consent
+   disclosure from ever rendering as fine print, and the missing safe-area insets.
+   Do not reintroduce it. If the widget looks wrong, report it upstream; a patch
+   here is invisible to them and breaks silently when they rename a class. */
+extreme-chat{
+  --exc-purple:#5F2980; --exc-green:#6BB85C; --exc-border:#E7E7EA;
+  --exc-ink:#0F172A; --exc-slate:#64748B;
+  --exc-radius-input:12px; --exc-radius-btn:12px; --exc-radius-card:16px;
+  --exc-weight-heading:900; --exc-weight-btn:800; --exc-size-fine:12.5px}
+
 /* ---------------------------- mobile dock ----------------------------
    Three things competed for the bottom of a phone screen and nothing arbitrated:
    this bar, the chat launcher, and whichever modal was open. The launcher lives in
@@ -202,12 +218,11 @@ background:rgba(37,16,50,.86);
 -webkit-backdrop-filter:blur(16px) saturate(150%);backdrop-filter:blur(16px) saturate(150%);
 border:1px solid rgba(255,255,255,.13);
 box-shadow:0 10px 30px rgba(9,4,14,.42),inset 0 1px 0 rgba(255,255,255,.07)}
-/* The right inset is the launcher's seat: 46px of button plus the 8px gap. Reserved
-   unconditionally rather than behind :has(extreme-chat), because the widget script is
-   deferred — making the seat conditional would shift the Schedule button sideways
-   after first paint on every load, to spare a symmetry nobody sees from the small
-   share of visitors who block the widget entirely. */
-.xh-callbar{padding-right:62px}
+/* The dock no longer reserves a seat for the launcher. It did while the launcher was
+   a bare circle we could size to match the buttons; as of the 2026-08-13 widget build
+   it is a labelled "Text Us" pill of its own width, which does not belong wedged into
+   a row of our buttons. It floats above the dock instead, via --exc-launcher-bottom,
+   which is the vendor's supported hook for exactly this. */
 /* nowrap is load-bearing, not cosmetic. flex:1 was splitting the bar down the middle,
    which on a 320px screen is 139px a side — enough for "Schedule Online" (needs 102)
    but not for "Call (844) 584-7399" (needs 154), so the phone number wrapped onto a
@@ -216,21 +231,19 @@ box-shadow:0 10px 30px rgba(9,4,14,.42),inset 0 1px 0 rgba(255,255,255,.07)}
 
    The budget, measured on the deployed dock rather than estimated. A 360px phone —
    a Galaxy S or a 12 mini, the narrowest width that still matters — gives the dock
-   336px, and the border, the left padding and the launcher's seat take 70 of it. Of
-   the 264 left, the number needs 122 and the gap 8, so the green pill gets 134 and
-   its label has to fit 118 of that. "Schedule Online" needs 118 exactly, which is not
-   a fit, it is a coincidence waiting to break on a font swap.
-   So two things give way, and neither is the number. The handset glyph goes, because
-   beside a phone number in a dock it says nothing the number does not already say —
-   it earns its place only in the icon-only layout below, where it is the whole button.
-   And the label sheds "Online": next to a phone number, a green Schedule pill is not
-   ambiguous about being the non-phone option. That leaves 22px of real slack. */
+   336px, and the border and padding take 18, leaving 318. The number needs 163 with
+   its handset glyph and the gap takes 8, so the green pill gets 147 for a label that
+   needs 122.
+   Handing the launcher's 54px seat back to the row is what bought that. While the seat
+   existed the pill had 134px and "Schedule Online" needed 118 of it, a fit so tight it
+   was a coincidence waiting to break on a font swap, and both the glyph and the word
+   "Online" had to go. Both come back now. */
 .xh-callbar a,.xh-callbar button{display:inline-flex;align-items:center;gap:6px;
 justify-content:center;min-height:46px;border-radius:12px;font-weight:800;font-size:15px;
 border:0;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap}
 .xh-callbar .call{flex:0 0 auto;padding:0 10px;background:rgba(255,255,255,.10);color:#fff;
 border:1px solid rgba(255,255,255,.24)}
-.xh-callbar .call svg{display:none;width:17px;height:17px;flex:none;fill:currentColor;opacity:.92}
+.xh-callbar .call svg{width:17px;height:17px;flex:none;fill:currentColor;opacity:.92}
 .xh-callbar .sched{flex:1 1 auto;min-width:0;padding:0 10px;background:#6BB85C;color:#0F172A;
 box-shadow:0 2px 10px rgba(107,184,92,.28)}
 /* Set by the header script while the mobile menu is open; the panel has its own
@@ -255,23 +268,17 @@ box-shadow:0 2px 10px rgba(107,184,92,.28)}
      over the last line of the footer. */
   body{padding-bottom:calc(86px + env(safe-area-inset-bottom))}
 
-  /* Seat the chat launcher in the dock. Coordinates are the dock's own, counted from
-     the viewport the way the launcher measures: 12px inset + 1px border + 8px padding
-     = 21, which lands it flush with the buttons beside it. Dropping the border from
-     that sum is a 1px misalignment, which is precisely the kind of thing that makes a
-     component read as accidental. Purple on a
-     purple bar would have vanished, so it borrows the Call button's glass treatment
-     and reads as its peer. The widget's drop shadow comes off — the dock casts one
-     for all three buttons now. */
-  extreme-chat::part(launcher){box-sizing:border-box;width:46px;height:46px;
-    right:21px;bottom:calc(21px + env(safe-area-inset-bottom));
-    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);
-    box-shadow:none}
-  extreme-chat::part(launcher):hover,
-  extreme-chat::part(launcher):focus-visible{background:rgba(255,255,255,.19)}
+  /* Lift the chat launcher clear of the dock. The dock's top edge is 76px off the
+     bottom (12 inset + 64 tall), so 88 leaves a 12px gap, matching the daylight the
+     dock keeps from the footer. --exc-launcher-bottom is the widget's own hook for
+     this, added in the 2026-08-13 build at our request, which is why nothing here
+     reaches into the shadow tree to position it any more. */
+  extreme-chat{--exc-launcher-bottom:calc(88px + env(safe-area-inset-bottom));
+    --exc-launcher-right:12px}
 
-  /* A modal owns the screen or it doesn't. Both of these are mobile-only states, and
-     on mobile the chat panel is a full-screen sheet — so neither the menu nor the
+  /* Positioning is a token; "get out of the way right now" is not, so these two stay
+     on ::part(). A modal owns the screen or it doesn't. Both states are mobile-only,
+     and on mobile the chat panel is a full-screen sheet — so neither the menu nor the
      wizard can be reached while chat is open, and hiding the launcher can never take
      away the only control that closes an open panel.
      :has() is the live-updating part: the wizard mounts .xw-root when it opens and
@@ -279,18 +286,14 @@ box-shadow:0 2px 10px rgba(107,184,92,.28)}
   .xh-menu-open extreme-chat::part(launcher){display:none}
   html:has(.xw-root) extreme-chat::part(launcher){display:none}
 }
-/* Narrowest phones still in use (iPhone SE 1st gen, 320px). The full number needs 154
-   and the dock only has 280 of usable width once the launcher's seat and the gaps come
-   out, which is not enough for number + Schedule + chat. The number gives way rather
-   than the tap targets or the type: it collapses to a handset glyph, and the button
-   still dials it. Everything from a 360px Galaxy up keeps the number on screen, which
-   is the one thing someone reads when the heat is out. */
+/* Narrowest phones still in use (iPhone SE 1st gen, 320px). 290px of usable width, and
+   the number plus "Schedule Online" needs 258 of it once the glyph comes off. So the
+   glyph gives way here and the number does not: it is the one thing someone reads when
+   the heat is out, and it now survives at every width the dock is drawn at. */
 @media (max-width:359px){
-  .xh-callbar{left:8px;right:8px;gap:6px;padding:6px;padding-right:58px}
-  .xh-callbar .call{width:46px;padding:0}
-  .xh-callbar .call .num{display:none}
-  .xh-callbar .call svg{display:block}
-  extreme-chat::part(launcher){right:15px;bottom:calc(19px + env(safe-area-inset-bottom))}
+  .xh-callbar{left:8px;right:8px;gap:6px;padding:6px}
+  .xh-callbar .call svg{display:none}
+  extreme-chat{--exc-launcher-right:8px}
 }
 @media (prefers-reduced-motion:reduce){.xh-hd *{transition:none!important}}
 
@@ -534,7 +537,7 @@ def header(current=""):
  4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"/></svg>
     <span class="num">{D.PHONE_DISPLAY}</span>
   </a>
-  <button class="sched js-schedule" type="button">Schedule</button>
+  <button class="sched js-schedule" type="button">Schedule Online</button>
 </div>'''
 
 # ---------------------------------------------------------------- footer
