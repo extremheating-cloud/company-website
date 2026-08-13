@@ -212,13 +212,25 @@ box-shadow:0 10px 30px rgba(9,4,14,.42),inset 0 1px 0 rgba(255,255,255,.07)}
    which on a 320px screen is 139px a side — enough for "Schedule Online" (needs 102)
    but not for "Call (844) 584-7399" (needs 154), so the phone number wrapped onto a
    second line. The dock keeps the lesson and drops the even split: the number is
-   content-sized and Schedule takes the slack it was never using. */
-.xh-callbar a,.xh-callbar button{display:inline-flex;align-items:center;gap:7px;
+   content-sized and Schedule takes the slack it was never using.
+
+   The budget, measured on the deployed dock rather than estimated. A 360px phone —
+   a Galaxy S or a 12 mini, the narrowest width that still matters — gives the dock
+   336px, and the border, the left padding and the launcher's seat take 70 of it. Of
+   the 264 left, the number needs 122 and the gap 8, so the green pill gets 134 and
+   its label has to fit 118 of that. "Schedule Online" needs 118 exactly, which is not
+   a fit, it is a coincidence waiting to break on a font swap.
+   So two things give way, and neither is the number. The handset glyph goes, because
+   beside a phone number in a dock it says nothing the number does not already say —
+   it earns its place only in the icon-only layout below, where it is the whole button.
+   And the label sheds "Online": next to a phone number, a green Schedule pill is not
+   ambiguous about being the non-phone option. That leaves 22px of real slack. */
+.xh-callbar a,.xh-callbar button{display:inline-flex;align-items:center;gap:6px;
 justify-content:center;min-height:46px;border-radius:12px;font-weight:800;font-size:15px;
 border:0;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap}
-.xh-callbar .call{flex:0 0 auto;padding:0 12px;background:rgba(255,255,255,.10);color:#fff;
+.xh-callbar .call{flex:0 0 auto;padding:0 10px;background:rgba(255,255,255,.10);color:#fff;
 border:1px solid rgba(255,255,255,.24)}
-.xh-callbar .call svg{width:15px;height:15px;flex:none;fill:currentColor;opacity:.92}
+.xh-callbar .call svg{display:none;width:17px;height:17px;flex:none;fill:currentColor;opacity:.92}
 .xh-callbar .sched{flex:1 1 auto;min-width:0;padding:0 10px;background:#6BB85C;color:#0F172A;
 box-shadow:0 2px 10px rgba(107,184,92,.28)}
 /* Set by the header script while the mobile menu is open; the panel has its own
@@ -243,13 +255,16 @@ box-shadow:0 2px 10px rgba(107,184,92,.28)}
      over the last line of the footer. */
   body{padding-bottom:calc(86px + env(safe-area-inset-bottom))}
 
-  /* Seat the chat launcher in the dock. Coordinates are the dock's own: 12px inset
-     plus 8px of padding puts its edge flush with the buttons beside it. Purple on a
+  /* Seat the chat launcher in the dock. Coordinates are the dock's own, counted from
+     the viewport the way the launcher measures: 12px inset + 1px border + 8px padding
+     = 21, which lands it flush with the buttons beside it. Dropping the border from
+     that sum is a 1px misalignment, which is precisely the kind of thing that makes a
+     component read as accidental. Purple on a
      purple bar would have vanished, so it borrows the Call button's glass treatment
      and reads as its peer. The widget's drop shadow comes off — the dock casts one
      for all three buttons now. */
   extreme-chat::part(launcher){box-sizing:border-box;width:46px;height:46px;
-    right:20px;bottom:calc(20px + env(safe-area-inset-bottom));
+    right:21px;bottom:calc(21px + env(safe-area-inset-bottom));
     background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);
     box-shadow:none}
   extreme-chat::part(launcher):hover,
@@ -271,11 +286,11 @@ box-shadow:0 2px 10px rgba(107,184,92,.28)}
    still dials it. Everything from a 360px Galaxy up keeps the number on screen, which
    is the one thing someone reads when the heat is out. */
 @media (max-width:359px){
-  .xh-callbar{left:8px;right:8px;gap:6px;padding:6px;padding-right:56px}
+  .xh-callbar{left:8px;right:8px;gap:6px;padding:6px;padding-right:58px}
   .xh-callbar .call{width:46px;padding:0}
   .xh-callbar .call .num{display:none}
-  .xh-callbar .call svg{width:17px;height:17px}
-  extreme-chat::part(launcher){right:14px;bottom:calc(18px + env(safe-area-inset-bottom))}
+  .xh-callbar .call svg{display:block}
+  extreme-chat::part(launcher){right:15px;bottom:calc(19px + env(safe-area-inset-bottom))}
 }
 @media (prefers-reduced-motion:reduce){.xh-hd *{transition:none!important}}
 
@@ -519,7 +534,7 @@ def header(current=""):
  4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"/></svg>
     <span class="num">{D.PHONE_DISPLAY}</span>
   </a>
-  <button class="sched js-schedule" type="button">Schedule Online</button>
+  <button class="sched js-schedule" type="button">Schedule</button>
 </div>'''
 
 # ---------------------------------------------------------------- footer
