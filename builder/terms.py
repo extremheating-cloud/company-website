@@ -179,10 +179,19 @@ EXISTING_SECTIONS = [
     #
     # The texting number is deliberately NOT a Text Us button here. Legal pages stay
     # clean of CTAs, and a reviewer reading this section needs the number as text.
+    #
+    # Whether the number belonged on this page at all was the one open contradiction
+    # between §6 and §9 of the requirements doc. Aaron settled it on 2026-08-12: show
+    # it. It appears twice on purpose — once identified as the sending number, once as
+    # the HELP contact — because those answer two different questions, and a reviewer
+    # checking that the campaign's stated number matches the site should not have to
+    # infer it from a sentence about opting out.
     ("text-message-program", "Text Message Program", [
         "By providing your mobile number and opting in, you agree to receive text "
         "messages from Extreme Heating, Air &amp; Plumbing about your service request, "
         "appointment, and scheduled work. Consent is not a condition of purchase.",
+
+        f"Our text messages are sent from {D.SMS_DISPLAY}.",
 
         "Message frequency varies by conversation and appointment, typically 2&ndash;6 "
         "messages per service request. Message and data rates may apply.",

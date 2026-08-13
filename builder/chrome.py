@@ -178,20 +178,49 @@ color:#fff;font-weight:800;font-size:15px;text-decoration:none}
 font-weight:700;font-size:12px;color:rgba(255,255,255,.82)}
 .xh-pinned .trust .s{color:#F6A723;letter-spacing:1px}
 
-.xh-callbar{position:fixed;left:0;right:0;bottom:0;z-index:940;display:none;gap:10px;
-padding:10px 16px calc(10px + env(safe-area-inset-bottom));
-background:rgba(58,26,78,.97);backdrop-filter:blur(8px);border-top:1px solid rgba(255,255,255,.14)}
+/* ---------------------------- mobile dock ----------------------------
+   Three things competed for the bottom of a phone screen and nothing arbitrated:
+   this bar, the chat launcher, and whichever modal was open. The launcher lives in
+   the chat widget's shadow root at z-index 2147483000, so it won every fight — it
+   sat on top of the Schedule button and clipped the label, on top of the mobile
+   menu's Text Us button, and on top of the booking wizard, where tapping it would
+   have started a second conversation mid-booking.
+
+   The fix is not to shuffle our own furniture around it. The widget marks its button
+   part="launcher", and in the shadow cascade normal declarations from the outer
+   document beat the shadow tree's own rules, so we can place and size it from here.
+   No fork, no vendor change, no JS, and the script's consent wording — which is
+   quoted verbatim in the A2P registration — is untouched.
+
+   So the launcher stops being a thing that lands on the bar and becomes the bar's
+   third button. If the widget ever drops the part attribute, every rule below stops
+   matching and it reverts to a free-floating circle: today's behavior, not worse. */
+.xh-callbar{position:fixed;z-index:940;display:none;gap:8px;
+left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));
+padding:8px;border-radius:18px;
+background:rgba(37,16,50,.86);
+-webkit-backdrop-filter:blur(16px) saturate(150%);backdrop-filter:blur(16px) saturate(150%);
+border:1px solid rgba(255,255,255,.13);
+box-shadow:0 10px 30px rgba(9,4,14,.42),inset 0 1px 0 rgba(255,255,255,.07)}
+/* The right inset is the launcher's seat: 46px of button plus the 8px gap. Reserved
+   unconditionally rather than behind :has(extreme-chat), because the widget script is
+   deferred — making the seat conditional would shift the Schedule button sideways
+   after first paint on every load, to spare a symmetry nobody sees from the small
+   share of visitors who block the widget entirely. */
+.xh-callbar{padding-right:62px}
 /* nowrap is load-bearing, not cosmetic. flex:1 was splitting the bar down the middle,
    which on a 320px screen is 139px a side — enough for "Schedule Online" (needs 102)
    but not for "Call (844) 584-7399" (needs 154), so the phone number wrapped onto a
-   second line. With nowrap the flex items' default min-width:auto floors each button
-   at its content width, so Call takes its 154 and Schedule gives up the slack it was
-   never using. Measured, not guessed. */
-.xh-callbar a,.xh-callbar button{flex:1;display:inline-flex;align-items:center;
-justify-content:center;min-height:48px;border-radius:12px;font-weight:800;font-size:15px;
+   second line. The dock keeps the lesson and drops the even split: the number is
+   content-sized and Schedule takes the slack it was never using. */
+.xh-callbar a,.xh-callbar button{display:inline-flex;align-items:center;gap:7px;
+justify-content:center;min-height:46px;border-radius:12px;font-weight:800;font-size:15px;
 border:0;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap}
-.xh-callbar .call{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28)}
-.xh-callbar .sched{background:#6BB85C;color:#0F172A}
+.xh-callbar .call{flex:0 0 auto;padding:0 12px;background:rgba(255,255,255,.10);color:#fff;
+border:1px solid rgba(255,255,255,.24)}
+.xh-callbar .call svg{width:15px;height:15px;flex:none;fill:currentColor;opacity:.92}
+.xh-callbar .sched{flex:1 1 auto;min-width:0;padding:0 10px;background:#6BB85C;color:#0F172A;
+box-shadow:0 2px 10px rgba(107,184,92,.28)}
 /* Set by the header script while the mobile menu is open; the panel has its own
    pinned Schedule/Call pair and the bar was landing on top of it. */
 .xh-menu-open .xh-callbar{display:none}
@@ -210,17 +239,43 @@ border:0;cursor:pointer;font-family:inherit;text-decoration:none;white-space:now
   .xh-burger{display:flex}
   .xh-logo img{height:38px}
   .xh-callbar{display:flex}
-  body{padding-bottom:68px}
+  /* Dock is 62px tall and floats 12px off the bottom; 86 leaves it 12px of daylight
+     over the last line of the footer. */
+  body{padding-bottom:calc(86px + env(safe-area-inset-bottom))}
+
+  /* Seat the chat launcher in the dock. Coordinates are the dock's own: 12px inset
+     plus 8px of padding puts its edge flush with the buttons beside it. Purple on a
+     purple bar would have vanished, so it borrows the Call button's glass treatment
+     and reads as its peer. The widget's drop shadow comes off — the dock casts one
+     for all three buttons now. */
+  extreme-chat::part(launcher){box-sizing:border-box;width:46px;height:46px;
+    right:20px;bottom:calc(20px + env(safe-area-inset-bottom));
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);
+    box-shadow:none}
+  extreme-chat::part(launcher):hover,
+  extreme-chat::part(launcher):focus-visible{background:rgba(255,255,255,.19)}
+
+  /* A modal owns the screen or it doesn't. Both of these are mobile-only states, and
+     on mobile the chat panel is a full-screen sheet — so neither the menu nor the
+     wizard can be reached while chat is open, and hiding the launcher can never take
+     away the only control that closes an open panel.
+     :has() is the live-updating part: the wizard mounts .xw-root when it opens and
+     unmounts it when it closes. Browsers without :has() keep today's behavior. */
+  .xh-menu-open extreme-chat::part(launcher){display:none}
+  html:has(.xw-root) extreme-chat::part(launcher){display:none}
 }
-/* Narrowest phones still in use (iPhone SE, 320px). Measured there: the two labels
-   need 154 + 114 = 268px of content, and the default 32px of bar padding plus a 10px
-   gap leaves 278 — it fits, but by ten pixels, which is not a margin. Tightening the
-   chrome rather than shrinking the type keeps both buttons at their 48px tap target
-   and the number at full size, which is the one thing on screen someone is trying to
-   read when the heat is out. */
+/* Narrowest phones still in use (iPhone SE 1st gen, 320px). The full number needs 154
+   and the dock only has 280 of usable width once the launcher's seat and the gaps come
+   out, which is not enough for number + Schedule + chat. The number gives way rather
+   than the tap targets or the type: it collapses to a handset glyph, and the button
+   still dials it. Everything from a 360px Galaxy up keeps the number on screen, which
+   is the one thing someone reads when the heat is out. */
 @media (max-width:359px){
-  .xh-callbar{padding-left:12px;padding-right:12px;gap:8px}
-  .xh-callbar a,.xh-callbar button{font-size:14.5px}
+  .xh-callbar{left:8px;right:8px;gap:6px;padding:6px;padding-right:56px}
+  .xh-callbar .call{width:46px;padding:0}
+  .xh-callbar .call .num{display:none}
+  .xh-callbar .call svg{width:17px;height:17px}
+  extreme-chat::part(launcher){right:14px;bottom:calc(18px + env(safe-area-inset-bottom))}
 }
 @media (prefers-reduced-motion:reduce){.xh-hd *{transition:none!important}}
 
@@ -458,7 +513,12 @@ def header(current=""):
 </header>
 
 <div class="xh-callbar">
-  <a class="call" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
+  <a class="call" href="{D.PHONE_TEL}" aria-label="Call {D.PHONE_DISPLAY}">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.6 10.8c1.4 2.8 3.8 5.2\
+ 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3\
+ 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"/></svg>
+    <span class="num">{D.PHONE_DISPLAY}</span>
+  </a>
   <button class="sched js-schedule" type="button">Schedule Online</button>
 </div>'''
 
