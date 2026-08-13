@@ -85,11 +85,20 @@ border-bottom:1px solid var(--rule)}
    pages that actually render one (see .xsp-bookcol in template.py). */
 .xhac-svc:has(.xsp-bookcol) .xco-body{padding-top:104px}
 .xco-split{display:grid;grid-template-columns:1fr 360px;gap:48px}
-.xco-heroslot{width:100%;height:250px;border-radius:16px;background:rgba(255,255,255,.08);
+/* The company photo is the one image on this site that is useless in a column: it is a
+   single line of 31 people, so in the old 400px hero slot each face was about 12px wide.
+   It takes the full content width at every viewport and gets its own row under the hero
+   copy. Height comes from the file's own 3.4:1 rather than a fixed pixel value, so it
+   never letterboxes, and it keeps the 16px radius every other image on the site has. */
+.xco-heroslot{width:100%;height:auto;aspect-ratio:1600/470;border-radius:16px;
+background:rgba(255,255,255,.08);
 border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
 font-size:12px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:1px;overflow:hidden}
 .xco-heroslot img{width:100%;height:100%;object-fit:cover;display:block}
-.xco-hero-grid-400{grid-template-columns:1fr 400px;align-items:center}
+/* One column, so the photo can span the hero. The copy keeps a readable measure rather
+   than stretching to the full 1200px now that nothing sits beside it. */
+.xco-hero-grid-400{grid-template-columns:1fr;gap:30px}
+.xco-hero-grid-400 > div:first-child{max-width:70ch}
 .xco-ccard{border:1px solid var(--rule);border-radius:16px;padding:18px;background:#fff}
 .xco-ccard .c{width:18px;height:18px;border-radius:50%;background:var(--green);color:#fff;
 font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
@@ -176,16 +185,7 @@ margin-top:2px}
 .xco-body{padding:40px 20px 48px;gap:40px}
 .xhac-svc:has(.xsp-bookcol) .xco-body{padding-top:40px}
 .xco-split{grid-template-columns:1fr;gap:40px}
-.xco-hero-grid-400{grid-template-columns:1fr}
-/* The company photo runs edge to edge on a phone. It is a single line of 31 people, so
-   the thing that makes it work is width — in the padded slot it was a 350px strip, and
-   letting it reach both bezels is the difference between a photo and a thumbnail.
-   It keeps its true 3.4:1 ratio rather than being cropped to something taller: cover on
-   a wider-than-container box trims the sides, and the sides are where people are.
-   100vw is safe here because this is phone-only, where there is no scrollbar to overflow. */
-.xco-heroslot{width:100vw;margin-left:calc(50% - 50vw);margin-top:26px;height:auto;
-border-radius:0;background:none;border:0}
-.xco-heroslot img{height:auto;aspect-ratio:1600/470}
+.xco-heroslot{margin-top:22px}
 .xco-coupons{grid-template-columns:1fr;gap:12px}
 .xco-story{grid-template-columns:1fr;gap:20px}
 .xco-story .xco-slot{height:200px}
