@@ -141,10 +141,35 @@ padding:32px 36px;position:relative;overflow:hidden}
 .xco-stats .n{font-style:italic;font-weight:900;font-size:30px;color:#fff}
 .xco-stats .n .st{color:var(--stars)}
 .xco-stats .cap{font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px}
-.xco-team{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
-.xco-team .slot{height:230px;border-radius:14px}
-.xco-team .name{font-weight:800;font-size:14px;margin-top:10px}
-.xco-team .role{font-size:12.5px;font-weight:600;color:var(--body)}
+/* Team. The grid minimum is set by the longest role rather than by taste: "Operations
+   Coordinator" is 22 characters and needs ~140px at 11.5px, and a role that wraps to a
+   second line pushes that one tile taller than the rest of its row, which is the single
+   most obvious way a portrait grid looks unfinished. 148 is that measurement plus a
+   little, checked in the browser at 320 / 360 / 390 / 768 / 1280 rather than estimated.
+   The 320px rule at the bottom of this file is the same constraint at the one width
+   where two columns cannot pay for it. */
+.xco-crew + .xco-crew{margin-top:30px}
+.xco-crew-hd{display:flex;align-items:center;gap:10px;padding-bottom:9px;
+border-bottom:2px solid var(--rule);margin-bottom:16px}
+.xco-crew-hd h3{margin:0;font-size:15px;font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+.xco-crew-hd .n{font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.xco-team{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:20px 14px}
+.xco-mem{margin:0}
+/* height:auto is load-bearing. Every headshot carries width="440" height="550" so the
+   browser can reserve the box before the bytes land, and those attributes make the used
+   height definite — at which point aspect-ratio is ignored, because it only resolves a
+   dimension that is auto. Without this line all 31 tiles render 550px tall. */
+.xco-mem img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:12px;
+display:block;background:var(--tint)}
+.xco-mem figcaption{margin-top:9px}
+.xco-mem .nm{display:block;font-weight:800;font-size:13.5px;color:var(--ink);line-height:1.25}
+.xco-mem .rl{display:block;font-size:11.5px;font-weight:600;color:var(--body);line-height:1.3;
+margin-top:2px}
+/* The two owners run larger and stop at two columns — a four-across leadership row reads
+   as just another crew. */
+.xco-team-lead{grid-template-columns:repeat(2,minmax(0,1fr));max-width:460px;gap:20px}
+.xco-team-lead .nm{font-size:15px}
+.xco-team-lead .rl{font-size:12.5px}
 @media (max-width:809px){
 .xco-2col{grid-template-columns:1fr;gap:12px;margin-top:16px}
 .xco-hours .row{padding:13px 16px}
@@ -152,15 +177,31 @@ padding:32px 36px;position:relative;overflow:hidden}
 .xhac-svc:has(.xsp-bookcol) .xco-body{padding-top:40px}
 .xco-split{grid-template-columns:1fr;gap:40px}
 .xco-hero-grid-400{grid-template-columns:1fr}
-.xco-heroslot{height:200px;margin-top:24px}
+/* The company photo runs edge to edge on a phone. It is a single line of 31 people, so
+   the thing that makes it work is width — in the padded slot it was a 350px strip, and
+   letting it reach both bezels is the difference between a photo and a thumbnail.
+   It keeps its true 3.4:1 ratio rather than being cropped to something taller: cover on
+   a wider-than-container box trims the sides, and the sides are where people are.
+   100vw is safe here because this is phone-only, where there is no scrollbar to overflow. */
+.xco-heroslot{width:100vw;margin-left:calc(50% - 50vw);margin-top:26px;height:auto;
+border-radius:0;background:none;border:0}
+.xco-heroslot img{height:auto;aspect-ratio:1600/470}
 .xco-coupons{grid-template-columns:1fr;gap:12px}
 .xco-story{grid-template-columns:1fr;gap:20px}
 .xco-story .xco-slot{height:200px}
 .xco-vals{grid-template-columns:1fr;gap:12px}
 .xco-stats{padding:26px 22px;border-radius:20px}
 .xco-stats .grid{grid-template-columns:1fr 1fr;gap:18px}
-.xco-team{grid-template-columns:1fr 1fr;gap:12px}
-.xco-team .slot{height:180px}
+}
+/* iPhone SE and friends. Measured: the content box is 280px here, so a 148px minimum
+   buys one column and turns this section into a 31-screen scroll. Two columns need the
+   minimum under (280 - 10) / 2 = 135, and at 130 the tile lands on 135. The longest
+   role needs 139 at 11.5px and 121 at 10px, so the type steps down with the grid —
+   both numbers move or neither works. */
+@media (max-width:359px){
+.xco-team{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:16px 10px}
+.xco-mem .nm{font-size:12.5px}
+.xco-mem .rl{font-size:10px}
 }
 """
 
@@ -1037,14 +1078,16 @@ ABOUT = {
     "heroChips": ["Family Owned &amp; Operated", f"{D.YEARS_LOCAL} Years Local",
                   f"{D.GOOGLE_RATING} from {D.REVIEW_COUNT} reviews",
                   f"{D.LICENSE_HVAC} &middot; {D.LICENSE_PLUMBING}"],
-    # PLACEHOLDERS until Block B of the shot list is shot. Both are real Extreme
-    # photography, but neither is what its slot ultimately wants:
-    #  - hero wants a team lineup; this is the branded vehicle at a community event
-    #  - the story slot wants founders / the first van; this is a current van
-    # The story copy says "From one van to the whole Miami Valley" — do NOT let the
-    # alt text or any caption imply this photo is that first van.
-    "heroPhoto": {"src": PHOTOS["troy"], "pos": "50% 45%",
-                  "alt": f"The {D.COMPANY} team at a community event in Troy, Ohio"},
+    # The hero slot always wanted a team lineup and held a community-event photo until
+    # one existed. It exists now: the whole company in front of a service van, shot
+    # 2026-08-13. Cropped 3.4:1 from a 3:2 frame that was 40% empty asphalt and sky.
+    #
+    # The story slot below is STILL a placeholder. It wants founders or the first van,
+    # and neither was shot — the owners' frames are single portraits that belong in the
+    # leadership row, not in a wide short box. The story copy says "one van to the whole
+    # Miami Valley"; do NOT let the alt text imply this current van is that first one.
+    "heroPhoto": {"src": PHOTOS["companyGroup"], "pos": "50% 42%",
+                  "alt": f"The {D.COMPANY} team in front of a company service van"},
     "storyPhoto": {"src": PHOTOS["skyline"],
                    "alt": f"An {D.COMPANY} service van with the Dayton skyline behind it"},
     "story": {
@@ -1078,19 +1121,79 @@ ABOUT = {
         {"n": D.SAME_DAY, "cap": "of calls handled same-day"},
         {"n": "24/7", "cap": "emergency service line"},
     ],
-    # TODO: replace placeholder team names/roles with real staff + headshots (handoff 4a)
-    # Real team, photos client-supplied 2026-08-01. Each was cropped to a
-    # head-and-shoulders portrait at matching framing — the row runs four across and
-    # mismatched crops are the first thing you notice.
-    # TODO (client): confirm roles and years with the team for each person.
+    # The whole company, from the 2026-08-13 shoot. Names and roles come from the
+    # photographer's filenames, confirmed by the client.
     #
-    # NOT RENDERED. See the note in about_page() — the section is off the page until
-    # the company photo shoot lands. Do not re-add it here or in the assembler.
+    # ORDER IS THE DESIGN. The crew was shot against two backdrops: field staff outdoors
+    # against the van wrap, which reads purple and green, and office staff indoors against
+    # the lobby sign, which reads light grey. Interleaved in one grid that looks like a
+    # mistake. Grouped, it looks deliberate, because the backdrop changes exactly where
+    # the crew heading does. Leadership and In the office are the two indoor sections and
+    # they run first, so the page crosses that line once instead of five times.
+    #
+    # Jim Nix is the one person the split does not fit: office role, shot at the van. He
+    # sits with Plumbing, which is defensible on his title alone — Plumbing Dispatcher —
+    # and keeps the seam clean.
+    #
+    # Douglas and Ryan were both shot both ways; the indoor frames are used so the pair
+    # matches. He founded the company and Ryan bought in later, so the titles differ.
+    #
+    # ORDER WITHIN A CREW IS SENIORITY, HIGHEST FIRST, then last name alphabetically among
+    # people who share a title. Tenure is not recorded anywhere in this repo, so the title
+    # is the only thing that can be ranked without inventing a fact about a real person,
+    # and the alphabetical tiebreak keeps the order stable when a title is shared by nine
+    # people. Jim Nix sits last in Plumbing rather than by rank: dispatching is a
+    # different track from the trade, not a lower rung on it.
     "team": [
-        {"name": "Anthony Griffin", "role": "Installer", "photo": PHOTOS["team"]["anthony-griffin"]},
-        {"name": "Jayvon Kilgore",  "role": "Installer", "photo": PHOTOS["team"]["jayvon-kilgore"]},
-        {"name": "Joe Richardson",  "role": "Comfort Advisor", "photo": PHOTOS["team"]["joe-richardson"]},
-        {"name": "Tyler Hardy",     "role": "Installer", "photo": PHOTOS["team"]["tyler-hardy"]},
+        ("Leadership", [
+            ("Douglas Washburn", "Founder &amp; Owner", "douglas-washburn"),
+            ("Ryan Basinger", "Owner", "ryan-basinger"),
+        ]),
+        ("In the office", [
+            ("Cyndi Reeves", "Financial Controller", "cyndi-reeves"),
+            ("Aaron Matthew", "Operations Coordinator", "aaron-matthew"),
+            ("Samantha Desaro", "Office Coordinator", "samantha-desaro"),
+            ("David Engelbrink", "Inventory Coordinator", "david-engelbrink"),
+            ("Aleasha King", "CSR", "aleasha-king"),
+        ]),
+        ("Comfort Advisors", [
+            ("Joe Richardson", "Comfort Advisor", "joe-richardson"),
+            ("Shaun Vamos", "Comfort Advisor", "shaun-vamos"),
+        ]),
+        ("HVAC Service", [
+            ("Ric White", "HVAC Service Manager", "ric-white"),
+            ("Josh Adkins", "HVAC Technician", "josh-adkins"),
+            ("Cody Evans", "HVAC Technician", "cody-evans"),
+            ("Garry Key", "HVAC Technician", "garry-key"),
+            ("Austin Robinson", "HVAC Technician", "austin-robinson"),
+            ("Tristan Robinson", "HVAC Technician", "tristan-robinson"),
+            ("Lee Sellon", "HVAC Technician", "lee-sellon"),
+            ("Emmanuel Tshiala", "HVAC Technician", "emmanuel-tshiala"),
+            ("Corey Witt", "HVAC Technician", "corey-witt"),
+        ]),
+        # "HVAC Install", not "HVAC Installation", in the titles. The heading has a whole
+        # line to itself and can carry the longer word; the titles sit in a 135px tile on a
+        # 320px phone, where "HVAC Installation Helper" measures 132 and leaves 3px — the
+        # kind of fit that survives until the first font change.
+        ("HVAC Installation", [
+            ("Anthony Griffin", "HVAC Install Lead", "anthony-griffin"),
+            ("Tyler Hardy", "HVAC Install Lead", "tyler-hardy"),
+            ("Brandon Orona", "HVAC Install Lead", "brandon-orona"),
+            ("Robbie Collier", "HVAC Install Helper", "robbie-collier"),
+            ("Chase Conway", "HVAC Install Helper", "chase-conway"),
+            ("Jayvon Kilgore", "HVAC Install Helper", "jayvon-kilgore"),
+            ("Logan Washburn", "HVAC Install Helper", "logan-washburn"),
+        ]),
+        ("Plumbing", [
+            ("Andre Roeder", "Master Plumber", "andre-roeder"),
+            ("Jason Romine", "Plumber", "jason-romine"),
+            ("Chris Weekley", "Plumber", "chris-weekley"),
+            ("Jim Nix", "Plumbing Dispatcher", "jim-nix"),
+        ]),
+        ("Duct Cleaning", [
+            ("Matt Carson", "Duct Cleaning Lead", "matt-carson"),
+            ("Jason Scales", "Duct Cleaning Helper", "jason-scales"),
+        ]),
     ],
     # Both cards used to point at /locations, so two differently-labelled links went
     # to the same place. The per-city pages exist; these are them.
@@ -1222,12 +1325,30 @@ def about_page(d, root_class):
   <img class="mark" src="{T.X_MARK}" alt=""{T.dim_attrs(T.X_MARK)} loading="lazy" decoding="async" style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)">
   <div class="grid">{stats}</div>
 </div>'''
-    # The team section is off the page until the company photo shoot (client, 2026-08-02
-    # — headshots for the whole company, then this page gets rebuilt around them). The
-    # four names that were here carried roles guessed from filenames, so publishing
-    # them was misattributing real people. Renderer and CSS stay; only the call is
-    # removed, so restoring it is one line once the photos land.
-    team = ""
+    # Back on the page as of the 2026-08-13 shoot. It sits under "Who will come to my
+    # house?" rather than in a section of its own: that heading already asks the question
+    # 31 faces answer, and a reader who has just been told a licensed tech in a marked van
+    # is coming is exactly the reader who wants to see them.
+    #
+    # Every headshot is lazy-loaded and carries its intrinsic width and height, so 31
+    # images reserve their boxes without shifting the page and without downloading until
+    # they are scrolled to.
+    def crew(title, members, lead=False):
+        cards = "".join(
+            f'''<figure class="xco-mem"><img src="{PHOTOS["team"][slug]}" alt="{name}, {role.replace("&amp;", "and")} at {D.COMPANY}"{T.dim_attrs(PHOTOS["team"][slug])} loading="lazy" decoding="async">
+    <figcaption><span class="nm">{name}</span><span class="rl">{role}</span></figcaption></figure>'''
+            for name, role, slug in members)
+        return f'''<div class="xco-crew">
+  <div class="xco-crew-hd"><h3>{title}</h3><span class="n">{len(members)}</span></div>
+  <div class="xco-team{" xco-team-lead" if lead else ""}">{cards}</div>
+</div>'''
+    team = section(
+        "THE TEAM", "Who works here?",
+        "".join(crew(t, m, lead=(t == "Leadership")) for t, m in d["team"]),
+        sid="team",
+        lead=[f"All {sum(len(m) for _, m in d['team'])} of us, across four Ohio shops. "
+              "Every technician is licensed, insured, drug-tested and background-checked "
+              "before they set foot in your house."])
     areas = "".join(
         f'''<a class="xsp-card" href="{a["href"]}">
   <span class="txt"><span class="t">{a["t"]}</span><br><span class="d">{a["d"]}</span></span>

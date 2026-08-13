@@ -617,10 +617,35 @@ padding:32px 36px;position:relative;overflow:hidden}
 .xco-stats .n{font-style:italic;font-weight:900;font-size:30px;color:#fff}
 .xco-stats .n .st{color:var(--stars)}
 .xco-stats .cap{font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px}
-.xco-team{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
-.xco-team .slot{height:230px;border-radius:14px}
-.xco-team .name{font-weight:800;font-size:14px;margin-top:10px}
-.xco-team .role{font-size:12.5px;font-weight:600;color:var(--body)}
+/* Team. The grid minimum is set by the longest role rather than by taste: "Operations
+   Coordinator" is 22 characters and needs ~140px at 11.5px, and a role that wraps to a
+   second line pushes that one tile taller than the rest of its row, which is the single
+   most obvious way a portrait grid looks unfinished. 148 is that measurement plus a
+   little, checked in the browser at 320 / 360 / 390 / 768 / 1280 rather than estimated.
+   The 320px rule at the bottom of this file is the same constraint at the one width
+   where two columns cannot pay for it. */
+.xco-crew + .xco-crew{margin-top:30px}
+.xco-crew-hd{display:flex;align-items:center;gap:10px;padding-bottom:9px;
+border-bottom:2px solid var(--rule);margin-bottom:16px}
+.xco-crew-hd h3{margin:0;font-size:15px;font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+.xco-crew-hd .n{font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.xco-team{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:20px 14px}
+.xco-mem{margin:0}
+/* height:auto is load-bearing. Every headshot carries width="440" height="550" so the
+   browser can reserve the box before the bytes land, and those attributes make the used
+   height definite — at which point aspect-ratio is ignored, because it only resolves a
+   dimension that is auto. Without this line all 31 tiles render 550px tall. */
+.xco-mem img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:12px;
+display:block;background:var(--tint)}
+.xco-mem figcaption{margin-top:9px}
+.xco-mem .nm{display:block;font-weight:800;font-size:13.5px;color:var(--ink);line-height:1.25}
+.xco-mem .rl{display:block;font-size:11.5px;font-weight:600;color:var(--body);line-height:1.3;
+margin-top:2px}
+/* The two owners run larger and stop at two columns — a four-across leadership row reads
+   as just another crew. */
+.xco-team-lead{grid-template-columns:repeat(2,minmax(0,1fr));max-width:460px;gap:20px}
+.xco-team-lead .nm{font-size:15px}
+.xco-team-lead .rl{font-size:12.5px}
 @media (max-width:809px){
 .xco-2col{grid-template-columns:1fr;gap:12px;margin-top:16px}
 .xco-hours .row{padding:13px 16px}
@@ -628,15 +653,31 @@ padding:32px 36px;position:relative;overflow:hidden}
 .xhac-svc:has(.xsp-bookcol) .xco-body{padding-top:40px}
 .xco-split{grid-template-columns:1fr;gap:40px}
 .xco-hero-grid-400{grid-template-columns:1fr}
-.xco-heroslot{height:200px;margin-top:24px}
+/* The company photo runs edge to edge on a phone. It is a single line of 31 people, so
+   the thing that makes it work is width — in the padded slot it was a 350px strip, and
+   letting it reach both bezels is the difference between a photo and a thumbnail.
+   It keeps its true 3.4:1 ratio rather than being cropped to something taller: cover on
+   a wider-than-container box trims the sides, and the sides are where people are.
+   100vw is safe here because this is phone-only, where there is no scrollbar to overflow. */
+.xco-heroslot{width:100vw;margin-left:calc(50% - 50vw);margin-top:26px;height:auto;
+border-radius:0;background:none;border:0}
+.xco-heroslot img{height:auto;aspect-ratio:1600/470}
 .xco-coupons{grid-template-columns:1fr;gap:12px}
 .xco-story{grid-template-columns:1fr;gap:20px}
 .xco-story .xco-slot{height:200px}
 .xco-vals{grid-template-columns:1fr;gap:12px}
 .xco-stats{padding:26px 22px;border-radius:20px}
 .xco-stats .grid{grid-template-columns:1fr 1fr;gap:18px}
-.xco-team{grid-template-columns:1fr 1fr;gap:12px}
-.xco-team .slot{height:180px}
+}
+/* iPhone SE and friends. Measured: the content box is 280px here, so a 148px minimum
+   buys one column and turns this section into a 31-screen scroll. Two columns need the
+   minimum under (280 - 10) / 2 = 135, and at 130 the tile lands on 135. The longest
+   role needs 139 at 11.5px and 121 at 10px, so the type steps down with the grid —
+   both numbers move or neither works. */
+@media (max-width:359px){
+.xco-team{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:16px 10px}
+.xco-mem .nm{font-size:12.5px}
+.xco-mem .rl{font-size:10px}
 }
 </style>
 <div class="xsp-hero">
@@ -649,7 +690,7 @@ padding:32px 36px;position:relative;overflow:hidden}
       <p class="xsp-intro">Locally owned. Extremely committed.</p>
       <div class="xsp-chiprow"><div class="xsp-chip">Family Owned &amp; Operated</div><div class="xsp-chip">20+ Years Local</div><div class="xsp-chip"><span class="st">★</span> 4.9 from 1,595 reviews</div><div class="xsp-chip">OH LIC #37179 &middot; OH LIC #13557</div></div>
     </div>
-    <div class="xco-heroslot"><img src="/assets/locations/troy-community-event.jpg?v=0339725" alt="The Extreme Heating, Air, Plumbing team at a community event in Troy, Ohio" style="object-position:50% 45%" loading="lazy" decoding="async"></div>
+    <div class="xco-heroslot"><img src="/assets/team/company-group.jpg?v=0339725" alt="The Extreme Heating, Air, Plumbing team in front of a company service van" style="object-position:50% 42%" loading="lazy" decoding="async"></div>
   </div>
 </div>
 <div class="xco-body">
@@ -690,7 +731,64 @@ padding:32px 36px;position:relative;overflow:hidden}
   <img class="mark" src="/assets/brand/x-mark.png?v=0339725" alt="" width="420" height="446" loading="lazy" decoding="async" style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)">
   <div class="grid"><div><div class="n">20+</div><div class="cap">years serving Ohio homes</div></div><div><div class="n"><span class="st">★</span> 4.9</div><div class="cap">average across 1,595 customer reviews</div></div><div><div class="n">90%</div><div class="cap">of calls handled same-day</div></div><div><div class="n">24/7</div><div class="cap">emergency service line</div></div></div>
 </div>
-  
+  <div id="team">
+  <div class="xsp-eyebrow">THE TEAM</div>
+  <h2 class="xsp-h2">Who works here?</h2>
+  <p class="xsp-prose">All 31 of us, across four Ohio shops. Every technician is licensed, insured, drug-tested and background-checked before they set foot in your house.</p>
+<div class="xco-crew">
+  <div class="xco-crew-hd"><h3>Leadership</h3><span class="n">2</span></div>
+  <div class="xco-team xco-team-lead"><figure class="xco-mem"><img src="/assets/team/douglas-washburn.jpg?v=0339725" alt="Douglas Washburn, Founder and Owner at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Douglas Washburn</span><span class="rl">Founder &amp; Owner</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/ryan-basinger.jpg?v=0339725" alt="Ryan Basinger, Owner at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Ryan Basinger</span><span class="rl">Owner</span></figcaption></figure></div>
+</div><div class="xco-crew">
+  <div class="xco-crew-hd"><h3>In the office</h3><span class="n">5</span></div>
+  <div class="xco-team"><figure class="xco-mem"><img src="/assets/team/cyndi-reeves.jpg?v=0339725" alt="Cyndi Reeves, Financial Controller at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Cyndi Reeves</span><span class="rl">Financial Controller</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/aaron-matthew.jpg?v=0339725" alt="Aaron Matthew, Operations Coordinator at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Aaron Matthew</span><span class="rl">Operations Coordinator</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/samantha-desaro.jpg?v=0339725" alt="Samantha Desaro, Office Coordinator at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Samantha Desaro</span><span class="rl">Office Coordinator</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/david-engelbrink.jpg?v=0339725" alt="David Engelbrink, Inventory Coordinator at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">David Engelbrink</span><span class="rl">Inventory Coordinator</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/aleasha-king.jpg?v=0339725" alt="Aleasha King, CSR at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Aleasha King</span><span class="rl">CSR</span></figcaption></figure></div>
+</div><div class="xco-crew">
+  <div class="xco-crew-hd"><h3>Comfort Advisors</h3><span class="n">2</span></div>
+  <div class="xco-team"><figure class="xco-mem"><img src="/assets/team/joe-richardson.jpg?v=0339725" alt="Joe Richardson, Comfort Advisor at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Joe Richardson</span><span class="rl">Comfort Advisor</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/shaun-vamos.jpg?v=0339725" alt="Shaun Vamos, Comfort Advisor at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Shaun Vamos</span><span class="rl">Comfort Advisor</span></figcaption></figure></div>
+</div><div class="xco-crew">
+  <div class="xco-crew-hd"><h3>HVAC Service</h3><span class="n">9</span></div>
+  <div class="xco-team"><figure class="xco-mem"><img src="/assets/team/ric-white.jpg?v=0339725" alt="Ric White, HVAC Service Manager at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Ric White</span><span class="rl">HVAC Service Manager</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/josh-adkins.jpg?v=0339725" alt="Josh Adkins, HVAC Technician at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Josh Adkins</span><span class="rl">HVAC Technician</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/cody-evans.jpg?v=0339725" alt="Cody Evans, HVAC Technician at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Cody Evans</span><span class="rl">HVAC Technician</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/garry-key.jpg?v=0339725" alt="Garry Key, HVAC Technician at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Garry Key</span><span class="rl">HVAC Technician</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/austin-robinson.jpg?v=0339725" alt="Austin Robinson, HVAC Technician at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Austin Robinson</span><span class="rl">HVAC Technician</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/tristan-robinson.jpg?v=0339725" alt="Tristan Robinson, HVAC Technician at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Tristan Robinson</span><span class="rl">HVAC Technician</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/lee-sellon.jpg?v=0339725" alt="Lee Sellon, HVAC Technician at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Lee Sellon</span><span class="rl">HVAC Technician</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/emmanuel-tshiala.jpg?v=0339725" alt="Emmanuel Tshiala, HVAC Technician at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Emmanuel Tshiala</span><span class="rl">HVAC Technician</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/corey-witt.jpg?v=0339725" alt="Corey Witt, HVAC Technician at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Corey Witt</span><span class="rl">HVAC Technician</span></figcaption></figure></div>
+</div><div class="xco-crew">
+  <div class="xco-crew-hd"><h3>HVAC Installation</h3><span class="n">7</span></div>
+  <div class="xco-team"><figure class="xco-mem"><img src="/assets/team/anthony-griffin.jpg?v=0339725" alt="Anthony Griffin, HVAC Install Lead at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Anthony Griffin</span><span class="rl">HVAC Install Lead</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/tyler-hardy.jpg?v=0339725" alt="Tyler Hardy, HVAC Install Lead at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Tyler Hardy</span><span class="rl">HVAC Install Lead</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/brandon-orona.jpg?v=0339725" alt="Brandon Orona, HVAC Install Lead at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Brandon Orona</span><span class="rl">HVAC Install Lead</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/robbie-collier.jpg?v=0339725" alt="Robbie Collier, HVAC Install Helper at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Robbie Collier</span><span class="rl">HVAC Install Helper</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/chase-conway.jpg?v=0339725" alt="Chase Conway, HVAC Install Helper at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Chase Conway</span><span class="rl">HVAC Install Helper</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/jayvon-kilgore.jpg?v=0339725" alt="Jayvon Kilgore, HVAC Install Helper at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Jayvon Kilgore</span><span class="rl">HVAC Install Helper</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/logan-washburn.jpg?v=0339725" alt="Logan Washburn, HVAC Install Helper at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Logan Washburn</span><span class="rl">HVAC Install Helper</span></figcaption></figure></div>
+</div><div class="xco-crew">
+  <div class="xco-crew-hd"><h3>Plumbing</h3><span class="n">4</span></div>
+  <div class="xco-team"><figure class="xco-mem"><img src="/assets/team/andre-roeder.jpg?v=0339725" alt="Andre Roeder, Master Plumber at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Andre Roeder</span><span class="rl">Master Plumber</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/jason-romine.jpg?v=0339725" alt="Jason Romine, Plumber at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Jason Romine</span><span class="rl">Plumber</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/chris-weekley.jpg?v=0339725" alt="Chris Weekley, Plumber at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Chris Weekley</span><span class="rl">Plumber</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/jim-nix.jpg?v=0339725" alt="Jim Nix, Plumbing Dispatcher at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Jim Nix</span><span class="rl">Plumbing Dispatcher</span></figcaption></figure></div>
+</div><div class="xco-crew">
+  <div class="xco-crew-hd"><h3>Duct Cleaning</h3><span class="n">2</span></div>
+  <div class="xco-team"><figure class="xco-mem"><img src="/assets/team/matt-carson.jpg?v=0339725" alt="Matt Carson, Duct Cleaning Lead at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Matt Carson</span><span class="rl">Duct Cleaning Lead</span></figcaption></figure><figure class="xco-mem"><img src="/assets/team/jason-scales.jpg?v=0339725" alt="Jason Scales, Duct Cleaning Helper at Extreme Heating, Air, Plumbing" width="440" height="550" loading="lazy" decoding="async">
+    <figcaption><span class="nm">Jason Scales</span><span class="rl">Duct Cleaning Helper</span></figcaption></figure></div>
+</div>
+</div>
   <div id="offices">
   <div class="xsp-eyebrow">OUR OFFICES</div>
   <h2 class="xsp-h2">Where are your offices?</h2>

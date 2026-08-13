@@ -62,6 +62,7 @@ PHOTOS = {
     "vans":         cdn_asset("locations/vans-leaving.jpg"),
     "troy":         cdn_asset("locations/troy-community-event.jpg"),
     "skyline":      cdn_asset("locations/dayton-skyline-van.jpg"),
+    "companyGroup": cdn_asset("team/company-group.jpg"),
     "ruudHeatPump": cdn_asset("equipment/ruud-heat-pump.jpg"),
     "ruudCondenser": cdn_asset("equipment/ruud-condenser.jpg"),
     "ruudInstall":  cdn_asset("equipment/ruud-install.jpg"),
@@ -72,12 +73,24 @@ PHOTOS = {
     "furnaceRepairOpen": cdn_asset("service/furnace-repair-open.jpg"),
     "traneInstall": cdn_asset("equipment/trane-install.jpg"),
     "geWaterHeater": cdn_asset("equipment/ge-water-heater-install.jpg"),
-    "team": {
-        "anthony-griffin": cdn_asset("team/anthony-griffin.jpg"),
-        "jayvon-kilgore":  cdn_asset("team/jayvon-kilgore.jpg"),
-        "joe-richardson":  cdn_asset("team/joe-richardson.jpg"),
-        "tyler-hardy":     cdn_asset("team/tyler-hardy.jpg"),
-    },
+    # 31 headshots from the company shoot, 2026-08-13. Slugs are the filenames; the
+    # roster that pairs each with a name, role and crew lives in company_pages.ABOUT.
+    # Every file is the same 440x550 4:5 crop, derived from the detected face box
+    # rather than the frame centre — the sources are landscape with the subject high
+    # and left, so a centre crop cuts heads off.
+    "team": {s: cdn_asset("team/" + s + ".jpg") for s in (
+        "aaron-matthew", "aleasha-king", "andre-roeder",
+        "anthony-griffin", "austin-robinson", "brandon-orona",
+        "chase-conway", "chris-weekley", "cody-evans",
+        "corey-witt", "cyndi-reeves", "david-engelbrink",
+        "douglas-washburn", "emmanuel-tshiala", "garry-key",
+        "jason-romine", "jason-scales", "jayvon-kilgore",
+        "jim-nix", "joe-richardson", "josh-adkins",
+        "lee-sellon", "logan-washburn", "matt-carson",
+        "ric-white", "robbie-collier", "ryan-basinger",
+        "samantha-desaro", "shaun-vamos", "tristan-robinson",
+        "tyler-hardy",
+    )},
 }
 
 GRADIENT_HERO = "linear-gradient(180deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%)"
@@ -211,10 +224,38 @@ ASSET_DIMS = {
     "service/sale.jpg": (943, 840),
     "service/smart-thermostat.jpg": (730, 588),
     "service/thermostat.jpg": (898, 629),
-    "team/anthony-griffin.jpg": (574, 766),
-    "team/jayvon-kilgore.jpg": (574, 766),
-    "team/joe-richardson.jpg": (496, 662),
-    "team/tyler-hardy.jpg": (574, 766),
+    "team/aaron-matthew.jpg": (440, 550),
+    "team/aleasha-king.jpg": (440, 550),
+    "team/andre-roeder.jpg": (440, 550),
+    "team/anthony-griffin.jpg": (440, 550),
+    "team/austin-robinson.jpg": (440, 550),
+    "team/brandon-orona.jpg": (440, 550),
+    "team/chase-conway.jpg": (440, 550),
+    "team/chris-weekley.jpg": (440, 550),
+    "team/cody-evans.jpg": (440, 550),
+    "team/company-group.jpg": (1600, 470),
+    "team/corey-witt.jpg": (440, 550),
+    "team/cyndi-reeves.jpg": (440, 550),
+    "team/david-engelbrink.jpg": (440, 550),
+    "team/douglas-washburn.jpg": (440, 550),
+    "team/emmanuel-tshiala.jpg": (440, 550),
+    "team/garry-key.jpg": (440, 550),
+    "team/jason-romine.jpg": (440, 550),
+    "team/jason-scales.jpg": (440, 550),
+    "team/jayvon-kilgore.jpg": (440, 550),
+    "team/jim-nix.jpg": (440, 550),
+    "team/joe-richardson.jpg": (440, 550),
+    "team/josh-adkins.jpg": (440, 550),
+    "team/lee-sellon.jpg": (440, 550),
+    "team/logan-washburn.jpg": (440, 550),
+    "team/matt-carson.jpg": (440, 550),
+    "team/ric-white.jpg": (440, 550),
+    "team/robbie-collier.jpg": (440, 550),
+    "team/ryan-basinger.jpg": (440, 550),
+    "team/samantha-desaro.jpg": (440, 550),
+    "team/shaun-vamos.jpg": (440, 550),
+    "team/tristan-robinson.jpg": (440, 550),
+    "team/tyler-hardy.jpg": (440, 550),
 }
 
 def asset_dims(src):

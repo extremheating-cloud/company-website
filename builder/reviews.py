@@ -21,7 +21,7 @@ REVIEWS = [
     ("Very professional people to deal with… definitely recommend Extreme Heating &amp; Air for first check &amp; fast, high tech solutions &amp; great crew. Thanks!", "Ferda G.", None),
     ("Our AC wasn't working well after the heatwave. Extreme had a technician out within 12 hours… he was great, got it fixed and didn't try to upsell me at all.", "Suzie Wegh", None),
     ("Awesome and professional. Will trust Extreme with all my HVAC needs from now on. Happy customer! Cody was great!", "Craig Johnson", None),
-    ("Furnace cleaning on HVAC system that was installed a few years ago by Extreme was just accomplished again by Cory Witt, Extreme technician and he did an outstanding job.", "Jerry Siders", None),
+    ("Furnace cleaning on HVAC system that was installed a few years ago by Extreme was just accomplished again by Corey Witt, Extreme technician and he did an outstanding job.", "Jerry Siders", None),
     ("Tristan was incredible. He was quickly able to diagnose the issue… and provided me with a lot of useful information that will help me in the future.", "Tyrus Wesson", None),
     ("The tech was top notch!", "David Overla", None),
     ("I had Tristan and he did a wonderful job explaining and checking everything to help diagnose what the issue was. Would do business with them again.", "Michael Stringfield", None),
