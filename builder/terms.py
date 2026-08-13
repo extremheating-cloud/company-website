@@ -187,9 +187,12 @@ EXISTING_SECTIONS = [
     # checking that the campaign's stated number matches the site should not have to
     # infer it from a sentence about opting out.
     ("text-message-program", "Text Message Program", [
-        "By providing your mobile number and opting in, you agree to receive text "
-        "messages from Extreme Heating, Air &amp; Plumbing about your service request, "
-        "appointment, and scheduled work. Consent is not a condition of purchase.",
+        # The trading name is D.COMPANY, not the "&" variant. Spelling the sender's
+        # name differently here than the chat widget spells it is the kind of mismatch
+        # a carrier reviewer reads as two different businesses.
+        f"By providing your mobile number and opting in, you agree to receive text "
+        f"messages from {D.COMPANY} about your service request, "
+        f"appointment, and scheduled work. Consent is not a condition of purchase.",
 
         f"Our text messages are sent from {D.SMS_DISPLAY}.",
 
