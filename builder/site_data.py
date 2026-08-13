@@ -79,7 +79,7 @@ EMAIL = "info@extremeheating.com"
 # THE DISPLAY RULE, and it is not a style preference. This number renders as literal
 # readable text in exactly TWO places:
 #
-#   /contact   "Call (844) 584-7399 · Text (937) 744-7148"
+#   /contact   "Call (844) 584-7399 · Text (937) 977-1464"
 #   /privacy   the opt-out sentence, which must name the number it applies to
 #
 # Everywhere else it is a Text Us button with no number painted on the page. The
@@ -87,10 +87,16 @@ EMAIL = "info@extremeheating.com"
 # relied on to inspect — and the aria-label keeps the number available to screen
 # readers without putting it in the visual design on 320 pages.
 #
-# Formatting is (937) 744-7148 everywhere, matching the registration character for
+# Formatting is (937) 977-1464 everywhere, matching the registration character for
 # character. A reviewer comparing the two should not have to normalise anything.
-SMS_DISPLAY = "(937) 744-7148"
-SMS_E164 = "+19377447148"
+#
+# CHANGED 2026-08-13: was (937) 744-7148 on Twilio. The provider moved to Telnyx and
+# that number does not exist on the new account, so it is not a re-format — anything
+# still showing it is pointing at a dead line. The office line (844) 584-7399 is
+# unrelated and unchanged, including the widget's data-phone, which is the CALL
+# fallback and is meant to be the office.
+SMS_DISPLAY = "(937) 977-1464"
+SMS_E164 = "+19379771464"
 
 # Bare sms: with no body=. iOS and Android disagree on ?body= vs &body=, and a
 # malformed one opens an empty composer with no recipient on some handsets. Losing the
