@@ -1046,12 +1046,16 @@ export default function ContactFlowDialog() {
         fd.set("Phone Number", formatPhone(phoneDigits))
         if (email.trim()) fd.set("Email", email.trim())
         fd.set("Service Address", address.trim())
-        fd.set("SMS Consent", smsOk ? "YES" : "NO")
-        if (smsOk) {
-            fd.set("SMS Consent Timestamp", new Date().toISOString())
-            fd.set("SMS Consent Page", window.location.href)
-            fd.set("SMS Consent Text", SMS_CONSENT_TEXT)
-        }
+        // SMS consent is deliberately NOT sent to Formspree (removed 2026-08-13).
+        // The checkbox still renders and still governs whether we may text this
+        // person, but nothing about it leaves the browser any more, so there is
+        // currently no stored record of who agreed. If that record is needed as
+        // the TCPA proof, it has to be captured somewhere first — reinstating
+        // these four fields is the smallest way back:
+        //   "SMS Consent"           smsOk ? "YES" : "NO"      (always, both ways)
+        //   "SMS Consent Timestamp" new Date().toISOString()  (only when true)
+        //   "SMS Consent Page"      window.location.href      (only when true)
+        //   "SMS Consent Text"      SMS_CONSENT_TEXT          (only when true)
         if (data.previousCustomer)
             fd.set("Previous Customer", data.previousCustomer)
         if (data.preferredContact)
