@@ -924,10 +924,20 @@ def main():
     # still reference the CDN, so this tree is unreferenced weight (~13 MB in a
     # gitignored directory) — cheap insurance against a half-landed migration.
     # print/ is excluded: press-resolution artwork nobody requests over HTTP.
+    #
+    # js/ is excluded too, and that one is not just weight. The wizard bundle is
+    # copied to site/js/ above, which is the path chrome.py actually loads and which
+    # _headers makes revalidate. Letting it ALSO land under site/assets/ published a
+    # second copy at a URL covered by the /assets/* immutable rule — same filename,
+    # never content-hashed, cached for a year. It went stale the first time the wizard
+    # changed and then stayed stale, and because it looks like the real bundle it is
+    # the copy you find when you go looking. It cost an hour on 2026-08-13: a deploy
+    # that had already succeeded read as failed for fifteen minutes because the URL
+    # being polled was this one.
     assets_src = os.path.join(ROOT, "assets")
     if os.path.isdir(assets_src):
         shutil.copytree(assets_src, os.path.join(SITE, "assets"), dirs_exist_ok=True,
-                        ignore=shutil.ignore_patterns("print", "*.afdesign"))
+                        ignore=shutil.ignore_patterns("print", "*.afdesign", "js"))
 
     write_404()
 

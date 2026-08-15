@@ -16,7 +16,7 @@ WHAT LOADS, AND FROM WHOM
     FollowUp Pro chat       (A2P opt-in path 2)   followup-pro-37ed6.web.app
 
 BOOKING FLOW, decided 2026-08-03: the site keeps its own scheduling wizard. Every
-.js-schedule button opens assets/js/schedule.js, exactly as before. The ServiceTitan
+.js-schedule button opens /js/schedule.js, exactly as before. The ServiceTitan
 modal below is loaded but is NOT wired to any button on this site — it exists so the
 Broccoli widget can trigger it by posting {type: "OPEN_ST_SCHEDULER"} or dispatching
 the OPEN_ST_SCHEDULER event. That is deliberate. Do not "fix" the apparently dead
