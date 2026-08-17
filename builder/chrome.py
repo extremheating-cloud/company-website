@@ -28,7 +28,7 @@ font-family:"Montserrat",ui-sans-serif,system-ui,sans-serif}
 .xh-hd a{text-decoration:none}
 /* Color inheritance is scoped to the purple bar and the mobile panel. Applying it to
    every descendant forced the white dropdown's links to render white-on-lavender. */
-.xh-bar a,.xh-panel a,.xh-callbar a{color:inherit}
+.xh-bar a,.xh-panel a{color:inherit}
 .xh-bar{max-width:1280px;margin:0 auto;padding:14px 40px;display:flex;align-items:center;
 justify-content:space-between;gap:24px}
 .xh-logo{display:flex;align-items:center;flex:none}
@@ -171,9 +171,6 @@ background:#6BB85C;color:#0F172A;font-weight:800;font-size:15.5px;font-family:in
 .xh-pinned .call{width:100%;min-height:48px;display:flex;align-items:center;
 justify-content:center;border:1.5px solid rgba(255,255,255,.45);border-radius:12px;
 color:#fff;font-weight:800;font-size:15px;text-decoration:none}
-.xh-pinned .text{width:100%;min-height:48px;display:flex;align-items:center;
-justify-content:center;border:1.5px solid rgba(255,255,255,.45);border-radius:12px;
-color:#fff;font-weight:800;font-size:15px;text-decoration:none}
 .xh-pinned .trust{display:flex;align-items:center;justify-content:center;gap:8px;
 font-weight:700;font-size:12px;color:rgba(255,255,255,.82)}
 .xh-pinned .trust .s{color:#F6A723;letter-spacing:1px}
@@ -187,68 +184,21 @@ font-weight:700;font-size:12px;color:rgba(255,255,255,.82)}
    around, including the .card p / .fine specificity bug that kept the consent
    disclosure from ever rendering as fine print, and the missing safe-area insets.
    Do not reintroduce it. If the widget looks wrong, report it upstream; a patch
-   here is invisible to them and breaks silently when they rename a class. */
-extreme-chat{
+   here is invisible to them and breaks silently when they rename a class.
+
+   BOTH TAG NAMES ON PURPOSE. The element was <extreme-chat>; the build shipped on
+   2026-08-13 renamed it to <extreme-chat-v3>, which silently killed every rule below
+   — the tokens stopped applying and the menu-open hide stopped matching, with no
+   error anywhere. Nothing in their docs mentions the rename; it was found by reading
+   the live DOM. Keep old names here when they add v4, and do not assume a selector
+   that worked last week still resolves. */
+extreme-chat,
+extreme-chat-v3{
   --exc-purple:#5F2980; --exc-green:#6BB85C; --exc-border:#E7E7EA;
   --exc-ink:#0F172A; --exc-slate:#64748B;
   --exc-radius-input:12px; --exc-radius-btn:12px; --exc-radius-card:16px;
   --exc-weight-heading:900; --exc-weight-btn:800; --exc-size-fine:12.5px}
 
-/* ---------------------------- mobile dock ----------------------------
-   Three things competed for the bottom of a phone screen and nothing arbitrated:
-   this bar, the chat launcher, and whichever modal was open. The launcher lives in
-   the chat widget's shadow root at z-index 2147483000, so it won every fight — it
-   sat on top of the Schedule button and clipped the label, on top of the mobile
-   menu's Text Us button, and on top of the booking wizard, where tapping it would
-   have started a second conversation mid-booking.
-
-   The fix is not to shuffle our own furniture around it. The widget marks its button
-   part="launcher", and in the shadow cascade normal declarations from the outer
-   document beat the shadow tree's own rules, so we can place and size it from here.
-   No fork, no vendor change, no JS, and the script's consent wording — which is
-   quoted verbatim in the A2P registration — is untouched.
-
-   So the launcher stops being a thing that lands on the bar and becomes the bar's
-   third button. If the widget ever drops the part attribute, every rule below stops
-   matching and it reverts to a free-floating circle: today's behavior, not worse. */
-.xh-callbar{position:fixed;z-index:940;display:none;gap:8px;
-left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));
-padding:8px;border-radius:18px;
-background:rgba(37,16,50,.86);
--webkit-backdrop-filter:blur(16px) saturate(150%);backdrop-filter:blur(16px) saturate(150%);
-border:1px solid rgba(255,255,255,.13);
-box-shadow:0 10px 30px rgba(9,4,14,.42),inset 0 1px 0 rgba(255,255,255,.07)}
-/* The dock no longer reserves a seat for the launcher. It did while the launcher was
-   a bare circle we could size to match the buttons; as of the 2026-08-13 widget build
-   it is a labelled "Text Us" pill of its own width, which does not belong wedged into
-   a row of our buttons. It floats above the dock instead, via --exc-launcher-bottom,
-   which is the vendor's supported hook for exactly this. */
-/* nowrap is load-bearing, not cosmetic. flex:1 was splitting the bar down the middle,
-   which on a 320px screen is 139px a side — enough for "Schedule Online" (needs 102)
-   but not for "Call (844) 584-7399" (needs 154), so the phone number wrapped onto a
-   second line. The dock keeps the lesson and drops the even split: the number is
-   content-sized and Schedule takes the slack it was never using.
-
-   The budget, measured on the deployed dock rather than estimated. A 360px phone —
-   a Galaxy S or a 12 mini, the narrowest width that still matters — gives the dock
-   336px, and the border and padding take 18, leaving 318. The number needs 163 with
-   its handset glyph and the gap takes 8, so the green pill gets 147 for a label that
-   needs 122.
-   Handing the launcher's 54px seat back to the row is what bought that. While the seat
-   existed the pill had 134px and "Schedule Online" needed 118 of it, a fit so tight it
-   was a coincidence waiting to break on a font swap, and both the glyph and the word
-   "Online" had to go. Both come back now. */
-.xh-callbar a,.xh-callbar button{display:inline-flex;align-items:center;gap:6px;
-justify-content:center;min-height:46px;border-radius:12px;font-weight:800;font-size:15px;
-border:0;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap}
-.xh-callbar .call{flex:0 0 auto;padding:0 10px;background:rgba(255,255,255,.10);color:#fff;
-border:1px solid rgba(255,255,255,.24)}
-.xh-callbar .call svg{width:17px;height:17px;flex:none;fill:currentColor;opacity:.92}
-.xh-callbar .sched{flex:1 1 auto;min-width:0;padding:0 10px;background:#6BB85C;color:#0F172A;
-box-shadow:0 2px 10px rgba(107,184,92,.28)}
-/* Set by the header script while the mobile menu is open; the panel has its own
-   pinned Schedule/Call pair and the bar was landing on top of it. */
-.xh-menu-open .xh-callbar{display:none}
 
 @media (max-width:1023px){
   .xh-bar{padding:12px 24px;gap:14px}
@@ -263,49 +213,24 @@ box-shadow:0 2px 10px rgba(107,184,92,.28)}
   .xh-nav,.xh-actions{display:none}
   .xh-burger{display:flex}
   .xh-logo img{height:38px}
-  .xh-callbar{display:flex}
-  /* Dock is 62px tall and floats 12px off the bottom; 86 leaves it 12px of daylight
-     over the last line of the footer. */
-  body{padding-bottom:calc(86px + env(safe-area-inset-bottom))}
 
-  /* Lift the chat launcher clear of the dock. The dock's top edge is 76px off the
-     bottom (12 inset + 64 tall), so 88 leaves a 12px gap, matching the daylight the
-     dock keeps from the footer.
+  /* The widget sits wherever it puts itself. We used to lift it clear of a sticky
+     dock of our own; the dock went on 2026-08-13 because the widget now carries Call
+     and Chat itself, so there is nothing left to clear and no offset to set.
 
-     Both halves of this are load-bearing, and the second is a workaround, not a belt
-     and braces. --exc-launcher-bottom is the widget's own hook, added 2026-08-13 at
-     our request, and on a phone it does nothing: they wrote
+     What stays is getting it out of the way when a modal of ours owns the screen.
+     This hides the HOST element rather than ::part(launcher): the widget renders two
+     buttons now, and a rule aimed at one named part would leave the other one sitting
+     over the menu. The host is an ordinary light-DOM element and hiding it takes the
+     whole widget, whatever it grows next.
 
-         .launcher                         { bottom: calc(var(--exc-launcher-bottom,20px) + …) }
-         .wrap[data-fullscreen] .launcher  { bottom: calc(16px + …) }
-
-     and the fullscreen rule out-specifies the token on the only layout where the
-     token matters. Same defect as the .fine one we reported, third time now. So the
-     token is set for when they fix it, and ::part carries it until they do, because
-     the outer document wins the shadow cascade on specificity ties and beats it. */
-  extreme-chat{--exc-launcher-bottom:calc(88px + env(safe-area-inset-bottom));
-    --exc-launcher-right:12px}
-  extreme-chat::part(launcher){bottom:calc(88px + env(safe-area-inset-bottom));right:12px}
-
-  /* Positioning is a token; "get out of the way right now" is not, so these two stay
-     on ::part(). A modal owns the screen or it doesn't. Both states are mobile-only,
-     and on mobile the chat panel is a full-screen sheet — so neither the menu nor the
-     wizard can be reached while chat is open, and hiding the launcher can never take
-     away the only control that closes an open panel.
-     :has() is the live-updating part: the wizard mounts .xw-root when it opens and
-     unmounts it when it closes. Browsers without :has() keep today's behavior. */
-  .xh-menu-open extreme-chat::part(launcher){display:none}
-  html:has(.xw-root) extreme-chat::part(launcher){display:none}
-}
-/* Narrowest phones still in use (iPhone SE 1st gen, 320px). 290px of usable width, and
-   the number plus "Schedule Online" needs 258 of it once the glyph comes off. So the
-   glyph gives way here and the number does not: it is the one thing someone reads when
-   the heat is out, and it now survives at every width the dock is drawn at. */
-@media (max-width:359px){
-  .xh-callbar{left:8px;right:8px;gap:6px;padding:6px}
-  .xh-callbar .call svg{display:none}
-  extreme-chat{--exc-launcher-right:8px}
-  extreme-chat::part(launcher){right:8px}
+     Safe on mobile specifically, which is all this block covers: the chat panel is
+     full screen there, so neither the menu nor the wizard can be opened behind it,
+     and this can never hide the only control that closes an open chat.
+     :has() is the live-updating half — the wizard mounts .xw-root when it opens and
+     unmounts it on close. Browsers without :has() keep today's behavior. */
+  .xh-menu-open extreme-chat, .xh-menu-open extreme-chat-v3,
+  html:has(.xw-root) extreme-chat, html:has(.xw-root) extreme-chat-v3{display:none}
 }
 @media (prefers-reduced-motion:reduce){.xh-hd *{transition:none!important}}
 
@@ -334,15 +259,9 @@ box-shadow:0 24px 60px rgba(15,23,42,.3)}
 .xt-x{position:absolute;top:12px;right:12px;width:36px;height:36px;border:0;border-radius:10px;
 background:#F4F1F8;color:#5F2980;font-size:17px;cursor:pointer;line-height:1}
 .xt-x:hover{background:#EAE2F0}
-.xt-f{margin:0 0 13px}
-.xt-f label{display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px}
-.xt-f input{width:100%;font-family:inherit;font-size:16px;padding:12px 13px;border-radius:12px;
-border:1.5px solid #E7E7EA;background:#fff;color:#0F172A;min-height:46px}
-.xt-f input:focus{outline:2px solid #6BB85C;outline-offset:1px;border-color:#5F2980}
-.xt-f input[aria-invalid="true"]{border-color:#B4342A}
-.xt-err{font-size:12px;font-weight:700;color:#B4342A;margin:6px 0 0}
 .xt-check{display:flex;gap:10px;align-items:flex-start;margin:4px 0 16px;cursor:pointer}
 .xt-check input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:#5F2980;cursor:pointer}
+.xt-check input:focus-visible{outline:2px solid #5F2980;outline-offset:2px}
 .xt-copy{font-size:12px;line-height:1.5;color:#64748B}
 .xt-copy a{color:#5F2980;font-weight:700;text-decoration:underline;text-underline-offset:2px}
 .xt-go{width:100%;min-height:48px;border:0;border-radius:12px;background:#6BB85C;color:#0F172A;
@@ -579,43 +498,29 @@ def header(current=""):
     <div class="xh-pinned">
       <button class="cta js-schedule" type="button">Schedule Service</button>
       <a class="call" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
-      <a class="text js-text" href="{D.SMS_HREF}" aria-label="{D.SMS_ARIA}">Text Us</a>
       <div class="trust"><span class="s">★★★★★</span> {D.GOOGLE_RATING} on Google · 24/7 emergency</div>
     </div>
   </div>
 </header>
 
-<div class="xh-callbar">
-  <a class="call" href="{D.PHONE_TEL}" aria-label="Call {D.PHONE_DISPLAY}">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.6 10.8c1.4 2.8 3.8 5.2\
- 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3\
- 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"/></svg>
-    <span class="num">{D.PHONE_DISPLAY}</span>
-  </a>
-  <button class="sched js-schedule" type="button">Schedule Online</button>
-</div>
 
 <div class="xt-back" id="xt-back" data-open="false">
   <div class="xt-card" role="dialog" aria-modal="true" aria-labelledby="xt-h">
     <button class="xt-x" type="button" id="xt-x" aria-label="Close">&times;</button>
     <h2 id="xt-h">Text us</h2>
-    <p class="sub">We&rsquo;ll open your messaging app in a second. Tell us who&rsquo;s writing
-    so we can pull up your address before we reply.</p>
-    <div class="xt-f">
-      <label for="xt-name">First name</label>
-      <input id="xt-name" type="text" autocomplete="given-name" autocapitalize="words">
-    </div>
-    <div class="xt-f">
-      <label for="xt-phone">Mobile number</label>
-      <input id="xt-phone" type="tel" inputmode="tel" autocomplete="tel"
-             placeholder="(937) 555-0142" maxlength="14">
-      <p class="xt-err" id="xt-err" hidden>Enter a 10-digit mobile number.</p>
-    </div>
+    <p class="sub">We&rsquo;ll open your messaging app with our number ready to go. Whatever
+    you send reaches the office, and someone answers 24/7.</p>
+    <!-- "at the number I text from", NOT the approved form's "at the number above".
+         That phrasing belongs to the booking form, where a phone field sits directly
+         above the checkbox. There is no field here, so "above" would point at nothing
+         and the sentence would be false. Everything a disclosure has to carry is still
+         here: consent is not a condition, rates, frequency, HELP and STOP, and both
+         links. Aaron should read this line before the campaign is resubmitted. -->
     <label class="xt-check" for="xt-ok">
       <input type="checkbox" id="xt-ok" aria-describedby="xt-copy">
-      <span class="xt-copy" id="xt-copy">Yes, text me about my service request at the number
-      above. Consent is not a condition of purchase. Msg &amp; data rates may apply, message
-      frequency varies. Reply HELP for help or STOP to opt out. See our
+      <span class="xt-copy" id="xt-copy">Yes, {D.COMPANY} may text me about my service request
+      at the number I text from. Consent is not a condition of purchase. Msg &amp; data rates
+      may apply, message frequency varies. Reply HELP for help or STOP to opt out. See our
       <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and
       <a href="/terms" target="_blank" rel="noopener noreferrer">Terms</a>.</span>
     </label>
@@ -835,36 +740,9 @@ JS = """
      optional agreement into a toll gate. */
   var tb = document.getElementById('xt-back');
   if (tb) {
-    var tName = document.getElementById('xt-name'),
-        tPhone = document.getElementById('xt-phone'),
-        tOk = document.getElementById('xt-ok'),
+    var tOk = document.getElementById('xt-ok'),
         tGo = document.getElementById('xt-go'),
-        tErr = document.getElementById('xt-err'),
-        tHref = null, tLast = null;
-
-    function tDigits(v){ return (v || '').replace(/\\D/g, '').replace(/^1(?=\\d{10}$)/, ''); }
-    function tFormat(v){
-      var d = tDigits(v).slice(0, 10);
-      if (d.length > 6) return '(' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6);
-      if (d.length > 3) return '(' + d.slice(0,3) + ') ' + d.slice(3);
-      if (d.length) return '(' + d;
-      return '';
-    }
-    function tValid(){ return tName.value.trim().length > 0 && tDigits(tPhone.value).length === 10; }
-    function tSync(){ tGo.disabled = !tValid(); }
-
-    tPhone.addEventListener('input', function(){
-      /* Reformat as they type. Backspacing over ")" or "-" has to eat the digit too,
-         or the caret sits still and the field looks frozen. */
-      var before = tDigits(tPhone.value);
-      tPhone.value = tFormat(tPhone.value);
-      if (tPhone.value === tLast && before.length) tPhone.value = tFormat(before.slice(0, -1));
-      tLast = tPhone.value;
-      tPhone.setAttribute('aria-invalid', 'false');
-      tErr.hidden = true;
-      tSync();
-    });
-    tName.addEventListener('input', tSync);
+        tHref = null;
 
     function tClose(){
       tb.setAttribute('data-open', 'false');
@@ -875,8 +753,9 @@ JS = """
       tHref = a;
       tb.setAttribute('data-open', 'true');
       document.body.style.overflow = 'hidden';
-      tSync();
-      setTimeout(function(){ tName.focus(); }, 30);
+      /* Focus the checkbox, not the button: it is the only thing here to decide, and
+         a keyboard user should land on the choice rather than past it. */
+      setTimeout(function(){ tOk.focus(); }, 30);
     }
 
     document.addEventListener('click', function(e){
@@ -894,15 +773,11 @@ JS = """
     });
 
     tGo.addEventListener('click', function(){
-      if (!tValid()){
-        tPhone.setAttribute('aria-invalid', 'true');
-        tErr.hidden = false;
-        tPhone.focus();
-        return;
-      }
-      /* Nothing is transmitted. The fields and the tick exist so the visitor is asked
-         plainly and on the record, but there is no endpoint behind this yet — see the
-         note in the commit. Add one here if the consent record is ever needed. */
+      /* No validation, because there is nothing left to validate and nothing is
+         transmitted. The sheet exists to put the disclosure in front of someone before
+         they text us and to let them agree or not; the tick is read by nobody today.
+         If a consent record is ever needed, tOk.checked is the value to send and this
+         is the line to send it from. */
       window.location.href = (tHref && tHref.getAttribute('href')) || 'sms:';
       tClose();
     });
