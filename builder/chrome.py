@@ -309,6 +309,49 @@ box-shadow:0 2px 10px rgba(107,184,92,.28)}
 }
 @media (prefers-reduced-motion:reduce){.xh-hd *{transition:none!important}}
 
+/* ========================= Text Us consent sheet =========================
+   Every Text Us button on the site is still an <a href="sms:...">, and this only
+   intercepts the click. With JS off, or if this script fails, the anchor works
+   exactly as it always did and opens the composer — the consent capture is an
+   enhancement on top, never a gate in front.
+
+   The checkbox does NOT gate the button. Telnyx rejected the chat widget on
+   2026-08-13 for making the number mandatory with no optional checkbox beside the
+   opt-in language, and a sheet that refuses to open Messages until someone ticks a
+   box is the same defect wearing our brand. Name and number are required because
+   the reviewer explicitly allows a mandatory field when the checkbox is optional;
+   consent itself never is. */
+.xt-back{position:fixed;inset:0;z-index:9998;display:none;align-items:center;
+justify-content:center;padding:20px;background:rgba(15,23,42,.55);
+-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.xt-back[data-open="true"]{display:flex}
+.xt-card{width:100%;max-width:430px;max-height:calc(100vh - 40px);overflow-y:auto;
+background:#fff;border-radius:18px;padding:26px 24px 22px;position:relative;
+font-family:"Montserrat",ui-sans-serif,system-ui,sans-serif;color:#0F172A;
+box-shadow:0 24px 60px rgba(15,23,42,.3)}
+.xt-card h2{margin:0 0 6px;font-size:21px;font-weight:900;letter-spacing:-.028em}
+.xt-card .sub{margin:0 0 18px;font-size:13.5px;line-height:1.55;color:#475569}
+.xt-x{position:absolute;top:12px;right:12px;width:36px;height:36px;border:0;border-radius:10px;
+background:#F4F1F8;color:#5F2980;font-size:17px;cursor:pointer;line-height:1}
+.xt-x:hover{background:#EAE2F0}
+.xt-f{margin:0 0 13px}
+.xt-f label{display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px}
+.xt-f input{width:100%;font-family:inherit;font-size:16px;padding:12px 13px;border-radius:12px;
+border:1.5px solid #E7E7EA;background:#fff;color:#0F172A;min-height:46px}
+.xt-f input:focus{outline:2px solid #6BB85C;outline-offset:1px;border-color:#5F2980}
+.xt-f input[aria-invalid="true"]{border-color:#B4342A}
+.xt-err{font-size:12px;font-weight:700;color:#B4342A;margin:6px 0 0}
+.xt-check{display:flex;gap:10px;align-items:flex-start;margin:4px 0 16px;cursor:pointer}
+.xt-check input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:#5F2980;cursor:pointer}
+.xt-copy{font-size:12px;line-height:1.5;color:#64748B}
+.xt-copy a{color:#5F2980;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.xt-go{width:100%;min-height:48px;border:0;border-radius:12px;background:#6BB85C;color:#0F172A;
+font-family:inherit;font-weight:800;font-size:15.5px;cursor:pointer}
+.xt-go:hover{background:#8FD481}
+.xt-go[disabled]{opacity:.5;cursor:default}
+.xt-note{margin:11px 0 0;font-size:11.5px;line-height:1.45;color:#94A3B8;text-align:center}
+@media (max-width:359px){.xt-card{padding:22px 18px 18px}}
+
 /* ============================== footer ============================== */
 .xf{position:relative;background:#3A1A4E;color:#fff;overflow:hidden;
 font-family:"Montserrat",ui-sans-serif,system-ui,sans-serif}
@@ -536,7 +579,7 @@ def header(current=""):
     <div class="xh-pinned">
       <button class="cta js-schedule" type="button">Schedule Service</button>
       <a class="call" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
-      <a class="text" href="{D.SMS_HREF}" aria-label="{D.SMS_ARIA}">Text Us</a>
+      <a class="text js-text" href="{D.SMS_HREF}" aria-label="{D.SMS_ARIA}">Text Us</a>
       <div class="trust"><span class="s">★★★★★</span> {D.GOOGLE_RATING} on Google · 24/7 emergency</div>
     </div>
   </div>
@@ -550,6 +593,35 @@ def header(current=""):
     <span class="num">{D.PHONE_DISPLAY}</span>
   </a>
   <button class="sched js-schedule" type="button">Schedule Online</button>
+</div>
+
+<div class="xt-back" id="xt-back" data-open="false">
+  <div class="xt-card" role="dialog" aria-modal="true" aria-labelledby="xt-h">
+    <button class="xt-x" type="button" id="xt-x" aria-label="Close">&times;</button>
+    <h2 id="xt-h">Text us</h2>
+    <p class="sub">We&rsquo;ll open your messaging app in a second. Tell us who&rsquo;s writing
+    so we can pull up your address before we reply.</p>
+    <div class="xt-f">
+      <label for="xt-name">First name</label>
+      <input id="xt-name" type="text" autocomplete="given-name" autocapitalize="words">
+    </div>
+    <div class="xt-f">
+      <label for="xt-phone">Mobile number</label>
+      <input id="xt-phone" type="tel" inputmode="tel" autocomplete="tel"
+             placeholder="(937) 555-0142" maxlength="14">
+      <p class="xt-err" id="xt-err" hidden>Enter a 10-digit mobile number.</p>
+    </div>
+    <label class="xt-check" for="xt-ok">
+      <input type="checkbox" id="xt-ok" aria-describedby="xt-copy">
+      <span class="xt-copy" id="xt-copy">Yes, text me about my service request at the number
+      above. Consent is not a condition of purchase. Msg &amp; data rates may apply, message
+      frequency varies. Reply HELP for help or STOP to opt out. See our
+      <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and
+      <a href="/terms" target="_blank" rel="noopener noreferrer">Terms</a>.</span>
+    </label>
+    <button class="xt-go" type="button" id="xt-go">Open Messages</button>
+    <p class="xt-note">Ticking the box is optional &mdash; this opens Messages either way.</p>
+  </div>
 </div>'''
 
 # ---------------------------------------------------------------- footer
@@ -628,7 +700,7 @@ def footer():
       <div class="xf-cta-btns">
         <button class="xf-btn-green js-schedule" type="button">Schedule Service&nbsp;&nbsp;→</button>
         <a class="xf-btn-outline" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
-        <a class="xf-btn-outline" href="{D.SMS_HREF}" aria-label="{D.SMS_ARIA}">Text Us</a>
+        <a class="xf-btn-outline js-text" href="{D.SMS_HREF}" aria-label="{D.SMS_ARIA}">Text Us</a>
       </div>
     </div>
 
@@ -749,6 +821,92 @@ JS = """
       b.setAttribute('aria-expanded', open ? 'false' : 'true');
     });
   });
+
+  /* --- Text Us: capture consent, then hand off to the SMS composer ----------
+     Progressive enhancement, deliberately. Every trigger is a real <a href="sms:...">,
+     so with JS off the composer opens directly and nothing is lost. This only runs
+     when the sheet is actually in the DOM and the click was a plain left click, so
+     cmd-click and long-press-copy still behave like a link.
+
+     The Open Messages button is enabled by name + number ONLY. The checkbox is never
+     part of that test — see the CSS note. Ticking it is what makes the difference
+     between "they texted us first" and "they told us we may text them", and both are
+     legitimate; refusing to open Messages until someone consents would turn an
+     optional agreement into a toll gate. */
+  var tb = document.getElementById('xt-back');
+  if (tb) {
+    var tName = document.getElementById('xt-name'),
+        tPhone = document.getElementById('xt-phone'),
+        tOk = document.getElementById('xt-ok'),
+        tGo = document.getElementById('xt-go'),
+        tErr = document.getElementById('xt-err'),
+        tHref = null, tLast = null;
+
+    function tDigits(v){ return (v || '').replace(/\\D/g, '').replace(/^1(?=\\d{10}$)/, ''); }
+    function tFormat(v){
+      var d = tDigits(v).slice(0, 10);
+      if (d.length > 6) return '(' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6);
+      if (d.length > 3) return '(' + d.slice(0,3) + ') ' + d.slice(3);
+      if (d.length) return '(' + d;
+      return '';
+    }
+    function tValid(){ return tName.value.trim().length > 0 && tDigits(tPhone.value).length === 10; }
+    function tSync(){ tGo.disabled = !tValid(); }
+
+    tPhone.addEventListener('input', function(){
+      /* Reformat as they type. Backspacing over ")" or "-" has to eat the digit too,
+         or the caret sits still and the field looks frozen. */
+      var before = tDigits(tPhone.value);
+      tPhone.value = tFormat(tPhone.value);
+      if (tPhone.value === tLast && before.length) tPhone.value = tFormat(before.slice(0, -1));
+      tLast = tPhone.value;
+      tPhone.setAttribute('aria-invalid', 'false');
+      tErr.hidden = true;
+      tSync();
+    });
+    tName.addEventListener('input', tSync);
+
+    function tClose(){
+      tb.setAttribute('data-open', 'false');
+      document.body.style.overflow = '';
+      if (tHref && tHref.focus) tHref.focus();
+    }
+    function tOpen(a){
+      tHref = a;
+      tb.setAttribute('data-open', 'true');
+      document.body.style.overflow = 'hidden';
+      tSync();
+      setTimeout(function(){ tName.focus(); }, 30);
+    }
+
+    document.addEventListener('click', function(e){
+      var a = e.target.closest ? e.target.closest('.js-text') : null;
+      if (!a) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      e.preventDefault();
+      tOpen(a);
+    });
+
+    document.getElementById('xt-x').addEventListener('click', tClose);
+    tb.addEventListener('click', function(e){ if (e.target === tb) tClose(); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && tb.getAttribute('data-open') === 'true') tClose();
+    });
+
+    tGo.addEventListener('click', function(){
+      if (!tValid()){
+        tPhone.setAttribute('aria-invalid', 'true');
+        tErr.hidden = false;
+        tPhone.focus();
+        return;
+      }
+      /* Nothing is transmitted. The fields and the tick exist so the visitor is asked
+         plainly and on the record, but there is no endpoint behind this yet — see the
+         note in the commit. Add one here if the consent record is ever needed. */
+      window.location.href = (tHref && tHref.getAttribute('href')) || 'sms:';
+      tClose();
+    });
+  }
 
   /* --- schedule triggers, header + footer + anywhere on the page --- */
   document.querySelectorAll('.js-schedule').forEach(function(el){
