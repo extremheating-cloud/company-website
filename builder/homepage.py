@@ -132,20 +132,15 @@ font-family:inherit;text-decoration:none;white-space:nowrap}
 .hp-btn-green:hover{background:#8FD481}
 .hp-btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.45)}
 .hp-btn-ghost:hover{border-color:#6BB85C;color:#8FD481}
-.hp-trust{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
-.hp-trust > span{display:inline-flex;align-items:center;gap:8px;
-border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);border-radius:12px;
-padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff}
-.hp-trust .st{color:#F6A723;letter-spacing:1.5px;font-size:11px}
-/* The green dot came off the old hero badge when that badge was folded into this
-   row. It is the only chip marker that is not the ◆ glyph, which is the point:
-   it marks the one chip carrying a fact about the company rather than a rating
-   or a number. */
-.hp-trust .dot{width:7px;height:7px;border-radius:50%;background:#6BB85C;flex:none}
-.hp-trust .dot{width:7px;height:7px;border-radius:50%;background:#6BB85C}
+/* Five items plus the label need 1053px of text and the bar has 1200 inside its
+   padding, so the column gap is what decides whether this is one line or two.
+   At 30px it came to 1203 and X-Plan dropped to a row of its own, which the
+   mobile note below already calls ragged. 24px leaves 27px of slack. Shortening
+   an item was the other option and the wrong one: "Free Replacement Estimates"
+   is not "Free Estimates" — estimates are free on replacements, not repairs. */
 .hp-promise{background:#0F172A;color:#fff}
 .hp-promise-in{max-width:1280px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;
-gap:12px 30px;flex-wrap:wrap}
+gap:12px 24px;flex-wrap:wrap}
 .hp-promise .lab{font-size:11px;font-weight:800;letter-spacing:1.8px;color:rgba(255,255,255,.45)}
 .hp-promise .item{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85)}
 
@@ -266,8 +261,6 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
   .hp-stats{grid-template-columns:1fr 1fr;gap:16px}
   .hp-cta-row{flex-direction:column;align-items:stretch;gap:10px;margin-top:24px}
   .hp-btn{width:100%;min-height:52px;font-size:15.5px}
-  .hp-trust{justify-content:center;gap:8px;margin-top:26px}
-  .hp-trust > span{padding:9px 13px}
   .hp-xp{padding:26px 22px;border-radius:20px}
   .hp-head-row{flex-direction:column;align-items:flex-start;gap:10px}
   .hp-brand img{height:38px;max-width:150px}
@@ -277,15 +270,15 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
   .hp-promise .lab{margin-bottom:2px}
 }
 /* ---- desktop / mobile copy swap -------------------------------------------------
-   The hero carries two versions of the badge, lede and trust row: the desktop copy is
-   too long for a phone, and the Framer hero swapped it rather than wrapping onto four
-   lines. These selectors are element+class deliberately — a bare .hp-mb loses to
-   .hp-trust{display:flex} on source order and both rows render at once. */
-p.hp-lede.hp-mb,div.hp-trust.hp-mb{display:none}
+   The hero carries two versions of the lede: the desktop copy is too long for a phone,
+   and the Framer hero swapped it rather than wrapping onto four lines. The badge and
+   the trust chips used to swap the same way; both are gone now, the chips folded into
+   the promise bar below the hero. The selector stays element+class — a bare .hp-mb
+   would lose to any later display rule on source order. */
+p.hp-lede.hp-mb{display:none}
 @media (max-width:809px){
-  p.hp-lede.hp-dt,div.hp-trust.hp-dt{display:none}
+  p.hp-lede.hp-dt{display:none}
   p.hp-lede.hp-mb{display:block}
-  div.hp-trust.hp-mb{display:flex}
 }
 """
 
@@ -329,18 +322,6 @@ def homepage():
       <button class="hp-btn hp-btn-green js-schedule" type="button">Schedule Service&nbsp;&nbsp;→</button>
       <a class="hp-btn hp-btn-ghost" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
     </div>
-    <div class="hp-trust hp-dt">
-      <span><span class="st">★★★★★</span> {D.GOOGLE_RATING} on Google</span>
-      <span>◆ {D.YEARS_LOCAL} Years</span>
-      <span><span class="dot"></span>Locally Owned &amp; Operated &middot; {len(D.OFFICES)} Locations</span>
-      <span>◆ 24/7 Emergency</span>
-    </div>
-    <div class="hp-trust hp-mb">
-      <span><span class="st">★★★★★</span> {D.GOOGLE_RATING}</span>
-      <span>{D.YEARS_LOCAL} yrs</span>
-      <span><span class="dot"></span>Locally Owned &middot; {len(D.OFFICES)} Locations</span>
-      <span>24/7</span>
-    </div>
 
     <div class="hp-van-stage" aria-hidden="true">
       <div class="hp-slash"></div>
@@ -358,6 +339,7 @@ def homepage():
 
 <div class="hp-promise"><div class="hp-promise-in">
   <span class="lab">THE EXTREME PROMISE</span>
+  <span class="item">◆ Locally Owned &amp; Operated</span>
   <span class="item">◆ Licensed &amp; Insured</span>
   <span class="item">◆ Free Replacement Estimates</span>
   <span class="item">◆ Financing Available</span>
