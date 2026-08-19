@@ -114,11 +114,7 @@ to{transform:translateX(-44.5%)}}
 to{transform:translateX(-50%)}}
 .hp-van-col .hp-van{animation:hp-drive 1.15s cubic-bezier(.17,.84,.34,1) .12s both}
 .hp-van-stage .hp-van{animation:hp-drive-mb 1s cubic-bezier(.17,.84,.34,1) .12s both}
-.hp-badge{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,.3);
-background:rgba(255,255,255,.1);border-radius:999px;padding:8px 15px;font-size:11.5px;
-font-weight:800;letter-spacing:1.4px}
-.hp-badge .dot{width:7px;height:7px;border-radius:50%;background:#6BB85C}
-.hp-h1{margin:20px 0 0;font-style:italic;font-weight:900;font-size:clamp(34px,5.4vw,54px);
+.hp-h1{margin:0;font-style:italic;font-weight:900;font-size:clamp(34px,5.4vw,54px);
 line-height:1.06;letter-spacing:-1.2px}
 .hp-roll{display:inline-block;height:1.06em;overflow:hidden;vertical-align:bottom}
 .hp-roll ul{list-style:none;margin:0;padding:0;animation:hp-roll 9s infinite}
@@ -141,6 +137,11 @@ font-family:inherit;text-decoration:none;white-space:nowrap}
 border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);border-radius:12px;
 padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff}
 .hp-trust .st{color:#F6A723;letter-spacing:1.5px;font-size:11px}
+/* The green dot came off the old hero badge when that badge was folded into this
+   row. It is the only chip marker that is not the ◆ glyph, which is the point:
+   it marks the one chip carrying a fact about the company rather than a rating
+   or a number. */
+.hp-trust .dot{width:7px;height:7px;border-radius:50%;background:#6BB85C;flex:none}
 .hp-trust .dot{width:7px;height:7px;border-radius:50%;background:#6BB85C}
 .hp-promise{background:#0F172A;color:#fff}
 .hp-promise-in{max-width:1280px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;
@@ -280,10 +281,9 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
    too long for a phone, and the Framer hero swapped it rather than wrapping onto four
    lines. These selectors are element+class deliberately — a bare .hp-mb loses to
    .hp-trust{display:flex} on source order and both rows render at once. */
-.hp-badge .hp-mb,p.hp-lede.hp-mb,div.hp-trust.hp-mb{display:none}
+p.hp-lede.hp-mb,div.hp-trust.hp-mb{display:none}
 @media (max-width:809px){
-  .hp-badge .hp-dt,p.hp-lede.hp-dt,div.hp-trust.hp-dt{display:none}
-  .hp-badge .hp-mb{display:inline}
+  p.hp-lede.hp-dt,div.hp-trust.hp-dt{display:none}
   p.hp-lede.hp-mb{display:block}
   div.hp-trust.hp-mb{display:flex}
 }
@@ -317,7 +317,6 @@ def homepage():
 <section class="hp-hero">
   <img class="hp-hero-mark" src="{X_MARK}" alt="" aria-hidden="true">
   <div class="hp-wrap"><div class="hp-hero-grid"><div class="hp-hero-in">
-    <span class="hp-badge"><span class="dot"></span><span class="hp-dt">LOCALLY OWNED · DAYTON + CINCINNATI</span><span class="hp-mb">DAYTON + CINCINNATI · 24/7</span></span>
     <h1 class="hp-h1">Trusted Team <br>for
       <span class="hp-roll"><ul>{roll}</ul></span>
     </h1>
@@ -332,13 +331,15 @@ def homepage():
     </div>
     <div class="hp-trust hp-dt">
       <span><span class="st">★★★★★</span> {D.GOOGLE_RATING} on Google</span>
-      <span>◆ {D.YEARS_LOCAL} Years Locally Owned</span>
+      <span>◆ {D.YEARS_LOCAL} Years</span>
+      <span><span class="dot"></span>Locally Owned &amp; Operated &middot; {len(D.OFFICES)} Locations</span>
       <span>◆ 24/7 Emergency</span>
     </div>
     <div class="hp-trust hp-mb">
       <span><span class="st">★★★★★</span> {D.GOOGLE_RATING}</span>
       <span>{D.YEARS_LOCAL} yrs</span>
-      <span><span class="dot"></span>24/7</span>
+      <span><span class="dot"></span>Locally Owned &middot; {len(D.OFFICES)} Locations</span>
+      <span>24/7</span>
     </div>
 
     <div class="hp-van-stage" aria-hidden="true">
