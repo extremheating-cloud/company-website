@@ -181,7 +181,7 @@ def shell(root_class, body):
 PAGE_TITLE = f"Refer a Friend & Earn $250 | {D.COMPANY}"
 PAGE_DESC = (
     f'Extreme Rewards: a friend saves {D.REWARDS["newSystem"]} on a new system or '
-    f'{D.REWARDS["everythingElse"]} on any other job over {D.REWARDS["everythingElseMin"]}, '
+    f'{D.REWARDS["everythingElse"]} on any other job of {D.REWARDS["everythingElseMin"]} or more, '
     "and you earn the same on a Visa gift card. Name them at booking."
 )
 
@@ -199,8 +199,8 @@ REFERRAL = {
     # which is the passage that actually gets cited.
     "answer": ("A friend you send us saves "
                f'{D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or '
-               f'{D.REWARDS["everythingElse"]} on any other job over '
-               f'{D.REWARDS["everythingElseMin"]}. You earn the same amount back '
+               f'{D.REWARDS["everythingElse"]} on any other job of '
+               f'{D.REWARDS["everythingElseMin"]} or more. You earn the same amount back '
                "on a Visa gift card once their job is done."),
     # "everything else" is a client-directed change from the MD's approved wording ("any
     # repair or installation"), applied site-wide on 2026-07-31 at the client's instruction:
@@ -219,7 +219,7 @@ REFERRAL = {
     "pairs": [
         {"head": "They're getting a new heating, cooling, or plumbing system",
          "they": D.REWARDS["newSystem"], "you": D.REWARDS["newSystem"]},
-        {"head": f'Everything else, on jobs over {D.REWARDS["everythingElseMin"]}',
+        {"head": f'Everything else, on jobs of {D.REWARDS["everythingElseMin"]} or more',
          "they": D.REWARDS["everythingElse"], "you": D.REWARDS["everythingElse"]},
     ],
     "how": {
@@ -228,7 +228,7 @@ REFERRAL = {
             {"title": "Tell a friend about us",
              "desc": f'Give them our name, and yours. They save {D.REWARDS["newSystem"]} on a new '
                       f'heating, cooling, or plumbing system, or {D.REWARDS["everythingElse"]} on any '
-                      f'other job over {D.REWARDS["everythingElseMin"]}.'},
+                      f'other job of {D.REWARDS["everythingElseMin"]} or more.'},
             {"title": "They mention your name when they book",
              "desc": "This is the step that counts. We ask every new customer who sent them, and your name in that answer is what earns your card."},
             {"title": "You earn a Visa gift card once the job is done and paid",
@@ -241,9 +241,9 @@ REFERRAL = {
     "shareMsg": f"I use Extreme for heating, cooling, and plumbing. They're local, and they price "
                 f"the work up front before they start. If you call them, mention my name: new "
                 f'customers get {D.REWARDS["newSystem"]} off a new system, or '
-                f'{D.REWARDS["everythingElse"]} off any other job over '
-                f'{D.REWARDS["everythingElseMin"]}. extremeheating.com',
-    "termsLine": f'New customers only. The {D.REWARDS["everythingElse"]} applies to jobs over {D.REWARDS["everythingElseMin"]}; the {D.REWARDS["newSystem"]} new-system reward has no minimum. Referral must be named when the job is booked. Reward issued within 90 days of job completion. See full terms at <a href="/terms">extremeheating.com/terms</a>.',
+                f'{D.REWARDS["everythingElse"]} off any other job of '
+                f'{D.REWARDS["everythingElseMin"]} or more. extremeheating.com',
+    "termsLine": f'New customers only. The {D.REWARDS["everythingElse"]} applies to jobs of {D.REWARDS["everythingElseMin"]} or more; the {D.REWARDS["newSystem"]} new-system reward has no minimum. Referral must be named when the job is booked. Reward issued within 90 days of job completion. See full terms at <a href="/terms">extremeheating.com/terms</a>.',
     "plain": [
         ("New customers only.", "We can't have serviced that address in the last 24 months."),
         ("Your name has to be given when the job is booked.", "We can't add it to a job after the fact, so tell your friend to have it ready."),
@@ -267,7 +267,7 @@ REFERRAL = {
             ["A new heating, cooling or plumbing system",
              f'{D.REWARDS["newSystem"]} off the job',
              f'{D.REWARDS["newSystem"]} on a Visa gift card'],
-            [f'Everything else, on jobs over {D.REWARDS["everythingElseMin"]}',
+            [f'Everything else, on jobs of {D.REWARDS["everythingElseMin"]} or more',
              f'{D.REWARDS["everythingElse"]} off the job',
              f'{D.REWARDS["everythingElse"]} on a Visa gift card'],
         ],
@@ -278,8 +278,8 @@ REFERRAL = {
         {"q": "How does Extreme Rewards work?",
          "a": "Your friend books a job and gives your name. They save "
               f'{D.REWARDS["newSystem"]} on a new system or '
-              f'{D.REWARDS["everythingElse"]} on any other job over '
-              f'{D.REWARDS["everythingElseMin"]}, and you earn the same amount '
+              f'{D.REWARDS["everythingElse"]} on any other job of '
+              f'{D.REWARDS["everythingElseMin"]} or more, and you earn the same amount '
               "on a Visa gift card."},
         {"q": "Is there a limit on how many people I can refer?",
          "a": "No limit. Every completed job earns its own card."},
@@ -350,8 +350,8 @@ def pairs(d):
   <div class="xrf-pairs">{cards}</div>
   <div class="xrf-nolimit">If your friend saved {D.REWARDS["everythingElse"]}, you earn
   {D.REWARDS["everythingElse"]}. There's no limit on how many friends you can refer.</div>
-  <div class="xrf-nolimit">The {D.REWARDS["everythingElse"]} applies to jobs over
-  {D.REWARDS["everythingElseMin"]}. The {D.REWARDS["newSystem"]} on a new system has no minimum.</div>
+  <div class="xrf-nolimit">The {D.REWARDS["everythingElse"]} applies to jobs of
+  {D.REWARDS["everythingElseMin"]} or more. The {D.REWARDS["newSystem"]} on a new system has no minimum.</div>
 </div>'''
 
 

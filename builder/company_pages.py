@@ -874,7 +874,7 @@ OFFERS = [
     # new-system special back here, it needs a confirmed figure and a deliberate position
     # against the $250 referral.
     {"pill": "REFERRALS", "value": f'{D.REWARDS["newSystem"]} off', "title": "When a Friend Refers You",
-     "desc": f'New customers save {D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or {D.REWARDS["everythingElse"]} on any other job over {D.REWARDS["everythingElseMin"]}. Name whoever sent you when you book.',
+     "desc": f'New customers save {D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or {D.REWARDS["everythingElse"]} on any other job of {D.REWARDS["everythingElseMin"]} or more. Name whoever sent you when you book.',
      "foot": "Always available", "cta": "/referral", "ctaLabel": "See Extreme Rewards"},
     {"pill": "PLUMBING", "value": "$99", "title": "Drain Clearing Special",
      "desc": "Single accessible drain cleared, with a camera check if the clog keeps coming back. Does not cover the home\u2019s main drain or sewer line.",
@@ -965,7 +965,7 @@ SPECIALS = {
              "X-Plan membership, which includes two visits a year", "Join X-Plan"],
             ["A first job after a friend recommended us",
              f'Extreme Rewards: {D.REWARDS["newSystem"]} on a new system, '
-             f'{D.REWARDS["everythingElse"]} on any other job over {D.REWARDS["everythingElseMin"]}',
+             f'{D.REWARDS["everythingElse"]} on any other job of {D.REWARDS["everythingElseMin"]} or more',
              "Name your friend when you book"],
         ],
     },

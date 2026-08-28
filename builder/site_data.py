@@ -400,12 +400,15 @@ XPLAN = {
 
 # Extreme Rewards is two numbers and nothing else.
 # everythingElseMin is a CONDITION, not decoration. Added 2026-08-13 at the client's
-# instruction: the $100 applies only to jobs over $1,000. Treat it the way the X-Plan
+# instruction: the $100 applies only to jobs of $750 or more. Treat it the way the X-Plan
 # accrual is treated — never publish the $100 without it. A customer who reads "$100
 # off everything else" on a $400 repair and hears otherwise at the door has been told
 # two different things by the same company, and the site is the one in writing.
 # The $250 new-system reward has NO minimum; do not add one.
-REWARDS = {"newSystem": "$250", "everythingElse": "$100", "everythingElseMin": "$1,000"}
+# "or more" is inclusive and "over" is not, so a $750 job qualifies. Every string below
+# says "or more" for that reason — a customer at exactly the threshold is the one most
+# likely to argue about it, and the site is the thing they will be quoting.
+REWARDS = {"newSystem": "$250", "everythingElse": "$100", "everythingElseMin": "$750"}
 
 LENDERS = ["GoodLeap", "Synchrony", "Wright-Patt Credit Union"]
 
