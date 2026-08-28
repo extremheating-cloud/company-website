@@ -218,7 +218,7 @@ EXISTING_SECTIONS = [
 # ---------------------------------------------------------------------------
 REWARDS_SECTION = ("extreme-rewards", "Extreme Rewards Referral Program", [
     f"<b>Who offers the program.</b> Extreme Rewards is offered and administered by {ENTITY}, including where the referred customer's job is performed by {ENTITY_PLUMBING}.",
-    "<b>What the program pays.</b> Extreme Rewards pays an existing customer when a new customer they referred completes a qualifying job. The referred customer saves $250 on a new heating, cooling, or plumbing system, or $100 on everything else. The referring customer earns the same amount their referred customer saved, and Extreme issues it on a Visa gift card.",
+    "<b>What the program pays.</b> Extreme Rewards pays an existing customer when a new customer they referred completes a qualifying job. The referred customer saves $250 on a new heating, cooling, or plumbing system, or $100 on any other job with a total over $1,000. The $250 new-system reward has no minimum job value. The referring customer earns the same amount their referred customer saved, and Extreme issues it on a Visa gift card.",
     "<b>How a referral is credited.</b> The referred customer must name the referring customer at the time they book the job. Extreme cannot apply a referral to a job after it is booked and does not accept retroactive claims.",
     "<b>Who qualifies as a referred customer.</b> The referred customer must be new to Extreme, meaning Extreme has not performed service at that address within the previous 24 months.",
     "<b>How long a referral stays valid.</b> A referral name remains valid for 90 days from the date it is given.",

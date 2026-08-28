@@ -608,7 +608,7 @@ Pricing: a flat number, quoted before we start.
 ## Membership, offers and financing
 
 - [X-Plan maintenance membership]({u}/maintenance): {D.XPLAN["annual"]} a year, or {D.XPLAN["monthly"]} a month {D.XPLAN["monthlyNote"]}. You get two seasonal safety and performance visits, 15% off every repair, priority scheduling, a lower service-call fee that also applies after hours and on holidays, and a 5-year warranty on qualified repairs. Stay a member in consecutive years and every dollar you have paid comes off the cost of replacing that system at end of life, up to $2,500 or 10 years, whichever comes first. The credit follows you, not the house.
-- [Extreme Rewards referral program]({u}/referral): Refer a friend and whatever they save, you earn. They save {D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or {D.REWARDS["everythingElse"]} on everything else, and you get the same amount on a Visa gift card. New customers only. Name them when the job is booked, and we send your reward within 90 days of finishing the job.
+- [Extreme Rewards referral program]({u}/referral): Refer a friend and whatever they save, you earn. They save {D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or {D.REWARDS["everythingElse"]} on any other job over {D.REWARDS["everythingElseMin"]}, and you get the same amount on a Visa gift card. New customers only. Name them when the job is booked, and we send your reward within 90 days of finishing the job.
 - [Current specials]({u}/specials): Whatever we're running right now.
 - [Financing options]({u}/financing-options): Monthly payment plans through {", ".join(D.LENDERS[:-1])} and {D.LENDERS[-1]}.
 """
