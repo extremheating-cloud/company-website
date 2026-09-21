@@ -783,23 +783,22 @@ JS = """
     });
   }
 
-  /* --- schedule triggers, header + footer + anywhere on the page --- */
+  function openServiceTitan(){
+    var se = window.ScheduleEngine;
+    if (!se || typeof se.show !== 'function') return false;
+    try { se.show(); return true; } catch (err) { return false; }
+  }
+
+  /* ServiceTitan first; our wizard only if their script didn't load */
   document.querySelectorAll('.js-schedule').forEach(function(el){
     el.addEventListener('click', function(e){
       e.preventDefault();
       closePanel();
-      window.dispatchEvent(new CustomEvent('open-contact-dialog'));
+      if (!openServiceTitan()) window.dispatchEvent(new CustomEvent('open-contact-dialog'));
     });
   });
 
-  /* --- schedule wizard: load on demand ------------------------------------
-     The wizard is React and weighs ~59KB gzipped, so it is not on the critical
-     path of a page whose whole job is to be read. Instead this listens for the
-     same 'open-contact-dialog' event every Schedule button already fires — the
-     header, the footer, the hero, the booking cards, the promo tiles — and pulls
-     the bundle in the first time one of them is used. Once the dialog is mounted
-     it answers the event itself and this listener steps aside.
-     Warming on the first hover/touch means the click usually finds it cached. */
+  /* backup scheduler, fetched only when ServiceTitan is unavailable */
   var loading = false;
   function loadWizard(replay){
     if (window.XHSchedule) { if (replay) window.XHSchedule.open(); return; }
@@ -819,6 +818,7 @@ JS = """
   window.addEventListener('open-contact-dialog', function(){ loadWizard(true); });
   ['pointerover','touchstart','focusin'].forEach(function(evt){
     document.addEventListener(evt, function(e){
+      if (window.ScheduleEngine) return;
       if (e.target && e.target.closest && e.target.closest('.js-schedule')) loadWizard(false);
     }, {passive:true});
   });

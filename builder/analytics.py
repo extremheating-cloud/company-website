@@ -12,15 +12,13 @@ WHAT LOADS, AND FROM WHOM
     Meta Pixel              1116748220634990      connect.facebook.net
     Broccoli widget         c5182eae-968f-...     cdn.broccoli.com
     Podium widget           REMOVED 2026-08-13, replaced by FollowUp Pro chat
-    ServiceTitan scheduler  tenant 770617940      go.servicetitan.com  (iframe, on demand)
+    ServiceTitan scheduler  sched_vszsnfpi7...    embed.scheduler.servicetitan.com  (Schedule buttons)
+    ServiceTitan legacy     tenant 770617940      go.servicetitan.com  (Broccoli only)
     FollowUp Pro chat       (A2P opt-in path 2)   followup-pro-37ed6.web.app
 
-BOOKING FLOW, decided 2026-08-03: the site keeps its own scheduling wizard. Every
-.js-schedule button opens /js/schedule.js, exactly as before. The ServiceTitan
-modal below is loaded but is NOT wired to any button on this site — it exists so the
-Broccoli widget can trigger it by posting {type: "OPEN_ST_SCHEDULER"} or dispatching
-the OPEN_ST_SCHEDULER event. That is deliberate. Do not "fix" the apparently dead
-listener by pointing the Schedule buttons at it.
+BOOKING FLOW: Schedule buttons open ServiceTitan (ScheduleEngine.show). If their script
+fails to load, they fall back to our wizard at /js/schedule.js. The legacy iframe modal
+below is Broccoli's OPEN_ST_SCHEDULER hook and is not wired to our buttons.
 
 THREE THINGS WORTH KNOWING, recorded here because they are easy to forget later:
 
@@ -138,6 +136,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script
   id="broccoli-widget-embed"
   src="https://cdn.broccoli.com/c5182eae-968f-47b1-acb0-be2459d2e4c5.js"
+></script>
+
+<script
+  data-api-key="ui34is3wjh0soubnv46ar9vj"
+  data-schedulerid="sched_vszsnfpi7yf7bi6g6l1nslt0"
+  defer
+  id="se-widget-embed"
+  src="https://embed.scheduler.servicetitan.com/scheduler-v1.js"
 ></script>
 
 
