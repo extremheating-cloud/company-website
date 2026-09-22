@@ -1,0 +1,12 @@
+name = "extreme-apex"
+main = "src/index.js"
+compatibility_date = "2026-09-22"
+workers_dev = false
+
+[[routes]]
+pattern = "extremeheating.com/*"
+zone_name = "extremeheating.com"
+
+[[routes]]
+pattern = "www.extremeheating.com/onboarding*"
+zone_name = "extremeheating.com"
