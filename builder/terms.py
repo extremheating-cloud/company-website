@@ -108,16 +108,10 @@ def shell(root_class, body):
 
 # ---------------------------------------------------------------------------
 # EXISTING published terms — reproduced verbatim from the live /terms page.
-# Do not reword. Legal entity is "Extreme Heating & Cooling LLC" as published.
+# Do not reword.
 # ---------------------------------------------------------------------------
-# Two separate legal entities under common ownership (client-confirmed 2026-07-31):
-#   Extreme Heating & Cooling LLC  — the HVAC company
-#   Extreme Home Services LLC      — the plumbing company
-# Registered form of the HVAC entity confirmed by the client 2026-07-31 as LLC, matching
-# the previously published page. "LTD" appeared in earlier drafts and is not correct.
-# Every mention on this page derives from this constant — change it here, not inline.
-ENTITY = "Extreme Heating &amp; Cooling LLC"
-ENTITY_PLUMBING = "Extreme Home Services LLC"
+ENTITY = D.ENTITY_HVAC
+ENTITY_PLUMBING = D.ENTITY_PLUMBING
 ENTITY_SCOPE = f"{ENTITY} and {ENTITY_PLUMBING}"
 
 # Effective date of this version of the Terms.

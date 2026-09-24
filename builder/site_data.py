@@ -57,8 +57,8 @@ def maps_dir(address, html=True):
     amp = "&amp;" if html else "&"
     return f"https://www.google.com/maps/dir/?api=1{amp}destination={_quote(address)}"
 
-# Two legal entities under common ownership — see pages/company/terms.html.
-ENTITY_HVAC = "Extreme Heating &amp; Cooling LLC"
+# HVAC is Ltd, plumbing is LLC (Aaron, 2026-09-24).
+ENTITY_HVAC = "Extreme Heating and Cooling Ltd"
 ENTITY_PLUMBING = "Extreme Home Services LLC"
 
 # ---------------------------------------------------------------- contact

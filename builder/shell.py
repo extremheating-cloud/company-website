@@ -336,7 +336,7 @@ CORE = {
 "/referral": (["Extreme Rewards Referral Program | Give $250, Get $250"],
  "Send us a friend: they save $250 on a new heating, cooling or plumbing system or $100 on anything else, and you get whatever they saved."),
 "/terms": (["Terms of Service & Limited Warranty"],
- "The terms and limited warranty covering our estimates, invoices and work, as Extreme Heating & Cooling LLC and Extreme Home Services LLC."),
+ "The terms and limited warranty covering our estimates, invoices and work, as Extreme Heating and Cooling Ltd and Extreme Home Services LLC."),
 "/privacy": (["Privacy Policy"],
  "What we collect when you book a visit, who it goes to, how long we keep it, and how to ask us to delete it. Written from what the site actually does."),
 

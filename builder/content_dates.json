@@ -10,8 +10,8 @@
   "published": "2026-08-02"
  },
  "/about": {
-  "hash": "d71a0e4f933e21b2",
-  "modified": "2026-08-13",
+  "hash": "4b8b5d0897ccf7ea",
+  "modified": "2026-09-24",
   "published": "2026-08-02"
  },
  "/ac-installation": {
@@ -1570,7 +1570,7 @@
   "published": "2026-08-02"
  },
  "/privacy": {
-  "hash": "f3d9327b84a98b91",
+  "hash": "8a7c62e3423152e6",
   "modified": "2026-09-24",
   "published": "2026-08-02"
  },
@@ -1590,8 +1590,8 @@
   "published": "2026-08-02"
  },
  "/terms": {
-  "hash": "310aa6c3c4abe4bb",
-  "modified": "2026-08-28",
+  "hash": "b60431e445da6be1",
+  "modified": "2026-09-24",
   "published": "2026-08-02"
  },
  "/thermostat": {

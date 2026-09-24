@@ -73,15 +73,11 @@ def shell(root_class, body):
 '''
 
 
-# Ltd per Aaron 2026-09-24 (matches the Apple developer team). /terms still says LLC.
-ENTITY = "Extreme Heating and Cooling Ltd"
+ENTITY = TM.ENTITY
 ENTITY_PLUMBING = TM.ENTITY_PLUMBING
-ENTITY_SCOPE = f"{ENTITY} and {ENTITY_PLUMBING}"
+ENTITY_SCOPE = TM.ENTITY_SCOPE
 
-# PLACEHOLDER. Set this to the date the page actually publishes, after attorney review.
-# Real publication date. Counsel approved the page as it stood on 2026-08-03, so
-# this is no longer a placeholder — it is the date the approved version went live.
-EFFECTIVE = "August 3, 2026"
+EFFECTIVE = "September 24, 2026"
 
 # Address for privacy requests. Deliberately ONE address, not all four offices — a
 # request needs a single destination, and the primary office is the one the footer
