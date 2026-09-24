@@ -48,6 +48,8 @@ import terms as TM
 # rules, same TOC. Reusing TERMS_CSS means a change to one page's treatment cannot
 # silently leave the other behind. The only page-specific rule is the draft banner.
 PRIVACY_CSS = """
+.xtm-h4{margin:26px 0 0;font-size:15.5px;font-weight:800;letter-spacing:-.1px;color:var(--ink)}
+.xtm-eff{font-size:13px;font-weight:700;color:var(--muted)}
 /* ------------------------------ /privacy ------------------------------ */
 /* The draft notice. Loud on purpose: this page carries legal weight it has not
    earned yet, and a reader has to know that before the first clause. Remove this
@@ -71,11 +73,10 @@ def shell(root_class, body):
 '''
 
 
-# Both entities share this site, this phone number and this schedule form, so one
-# policy covers both. Derived from terms.py — change the entity names there, not here.
-ENTITY = TM.ENTITY
+# Ltd per Aaron 2026-09-24 (matches the Apple developer team). /terms still says LLC.
+ENTITY = "Extreme Heating and Cooling Ltd"
 ENTITY_PLUMBING = TM.ENTITY_PLUMBING
-ENTITY_SCOPE = TM.ENTITY_SCOPE
+ENTITY_SCOPE = f"{ENTITY} and {ENTITY_PLUMBING}"
 
 # PLACEHOLDER. Set this to the date the page actually publishes, after attorney review.
 # Real publication date. Counsel approved the page as it stood on 2026-08-03, so
@@ -154,7 +155,9 @@ SECTIONS = [
         "stored and processed in the United States.",
 
         "<b>What this policy does not cover.</b> This policy covers this website and the "
-        "requests you send through it. It does not cover other companies' websites you "
+        "requests you send through it. It also covers the Extreme employee app. See "
+        "<a href=\"#employee-app\">The Extreme Employee App</a> below. "
+        "It does not cover other companies' websites you "
         "reach from here, including lender sites, review sites and social media, each of "
         "which has its own privacy policy.",
     ]),
@@ -533,6 +536,43 @@ SECTIONS = [
         "policy applies. "
         "[NEEDS: whether Extreme wants to commit to notifying customers directly of material "
         "changes, and by what channel.]",
+    ]),
+
+    # Verbatim from ExtremeAppStore/privacy-policy-employee-app.md. Retention text depends
+    # on followup-pro purgeExpiredAppData (RETENTION_DAYS=365); change both together.
+    ("employee-app", 'The Extreme Employee App', [
+        '<span class="xtm-eff">Effective September 24, 2026</span>',
+        'This section is for the technicians and office staff of Extreme Heating and Cooling Ltd ("Extreme") who use the Extreme app on an iPhone or iPad. The rest of this policy is about customers and this website.',
+        '<h4 class="xtm-h4">What the app collects, and why</h4>',
+        "<b>Your account.</b> When you sign in with your company Google account, the app sends your email address and your account's user ID to FollowUp Pro, Extreme's own business system. FollowUp Pro uses them to match you to your ServiceTitan technician record, to decide which parts of the app you can use, and to put your name on what you log.",
+        '<b>What you log.</b> Follow-up outcomes, notes and next follow-up dates. Parts you use on a job, parts you take from the shop, and transfer and stock requests with any notes. For office staff, counts, stock moves, approvals and other inventory changes. Each is saved with your name, so the office knows who did what.',
+        '<b>Call recordings you play.</b> Recordings of your calls come from ServiceTitan. The first time one is played, FollowUp Pro keeps a copy in Google Cloud Storage and plays it through a private link that stops working after 10 minutes. A recording plays only for the technician on the call and for the people Extreme allows to listen.',
+        '<b>How you use the app.</b> FollowUp Pro records when you last signed in to the app. Each time a call recording is played, it also records which call it was, who played it and when. Extreme keeps this usage data for security and support, and deletes it after 365 days.',
+        '<b>The camera.</b> The app uses the camera only to read part barcodes. The barcode is read on the phone and matched against the parts list the app keeps on the phone. A code is sent to FollowUp Pro only when you link it to a part. No photo or video leaves the phone.',
+        "The app also shows you things it doesn't collect from you: your pay statements and hours, your coaching numbers, and customer and job details. Those come from Extreme's records in ServiceTitan and FollowUp Pro.",
+        "The app doesn't collect your location, contacts, photos or device identifiers. It has no advertising, analytics or crash-reporting software in it.",
+        '<h4 class="xtm-h4">What stays on your phone</h4>',
+        "Your sign-in is kept in the Keychain on your iPhone or iPad, for that device only. The app keeps copies of your follow-ups, your numbers and the calculators' settings so it opens quickly and works without signal. Pay isn't kept on the device: a pay statement you open as a PDF is deleted when you close it. The files the app saves are left out of iCloud backups.",
+        "Signing out deletes your sign-in and those copies. The parts catalog, the list of technicians and any material logs still waiting to send stay on the device. An unsent log still has to reach the shop's stock count.",
+        '<h4 class="xtm-h4">Where it\'s stored</h4>',
+        "FollowUp Pro runs on Google Firebase and Google Cloud, in the United States. Google also handles sign-in, because Extreme's company accounts are Google Workspace accounts.",
+        '<h4 class="xtm-h4">Who receives it</h4>',
+        "<b>Extreme.</b> The office and managers see what you log in FollowUp Pro. Follow-up entries go into the customer's shared follow-up history, which the office and other staff working with that customer can see.",
+        "<b>ServiceTitan.</b> When you log a follow-up, a note is added to the customer's record in ServiceTitan, Extreme's field-service software. It carries your name, the outcome, what you wrote, the next follow-up date, and the estimate and job it's about.",
+        '<b>Google.</b> Google hosts FollowUp Pro and runs the sign-in.',
+        "Extreme doesn't sell this information. The app shows no ads and doesn't track you across other companies' apps or websites.",
+        '<h4 class="xtm-h4">How long it\'s kept</h4>',
+        "FollowUp Pro deletes these once they're more than 365 days old. A cleanup runs every night.",
+        '<ul><li><span class="b"></span><span>Follow-up entries: the outcomes, notes and next follow-up dates you log, and the ServiceTitan calls filed in a customer\'s follow-up history. Each customer\'s follow-up summary is worked out again from the entries that are left.</span></li><li><span class="b"></span><span>The time you last signed in to the app.</span></li><li><span class="b"></span><span>The record of each recording play: which call, who played it and when.</span></li><li><span class="b"></span><span>The saved copy of a call recording, 365 days after the copy was made.</span></li><li><span class="b"></span><span>FollowUp Pro\'s copy of each ServiceTitan call record: who was on the call, the customer, the direction and how long it lasted.</span></li><li><span class="b"></span><span>The copy of clocked hours the Pay tab keeps so it opens quickly.</span></li></ul>',
+        'One-time sign-in codes expire after two minutes and are deleted within two days.',
+        "These stay, because they're Extreme's business records:",
+        '<ul><li><span class="b"></span><span>Parts and stock records: parts used on jobs, parts taken from the shop, transfer and stock requests, counts, stock moves and approvals. The shop\'s stock count depends on them.</span></li><li><span class="b"></span><span>Notes sent to ServiceTitan. A follow-up note on a customer\'s record in ServiceTitan follows ServiceTitan\'s records. Deleting the entry in FollowUp Pro doesn\'t remove the note from ServiceTitan.</span></li><li><span class="b"></span><span>The office\'s own call records. When the office logs a follow-up outcome from its queue, it\'s also saved in the office\'s call records, which the office\'s reports count.</span></li><li><span class="b"></span><span>Pay and coaching records. Your pay statements, hours and coaching numbers come from Extreme\'s payroll and job records and are kept with them. That includes the PDF copy of a pay statement that FollowUp Pro saves the first time the statement is opened.</span></li><li><span class="b"></span><span>Your FollowUp Pro account (your email address, name and role), for as long as you have the account. Google\'s sign-in service also keeps when your account last signed in, as part of the account.</span></li></ul>',
+        "Google Cloud keeps FollowUp Pro's server logs, which record the IP address each request came from, for 30 days.",
+        '<h4 class="xtm-h4">Seeing, correcting or deleting your information</h4>',
+        'To get a copy of your information, or to have it corrected or deleted, email <a href="mailto:onboarding@extremeheating.com">onboarding@extremeheating.com</a>.',
+        "You can't create or delete an account in the app. Extreme's Google Workspace administrator creates and removes company accounts, and an administrator can turn off your app access in FollowUp Pro. A note already added to a customer's record in ServiceTitan stays there until someone removes it in ServiceTitan.",
+        '<h4 class="xtm-h4">Security</h4>',
+        "The app talks to Extreme's servers only over encrypted (HTTPS) connections, and it keeps your sign-in in the device's Keychain.",
     ]),
 ]
 

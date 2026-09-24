@@ -291,7 +291,7 @@ TERMS_GAPS = [
 
 
 def sec(anchor, title, paras, prog=False):
-    body = "".join(f"<p>{p}</p>" for p in paras)
+    body = "".join(p if p.startswith(("<h4", "<ul")) else f"<p>{p}</p>" for p in paras)
     cls = "xtm-sec xtm-prog" if prog else "xtm-sec"
     return f'''<div class="{cls}" id="{anchor}">
   <h3 class="xtm-h3">{title}</h3>
