@@ -1,61 +1,20 @@
-"""Service-page template system — design_handoff_services_pages.
-
-Three tiers (detail / hub / subpage) assembled from shared section
-renderers. Pages are emitted as self-contained <section> HTML embeds
-matching the conventions of the existing service-page files.
-
-Single source of truth for phone + asset URLs lives here.
-"""
 import re
-# business imports nothing from the builder, so this cannot cycle. It is here so the
-# X-Plan benefit rows can read the service-call fee from the one place it is defined
-# rather than carrying a hand-typed copy of it.
 from data import business as D
 
 PHONE_TEL = "tel:18445847399"
 PHONE_DISPLAY = "(844) 584-7399"
-# ---------------------------------------------------------------- assets
-# Everything the live site loads comes from this repo's own assets/ folder, served
-# by jsDelivr. One repo, one place to look.
-#
-# SAME-ORIGIN AS OF 2026-08-03. Every image used to be served from jsDelivr against a
-# pinned commit of this repo. That worked, and it carried two costs worth removing
-# before launch: the repo had to stay public forever, and a jsDelivr outage took out
-# all 2,244 images on the site at once. It also cost a whole extra origin — a DNS
-# lookup and a TLS handshake that had to complete before the first image could start
-# downloading. Cloudflare Pages is a global CDN too, so serving from our own origin is
-# not slower; it is one fewer connection and it reuses the HTTP/2 connection the HTML
-# already came down.
-#
-# ASSET_VERSION is what ASSET_COMMIT used to be, doing the same job for the same
-# reason. Files under assets/ are not content-hashed, so without a version in the URL
-# a replaced photo would sit in browser caches behind the long immutable TTL in
-# _headers. The query string changes the URL, which is what actually busts a cache.
-#
-# AFTER PUSHING new or changed assets: bump ASSET_VERSION and rebuild. `git rev-parse
-# --short HEAD` is the convention, but any value that changes will do.
+# Bump after changing anything under assets/: files aren't content-hashed and are cached immutable.
 ASSET_VERSION = "0339725"
 
-# Kept because image_inventory.json stores whole jsDelivr URLs captured from the old
-# site, and old_img() rewrites them against this prefix. Nothing new should use it.
 ASSET_REPO   = "https://cdn.jsdelivr.net/gh/extremheating-cloud/company-website"
 
 def cdn_asset(relpath, version=None):
-    """Same-origin URL for anything under assets/. relpath is repo-relative below
-    assets/, e.g. "team/tyler-hardy.jpg". Filenames are lowercase-hyphen with no
-    spaces, so nothing needs percent-encoding — keep it that way.
-
-    Name kept as cdn_asset despite no longer naming a CDN: it is called from six
-    modules and the rename is churn without a reader benefit. It is still a CDN, it
-    is just ours now."""
+    # No percent-encoding: filenames under assets/ must stay lowercase-hyphen with no spaces.
     return f"/assets/{relpath}?v={version or ASSET_VERSION}"
 
 CDN = "/assets/brand"
 X_MARK = cdn_asset("brand/x-mark.png")
 
-# ---------------------------------------------------------------- photography
-# Named handles for the real Extreme photography, so pages refer to a subject
-# rather than a filename. Add here rather than inlining a URL at a call site.
 PHOTOS = {
     "beavercreek":  cdn_asset("locations/beavercreek-office.jpg"),
     "mason":        cdn_asset("locations/mason-office.jpg"),
@@ -66,18 +25,12 @@ PHOTOS = {
     "ruudHeatPump": cdn_asset("equipment/ruud-heat-pump.jpg"),
     "ruudCondenser": cdn_asset("equipment/ruud-condenser.jpg"),
     "ruudInstall":  cdn_asset("equipment/ruud-install.jpg"),
-    # Real job photography, August 2026 — these replaced carried-over stock
     "acRepairGauges":   cdn_asset("service/ac-repair-gauges.jpg"),
     "acContactor":      cdn_asset("service/ac-contactor.jpg"),
     "furnaceService":   cdn_asset("service/furnace-service.jpg"),
     "furnaceRepairOpen": cdn_asset("service/furnace-repair-open.jpg"),
     "traneInstall": cdn_asset("equipment/trane-install.jpg"),
     "geWaterHeater": cdn_asset("equipment/ge-water-heater-install.jpg"),
-    # 31 headshots from the company shoot, 2026-08-13. Slugs are the filenames; the
-    # roster that pairs each with a name, role and crew lives in about.ABOUT.
-    # Every file is the same 440x550 4:5 crop, derived from the detected face box
-    # rather than the frame centre — the sources are landscape with the subject high
-    # and left, so a centre crop cuts heads off.
     "team": {s: cdn_asset("team/" + s + ".jpg") for s in (
         "aaron-matthew", "aleasha-king", "andre-roeder",
         "anthony-griffin", "austin-robinson", "brandon-orona",
@@ -95,28 +48,7 @@ PHOTOS = {
 
 GRADIENT_HERO = "linear-gradient(180deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%)"
 
-# ------------------------------------------------------- intrinsic image sizes
-# Every <img> the builder emits carries width/height so the browser reserves the
-# box before the bytes arrive. The numbers below are the REAL pixel dimensions of
-# the files in assets/, read with PIL — not the rendered CSS size, and not a guess.
-# They are a literal table because the builder is stdlib-only and stdlib has no
-# image decoder.
-#
-# REGENERATE after adding, replacing or re-exporting anything under assets/:
-#
-#   python3 - <<'PY'
-#   from PIL import Image; import os
-#   for root, _, files in os.walk("assets"):
-#       if os.path.basename(root) == "print": continue
-#       for f in sorted(files):
-#           if not f.lower().endswith((".jpg",".jpeg",".png",".webp",".avif",".gif")): continue
-#           p = os.path.join(root, f)
-#           with Image.open(p) as im: w, h = im.size
-#           print(f'    "{os.path.relpath(p, "assets")}": ({w}, {h}),')
-#   PY
-#
-# A file missing from this table emits no width/height rather than a wrong one —
-# a wrong aspect ratio is a worse bug than an unsized image.
+# Real pixel sizes of the files under assets/; update when an image is added or replaced.
 ASSET_DIMS = {
     "brand/apple-touch-icon.png": (180, 180),
     "brand/logo-white-tight.png": (410, 101),
@@ -259,9 +191,6 @@ ASSET_DIMS = {
 }
 
 def asset_dims(src):
-    """(width, height) of the file behind an assets/ URL, or None if it isn't in
-    ASSET_DIMS. Works on the jsDelivr URLs the site serves today and on the plain
-    /assets/... paths it will serve after cutover — both contain "/assets/"."""
     if not src:
         return None
     rel = src.split("?", 1)[0].split("#", 1)[0]
@@ -272,42 +201,27 @@ def asset_dims(src):
     return d if d else None
 
 def dim_attrs(src):
-    """` width="W" height="H"` for an <img>, or "" when the file is unknown."""
     d = asset_dims(src)
     return f' width="{d[0]}" height="{d[1]}"' if d else ""
 
-# ---------------------------------------------------------------- CSS
 CSS = """
 .xhac-svc{--purple:#542770;--purple-light:#5E2C7E;--purple-dark:#3A1A4E;--green:#6BB85C;
 --green-hover:#8FD481;--green-dark:#4E9B41;--green-tint:#EEF7EC;--promo-green:#3D7A33;
 --ink:#0F172A;--body:#475569;--muted:#94A3B8;--rule:#E7E7EA;--soft:#F7F6FA;--tint:#F4F1F8;
 --stars:#F6A723;
-/* "Montserrat Fallback" is the metric-overridden local face shell.py defines alongside
-   the self-hosted woff2. It is what stops the swap from shifting layout — the measured
-   CLS on this site is fonts, not images. An unknown family name is skipped by the
-   browser, so this is inert until shell.py declares it. */
 font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
 color:var(--ink);width:100%;overflow-x:hidden;
-/* The embed is a bare <section>. Framer's page supplies the white behind it, but
-   standalone — a local preview, or anyone opening the file — whatever is behind
-   shows through, and on a dark-mode browser that is black under dark text.
-   Own the background so the embed renders correctly anywhere. color-scheme keeps
-   form controls light too, or the ZIP input renders dark-on-dark. */
+/* color-scheme:light keeps form controls light on dark-mode browsers */
 background:#fff;color-scheme:light}
 .xhac-svc *{box-sizing:border-box;margin:0}
 .xsp-wrap{max-width:1280px;margin:0 auto;padding:0 40px}
 .xsp-dt{}
 .xsp-mb{display:none !important}
 
-/* Where in-page anchor links land. The site header is position:sticky;top:0, so a
-   section scrolled flush to the viewport top slides underneath it. scroll-margin-top
-   is honoured by scrollIntoView — including across the embed iframe boundary — and
-   pushes the landing point down by this much. TUNE THIS ONE VALUE if the header
-   height changes: it should be header height + ~20px of breathing room. */
+/* sticky header height + ~20px; retune if the header height changes */
 .xhac-svc{--xsp-anchor-offset:112px}
 .xhac-svc [id]{scroll-margin-top:var(--xsp-anchor-offset)}
 
-/* buttons */
 .xsp-btn-green{display:flex;align-items:center;justify-content:center;background:var(--green);
 color:var(--ink);font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
 text-decoration:none;cursor:pointer;border:0;font-family:inherit;width:100%;
@@ -327,17 +241,12 @@ transition:background .15s ease}
 color:#fff;font-weight:800;font-size:14px;padding:12px 20px;border-radius:10px;min-height:44px;
 text-decoration:none;background:transparent;white-space:nowrap;transition:border-color .15s,color .15s}
 .xsp-cta-outline:hover{border-color:var(--green);color:var(--green)}
-/* Text Us inside a light card. .xsp-cta-outline is the HERO outline — white border,
-   white text — and rendered white-on-white in the booking card, which is how it got
-   caught. Same geometry as .xsp-btn-purple so the three buttons read as one stack;
-   outlined rather than filled so Call stays visibly the primary action. */
 .xsp-btn-text{display:flex;align-items:center;justify-content:center;background:transparent;
 color:var(--purple);font-weight:800;font-size:15px;padding:14px;border-radius:10px;min-height:44px;
 text-decoration:none;cursor:pointer;border:1.5px solid var(--rule);font-family:inherit;width:100%;
 margin-top:10px;transition:border-color .15s ease,background .15s ease}
 .xsp-btn-text:hover{border-color:var(--purple);background:#F7F5FA}
 
-/* hero */
 .xsp-hero{background:linear-gradient(180deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);position:relative;color:#fff}
 .xsp-hero-mark{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .xsp-hero-mark img{position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;
@@ -360,13 +269,7 @@ padding:10px 14px;font-size:12.5px;font-weight:700;color:#fff}
 .xsp-chip .st{color:var(--stars)}
 .xsp-hero-ctas{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
 
-/* booking card (hero overlap)
-   align-self:end pins the card to the bottom of the hero grid so the -84px margin
-   actually pulls it past the edge and it hangs over the section below. With
-   align-self:start the card floated at the top of a taller row and the negative
-   margin did nothing — which is why the service pages never overhung. Every page
-   that renders a .xsp-bookcol also renders a body section below it, so the
-   clearance on .xsp-bodygrid / .xco-body is unconditional. */
+/* align-self:end is what lets the -84px margin overhang the next section */
 .xsp-bookcol{position:relative;margin-bottom:-84px;align-self:end}
 .xsp-book{background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(15,23,42,.25);padding:24px;color:var(--ink)}
 .xsp-book.inflow{box-shadow:0 12px 30px rgba(84,39,112,.12);border:1px solid var(--rule)}
@@ -379,7 +282,6 @@ margin-top:16px;padding-top:14px;font-size:12px;font-weight:700;color:var(--body
 .xsp-book .trust .st{color:var(--stars)}
 .xsp-book .trust .bar{color:#D8D5DE}
 
-/* pill sub-nav */
 .xsp-pillbar{background:#fff;border-bottom:1px solid var(--rule)}
 .xsp-pillbar-in{max-width:1280px;margin:0 auto;padding:14px 40px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .xsp-pill-label{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--muted)}
@@ -390,12 +292,7 @@ transition:background .15s,color .15s}
 .xsp-pill:hover{background:#E9E2F1}
 .xsp-pill.active{background:var(--purple);color:#fff;font-weight:800}
 
-/* body grid */
 .xsp-bodygrid{display:grid;grid-template-columns:1fr 360px;gap:48px;max-width:1280px;margin:0 auto;padding:56px 40px}
-/* Only the pages whose hero carries a booking card need clearance for it — the sub
-   pages put that card in the rail instead, and padding them too would just open a
-   48px hole. Scoped with :has() so no generator has to remember to flag it; a browser
-   without :has() falls back to the plain 56px, which is what shipped before. */
 .xhac-svc:has(.xsp-bookcol) .xsp-bodygrid{padding-top:104px}
 .xsp-main{display:flex;flex-direction:column;gap:48px;min-width:0}
 .xsp-rail{padding-top:64px;display:flex;flex-direction:column;gap:16px;align-self:start}
@@ -404,7 +301,6 @@ transition:background .15s,color .15s}
 .xsp-eyebrow.purple{color:var(--purple)}
 .xsp-h2{margin-top:10px;font-style:italic;font-weight:900;font-size:33px;letter-spacing:-.5px;color:var(--ink)}
 
-/* checklist */
 .xsp-checks{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-top:20px}
 .xsp-check{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700;color:var(--body)}
 .xsp-check .c{width:18px;height:18px;flex:none;border-radius:50%;background:var(--green);color:#fff;
@@ -416,7 +312,6 @@ font-size:13px;font-weight:600;color:var(--promo-green);line-height:1.55}
 .xsp-callout.safety b{color:var(--green-hover)}
 .xsp-callout.safety a{color:#fff;font-weight:800}
 
-/* what-we-do cards */
 .xsp-cards3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
 .xsp-card{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff;display:flex;
 flex-direction:column;gap:8px;text-decoration:none;transition:box-shadow .18s,border-color .18s,transform .18s}
@@ -430,14 +325,12 @@ flex-direction:column;gap:8px;text-decoration:none;transition:box-shadow .18s,bo
 .xsp-glyph i:first-child{background:var(--purple);transform:rotate(45deg)}
 .xsp-glyph i:last-child{background:var(--green);transform:rotate(-45deg)}
 
-/* process */
 .xsp-steps{display:flex;flex-direction:column;gap:22px;margin-top:20px}
 .xsp-step{display:flex;gap:0}
 .xsp-step .n{flex:0 0 44px;font-style:italic;font-weight:900;font-size:25px;color:var(--purple)}
 .xsp-step .t{font-weight:800;font-size:15px}
 .xsp-step .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px;max-width:560px}
 
-/* decision card */
 .xsp-decision{border:1px solid var(--rule);border-radius:16px;padding:20px 22px;background:#fff}
 .xsp-decision .t{font-weight:800;font-size:16.5px}
 .xsp-decision .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:6px;max-width:620px}
@@ -446,7 +339,6 @@ color:var(--purple);font-weight:800;font-size:13.5px;padding:10px 18px;border-ra
 text-decoration:none;transition:background .15s,color .15s}
 .xsp-decision a:hover{background:var(--purple);color:#fff}
 
-/* faq */
 .xsp-faq{display:flex;flex-direction:column;gap:12px;margin-top:20px}
 .xsp-qa{border:1px solid var(--rule);border-radius:14px;background:#fff;overflow:hidden}
 .xsp-qa button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -459,7 +351,6 @@ display:flex;align-items:center;justify-content:center;font-size:15px;font-weigh
 padding:0 18px 16px;max-width:620px}
 .xsp-qa.open .a{display:block}
 
-/* media block — one photo or one video, full width of the main column */
 .xsp-shot{position:relative;margin-top:20px;aspect-ratio:16 / 9;border-radius:14px;overflow:hidden;
 background:#0F172A;border:1px solid var(--rule)}
 .xsp-shot img,.xsp-shot iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
@@ -467,7 +358,6 @@ background:#0F172A;border:1px solid var(--rule)}
 .xsp-mediasub{margin-top:10px;font-size:14px;line-height:1.6;font-weight:500;color:var(--body);max-width:64ch}
 .xsp-mediacap{margin-top:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
 
-/* rail photo + promos */
 .xsp-photo{height:220px;border-radius:14px;background:#F4F6F8;border:1px solid var(--rule);
 display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);
 letter-spacing:1px;overflow:hidden}
@@ -489,9 +379,7 @@ font-size:13.5px;font-weight:700;color:var(--ink);text-decoration:none;border-bo
 .xsp-sibs a:hover{color:var(--purple)}
 .xsp-sibs .ar{color:var(--purple);font-weight:800}
 
-/* emergency band */
 
-/* related strip */
 .xsp-rel{background:var(--soft)}
 .xsp-rel-in{max-width:1280px;margin:0 auto;padding:44px 40px}
 .xsp-rel-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
@@ -502,63 +390,28 @@ text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:box-s
 .xsp-rel-card .lm{font-weight:800;font-size:13px;color:var(--purple)}
 .xsp-rel-card:hover .lm{color:var(--green-dark)}
 
-/* ---------------------- GEO content model ----------------------
-   Four pieces the copy needs and the old template had nowhere to put: the
-   answer-first block, real H2/H3 body sections, decision tables, and a visible
-   last-updated line. */
 
-/* The answer-first block sits in the hero copy column, directly under the H1.
-   It is the page's lead paragraph, not a callout: no box, no border, no tint, no
-   rule. Size and weight carry it, and the deck below steps down so the order of
-   importance reads correctly. Anything boxed here would look like an aside and get
-   read as one. */
 .xsp-answer{margin-top:18px;max-width:640px}
 .xsp-answer p{font-size:18px;line-height:1.55;font-weight:600;color:#fff;letter-spacing:-.1px}
 .xsp-answer p + p{margin-top:10px}
 .xsp-answer + .xsp-intro{margin-top:12px;font-size:14.5px;color:rgba(255,255,255,.72)}
 
-/* body sections: an H2 question, its direct answer, optional H3 sub-questions.
-   .xsp-main already puts 48px between blocks, so a section owns only its internals. */
 .xsp-h3{margin-top:24px;font-weight:800;font-size:18px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
 .xsp-prose{margin-top:12px;font-size:15px;line-height:1.65;font-weight:500;color:var(--body);max-width:68ch}
-/* Contextual links in body copy. These are the site's internal-linking backbone — 139
-   of them across the service pages — so they stay inline in the sentence where their
-   anchor text means something, rather than becoming buttons. A 1px underline set off
-   the baseline reads as a link without the heavy default rule cutting through the
-   descenders. */
 .xsp-prose a{color:var(--purple);font-weight:700;text-decoration:underline;
 text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:#C9B8D8}
 .xsp-prose a:hover{color:var(--green-dark);text-decoration-color:currentColor}
-/* A phone number in prose is a fact first and a link second. It keeps tel: so it is
-   still tappable, but it is not competing with the contextual links around it — the
-   button under the section is the thing meant to be pressed. */
 .xsp-prose a[href^="tel:"]{color:var(--ink);text-decoration-color:#D9D4E0}
 .xsp-prose a[href^="tel:"]:hover{color:var(--purple)}
-/* The action row that closes a section whose answer is "call or book". */
 .xsp-inlinecta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 
-/* The one-sentence takeaway that has to sit immediately above a table — engines lift
-   it when they can't lift the table. Heavier than body copy, lighter than a heading. */
 .xsp-takeaway{margin-top:18px;font-size:15.5px;line-height:1.6;font-weight:700;color:var(--ink);max-width:68ch}
 
-/* Decision tables.
-   Desktop: a purple header band, a tinted row-header column, hairline rules and a
-   soft lift. The caption sits ABOVE the card rather than inside it — inside, it read
-   as a stray label floating over the header row.
-   Mobile (<=700px): the table becomes stacked cards. A four-column comparison in a
-   390px scroller means reading one column at a time and losing the row you were on;
-   as cards, each row is a self-contained "Factor: value, value, value" block. The
-   markup stays a real <table> — only `display` changes — and table_block() adds the
-   ARIA roles back, because display:block strips a table's implicit roles from the
-   accessibility tree in Chrome and Firefox. */
 .xsp-tablewrap{margin-top:14px;border:1px solid var(--rule);border-radius:14px;background:#fff;
 overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;
 box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(84,39,112,.18)}
 .xsp-tablewrap:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
 .xsp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.55}
-/* The table's title, sitting above the box as a sub-headline. Sentence case at
-   reading size — as a tiny uppercase tracked-out label it read as chrome, and long
-   ones are a wall of capitals. */
 .xsp-tablelabel{margin:20px 0 10px;font-size:16.5px;line-height:1.45;font-weight:800;
 color:var(--ink);max-width:68ch}
 .xsp-tablelabel + .xsp-tablewrap{margin-top:0}
@@ -573,17 +426,7 @@ color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
 .xsp-table tbody tr:last-child th,.xsp-table tbody tr:last-child td{border-bottom:0}
 @media (hover:hover){.xsp-table tbody tr:hover td{background:#FBFAFC}}
 
-/* Stacked cards under 700px. 700, not the site's 810 breakpoint: a three-column
-   comparison is still readable on a tablet and only breaks down on a phone.
-   The wrapper drops its border and shadow so the CARDS carry the styling — a card
-   inside a card reads as a mistake. Column headers move into each cell via
-   data-label, which table_block() writes. */
-/* Two ranges, one treatment. Under 700px the viewport is the constraint. But from 810
-   to ~1090 the RAIL is: .xsp-bodygrid is `1fr 360px` with a 48px gap and 40px padding,
-   so the main column is viewport-488 — 322px at 810 and 536px at 1024, both under the
-   table's 560px minimum. Left alone that band side-scrolls a four-column table inside
-   a half-width column, which is worse than a phone. Between 700 and 809 the rail is
-   hidden and the column is full width, so the table fits and stays a table. */
+/* 810-1090 too: beside the rail the main column is narrower than the table's 560px min-width */
 @media (max-width:699px), (min-width:810px) and (max-width:1090px){
   .xsp-tablewrap{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
   .xsp-table{min-width:0;display:block;font-size:14px}
@@ -594,13 +437,8 @@ color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
   .xsp-table tbody tr{display:block;background:#fff;border:1px solid var(--rule);border-radius:14px;
   padding:4px 0;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
   .xsp-table tbody tr:last-child{margin-bottom:0}
-  /* The row header becomes the card title. */
   .xsp-table tbody th{display:block;width:auto;background:transparent;border-bottom:1px solid #EFECF3;
   font-size:15px;color:var(--ink);padding:12px 16px}
-  /* Label above value, not beside it. Side by side looks tidy while column names are
-     short ("Single-stage") and falls apart when they are not — "Replacement usually
-     makes sense when" wraps to three lines against a one-line value and the pair
-     stops reading as a pair. Stacked handles any length. */
   .xsp-table tbody td{display:block;border-bottom:1px solid #F5F3F8;padding:11px 16px 12px}
   .xsp-table tbody tr td:last-child{border-bottom:0}
   .xsp-table tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;
@@ -608,11 +446,8 @@ color:#fff;background:var(--purple);border-bottom:0;white-space:nowrap}
   .xsp-table tbody td>span{display:block}
 }
 
-/* Last updated. Quiet, but present — it has to match schema dateModified exactly. */
 .xsp-updated{font-size:12.5px;font-weight:700;color:var(--muted)}
 
-/* Click-to-load video facade. The YouTube iframe pulls ~835 KiB before anyone presses
-   play; this is the poster, and the player replaces it on click. */
 .xsp-shot .xsp-vplay{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;
 display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;
 background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);color:#fff;font-family:inherit;
@@ -624,7 +459,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-vplay .vt{font-size:14.5px;font-weight:800;max-width:34ch;line-height:1.4}
 .xsp-vplay .vh{font-size:11.5px;font-weight:700;letter-spacing:1.6px;color:rgba(255,255,255,.6)}
 
-/* ------------------------- mobile (2b stacking) ------------------------- */
 @media (max-width:809px){
 .xsp-answer{max-width:none}
 .xsp-answer p{font-size:16px;line-height:1.5}
@@ -649,7 +483,6 @@ box-shadow:0 10px 28px rgba(0,0,0,.35);transition:background .15s,transform .15s
 .xsp-chip{padding:7px 10px;font-size:11px;border-radius:10px}
 .xsp-bookcol{display:none}
 .xsp-bodygrid{grid-template-columns:1fr;gap:40px;padding:40px 20px 48px}
-/* the hero card is display:none here, so there is nothing to clear */
 .xhac-svc:has(.xsp-bookcol) .xsp-bodygrid{padding-top:40px}
 .xsp-rail{display:none}
 .xsp-h2{font-size:24px;letter-spacing:-.4px}
@@ -677,7 +510,6 @@ box-shadow:none;background:transparent;padding:13px 0;border-bottom:1px solid #F
 }
 """
 
-# ---------------------------------------------------------------- JS
 def script(root_class):
     return f"""
   <script>
@@ -687,27 +519,10 @@ def script(root_class):
       root.querySelectorAll("a[href]").forEach((a) => {{
         const h = a.getAttribute("href") || "";
         if (h && !h.startsWith("#") && !h.startsWith("tel:")) {{
-          // Default off-site links to _top so they escape the embed iframe instead
-          // of loading a full site inside a content-sized frame. A link that already
-          // declares a target (the lender application uses _blank) keeps its own.
           if (!a.getAttribute("target")) a.setAttribute("target", "_top");
           if (!a.getAttribute("rel")) a.setAttribute("rel", "noopener");
         }}
       }});
-      // In Framer the embed iframe is sized to its content, so this document has
-      // nothing to scroll — scrollIntoView has to cross the frame boundary to move
-      // the parent page. A plain hash jump never does that (the anchor just sets the
-      // hash and nothing moves), and "smooth" does not cross the boundary either —
-      // it silently no-ops. Instant is the behavior that works in an embed, in a
-      // scrollable iframe, and standalone.
-      //
-      // The site header is position:sticky;top:0, so landing flush with the top hides
-      // the section heading underneath it. Measure the real header at jump time and
-      // clear it; --xsp-anchor-offset in the CSS is the fallback for when the parent
-      // can't be read.
-      // How far below the viewport top an anchored section should land: enough to
-      // clear the site's sticky header. Measured off the real header when the parent
-      // is readable; --xsp-anchor-offset in the CSS is the fallback.
       const landingOffset = () => {{
         try {{
           const pw = window.parent;
@@ -735,12 +550,7 @@ def script(root_class):
       const jumpTo = (target) => {{
         if (!target) return;
         const offset = landingOffset();
-        // scrollIntoView cannot be trusted to cross the embed boundary correctly.
-        // Measured in a content-sized iframe under a sticky header: the browser
-        // scrolls the parent to (target's Y *within this document*) - offset and
-        // never adds the iframe's own offsetTop in the parent, so every anchor
-        // lands short by exactly however far down the page the embed sits. Compute
-        // the absolute position and drive the parent's scroll directly instead.
+        // scrollIntoView ignores the iframe's own offset in the parent, so scroll the parent directly
         try {{
           const pw = window.parent;
           const fe = window.frameElement;
@@ -753,8 +563,6 @@ def script(root_class):
             return;
           }}
         }} catch (err) {{}}
-        // Standalone, or a parent we're not allowed to read: scrollIntoView is
-        // correct here because there is only one scrolling box involved.
         target.style.scrollMarginTop = offset + "px";
         target.scrollIntoView({{ behavior: "auto", block: "start" }});
         if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
@@ -772,21 +580,14 @@ def script(root_class):
         }});
       }});
 
-      // Deep links from another page (/terms#financing) land the hash on the PARENT
-      // url — this document never sees it, and the parent has no element with that
-      // id because the section lives in here. Read the parent's hash on load and, if
-      // it names something inside this embed, run the same jump an in-page anchor
-      // would. Without this a cross-page anchor silently lands at the top of the page.
+      // A cross-page anchor (/terms#financing) puts the hash on the parent URL, not this document
       try {{
         let hash = window.location.hash;
         if (!hash && window.parent !== window) hash = window.parent.location.hash || "";
         const id = decodeURIComponent(hash.replace(/^#/, ""));
         const target = id ? document.getElementById(id) : null;
         if (target) {{
-          // Framer is still laying out (and loading images) when this runs, so the
-          // first jump can land short. Repeat once the layout settles, then stop —
-          // and abandon it the moment the reader scrolls, so we never yank the page
-          // out from under someone who has started reading.
+          // Re-jump while Framer is still laying out; stop as soon as the reader scrolls
           let userMoved = false;
           const release = () => {{ userMoved = true; }};
           ["wheel", "touchstart", "keydown"].forEach((evt) => {{
@@ -812,9 +613,6 @@ def script(root_class):
           window.dispatchEvent(new CustomEvent("open-contact-dialog"));
         }});
       }});
-      // Video facade: swap the poster button for the real player on click, with
-      // autoplay=1 so the press that loaded it also starts it. Nothing reaches
-      // youtube.com until this runs.
       root.querySelectorAll(".js-video").forEach((btn) => {{
         btn.addEventListener("click", () => {{
           const id = btn.getAttribute("data-video");
@@ -861,16 +659,10 @@ def script(root_class):
     }})();
   </script>"""
 
-# ------------------------------------------------------- section renderers
 def esc(s):
     return s  # copy strings are authored with entities where needed
 
 def crumbs(items):
-    # Every trail starts at Home. The service and plumbing pages used to start at
-    # their own category, so 31 pages offered no way back to the homepage from the
-    # breadcrumb while all 267 location pages did. Prepending here rather than in 31
-    # data definitions keeps the two from drifting apart again; pages that already
-    # start at Home are left alone.
     items = list(items)
     if not items or items[0][1] != "/":
         items = [("Home", "/")] + items
@@ -886,38 +678,11 @@ def crumbs(items):
 def h1(text, highlight):
     return f'<h1 class="xsp-h1">{text.replace("{X}", f"<em>{highlight}</em>")}</h1>'
 
-# --------------------------------------------------- GEO content model pieces
-# Four optional page-data fields, all rendered by detail_page() and sub_page():
-#
-#   answer    str (or list of str) — the answer-first block. Renders as the FIRST
-#             element after the <h1>, inside the hero copy column. id="answer" is
-#             stable on purpose: speakable schema targets it by selector.
-#   sections  [{h2, body, h3s?, table?, eyebrow?, id?}] — real <h2>/<h3> headings
-#             with paragraphs, so a page can carry 5-7 H2s instead of three.
-#             `sectionsTail` is the same shape, rendered after Process instead of
-#             before it, for the sections that belong at the end of the page.
-#   table     {caption, takeaway, columns, rows, h2?, eyebrow?} — a real <table>.
-#   updated   human date string; `updatedISO` is the machine form. The visible line
-#             and schema dateModified must be the same date.
-#
-# `body` is a string or a list of strings; each becomes one <p>. Copy is authored
-# with HTML entities already in place (see esc), so nothing here escapes.
 
 _PHONE_RX = re.compile(re.escape(PHONE_DISPLAY))
 
 def autolink_phone(html):
-    """Make every phone number in page text tappable.
-
-    108 of them across 101 pages were plain text — readable on a desktop, useless on
-    the phone someone is holding when their heat is out. Chasing the strings would
-    only work until the next copy edit, so this runs over the assembled body instead.
-
-    It walks tokens rather than regexing the whole document, because the number also
-    appears inside href/aria-label/title attributes, inside anchors that are already
-    links, and inside the <script> on /locations. Substituting there would produce a
-    nested anchor or broken JavaScript. Only bare text nodes, outside <a>, <script>
-    and <style>, are touched.
-    """
+    # Token walk, not a regex over the document: attributes, existing <a> and <script>/<style> stay untouched.
     out, in_a, in_raw = [], 0, 0
     for tok in re.split(r"(<[^>]+>)", html):
         if tok.startswith("<"):
@@ -945,8 +710,6 @@ def paragraphs(body, cls="xsp-prose"):
     return "".join(f'<p class="{cls}">{p}</p>' for p in items)
 
 def answer_block(d):
-    """The answer-first block. Deliberately unstyled as a box: it is the page's lead
-    paragraph, and a bordered callout reads as an aside instead of as the answer."""
     a = d.get("answer")
     if not a:
         return ""
@@ -955,35 +718,18 @@ def answer_block(d):
             + "".join(f"<p>{p}</p>" for p in items) + "</div>")
 
 def table_block(t):
-    """A real <table> — <caption>, <thead>, th scope=col, th scope=row — because an
-    engine that cannot parse the table cannot cite it. The takeaway sentence goes
-    immediately BEFORE the table; that is the sentence that gets lifted when the
-    table itself doesn't. The wrapper carries overflow-x inline as well as in CSS so
-    a wide table can never make the page scroll sideways, and it is focusable with a
-    label so it can be scrolled from the keyboard."""
-    # role="table"/"row"/"cell" are redundant on a real table and normally worth
-    # leaving off — but under 700px the CSS sets display:block on these elements,
-    # and Chrome and Firefox drop a table's implicit roles the moment it stops being
-    # display:table. Without these the cards are read as a pile of unrelated text.
+    # Explicit roles: the mobile CSS sets display:block, which strips a table's implicit roles.
     cols = list(t["columns"])
     head = "".join(f'<th scope="col">{c}</th>' for c in cols)
     rows = []
     for r in t["rows"]:
         cells = list(r)
         first = f'<th scope="row" role="rowheader">{cells[0]}</th>'
-        # data-label supplies the column name as a prefix inside each stacked card;
-        # the value is wrapped so it can be right-aligned against that label.
         rest = "".join(
             f'<td role="cell" data-label="{cols[i + 1]}"><span>{c}</span></td>'
             for i, c in enumerate(cells[1:]))
         rows.append(f'<tr role="row">{first}{rest}</tr>')
-    # The title is a sub-headline ABOVE the box, not a <caption> inside it. As a
-    # caption it broke twice: in card mode the table is display:block, which took the
-    # caption's width with it and stacked the words one per line; and on desktop the
-    # wrapper's overflow clipped the left edge of any caption wider than the table.
-    # Out here it is just a line of text, so it can neither be squeezed nor clipped.
-    # It still names the table for assistive tech, via aria-labelledby rather than the
-    # caption element.
+    # A <p>, not a <caption>: card mode squeezed a caption and the wrapper's overflow clipped it.
     caption = t.get("caption")
     label = ""
     labelled = ""
@@ -991,13 +737,8 @@ def table_block(t):
         tid = "tbl-" + re.sub(r"[^a-z0-9]+", "-", re.sub(r"<[^>]+>", "", caption).lower()).strip("-")[:48]
         label = f'<p class="xsp-tablelabel" id="{tid}">{caption}</p>'
         labelled = f' aria-labelledby="{tid}"'
-    # tabindex makes the scroll box reachable from the keyboard, which is the whole
-    # point of a scrolling container. role="region" only goes on when there is a name
-    # to give it — an unnamed region is worse than no region.
     region = f' role="region"{labelled}' if caption else ""
     takeaway = f'<p class="xsp-takeaway">{t["takeaway"]}</p>' if t.get("takeaway") else ""
-    # No inline overflow-x here any more: under 700px the CSS sets overflow:visible so
-    # the cards flow, and an inline style would win over it and reinstate the scroller.
     return (f'{takeaway}{label}<div class="xsp-tablewrap" '
             f'tabindex="0"{region}>'
             f'<table class="xsp-table" role="table"{labelled}>'
@@ -1005,15 +746,12 @@ def table_block(t):
             f"</table></div>")
 
 def table_section(t):
-    """A table standing on its own as a page section, with its own heading."""
     eyebrow = f'<div class="xsp-eyebrow purple">{t["eyebrow"]}</div>' if t.get("eyebrow") else ""
     heading = f'<h2 class="xsp-h2">{t["h2"]}</h2>' if t.get("h2") else ""
     sid = f' id="{t["id"]}"' if t.get("id") else ""
     return f'<div class="xsp-section"{sid}>{eyebrow}{heading}{table_block(t)}</div>'
 
 def content_section(s):
-    """One body section: an <h2> question, the direct answer under it, then any <h3>
-    sub-questions with their own answers, then an optional table."""
     parts = []
     if s.get("eyebrow"):
         cls = "" if s.get("eyebrowColor", "green") == "green" else " purple"
@@ -1025,11 +763,6 @@ def content_section(s):
         parts.append(paragraphs(sub.get("body")))
     if s.get("table"):
         parts.append(table_block(s["table"]))
-    # An optional action row. A section whose answer IS "call or book" should end in a
-    # button, not in an underlined phone number buried mid-paragraph — the number stays
-    # in the prose because that is the sentence an AI answer lifts, but the tap target
-    # is a real button. cta: True gives the standard Schedule + Call pair; a dict gives
-    # a single custom link, e.g. {"label": "Explore X-Plan", "href": "/maintenance"}.
     cta = s.get("cta")
     if cta is True:
         parts.append(f'<div class="xsp-inlinecta">{schedule_btn("Schedule Service", "xsp-cta")}'
@@ -1041,36 +774,20 @@ def content_section(s):
     return f'<div class="xsp-section"{sid}>{"".join(parts)}</div>'
 
 def content_sections(items):
-    """List form, so an assembler can splice it straight into its column."""
     return [content_section(s) for s in (items or [])]
 
 def updated_line(text, iso=None):
-    """Visible "Last updated" line. This date and schema dateModified have to match
-    exactly — engines read the rendered text and compare. Pass `updatedISO` through
-    to head.py for the schema side; never stamp either from the build clock."""
+    # Must match schema dateModified exactly; never stamp it from the build clock.
     if not text:
         return ""
     dt = f' datetime="{iso}"' if iso else ""
     return f'<p class="xsp-updated">Last updated <time{dt}>{text}</time></p>'
 
 def hero_mark():
-    """The decorative X watermark behind every hero.
-
-    Carries its intrinsic size so it can never shift layout. It is also, today, the
-    measured LCP element on every page type — a 33 KB PNG drawn at 6% opacity that
-    says nothing. Replacing it with an inline SVG moves LCP to real content and drops
-    662 requests sitewide (performance.md §6.2); that swap is blocked only on
-    [NEEDS: an SVG of the X mark], and when it arrives it happens in this function."""
     return (f'<div class="xsp-hero-mark">'
             f'<img src="{X_MARK}" alt="" aria-hidden="true"{dim_attrs(X_MARK)}></div>')
 
-# Sub pages carry the same three proof points on every page, so they are a default
-# here rather than repeated in every page's data. A page can still override them by
-# setting heroChips, the same key the detail pages use.
-# Kept short on purpose: the row is 344px wide, which is inside the narrowest overview
-# page's chip row, so a sub page never wraps to two lines where its own overview sits
-# on one. "20+ Years Locally Owned" and "24/7 Emergency Service" pushed it to 459px
-# and wrapped on every phone.
+# Short on purpose: longer labels wrap the chip row to two lines on phones.
 SUB_CHIPS = ["4.9 on Google", "Locally Owned", "24/7 Emergency"]
 
 def chips(items):
@@ -1088,16 +805,6 @@ def call_btn(label, cls="xsp-btn-purple"):
     return f'<a class="{cls}" href="{PHONE_TEL}">{label}</a>'
 
 def text_btn(cls="xsp-btn-text"):
-    """The Text Us button. One builder, used everywhere, so the label, the href and the
-    accessible name cannot drift apart on 320 pages.
-
-    The number is NOT painted on the page here — that happens in exactly two places
-    (see business.SMS_DISPLAY). It lives in aria-label so a screen reader still gets
-    it, which is also what makes the button honest: "Text Us" alone tells a blind user
-    nothing about where the message goes.
-
-    Bare sms: with no body=. iOS and Android disagree on ?body= vs &body= and a
-    malformed one opens an empty composer with no recipient on some handsets."""
     return (f'<a class="{cls} js-text" href="{D.SMS_HREF}" '
             f'aria-label="{D.SMS_ARIA}">Text Us</a>')
 
@@ -1134,10 +841,6 @@ def hero_detail(d):
 </div>'''
 
 def hero_sub(d):
-    """Same anatomy as hero_detail: booking card in the hero, overhanging the section
-    below, and the CTA pair in the copy column reduced to a mobile fallback for when
-    the card is hidden. The sub pages used to be the one page type without the card
-    in the hero — it lived inline in the rail, so it never overhung anything."""
     label = d.get("scheduleLabel", "Schedule Service")
     return f'''<div class="xsp-hero sub">
   {hero_mark()}
@@ -1214,10 +917,6 @@ def decision_card(dc):
   <a href="{dc["href"]}">{dc["linkLabel"]}</a>
 </div>'''
 
-# The FAQ heading every page used to carry, verbatim. It is a slogan, it is identical
-# on 311 pages, and it wastes the strongest H2 slot on the page — so pages can now set
-# `faqH2` to a question and get a heading that earns its place. Kept as the default so
-# nothing that has not been rewritten changes. `faqH2: None` drops the heading entirely.
 DEFAULT_FAQ_H2 = "Your questions, answered."
 
 def faq(f, eyebrow, h2=DEFAULT_FAQ_H2):
@@ -1262,14 +961,6 @@ def promo(key):
 </a>'''
 
 def photo_slot(label="PHOTO — TECH AT UNIT", src=None, alt="", pos=None, eager=False):
-    """pos sets object-position for sources whose subject isn't centred. The slot is
-    360x220 landscape and the image is object-fit:cover, so a portrait photo shows
-    only a horizontal band of itself — pos is how you choose which band.
-
-    `eager` is for the copy of this slot that is actually the LCP element. On mobile
-    that is the photo at the top of the body (mobile_photo); lazy-loading the LCP
-    image delays it by a whole round trip. Both copies of the rail photo share one
-    URL, so marking both eager is still one request."""
     if src:
         style = f' style="object-position:{pos}"' if pos else ""
         load = (' fetchpriority="high" decoding="async"' if eager
@@ -1294,20 +985,13 @@ def sibling_links(s):
     return f'<div class="xsp-sibs"><div class="h">{s["label"]}</div>{links}</div>'
 
 def media_block(m):
-    """One piece of evidence in the main column — a photo or a video, full width of
-    the column at 16:9. Deliberately one per block: a photo and a video side by side
-    never share a height (a 4:3 frame next to a 16:9 player leaves a hole under the
-    shorter one), so each gets its own section and its own heading."""
     if m.get("photo"):
         pos = m.get("photoPos", "50% 50%")
         shot = (f'<div class="xsp-shot"><img src="{m["photo"]}" alt="{m.get("photoAlt", "")}" '
                 f'style="object-position:{pos}"{dim_attrs(m["photo"])} '
                 f'loading="lazy" decoding="async"></div>')
     else:
-        # Click-to-load facade. loading="lazy" does nothing for a YouTube iframe —
-        # measured, it still pulls ~835 KiB of player JavaScript on load. Nothing
-        # third-party is requested until someone presses play, and the button is a
-        # real <button> so it works from the keyboard.
+        # Facade, not a lazy iframe: loading="lazy" still pulls ~835 KiB of YouTube JS.
         shot = (f'<div class="xsp-shot">'
                 f'<button type="button" class="xsp-vplay js-video" '
                 f'data-video="{m["video"]}" data-title="{m["videoTitle"]}" '
@@ -1337,16 +1021,10 @@ def related(rel):
 </div></div>'''
 
 def mobile_inline_rail(d):
-    """2b: the financing/x-plan promos flow inline after Process on mobile, where the
-    rail itself is display:none."""
     parts = [promo(k) for k in d["rail"]["promos"]]
     return f'<div class="xsp-mbrail xsp-mb">{"".join(parts)}</div>'
 
 def mobile_photo(r):
-    """The rail photo's mobile home: the top of the body, directly under the pill nav.
-    It rode along with the promos for a while, which dropped it halfway down the page
-    between two text sections — it read as an interruption rather than as the page's
-    image."""
     if not r.get("photo"):
         return ""
     return ('<div class="xsp-mbphoto xsp-mb">'
@@ -1354,7 +1032,6 @@ def mobile_photo(r):
                          eager=True)
             + "</div>")
 
-# ------------------------------------------------------------ assemblers
 def page_shell(root_class, body):
     return f'''<section class="xhac-svc {root_class}">
   <style>{CSS}</style>
@@ -1364,17 +1041,6 @@ def page_shell(root_class, body):
 '''
 
 def detail_page(d, root_class):
-    """Tier 2 — detail template (2a/2b). Optional pillNav → 2e combo.
-
-    Optional GEO fields: `answer`, `sections`, `table`, `sectionsTail`, `faqH2`,
-    `updated` / `updatedISO`. Section order in the main column is
-
-      symptoms → whatWeDo → sections → media → process → table → sectionsTail
-      → FAQ → last updated
-
-    so `sections` carries the questions that set up the page and `sectionsTail`
-    the ones that follow from the process. Everything is optional; a page that
-    supplies none of it renders exactly as it did before."""
     left = [mobile_photo(d["rail"]), checklist(d["symptoms"])]
     if d.get("whatWeDo"):
         left.append(what_we_do(d["whatWeDo"]))
@@ -1399,15 +1065,6 @@ def detail_page(d, root_class):
     return page_shell(root_class, body)
 
 def sub_page(d, root_class):
-    """Tier 3 — sub-page template (2d).
-
-    Same optional GEO fields as detail_page(). Order in the main column is
-
-      symptoms → sections → process → decision → table → sectionsTail
-      → FAQ → last updated
-
-    The table sits after the decision card on purpose: on the repair pages the card
-    asks the repair-or-replace question and the table answers it."""
     left = [mobile_photo(d["rail"]), checklist(d["symptoms"])]
     left += content_sections(d.get("sections"))
     left.append(process(d["process"]))
@@ -1419,8 +1076,6 @@ def sub_page(d, root_class):
     left.append(mobile_inline_rail(d))
     left.append(faq(d["faq"], d["faqEyebrow"], h2=d.get("faqH2", DEFAULT_FAQ_H2)))
     left.append(updated_line(d.get("updated"), d.get("updatedISO")))
-    # The booking card moved into the hero (see hero_sub), so the rail is photo first
-    # then the promo and sibling links — the same rail the detail pages carry.
     photo = ""
     if d["rail"].get("photo"):
         photo = photo_slot("", d["rail"]["photo"], d["rail"].get("photoAlt", ""),
@@ -1435,7 +1090,6 @@ def sub_page(d, root_class):
 {xplan_panel()}'''
     return page_shell(root_class, body)
 
-# ------------------------------------------------------------ hub sections
 HUB_CSS = """
 .xsp-hubhero-grid{position:relative;display:grid;grid-template-columns:1fr .9fr;gap:48px;align-items:center;
 max-width:1280px;margin:0 auto;padding:48px 40px 72px}
@@ -1514,9 +1168,6 @@ padding:8px 14px;font-size:12.5px;font-weight:700}
 """
 
 def hub_hero(d):
-    # The hub's photo box is .ph, not .xsp-photo, so photo_slot's wrapper doesn't fit
-    # here — but the img itself must still honour photoPos, or a portrait source
-    # silently centre-crops in a wide box.
     if d.get("photo"):
         pos = f' style="object-position:{d["photoPos"]}"' if d.get("photoPos") else ""
         hub_photo = (f'<img src="{d["photo"]}" alt="{d.get("photoAlt", "")}"{pos}'
@@ -1584,11 +1235,7 @@ def hub_additional(d):
   <div class="xsp-grid4">{cards}</div>
 </div></div>'''
 
-# Every X-Plan fact the site states, in one place. Change a price here and it changes
-# on the hub, the maintenance page, and all 38 location maintenance pages at once.
-# Client-confirmed figures — see the extreme-brand skill before editing any of them.
-# Members pay DISCOUNTED service call rates, never free: writing "$0" or "free" here
-# would be wrong and is the mistake the handoff calls out by name.
+# Members get discounted service calls, never free: don't write "$0" or "free" here.
 XPLAN = {
     "annual": "$249",
     "monthly": "$20.75",
@@ -1602,8 +1249,6 @@ XPLAN = {
 }
 
 def xplan_panel(detail=False):
-    """The X-Plan band. `detail` adds the member benefit list the location maintenance
-    pages carry; the pricing is the same object either way."""
     rows = ""
     if detail:
         rows = ('<ul class="xsp-xplan-detail">' +
@@ -1651,7 +1296,6 @@ def hub_crosslinks(d):
 </div></div>'''
 
 def hub_page(d, root_class):
-    """Tier 1 — hub template (2c)."""
     panel = xplan_panel() if d.get("panel") == "xplan" else specials_panel()
     body = f'''{hub_hero(d)}
 {promise_strip()}
@@ -1663,7 +1307,6 @@ def hub_page(d, root_class):
 
 CSS = CSS + HUB_CSS
 
-# ------------------------------------------------ X-Plan membership page (3a)
 XPLAN_CSS = """
 .xsp-bookcol.pricing .price-row{display:flex;align-items:baseline;gap:8px;margin-top:10px}
 .xsp-bookcol.pricing .amt{font-style:italic;font-weight:900;font-size:38px;color:var(--ink)}
@@ -1702,8 +1345,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 """
 CSS = CSS + XPLAN_CSS
 
-# Join X-Plan CTA target — TODO: pending confirmation (ScheduleEngine vs signup form).
-# Interim: anchors to the pricing card; marked with data-join-cta for one-pass wiring.
+# TODO: real join target (ScheduleEngine vs signup form); data-join-cta marks every use.
 JOIN_HREF = "#xsp-pricing"
 
 def pricing_card(pc):
@@ -1757,8 +1399,6 @@ def join_band(j):
 </div></div>'''
 
 def xplan_page(d, root_class):
-    """3a — detail anatomy, membership-flavored. No pill nav, no related strip,
-    no site-wide X-Plan panel (the whole page is the X-Plan CTA)."""
     hero = f'''<div class="xsp-hero">
   {hero_mark()}
   <div class="xsp-hero-grid">
@@ -1784,8 +1424,6 @@ def xplan_page(d, root_class):
     if d.get("table"):
         left.append(table_section(d["table"]))
     left += content_sections(d.get("sectionsTail"))
-    # This page has always suppressed the FAQ heading — the eyebrow carries it — so
-    # its default stays None rather than DEFAULT_FAQ_H2.
     left.append(faq(d["faq"], d["faqEyebrow"], h2=d.get("faqH2")))
     left.append(updated_line(d.get("updated"), d.get("updatedISO")))
     rail_html = f'<aside class="xsp-rail">{promo("askJoin")}{promo("tuneUpNow")}</aside>'

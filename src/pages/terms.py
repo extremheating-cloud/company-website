@@ -1,35 +1,9 @@
-"""Terms of Service & Limited Warranty — /terms.
-
-Two jobs:
-
-1. Carry forward the EXISTING published terms verbatim. The body text below was
-   extracted from the live https://www.extremeheating.com/terms on 2026-07-31 and
-   is reproduced word for word — payment, scope, limited warranty, water-related
-   exclusions, concealed conditions, customer-supplied parts, performance, access,
-   permits, disclaimer, liability, delays, lien rights, indemnification, acceptance.
-
-2. Add the two program sections the site was missing. The Extreme Rewards terms
-   line printed on the brochure points here, and until now this page carried no
-   referral terms at all.
-
-Sourcing: program facts come from ~/.claude/skills/extreme-brand/references/programs.md.
-A terms page is where eligibility and payout rules belong, so the rules from that
-file's internal section that BIND a customer are published here (naming at booking,
-24-month lookback, validity, one reward per job, exclusions, greater-of stacking).
-Deliberately NOT published, because they are commercial rather than binding:
-the spend backstop thresholds, the internal job-type table, gift-card activation
-cost, batching cadence, and cost per acquisition.
-
-Nothing here is invented. Clauses a terms page would normally carry that are not in
-the source file are listed in TERMS_GAPS for the client and their attorney.
-"""
 import os
 from layout import components as T
 from data import business as D
 from pages import company_shared as CP
 
 TERMS_CSS = """
-/* ------------------------------- /terms ------------------------------- */
 .xsp-terms .xsp-h1,.xsp-terms .xsp-h2,.xsp-terms .xtm-h3{font-weight:800}
 .xsp-terms .xsp-eyebrow{color:#3F852B}
 .xsp-terms .xsp-crumbs .cur{color:var(--green-hover)}
@@ -40,7 +14,6 @@ TERMS_CSS = """
 .xtm-lead{max-width:820px}
 .xtm-lead p{font-size:15px;line-height:1.7;font-weight:500;color:var(--body);margin-top:14px}
 
-/* summary card */
 .xtm-summary{background:var(--tint);border-radius:16px;padding:26px 30px;margin-top:24px}
 .xtm-summary .k{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--purple)}
 .xtm-summary h2{margin-top:8px;font-style:italic;font-weight:800;font-size:26px;
@@ -54,13 +27,11 @@ max-width:760px}
 line-height:1.65;font-weight:500;color:var(--body)}
 .xtm-note b{color:var(--ink);font-weight:800}
 
-/* contact strip */
 .xtm-contact{border:1px solid var(--rule);border-radius:16px;padding:20px 24px;margin-top:20px;
 display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:#fff}
 .xtm-contact .t{font-weight:800;font-size:16.5px}
 .xtm-contact .d{font-size:13.5px;line-height:1.55;font-weight:500;color:var(--body);margin-top:4px}
 
-/* legal sections */
 .xtm-sec{margin-top:34px;scroll-margin-top:var(--xsp-anchor-offset)}
 .xtm-h3{font-size:19px;letter-spacing:-.2px;color:var(--ink);
 padding-bottom:10px;border-bottom:2px solid var(--green)}
@@ -73,10 +44,8 @@ max-width:78ch}
 .xtm-sec li .b{width:6px;height:6px;border-radius:50%;background:var(--green);flex:none;margin-top:9px}
 .xtm-sec li b{color:var(--ink);font-weight:800}
 
-/* the two program blocks get a tinted rail so they read as additions */
 .xtm-prog{border-left:4px solid var(--green);padding-left:22px}
 
-/* jump nav */
 .xtm-toc{border:1px solid var(--rule);border-radius:16px;padding:20px 24px;margin-top:24px;background:#fff}
 /* --muted (#94A3B8) is only 2.56:1 on white and fails AA as a label; --body clears it. */
 .xtm-toc .k{font-size:10.5px;font-weight:800;letter-spacing:1.8px;color:var(--body)}
@@ -106,17 +75,13 @@ def shell(root_class, body):
 '''
 
 
-# ---------------------------------------------------------------------------
-# EXISTING published terms — reproduced verbatim from the live /terms page.
-# Do not reword.
-# ---------------------------------------------------------------------------
 ENTITY = D.ENTITY_HVAC
 ENTITY_PLUMBING = D.ENTITY_PLUMBING
 ENTITY_SCOPE = f"{ENTITY} and {ENTITY_PLUMBING}"
 
-# Effective date of this version of the Terms.
 EFFECTIVE = "August 1, 2026"
 
+# published terms, reproduced verbatim from the live /terms page; do not reword
 EXISTING_SECTIONS = [
     ("payment-terms", "Payment Terms", [
         "Payment for the work described is due immediately upon completion unless otherwise specified in writing. A deposit may be required to schedule work. Any unpaid balance will be subject to a late charge of 10% per month, or the maximum amount permitted by law, plus all costs of collection, including reasonable attorney fees and court costs, as permitted by law.",
@@ -154,36 +119,14 @@ EXISTING_SECTIONS = [
     ("delays", "Delays / Third Parties", [
         "Extreme is not responsible for delays caused by unforeseen issues, including weather-related events, pandemic, supply delays, or third-party delays, and is not liable for expenses incurred due to scheduling or completing inspections with municipalities and/or county building or utility departments.",
     ]),
-    # The only clause where the published text was altered rather than reproduced. It named
-    # the HVAC entity alone, which left plumbing work sold by Extreme Home Services LLC
-    # outside it. Changed at the client's instruction 2026-07-31: names both companies, and
-    # ties each one's lien to the work it furnished rather than letting either lien for the
-    # other's. Everything else in the clause is the original wording.
     ("lien-rights", "Lien Rights", [
         f"Customer acknowledges that each of {ENTITY} and {ENTITY_PLUMBING} may have the right to file a mechanic's lien or other lien claim against the property for unpaid labor, services, and materials it furnished, as permitted by Ohio law. Customer agrees to pay all amounts due in accordance with these Terms to avoid lien filing, and to pay reasonable costs of collection, including attorney fees and court costs, as permitted by law.",
     ]),
     ("indemnification", "Indemnification", [
         "Customer agrees to indemnify Extreme from any claims, judgments, damages, fees, costs, expenses, losses, or liabilities arising from or directly related to Customer's violation of these Terms, including collection costs and reasonable attorney fees.",
     ]),
-    # Added 2026-08-12 for A2P 10DLC. This page's URL is submitted as the campaign's
-    # terms of service and carried no SMS content at all, which is one of the things a
-    # carrier reviewer checks. Copy is the approved text from the requirements doc and
-    # should be treated the same way as the widget disclosure: if it changes, the
-    # registration changes with it.
-    #
-    # The texting number is deliberately NOT a Text Us button here. Legal pages stay
-    # clean of CTAs, and a reviewer reading this section needs the number as text.
-    #
-    # Whether the number belonged on this page at all was the one open contradiction
-    # between §6 and §9 of the requirements doc. Aaron settled it on 2026-08-12: show
-    # it. It appears twice on purpose — once identified as the sending number, once as
-    # the HELP contact — because those answer two different questions, and a reviewer
-    # checking that the campaign's stated number matches the site should not have to
-    # infer it from a sentence about opting out.
+    # A2P 10DLC: quoted verbatim in the carrier filing; do not reword or change the sender name
     ("text-message-program", "Text Message Program", [
-        # The trading name is D.COMPANY, not the "&" variant. Spelling the sender's
-        # name differently here than the chat widget spells it is the kind of mismatch
-        # a carrier reviewer reads as two different businesses.
         f"By providing your mobile number and opting in, you agree to receive text "
         f"messages from {D.COMPANY} about your service request, "
         f"appointment, and scheduled work. Consent is not a condition of purchase.",
@@ -204,12 +147,6 @@ EXISTING_SECTIONS = [
     ]),
 ]
 
-# ---------------------------------------------------------------------------
-# NEW — Extreme Rewards. Facts from programs.md. Amounts and the customer-facing
-# job wording ("a new heating, cooling, or plumbing system" / "any repair or
-# installation") are the approved language; the internal job-type table and the
-# spend backstop are deliberately absent.
-# ---------------------------------------------------------------------------
 REWARDS_SECTION = ("extreme-rewards", "Extreme Rewards Referral Program", [
     f"<b>Who offers the program.</b> Extreme Rewards is offered and administered by {ENTITY}, including where the referred customer's job is performed by {ENTITY_PLUMBING}.",
     f"<b>What the program pays.</b> Extreme Rewards pays an existing customer when a new customer they referred completes a qualifying job. The referred customer saves {D.REWARDS['newSystem']} on a new heating, cooling, or plumbing system, or {D.REWARDS['everythingElse']} on any other job with a total of {D.REWARDS['everythingElseMin']} or more. The {D.REWARDS['newSystem']} new-system reward has no minimum job value. The referring customer earns the same amount their referred customer saved, and Extreme issues it on a Visa gift card.",
@@ -223,11 +160,7 @@ REWARDS_SECTION = ("extreme-rewards", "Extreme Rewards Referral Program", [
     "<b>Taxes.</b> Referral rewards may constitute taxable income to the recipient. Extreme may be required to collect tax information and to issue tax forms where reward totals meet applicable reporting thresholds. Recipients are responsible for any taxes owed.",
 ])
 
-# ---------------------------------------------------------------------------
-# NEW — X-Plan. Zero Risk Investment carries BOTH conditions (consecutive years,
-# $2,500 or 10 years cap). Transferability is NOT claimed — the accrual follows
-# the member, not the property.
-# ---------------------------------------------------------------------------
+# Zero Risk Investment keeps both conditions (consecutive years, $2,500 or 10 years)
 XPLAN_SECTION = ("x-plan", "X-Plan Membership", [
     f"<b>Who offers the membership.</b> X-Plan is offered and administered by {ENTITY}, including member benefits that apply to work performed by {ENTITY_PLUMBING}.",
     "<b>Pricing.</b> X-Plan costs $249 per year or $20.75 per month.",
@@ -237,18 +170,7 @@ XPLAN_SECTION = ("x-plan", "X-Plan Membership", [
     "<b>Repair warranty.</b> Qualified repairs performed by Extreme technicians carry a Worry-Free 5-Year Warranty. It applies only to those repairs and remains subject to the exclusions set out in the Limited Warranty and No Warranty Items sections above.",
 ])
 
-# ---------------------------------------------------------------------------
-# NEW — Financing (client instruction 2026-07-31). The load-bearing point the
-# client asked for: submitting an application is a request for PRE-APPROVAL. It
-# creates no agreement with Extreme and no credit agreement with the lender.
-#
-# Everything here is either (a) already published on /financing-options
-# ("Financing subject to credit approval", the three named lenders), (b) the
-# client's own instruction, or (c) a direct consequence of Extreme not being the
-# lender. Nothing states a rate, a term length, an approval standard, or a
-# lender's internal process — Extreme does not control any of those and must not
-# appear to promise them. See TERMS_GAPS for what an attorney still has to add.
-# ---------------------------------------------------------------------------
+# never state a rate, term or approval standard: Extreme is not the lender
 FINANCING_SECTION = ("financing", "Financing", [
     "<b>Extreme is not the lender.</b> Financing is offered by third-party lenders, including GoodLeap, Synchrony, and Wright-Patt Credit Union. Extreme does not extend credit, is not a party to any credit agreement between Customer and a lender, and does not act as the lender's agent.",
     "<b>Applying is a request for pre-approval.</b> Submitting a financing application through a link provided by Extreme is a request for pre-approval from that lender. It is not an agreement between Customer and Extreme, it is not an agreement by Extreme to perform any work or to hold any price, and it is not a credit agreement between Customer and Wright-Patt Credit Union or any other lender. Pre-approval does not obligate Customer to proceed with any work or to accept any offer of credit.",
@@ -262,23 +184,16 @@ ACCEPTANCE_SECTION = ("acceptance", "Acceptance of Terms", [
     "By signing an estimate or invoice, authorizing work, scheduling service, or making payment, Customer confirms acceptance of these Terms of Service and Limited Warranty.",
 ])
 
-# Clauses a terms page would normally carry that are NOT in programs.md or on the
-# existing published page. Not written, because inventing a term is worse than a
-# gap. Surfaced to the client in the build report.
 TERMS_GAPS = [
     "Right to modify, suspend, or end Extreme Rewards or X-Plan, and what happens to referrals or memberships already in flight.",
     "X-Plan cancellation, refund, auto-renewal and what happens to accrued Zero Risk Investment credit on cancellation or lapse.",
     "Whether X-Plan pricing is per system or per household, and how additional systems are priced.",
     "Visa gift card issuer terms, expiry, and replacement of lost cards.",
     "Governing law and dispute resolution for the programs (the existing page references Ohio law only for lien rights).",
-    # Raised by the Financing section added 2026-07-31.
     "Financing: whether a quote or price is held while a financing application is pending, and for how long. The section says applying does not hold a price, which is the safe default — confirm it matches how sales actually operates.",
     "Financing: what happens to Extreme's payment terms if a customer is declined after work is scheduled or started. Payment Terms currently says payment is due on completion with no financing contingency.",
     "Financing: whether Extreme receives compensation from any lender, which may carry disclosure obligations.",
     "Financing: confirm Extreme's agreements with GoodLeap, Synchrony, and Wright-Patt Credit Union permit naming them on the website and in these Terms, and require no specific lender-mandated disclosure language.",
-    # Raised by the two-entity structure confirmed 2026-07-31. The registered form of
-    # the HVAC entity was the blocking item here and is now closed: the client
-    # confirmed LLC on 2026-07-31, matching the previously published page.
     "Whether the umbrella corporation should be named in these Terms at all.",
     "Lien Rights was amended 2026-07-31 to name both LLCs, each for the work it furnished. This is the one place the previously published legal text was changed, so it should get an attorney read before the effective date.",
 ]
@@ -356,10 +271,6 @@ def toc(sections):
 
 
 def terms_page(d, root_class):
-    # The green left rule marks the sections added on top of the original published
-    # terms — the two Extreme programs plus financing. Financing is not an Extreme
-    # program; it shares the treatment because it is offering-specific rather than
-    # part of the base work terms.
     programs = [REWARDS_SECTION, XPLAN_SECTION, FINANCING_SECTION]
     all_sections = EXISTING_SECTIONS + programs + [ACCEPTANCE_SECTION]
     prog_anchors = {a for a, _, _ in programs}

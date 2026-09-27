@@ -1,88 +1,22 @@
-"""Per-city content angles for the city x service pages.
-
-WHY THIS EXISTS
-
-Measured 2026-08-03, six-word-shingle Jaccard over visible <main> text:
-
-    city x service pages   9.6% median unique text, 0.51-0.58 Jaccard
-                           WITHIN a service family (all 39 heating pages
-                           are 56% identical to each other)
-    city overview pages   22.0% median unique
-
-Every competitor audited beats that: Eco Plumbers 58-66%, McAfee 47.5%,
-Butler 43-52%, Five Star 35.9%. It is the heaviest-weighted category in the
-scoring and the one place we are last.
-
-THE MECHANISM, COPIED FROM ECO PLUMBERS
-
-Their Brookville and Montgomery AC pages score Jaccard 0.229. They do not do
-per-city research to get there. They keep a library of substantive angles and
-give each city a DIFFERENT SUBSET of them, so no two pages carry the same set:
-
-    Brookville: warning signs / smart upgrades / cost of waiting / trust
-    Montgomery: what the AC is telling you / when the fix is worth it /
-                zoning systems / resale value
-
-Same trade, different five sections. That is the whole trick, and it is worth
-being honest about what it is: rotation raises uniqueness without making a page
-more *local*. A Montgomery reader gets zoning and a Brookville reader gets cost
-of waiting for no reason connected to their town.
-
-So the rule here is that every angle must be independently worth reading. If a
-section only exists to make a page look different from its neighbor, it is
-padding, and padding on 234 pages is how a site earns a thin-content problem
-instead of solving one. Each angle below answers a question a homeowner in this
-market actually asks, and would earn its place on a single page with no
-neighbors at all.
-
-The genuinely local layer sits ELSEWHERE and stays there: LOCAL[slug]["svc"]
-carries the researched permit, water and utility facts for the indexed ten, and
-those still render first. This is the layer underneath, for the other twenty
-cities and for depth on the ten.
-
-[NEEDS: a Census API key (free, api.census.gov/data/key_signup.html). ACS table
- B25034, year structure built, keyed by place, would let each city's angle set
- be chosen by its actual housing stock rather than by hash - a 1950s Kettering
- ranch and a 2003 Springboro subdivision genuinely need different questions
- answered. That turns rotation into relevance. The API stopped serving keyless
- requests, so it is one free signup away.]
-"""
 import hashlib
 
 
 def pick(slug, service, n=4):
-    """A deterministic, stable subset of angles for one city and service.
-
-    Ordering is by SHA1 of (slug, service, angle id) rather than random.shuffle:
-    the same city gets the same sections on every build, so a rebuild never
-    rewrites 234 pages and never churns the sitemap lastmod dates. Python's
-    built-in hash() is salted per process and would do exactly that.
-    """
     pool = ANGLES.get(service) or []
     if not pool:
         return []
+    # sha1, not hash() or random: hash() is salted per process and would reshuffle every page each build.
     keyed = sorted(
         pool,
         key=lambda a: hashlib.sha1(
             f"{slug}|{service}|{a['id']}".encode()).hexdigest())
-    # Ranking the whole pool and taking the top n is not a uniform draw over
-    # combinations, and with 30 cities against 16 angles it collided once for real:
-    # moraine and springfield drew an identical four for heating. The rotating start
-    # point breaks that. It is still a pure function of (slug, service) — no dependence
-    # on the city list, so adding a town later cannot reshuffle an existing one — and
-    # two cities now have to match on both the ranking and the offset.
+    # The offset stops identical sets (moraine/springfield collided without it); keep it a pure function of slug+service.
     start = int(hashlib.sha1(f"{slug}|{service}|offset".encode()).hexdigest(), 16)
     start %= len(keyed)
     return [keyed[(start + i) % len(keyed)] for i in range(min(n, len(keyed)))]
 
 
 def coverage(slugs, service, n=4):
-    """How evenly the pool is used, and whether any two cities got the same set.
-
-    Called by the build's own check rather than trusted: an uneven pool means
-    some sections render on thirty pages and others on two, which is the failure
-    mode that turns rotation back into duplication.
-    """
     sets = {s: tuple(a["id"] for a in pick(s, service, n)) for s in slugs}
     counts = {}
     for ids in sets.values():
@@ -92,18 +26,7 @@ def coverage(slugs, service, n=4):
     return counts, dupes
 
 
-# ---------------------------------------------------------------------------
-# The library.
-#
-# Every entry: an id that never changes (it seeds the ordering, so renaming one
-# reshuffles that city's page), an h2 that may carry {C} for the city, and body
-# copy in the site voice - second person, no self-naming, no dashes standing in
-# for punctuation, a fact rather than an adjective wherever one exists.
-#
-# Sizing: pools of 10 give 210 distinct four-section combinations, which is
-# comfortably more than the 39 cities and leaves room to add cities later.
-# ---------------------------------------------------------------------------
-
+# Angle ids seed the ordering: renaming one reshuffles every page that uses it.
 ANGLES = {
     "heating": [
         {"id": "hx-crack",
@@ -200,10 +123,7 @@ ANGLES = {
              "in an Ohio January is not a call worth putting off until morning, both "
              "for the house and for the pipes in it.")},
 
-        # This slot used to answer "do you still work on boilers and radiators" with a
-        # yes. We do not work on boilers or geothermal, client-corrected 2026-08-03. Oil
-        # furnaces we do, and nothing on the site said so, so the honest version of this
-        # angle is more useful than the wrong one was.
+        # No boiler or geothermal angles: we don't service either.
         {"id": "hx-oil",
          "h2": "Do you work on oil furnaces?",
          "body": (
@@ -348,10 +268,6 @@ ANGLES = {
     ],
 }
 
-# Plumbing gets a pool of 16 rather than 10, because it started worst: 0.551 Jaccard,
-# 29.1% novel, and a 61.2% boilerplate floor on a 373-word median page. Four picked
-# from 16 means two cities share ~1.0 section on average against heating's ~1.6, and
-# the added words drop the boilerplate share at the same time. Both levers, one change.
 ANGLES["plumbing"] = [
     {"id": "px-hardwater",
      "h2": "Is the water here hard enough to matter?",
@@ -532,10 +448,6 @@ ANGLES["plumbing"] = [
          "arguments at the tiling stage.")},
 ]
 
-# Heating and cooling grown from 10 to 16, matching plumbing. The plumbing result is
-# why: same mechanism, same four-per-page, but a pool of 16 landed 54.8% novel against
-# heating's 48.1%. Four from 16 means two cities share about one section instead of
-# 1.6, so the pool size was carrying the difference, not the writing.
 ANGLES["heating"] += [
     {"id": "hx-burning-smell",
      "h2": "The vents smell like burning dust when the heat first comes on.",
@@ -673,14 +585,6 @@ ANGLES["cooling"] += [
          "clog and your ceiling.")},
 ]
 
-# The remaining three services, 16 each, same shape as the first three.
-#
-# Two hard constraints held in this block. Radon does not appear anywhere in the IAQ
-# pool: we do not do radon mitigation (client), and an air-quality page is exactly
-# where a reader would assume otherwise if it were mentioned at all. And the duct
-# pool opens by admitting when duct cleaning is not worth buying, because a page
-# selling duct cleaning that will not say that is the reason the whole category has
-# the reputation it does.
 ANGLES["maintenance"] = [
     {"id": "mx-why-twice",
      "h2": "Why twice a year rather than once?",
@@ -1031,6 +935,7 @@ ANGLES["duct-cleaning"] = [
          "before paying to clean anything.")},
 ]
 
+# No radon anywhere in this pool: we don't do radon mitigation.
 ANGLES["indoor-air-quality"] = [
     {"id": "ix-what-matters",
      "h2": "What actually affects the air in a house?",
@@ -1206,15 +1111,6 @@ ANGLES["indoor-air-quality"] = [
          "that is worth questioning.")},
 ]
 
-# City OVERVIEW pages. A different pool from the six service pools, because these pages
-# are not about one trade: a tail overview had three H2s and 392 words, thinner than any
-# service page. These angles are the whole-home, choosing-and-process questions a
-# homeowner asks before they have decided what is even wrong, which is the job an
-# overview page is actually doing.
-#
-# Keyed as "overview" and picked the same way. Deliberately no overlap in subject with
-# the service pools: nothing here re-explains a furnace or a drain, because a reader
-# who lands on the city page and wants that is one click from the page that does it.
 ANGLES["overview"] = [
     {"id": "ox-choosing",
      "h2": "How do I check that a contractor is legitimate?",

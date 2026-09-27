@@ -1,18 +1,3 @@
-"""Location pages — design_handoff_location_pages (screens 5h, 5a-5g).
-
-One template, 38 cities, 267 pages. Copy is verbatim from the mockup; the only
-things that vary per city are the name, the metro, the neighbor-town list and the
-hero photo. Everything else is shared, which is exactly how the handoff asks for it
-("Build as a template, not 40 pages").
-
-  5h  /locations                          hub
-  5a  /locations/{city}                    overview
-  5b-5g  /locations/{city}/{service}       six service pages
-
-THE RULE THAT GOVERNS THESE PAGES: they are service areas, not storefronts. No
-street address, no "get directions", no address schema — anywhere. The two real
-offices live on /contact and stay there.
-"""
 import os
 import re
 from layout import components as T
@@ -28,9 +13,7 @@ METRO_BLURB = {
     "Counties": "southwest Ohio",
 }
 
-# ---------------------------------------------------------------- CSS
 LOC_CSS = """
-/* --------------------------- location pages (5a-5h) --------------------------- */
 .xlc-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
 .xlc-card{position:relative;border:1px solid var(--rule);border-radius:16px;padding:20px;
 background:#fff;text-decoration:none;display:block;transition:box-shadow .15s ease,transform .15s ease}
@@ -48,8 +31,6 @@ font-size:10px;font-weight:800;display:grid;place-items:center}
 .xlc-town a{color:var(--body);text-decoration:none}
 .xlc-town a:hover{color:var(--purple)}
 .xlc-note{font-size:13px;font-weight:600;color:var(--muted);margin-top:16px}
-/* Descriptive cross-links out of a city page. Navigation, not a page section, so it
-   takes an eyebrow and no H2 — the indexed hubs already run seven of those. */
 .xlc-rel{margin-top:8px}
 .xlc-rellinks{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:12px}
 .xlc-rellinks a{display:inline-flex;align-items:center;min-height:36px;border:1px solid var(--rule);
@@ -70,8 +51,7 @@ padding-bottom:10px;border-bottom:1px solid var(--rule)}
 .xlc-links a:hover{color:var(--purple)}
 .xlc-metro{border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#fff;
 margin-top:20px}
-/* Atlist embed. It sizes itself internally, so the wrapper owns the height and the
-   iframe fills it — the same treatment the previous hub used. */
+/* Atlist sizes itself internally, so the wrapper owns the height and the iframe fills it */
 .xlc-map{width:100%;height:clamp(420px,55vw,640px);overflow:hidden;background:#F4F6F8;
 border-bottom:1px solid var(--rule)}
 .xlc-map iframe{width:100%!important;height:100%!important;display:block;border:0}
@@ -105,9 +85,6 @@ color:var(--ink);font-weight:800;font-size:15px;padding:13px 24px;border-radius:
 text-decoration:none;margin-top:22px}
 .xlc-xp .cta:hover{background:var(--green-hover)}
 .xlc-xp .fine{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.6);margin-top:12px}
-/* --- page-specific ink CTA band (handoff: ink #0F172A band + 4px green-to-purple
-   hairline). These pages emit .xsp-band, which had no styles at all — the markup was
-   rendering unformatted. --- */
 .xsp-band{background:var(--ink)}
 .xsp-band-in{max-width:1280px;margin:0 auto;padding:34px 40px;display:flex;align-items:center;
 justify-content:space-between;gap:18px 32px;flex-wrap:wrap}
@@ -119,22 +96,15 @@ margin-top:8px;max-width:64ch}
 .xsp-band::after{content:"";display:block;height:4px;
 background:linear-gradient(90deg,var(--green),var(--purple))}
 
-/* The overhanging booking card and the body clearance it needs now live in
-   template.py / company_pages.py, so every page type gets the same treatment. */
 
 @media (max-width:809px){
-/* The hub's hero card is the town finder, not a booking CTA. .xsp-bookcol is
-   display:none on a phone, which left /locations with no search box at all — the
-   only input on the page. Show it inline instead, the way /maintenance keeps its
-   pricing card, and drop the overhang since nothing is overhanging on mobile. */
+/* .xsp-bookcol is hidden on phones, but on the hub it holds the only input: the town finder */
 .xsp-bookcol.zip{display:block;margin:24px 0 0}
 .xsp-band-in{padding:26px 20px;flex-direction:column;align-items:flex-start;gap:16px}
 .xsp-band .t{font-size:21px}
 .xsp-band .btns{width:100%}
 .xsp-band .xsp-cta{width:100%}
 }
-/* The NEW pill belongs to the headline, not the breadcrumb. Sitting flush under the
-   crumbs it read as another nav item; the spacing now groups it with the H1 below. */
 .xlc-pill{display:inline-block;background:var(--green);color:var(--ink);font-size:11px;
 font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin:26px 0 0}
 .xlc-pill + .xsp-h1{margin-top:10px}
@@ -148,7 +118,6 @@ font-weight:800;letter-spacing:1.4px;border-radius:999px;padding:6px 12px;margin
 }
 """
 
-# ---------------------------------------------------------------- shared bits
 def _stat_panel(stats):
     inner = "".join(f'<div><div class="n">{n}</div><div class="cap">{c}</div></div>'
                     for n, c in stats)
@@ -159,7 +128,6 @@ def _stat_panel(stats):
             f'<div class="grid">{inner}</div></div>')
 
 def _band(title, sub, cta="call"):
-    """Ink CTA band. `cta` is "call" or "schedule" per the handoff's per-page note."""
     btn = (T.schedule_btn("Schedule Service", "xsp-cta") if cta == "schedule"
            else f'<a class="xsp-cta" href="{T.PHONE_TEL}">Call {PHONE}</a>')
     return f'''<div class="xsp-band"><div class="xsp-band-in">
@@ -169,16 +137,9 @@ def _band(title, sub, cta="call"):
 
 def _hero(city, crumbs, h1, hi, intro, chips, card, pill="", card_class="", ctas=True,
           answer=None):
-    """ctas=False is for the hub, whose card is a search tool rather than a booking
-    CTA and stays on screen at every width instead of handing off to a button pair.
-
-    `answer` is the answer-first block. It renders as the first element after the H1,
-    ahead of the intro, because that is the passage an engine lifts and because
-    id="answer" is what speakable schema targets."""
     pill_html = f'<div class="xlc-pill">{pill}</div>' if pill else ""
     answer_html = T.answer_block({"answer": answer}) if answer else ""
-    # The booking card is display:none under 810px, so without this pair a phone gets
-    # a hero with no way to book — which is what all 267 location pages used to do.
+    # The booking card is hidden under 810px, so this pair is the only way to book on a phone.
     cta_html = f'''<div class="xsp-hero-ctas xsp-mb">
         {T.schedule_btn("Schedule Service", "xsp-cta")}
         <a class="xsp-cta-outline" href="{T.PHONE_TEL}">Call {T.PHONE_DISPLAY}</a>
@@ -204,11 +165,6 @@ def _book(eyebrow, title, sub, label="Schedule Service", trust2="Local techs"):
                           schedule_label=label)
 
 def _cards(eyebrow, h2, items, lead=None):
-    """Service / capability card grid. items: (title, desc, href|None, pill|None).
-
-    `lead` is the direct answer to an interrogative H2. Every question heading has to
-    be followed by prose before a grid or a list, or the heading is a label rather than
-    a question anything can quote."""
     out = []
     for t, d, href, pill in items:
         tag = f'<a class="xlc-card" href="{href}">' if href else '<div class="xlc-card">'
@@ -226,8 +182,6 @@ def _checklist(eyebrow, h2, items, note=None):
         body += f'<div class="xlc-note">{note}</div>'
     return section(eyebrow, h2, body)
 
-# ---------------------------------------------------------------- copy deck
-# Verbatim from the mockup. {CITY} is the only substitution.
 SERVICE_COPY = {
 "heating": dict(
   nav="Heating", h1="{CITY} heating help, {X}", hi="extremely fast",
@@ -263,8 +217,7 @@ SERVICE_COPY = {
   gridEyebrow="WHAT WE HANDLE", gridH2="Every way a {CITY} home stays cool.",
   cards=[("AC repair","From weak airflow to total shutdowns — diagnosed and quoted upfront."),
          ("AC installation &amp; replacement","High-efficiency systems sized to your square footage and ductwork."),
-         # No rebate claim: Extreme is not a registered utility trade ally, so "rebates
-         # often available" is a promise the company cannot keep at the counter.
+         # No rebate claims: Extreme isn't a registered utility trade ally.
          ("Heat pumps","One system for summer and winter — sized for Ohio's swing seasons."),
          ("Ductless mini-splits","Room-by-room comfort for additions, sunrooms, and older homes."),
          ("AC tune-ups","Coils, refrigerant, and airflow checked before the first hot week."),
@@ -304,10 +257,6 @@ SERVICE_COPY = {
   photoAlt="A newly installed water heater connected in a basement"),
 
 "maintenance": dict(
-  # The {X} slot is the city token on every other service. Putting a slogan there
-  # ("breakdowns away") gave all 38 maintenance pages the same H1 — with duct-cleaning
-  # below, that was 76 pages sharing two headings. The slogan moves into the sentence
-  # and the city goes back in the highlight.
   nav="Maintenance", h1="Tune-ups that keep breakdowns out of {X}", hi="{CITY}",
   intro="Seasonal furnace and AC maintenance for {CITY} homes — done right, documented for your "
         "warranty, and automatic if you're on the X-Plan.",
@@ -329,7 +278,6 @@ SERVICE_COPY = {
   photoAlt="A worn, cobwebbed contactor found inside an air conditioner during service"),
 
 "duct-cleaning": dict(
-  # Same fix as maintenance above: "cleaner air" was a slogan sitting in the city slot.
   nav="Duct Cleaning", h1="Cleaner ducts, cleaner air in {X}", hi="{CITY}",
   intro="Whole-home duct cleaning with negative-pressure equipment — and before/after photos so "
         "you can see exactly what you paid for.",
@@ -389,41 +337,9 @@ OVERVIEW_CARDS = [
     ("indoor-air-quality", "Indoor Air Quality", "Filtration, purifiers, humidity control, and fresh-air ventilation."),
 ]
 
-# ================================================================ local copy deck
-# copy-locations.md, applied. Everything below is the material that makes the ten
-# featured communities genuinely local rather than find-and-replace, and it is the
-# mechanical test for indexation: a page that cannot fill these slots is not in
-# locations.FEATURED and is not indexed.
-#
-# Sourcing rules that were applied to every string here:
-#   * Nothing is invented. Where the research carried a [NEEDS] the sentence is
-#     omitted, not guessed and not shipped with a bracket in it. Each omission is
-#     recorded as a `# [NEEDS: ...]` comment beside the copy it belongs to.
-#   * No radon mitigation service claim anywhere. The client does not do radon work,
-#     so the Troy and Dayton radon hooks in the research are struck entirely rather
-#     than softened into "context" — a page that mentions radon at all pulls radon
-#     leads. See the summary note.
-#   * No rebate or utility trade-ally claim. The utility paragraphs name who supplies
-#     what and stop there.
-#   * No service-call, dispatch or after-hours rate in any heading, hero or answer
-#     block. The X-Plan member fee line stays where it already is, in the benefit
-#     list rendered by T.xplan_panel(detail=True), which is a card body.
-#   * Street addresses appear only on the three city pages that contain an office.
-#
-# Shared H2s. Slots 2, 3 and 7 of the seven-H2 hub outline; 3 is built per city from
-# locations.OFFICE so the distance is real rather than a promise.
+# Copy below: nothing invented (gaps stay [NEEDS] notes); no radon, rebate or trade-ally claims; no fees in headings.
 GEO_COVERED_H2 = "What heating, cooling and plumbing work do you do?"
 def geo_covered(slug=None):
-    """The 'what work do you do' answer, with each service linked.
-
-    It is a list of services, so every item in it should be a way through to that
-    service — unlinked, it names six things a reader might want and offers no route
-    to any of them. On a city page the links go to that city's own service pages
-    rather than the generic ones, which is the whole point of having 228 of them.
-
-    Every city and county slug has all six service pages (38 x 6 = 228), so the
-    slug alone is enough to build the URL; without one it falls back to the generic
-    pages, which is what the /locations hub wants."""
     def link(text, city_svc, generic):
         href = f"/locations/{slug}/{city_svc}" if slug and city_svc else generic
         return f'<a href="{href}">{text}</a>'
@@ -436,7 +352,6 @@ def geo_covered(slug=None):
             f'and {link("plumbing", "plumbing", "/plumbing/services")} from the water heater '
             f'to the sewer line. Both trades, one number to call.')
 
-# Kept for callers that want the plain sentence with no links.
 GEO_COVERED = ("Furnaces, heat pumps and air conditioners: repair, replacement and seasonal "
                "tune-ups. Duct and dryer-vent cleaning, air quality equipment, and plumbing "
                "from the water heater to the sewer line. Both trades, one number to call.")
@@ -447,13 +362,7 @@ GEO_BOOK = ("Call " + PHONE + " and you get a person, or book online in about a 
             "rather than booking. That goes straight to the 24/7 line.")
 
 def geo_book(slug, group):
-    """The booking answer, naming the local line for cities that have one.
-
-    The sitewide number stays first and stays the emergency route, because that is the
-    line answered at 3am. The local number is offered as the alternative for people who
-    would rather dial a number with their own area code, which is most of the reason
-    local DIDs are worth having at all.
-    """
+    # Sitewide number stays first: it's the line answered at 3am.
     disp, href = local_phone(slug, group)
     if not disp:
         return GEO_BOOK
@@ -462,8 +371,6 @@ def geo_book(slug, group):
     return (GEO_BOOK + f' The {town} office also takes calls direct on '
             f'<a href="{href}">{disp}</a>.')
 
-# The six service H1 patterns for the indexed pages. The noindexed tail keeps the
-# branded H1s in SERVICE_COPY, which is part of what makes the two sets distinguishable.
 GEO_SERVICE_H1 = {
     "heating": "Furnace repair and heating service in {X}",
     "cooling": "AC repair and air conditioning service in {X}",
@@ -473,11 +380,6 @@ GEO_SERVICE_H1 = {
     "indoor-air-quality": "Indoor air quality services in {X}",
 }
 
-# The shared scaffold headings on an indexed service page. SERVICE_COPY's own H2s are
-# decks ("Not a once-over. A real inspection.", "Six signs your ducts are due.") and
-# they are identical on all 38 pages of that service. On the ten indexed communities
-# they become questions, which is what a heading has to be to get quoted. The tail
-# keeps the branded decks, which is one more way the two sets read differently.
 GEO_SCAFFOLD_H2 = {
  "heating":            {"gridH2": "What heating work do you handle?",
                         "decH2": "Should I repair my furnace or replace it?",
@@ -501,9 +403,6 @@ GEO_SERVICE_BOOK = ("Call " + PHONE + " and you get a person, or book online in 
                     "than booking. That skips the next-day queue and goes straight to the 24/7 "
                     "line.")
 
-# Answer-block verbs and scope sentences for the noindexed tail. The city name is the
-# only thing that varies, which is the honest position: there is no local research for
-# 28 more places and inventing it is worse than omitting it.
 TAIL_VERB = {
     "heating": "repair and replace gas, electric and oil furnaces, and heat pumps",
     "cooling": "repair and replace air conditioners, ductless systems included",
@@ -524,7 +423,6 @@ TAIL_SCOPE = {
 
 LOCAL = {
 
-# ---------------------------------------------------------------- 1. Dayton
 "dayton": dict(
  alt="A street of pre-war houses in Dayton, Ohio",
  answer="We cover Dayton out of the Beavercreek office, about eight miles east. Heating, "
@@ -545,15 +443,13 @@ LOCAL = {
    "and softens with lime at the plant. Electricity and gas come from two different companies "
    "here, which surprises people who moved from the Cincinnati side: AES Ohio does electric, "
    "CenterPoint Energy Ohio does gas. Two bills, two shut-off procedures."]),
-  # [NEEDS: delivered hardness in grains per gallon from the City of Dayton Water Quality
-  # Report. Third-party aggregators say 9 to 11 gpg; that range is not published here.]
+  # [NEEDS: Dayton delivered hardness from the city Water Quality Report; don't use aggregator figures.]
   ("Who inspects plumbing permits in Dayton?", [
    "The city does, not the county. Public Health, Dayton &amp; Montgomery County runs plumbing "
    "inspection for Montgomery County but explicitly excludes Dayton, Centerville, Oakwood and "
    "Kettering. So a Dayton plumbing permit is a City of Dayton permit, and a contractor who "
    "assumes the county has it is going to the wrong counter."]),
-  # [NEEDS: which City of Dayton division issues residential mechanical permits, plus its
-  # address and portal.]
+  # [NEEDS: which City of Dayton division issues residential mechanical permits, plus address and portal.]
  ],
  table=dict(
   caption="Common problems in Dayton, Ohio homes and what to book",
@@ -677,8 +573,6 @@ LOCAL = {
    answer="We install filtration, humidity control and ventilation equipment in Dayton homes. "
           "A pre-1940 house with one central return cannot carry a dense filter, so we measure "
           "airflow, humidity and particulates before recommending anything.",
-   # The research offered a Montgomery County radon average here. Struck: Extreme does not
-   # perform radon mitigation, and a radon paragraph on an IAQ page produces radon leads.
    slots=[("What can a pre-war Dayton house actually carry?", [
     "Less filter than people expect, and more humidity control than they think. A house with one "
     "central return and retrofitted trunk lines is already running at higher static pressure than "
@@ -691,7 +585,6 @@ LOCAL = {
         "decides which filter the house can carry.")),
  }),
 
-# ---------------------------------------------------------------- 2. Cincinnati
 "cincinnati": dict(
  alt="Hillside houses above the Ohio River in Cincinnati, Ohio",
  answer="We cover Cincinnati out of the Mason office, roughly 22 miles north of downtown. "
@@ -713,8 +606,7 @@ LOCAL = {
    "5,364 heating degree days on the NOAA 1991 to 2020 normals. A heat pump balance point or a "
    "furnace size that is right for a house in Mason is not automatically right for the same "
    "house 20 minutes south."]),
-  # [VERIFY: the 4A designation mirrors the IECC 2012/2009 county table. Confirm against the
-  # edition of the Residential Code of Ohio in force before the next content review.]
+  # [VERIFY: 4A mirrors the IECC 2012/2009 county table; check the Residential Code of Ohio in force.]
   ("Do I need a permit to replace a furnace in Cincinnati?", [
    "Yes, and this catches people out. The City of Cincinnati Department of Buildings &amp; "
    "Inspections requires a permit for new and replacement units, plus furnace add-ons, "
@@ -856,12 +748,9 @@ LOCAL = {
         "the air while the drainage question gets answered separately.")),
  }),
 
-# ---------------------------------------------------------------- 3. Beavercreek
 "beavercreek": dict(
  alt="A residential street in Beavercreek, Ohio",
- # [NEEDS: confirm whether cities/beavercreek.jpg shows the office on N Fairfield Rd. If it
- # does, the alt becomes "The Extreme Heating, Air, Plumbing office on N Fairfield Rd in
- # Beavercreek, Ohio". Until confirmed the alt describes what can be verified.]
+ # [NEEDS: confirm whether cities/beavercreek.jpg shows the N Fairfield Rd office before the alt says so.]
  answer="We work out of 712 N Fairfield Rd, right here in Beavercreek, covering Greene County "
         "for heating, cooling, air quality and plumbing. Most calls get handled the same day, "
         "and someone answers the emergency line at any hour.",
@@ -1016,7 +905,6 @@ LOCAL = {
         "and softener are worth checking together.")),
  }),
 
-# ---------------------------------------------------------------- 4. Mason
 "mason": dict(
  alt="A residential street in Mason, Ohio",
  # [NEEDS: confirm whether cities/mason.jpg shows the office on Tylersville Rd.]
@@ -1032,8 +920,7 @@ LOCAL = {
    "The good news for Mason homeowners is the opposite of Dayton's situation: the ductwork in these "
    "houses is generally sound and correctly sized. It is the equipment that is tired, which usually "
    "makes for a clean swap rather than a rebuild."]),
-  # [NEEDS: ACS DP04 year-structure-built distribution for Mason, to put a percentage on "a very
-  # large number".]
+  # [NEEDS: ACS DP04 year-built distribution for Mason, to put a percentage on "a very large number".]
   ("Where does Mason's water actually come from?", [
    "From Cincinnati. Mason's drinking water is supplied by Greater Cincinnati Water Works, not by "
    "Warren County Water &amp; Sewer and not from city wells, which puts Mason houses on roughly 7 to "
@@ -1045,8 +932,7 @@ LOCAL = {
    "inside the city, including separate trade permits for mechanical and HVAC work. Mason is not on "
    "the Warren County building department, which is a common wrong assumption for contractors "
    "working across the county line."]),
-  # [NEEDS: the exact mechanical permit application name, fee and typical turnaround, direct from
-  # imaginemason.org.]
+  # [NEEDS: Mason mechanical permit name, fee and turnaround, from imaginemason.org.]
  ],
  table=dict(
   caption="Common problems in Mason, Ohio homes and what to book",
@@ -1186,7 +1072,6 @@ LOCAL = {
         "airflow gets checked before and after.")),
  }),
 
-# ---------------------------------------------------------------- 5. Kettering
 "kettering": dict(
  alt="A post-war ranch house on a residential street in Kettering, Ohio",
  answer="We cover Kettering from the Beavercreek office, about seven miles east. Heating, "
@@ -1201,8 +1086,7 @@ LOCAL = {
    "Returns are the recurring problem: one or two of them for a whole house, which limits what a "
    "high-MERV filter can do without starving the system. Mechanical closets are small, equipment "
    "often sits in a crawl space or a half basement, and there is rarely room to grow."]),
-  # [NEEDS: Kettering incorporation year and ACS median year structure built. Both belong on this
-  # page as numbers.]
+  # [NEEDS: Kettering incorporation year and ACS median year structure built.]
   ("Which water utility covers my street?", [
    "It depends which side of the line the house is on, and that is not a figure of speech. Most of "
    "Kettering runs on the Montgomery County and Dayton regional supply, but small parts of Kettering "
@@ -1353,11 +1237,9 @@ LOCAL = {
         "Measuring static pressure identifies it in one visit.")),
  }),
 
-# ---------------------------------------------------------------- 6. Centerville
 "centerville": dict(
  alt="A residential street in Centerville, Ohio",
- # [NEEDS: confirm whether cities/centerville.jpg shows the Uptown stone district. If it does,
- # the alt becomes "Early limestone buildings in Uptown Centerville, Ohio".]
+ # [NEEDS: confirm whether cities/centerville.jpg shows the Uptown stone district before the alt says so.]
  answer="We cover Centerville from the Beavercreek office, about nine miles northeast. Heating, "
         "cooling and plumbing for the old stone Uptown and the subdivisions around it alike. "
         "Most get handled the same day, and the emergency line never closes.",
@@ -1382,8 +1264,7 @@ LOCAL = {
    "The city does. Centerville is one of only four Montgomery County cities excluded from the Public "
    "Health, Dayton &amp; Montgomery County plumbing program, alongside Dayton, Oakwood and "
    "Kettering. So a Centerville plumbing permit is a city permit."]),
-  # [NEEDS: which authority issues residential building and mechanical permits in Centerville. The
-  # health department exclusion only tells us about plumbing; do not assume the city handles both.]
+  # [NEEDS: who issues Centerville building and mechanical permits; don't assume the city does both.]
  ],
  table=dict(
   caption="Common problems in Centerville, Ohio homes and what to book",
@@ -1513,7 +1394,6 @@ LOCAL = {
         # [NEEDS: the winter humidity target range Extreme's technicians recommend.]
  }),
 
-# ---------------------------------------------------------------- 7. West Chester
 "west-chester": dict(
  alt="A subdivision street in West Chester Township, Ohio",
  answer="We cover West Chester Township from the Mason office, about seven miles east. "
@@ -1672,7 +1552,6 @@ LOCAL = {
         "a smaller one unless the coil shows it.")),
  }),
 
-# ---------------------------------------------------------------- 8. Huber Heights
 "huber": dict(
  alt="Brick homes on a residential street in Huber Heights, Ohio",
  answer="We cover Huber Heights from the Beavercreek office, about twelve miles southeast. "
@@ -1687,11 +1566,7 @@ LOCAL = {
    "same equipment locations, the same duct layouts, the same chase and closet dimensions. A "
    "technician who has worked a few hundred of them knows what is behind the wall before opening it, "
    "which shortens the diagnosis and takes most of the guesswork out of a replacement quote."]),
-  # [NEEDS: three or four specifics from Extreme's own technicians about an original Huber home.
-  # Original heating type, typical furnace or air handler location, duct material and sizing,
-  # whether returns are ducted or panned joist bays, typical service panel capacity, whether the
-  # original system was sized for a later A/C add-on. This is the highest-value page in the tree
-  # and it is currently running on public history rather than field experience.]
+  # [NEEDS: field specifics from Extreme's techs on an original Huber home (heat type, ducts, returns, panel).]
   ("What did the Rip Rap Road softening project change?", [
    "Huber Heights runs its own municipal water system, drawing from the Great Miami Buried Valley "
    "Aquifer and treating at the Rip Rap Road Water Treatment Plant. An $11 million softening project "
@@ -1708,8 +1583,7 @@ LOCAL = {
    "supply systems, including replacement fixtures. There is a homeowner appliance application with "
    "affidavit for residential water heaters. Counter hours are Monday to Friday, 8:00 to 11:30 and "
    "12:30 to 4:00."]),
-  # [NEEDS: whether the City of Huber Heights or Montgomery County Building Regulations issues
-  # residential mechanical permits. The county covers townships; Huber Heights is a city.]
+  # [NEEDS: whether Huber Heights or Montgomery County issues residential mechanical permits.]
  ],
  table=dict(
   caption="Common problems in Huber Heights, Ohio homes and what to book",
@@ -1778,8 +1652,7 @@ LOCAL = {
     "rather than a surprise on the day. Where a coil or an air handler will physically fit is known "
     "before the survey rather than discovered during it, and that is the difference between an "
     "accurate quote and a revised one."])],
-   # [NEEDS: tech confirmation on whether original Huber systems were sized for a later A/C add-on.
-   # The paragraph above is deliberately general because that answer is missing.]
+   # [NEEDS: tech confirmation on whether original Huber systems were sized for a later A/C add-on.]
    faq=("My neighbor had the same fault last summer. Is that a coincidence?",
         "Probably not. Huber Heights houses share builder, date range and floor plan, so equipment "
         "ages and fails in patterns across a street rather than at random.")),
@@ -1842,7 +1715,6 @@ LOCAL = {
         "softener together is the sensible order.")),
  }),
 
-# ---------------------------------------------------------------- 9. Springboro
 "springboro": dict(
  alt="A newer two-story neighborhood in Springboro, Ohio",
  answer="We cover Springboro from the Waynesville office, about eleven miles southeast. "
@@ -1855,10 +1727,7 @@ LOCAL = {
    "runs its own state-certified Building Department at 320 W. Central Ave, and that covers building "
    "permits citywide. Plumbing is the split: the county plumbing departments handle it, and which "
    "county depends on which side of the line the house sits on."]),
-  # [NEEDS: written confirmation from the Springboro Building Department, (937) 748-9791, covering
-  # (a) the plumbing split as described and (b) whether a mechanical permit is required for a
-  # like-for-like HVAC replacement. One aggregator claims a straight swap needs no permit there.
-  # That contradicts Cincinnati and Kettering and is not published here.]
+  # [NEEDS: Springboro Building Dept to confirm the plumbing split and the permit rule for a like-for-like swap.]
   ("Which water supply covers my side of the line?", [
    "On the Warren County side, Warren County Water &amp; Sewer, which finished nanofiltration "
    "membrane softening in 2022 and cut hardness by roughly 55%, down to about 8 grains per gallon "
@@ -2004,11 +1873,9 @@ LOCAL = {
         "or cooling, which a window does not.")),
  }),
 
-# ---------------------------------------------------------------- 10. Troy
 "troy": dict(
  alt="A residential street in Troy, Ohio",
- # [NEEDS: confirm what cities/troy.jpg shows. If it is the downtown public square the alt
- # becomes "The public square in downtown Troy, Ohio".]
+ # [NEEDS: confirm what cities/troy.jpg shows before the alt names it.]
  answer="We work out of 2950 Stone Cir Dr, right here in Troy, covering Miami County for "
         "heating, cooling and plumbing. Most calls get handled the same day, and the emergency "
         "line never closes.",
@@ -2024,15 +1891,12 @@ LOCAL = {
    "The city's own system. Troy pumps up to 4 million gallons a day from the Great Miami Buried "
    "Valley Aquifer through 116 miles of water main, 1,030 hydrants and three elevated storage tanks, "
    "Herrlinger, Stanfield and Barnhart, holding 3.5 million gallons between them."]),
-  # [NEEDS: Troy's delivered hardness from the city's Consumer Confidence Report, and whether Troy
-  # softens at the plant. Aquifer-sourced water is hard raw; the finished figure is not guessed.]
+  # [NEEDS: Troy delivered hardness from its Consumer Confidence Report, and whether it softens at the plant.]
   ("Who supplies electricity to a Troy house?", [
    "AES Ohio. Troy does not run a municipal electric utility, even though several nearby Miami "
    "County communities do. It is worth checking whose grid a house is actually on before applying "
    "anything a neighboring town's homeowner was told about their own utility."]),
   # [NEEDS: confirm CenterPoint Energy Ohio supplies natural gas to Troy.]
-  # The research also carried a Troy radon figure. Struck in full: Extreme does not perform radon
-  # mitigation, and publishing the number invites work the company does not do.
  ],
  table=dict(
   caption="Common problems in Troy, Ohio homes and what to book",
@@ -2100,11 +1964,7 @@ LOCAL = {
     "County communities do, and what a utility offers its own customers differs between them. "
     "Anyone comparing something a neighboring town's homeowner was told should check whose grid the "
     "house is actually on first."])],
-   # Client-verified 2026-08-03: Troy is on AES Ohio and does not run a municipal electric
-   # utility. That was the one agent-researched claim about a named third party still
-   # standing unconfirmed at launch.
-   # [NEEDS: current AES Ohio residential HVAC program details. No figure is published here, and
-   # no trade-ally status is claimed.]
+   # [NEEDS: current AES Ohio residential HVAC program details; no figure or trade-ally status claimed.]
    faq=("Does the electric utility change anything about a new system in Troy?",
         "Only in what the utility itself offers. Troy is on AES Ohio, and several nearby Miami "
         "County towns run their own municipal electric utilities, so what applies a few miles away "
@@ -2152,7 +2012,6 @@ LOCAL = {
    answer="We install filtration, humidity control and ventilation in Troy, from the office at "
           "2950 Stone Cir Dr. We measure humidity, particulates and ventilation in your house "
           "before recommending a thing.",
-   # The research proposed a radon-average section here. Struck: Extreme does not do radon work.
    slots=[("What does a Miami County basement usually need?", [
     "Moisture control before anything else. Troy's older housing has full basements below grade and "
     "the newer subdivisions on the edge of town are tighter than the stock downtown, so the same "
@@ -2165,9 +2024,7 @@ LOCAL = {
  }),
 }
 
-# Sanity: the copy deck and the indexed set are the same ten, and every one of them
-# fills all six service slots. A page that cannot fill its local slots is not indexed,
-# and this assert is what keeps that rule from drifting.
+# A city that can't fill its local slots must not be indexed.
 assert set(LOCAL) == L.FEATURED, (
     f"LOCAL and locations.FEATURED disagree: {set(LOCAL) ^ L.FEATURED}")
 for _s, _d in LOCAL.items():
@@ -2176,19 +2033,12 @@ for _s, _d in LOCAL.items():
 del _s, _d
 
 
-# The homepage's real curated Google reviews, not invented placeholders. Each city
-# shows three, rotated deterministically by its position in the list so 38 pages
-# don't all repeat the same trio — the handoff warns specifically against pure
-# find-replace pages. Same pool, different slice.
-#
-# To show the SAME three everywhere instead, return REVIEWS[:3] from city_reviews().
 from data.reviews import REVIEWS
 
 def city_reviews(slug, n=3):
     i = L.ALL.index(next(x for x in L.ALL if x[0] == slug))
     return [REVIEWS[(i * n + k) % len(REVIEWS)] for k in range(n)]
 
-# ---------------------------------------------------------------- promos
 T.PROMOS["locFinanceHeat"] = dict(cls="lav", t="New furnace, monthly payments",
     d="Finance a replacement through GoodLeap, Synchrony, or Wright-Patt Credit Union.",
     lm="Financing Options →", href="/financing-options")
@@ -2212,7 +2062,6 @@ T.PROMOS["locSpecialTuneUp"] = dict(cls="mint", t="$79 tune-up special",
     lm="See Specials →", href="/specials")
 
 def _cross(city_slug, city, kind):
-    """5f and 5g cross-link to each other within the same city."""
     if kind == "locIaqCross":
         return dict(cls="mint", t="Pair it with air quality",
                     d="Clean ducts plus filtration keeps the dust from coming right back.",
@@ -2221,31 +2070,18 @@ def _cross(city_slug, city, kind):
                 d="Filtration works best when the ductwork behind it isn't full of dust.",
                 lm=f"{city} Duct Cleaning →", href=f"/locations/{city_slug}/duct-cleaning")
 
-# ---------------------------------------------------------------- per-city data
 def neighbors(slug, group, n=10):
-    """The other towns in the same metro. This is the one genuinely per-city block on
-    the page, and the handoff names it as what keeps these from being find-replace.
-
-    Indexed communities sort first. That is the whole point of keeping the tail: link
-    equity and topical signal flow toward the ten rather than around them in a circle.
-    Order within each half is list order, which is the live Framer page-tree order.
-
-    [NEEDS: lat/long or an adjacency table in cities.py so this can be
-    genuinely nearest-first rather than featured-first. The file already carries a TODO
-    about adding ZIPs and it is the same missing data.]"""
+    # [NEEDS: lat/long or an adjacency table in cities.py for true nearest-first order.]
     pool = {"Dayton": L.DAYTON, "Cincinnati": L.CINCINNATI, "Counties": L.COUNTIES}[group]
     others = [(s, nm) for s, nm in pool if s != slug]
     return sorted(others, key=lambda x: x[0] not in L.FEATURED)[:n]
 
 
 def office_line(slug):
-    """(office town, street or None, distance phrase or None) for an indexed city."""
     return L.OFFICE[slug]
 
 
 def geo_speed(slug, long):
-    """H2 3 on an indexed hub. Built from locations.OFFICE so the distance is the
-    researched mileage rather than a response-time promise."""
     town, street, dist = office_line(slug)
     where = (f"start their day at the office on {street}, inside the city" if street
              else f"start their day at the {town} office, {dist}")
@@ -2254,7 +2090,6 @@ def geo_speed(slug, long):
 
 
 def geo_serve(slug, long):
-    """H2 1 on an indexed hub."""
     town, street, dist = office_line(slug)
     where = ("one of the towns we are actually based in" if street
              else f"a short run from the {town} office")
@@ -2264,27 +2099,15 @@ def geo_serve(slug, long):
 
 
 def _qa_section(h2, body):
-    """One H2 question with its direct answer under it, no eyebrow. The location pages
-    use the eyebrow for marketing labels; a question heading does not want one."""
     return T.content_section({"h2": h2, "body": body})
 
 
 def _local_links(items):
-    """Descriptive cross-links out of a city page. No eyebrow-plus-H2 wrapper, because
-    these are navigation rather than a section of the page, and the hub already runs
-    seven H2s. Anchor text always names the destination."""
     links = "".join(f'<a href="{href}">{anchor}</a>' for anchor, href in items)
     return ('<div class="xlc-rel"><div class="xsp-eyebrow purple">MORE FROM EXTREME</div>'
             f'<div class="xlc-rellinks">{links}</div></div>')
 
 def local_phone(slug, group):
-    """The local number to show on a city page, or (None, None).
-
-    OFFICE is the researched "which office covers this city" map and wins. Only the ten
-    indexed cities have an entry; for the rest the metro is the honest fallback, and a
-    city with neither gets no local number at all rather than a guessed one. Printing a
-    number that rings an office forty miles away is worse than printing none.
-    """
     entry = L.OFFICE.get(slug)
     if entry:
         return D.office_phone(entry[0])
@@ -2297,11 +2120,6 @@ def metro_adj(group):
             "Counties": "southwest Ohio"}[group]
 
 def fill(text, city, group):
-    # "a {CITY}" reads "a Oakwood home" on the three towns whose names start with a
-    # vowel — Oakwood, Englewood, Xenia — because the article was written into the
-    # template before the city was known. Fixed here rather than in each string so a
-    # town added later cannot reintroduce it. Only the indefinite article moves; "the
-    # {CITY}" and every other construction is left alone.
     out = (text.replace("{CITYU}", city.upper()).replace("{CITY}", city)
                .replace("{METRO_ADJ}", metro_adj(group)))
     if city[:1].upper() in "AEIOU":
@@ -2312,15 +2130,8 @@ def fill(text, city, group):
 NO_TOWN_NOTE = ('<div class="xlc-note">Don&#39;t see your town? If you&#39;re close to one '
                 'that&#39;s listed, call — if we can reach you, we will.</div>')
 
-# ---------------------------------------------------------------- renderers
 def _county_answer(slug, name):
-    """The nine county overviews. Deliberately the thinnest page type on the site and
-    noindexed by head.noindex(): a county page is always a superset of its city pages,
-    so it does one job, which is listing them. No county housing-stock copy — it would
-    contradict the city pages underneath it."""
     kids = [nm for s, nm in L.ALL if s in L.COUNTY_CITIES.get(slug, [])]
-    # Preble and Darke have no covered community with a page of its own, so they get a
-    # coverage sentence instead of an invented town list.
     covered = (f" That includes {', '.join(kids[:-1])} and {kids[-1]}."
                if len(kids) > 1 else (f" That includes {kids[0]}." if kids else
                                       " Every town books through the same number."))
@@ -2329,18 +2140,9 @@ def _county_answer(slug, name):
 
 
 def _tail_answer(slug, city, group):
-    """Answer block for a community with no local research behind it. The city name is
-    the only thing that varies, and that is the honest position: there is no fact base
-    for 28 more places and inventing one is worse than omitting it.
-
-    [NEEDS: nearest office and approximate mileage for each of the 19 remaining cities.
-    Until those are supplied this block names no office and claims no distance, because
-    a wrong drive time is a broken promise rather than a thin page.]"""
+    # [NEEDS: nearest office and mileage per tail city; until then name no office and claim no distance.]
     if group == "Counties":
         return _county_answer(slug, city)
-    # A town that holds one of the four offices is not a page with no fact base — the
-    # address is the fact, and it is client-confirmed. It gets named rather than being
-    # given the same sentence as a town we only drive to.
     office = L.OFFICE.get(slug)
     if office and office[1]:
         return (f"Yes, and {city} is one of the four towns we work out of. The office is at "
@@ -2353,8 +2155,6 @@ def _tail_answer(slug, city, group):
 
 
 def _tail_routes(slug, group):
-    """Upward and sideways links out of a noindexed page: the indexed metro parent plus
-    one or two indexed neighbors. This is the reason these pages are kept at all."""
     metro = ("dayton" if group == "Dayton" else
              "cincinnati" if group == "Cincinnati" else None)
     names = dict(L.ALL)
@@ -2384,24 +2184,14 @@ def city_overview(city, slug, group):
 
     if featured:
         d = LOCAL[slug]
-        # The seven-H2 outline. Slots 4, 5 and 6 are the local ones and are required
-        # fields, which is what makes these ten non-duplicate by construction rather
-        # than by good intentions.
         h1, hi = "HVAC and plumbing services in {X}", f"{long}, Ohio"
         answer = d["answer"]
         photo_alt = d["alt"]
         intro = ("Local techs who know " + metro_adj(group) + " homes, one number for both "
                  "trades, and most calls handled the same day.")
-        # "{city}-Based Techs" was false on every city but the three that hold an
-        # office — Kettering's badge said "Kettering-Based Techs" while its own body
-        # copy said the work runs out of Beavercreek. The claim stays only where it
-        # is true; everywhere else the chip falls back to a proof point that is.
         chips = [(f"{city} Office" if slug in D.OFFICE_BY_SLUG else "Locally Owned"),
                  "90% Same-Day Service", "24/7 Emergency Line"]
         sections = [
-            # H2 1 doubles as the heading over the service card grid, so the grid stops
-            # being an unlabelled block under a slogan. The slogan the grid used to
-            # carry ("Everything your house throws at you.") was identical on 38 pages.
             _cards(f"SERVICES IN {city.upper()}",
                    f"Do you serve {long}, Ohio?", cards,
                    lead=geo_serve(slug, long)),
@@ -2412,25 +2202,17 @@ def city_overview(city, slug, group):
             sections.append(_qa_section(h2, body))
         sections.append(T.table_section(dict(d["table"], eyebrow="WHAT WE SEE MOST",
                                              h2="Which problems come up most here?")))
-        # Overview angles go before the booking answer, so the page still closes on
-        # "how do I book" rather than trailing off into general advice. Featured cities
-        # already have their researched local sections above this; the tail had three
-        # H2s and 392 words, which was the thinnest page type on the site.
         for a in angles.pick(slug, "overview", 4):
             sections.append(_qa_section(a["h2"].replace("{C}", long), a["body"]))
         sections.append(_qa_section(GEO_BOOK_H2, geo_book(slug, group)))
-        # Deliberately not "communities near {City}": the deck's own three local H2s
-        # already name the city, and the contract caps that at two. The headings this
-        # module owns give the budget back to the researched ones.
+        # No city in this H2: the contract caps city mentions at two H2s.
         sections.append(section("SERVICE AREA", "Which nearby communities are covered?",
             f'<div class="xlc-towns">{towns}</div>'
             f'<div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div>'
             f'<div style="margin-top:20px">{T.photo_slot("", hero_img, photo_alt)}</div>'))
         sections.append(T.faq([{"q": q, "a": a} for q, a in d["faq"]], "COMMON QUESTIONS",
                               h2=f"What else do {long} homeowners ask?"))
-        # The review pool carries no city attribution, so the heading makes no city
-        # claim. [NEEDS: review excerpts tagged with the customer's city — tagging even
-        # five per indexed metro turns the weakest block on the page into the strongest.]
+        # Reviews aren't city-tagged, so no city claim here. [NEEDS: city-tagged review excerpts.]
         revs = "".join(
             f'<div class="xlc-rev"><div class="stars">★★★★★</div><div class="q">“{q}”</div>'
             f'<div class="who">{who}{f" <span>· {rc}</span>" if rc else ""}</div></div>'
@@ -2439,23 +2221,14 @@ def city_overview(city, slug, group):
                                 f'<div class="xlc-revs">{revs}</div>'))
         sections.append(_local_links(d["links"]))
     else:
-        # The noindexed tail. It keeps serving users — the service children, the
-        # neighbour list, the booking path — and is deliberately, visibly thinner:
-        # a real answer block, then it routes into the indexed ten. No local facts,
-        # because the research does not exist for these places.
         h1, hi = "Heating, air &amp; plumbing — {X}", f"right here in {city}"
         answer = _tail_answer(slug, city, group)
-        # The stand-in photo (see locations.HERO_OVERRIDES) must not be captioned as
-        # the town it is not.
+        # Waynesville's hero is a stand-in (HERO_OVERRIDES); don't caption it as the town.
         photo_alt = ("Warren County, Ohio, where the Waynesville office sits"
                      if slug == "waynesville" else
                      f"A residential street in {city}, Ohio")
         intro = (f"Local techs who know {metro_adj(group)} homes. One number, and most "
                  "calls handled the same day.")
-        # "{city}-Based Techs" was false on every city but the three that hold an
-        # office — Kettering's badge said "Kettering-Based Techs" while its own body
-        # copy said the work runs out of Beavercreek. The claim stays only where it
-        # is true; everywhere else the chip falls back to a proof point that is.
         chips = [(f"{city} Office" if slug in D.OFFICE_BY_SLUG else "Locally Owned"),
                  "90% Same-Day Service", "24/7 Emergency Line"]
         sections = [
@@ -2466,10 +2239,6 @@ def city_overview(city, slug, group):
                 f'<div class="xlc-note">Outside the list? Call — if we can reach you, we will.</div>'
                 f'<div style="margin-top:20px">{T.photo_slot("", hero_img, photo_alt)}</div>'),
         ] + [
-            # The tail was the thinnest page type on the site: three H2s and 392 words,
-            # thinner than any service page. "Deliberately thinner than the indexed ten"
-            # was the intent and it still is, but three headings is below the line where
-            # a page is useful to the person reading it.
             _qa_section(a["h2"].replace("{C}", long), a["body"])
             for a in angles.pick(slug, "overview", 4)
         ] + [
@@ -2501,9 +2270,6 @@ def city_service(city, slug, group, service):
     d = LOCAL[slug]["svc"][service] if featured else None
 
     if featured:
-        # The indexed pages take the keyword H1 and the local slots. The tail keeps the
-        # branded H1 from SERVICE_COPY, which is part of what makes the two sets tell
-        # themselves apart at a glance.
         h1 = d.get("h1", GEO_SERVICE_H1[service])
         hi = f"{long}, Ohio"
         answer = d["answer"]
@@ -2512,8 +2278,6 @@ def city_service(city, slug, group, service):
         answer = (f"We {TAIL_VERB[service]} in {city}, Ohio. {TAIL_SCOPE[service]} Most calls "
                   "get handled the same day, and someone answers the emergency line at any hour.")
 
-    # Heading picker: the interrogative form on the indexed ten, the branded deck on
-    # the tail. `f` still runs over both so {CITY} substitution is unaffected.
     def hh(key):
         alt = GEO_SCAFFOLD_H2.get(service, {}).get(key) if featured else None
         return f(alt.replace("{C}", long)) if alt else f(c[key])
@@ -2525,26 +2289,13 @@ def city_service(city, slug, group, service):
         left.append(_cards(f(c["gridEyebrow"]), hh("gridH2"),
                            [(t, f(d2), None, None) for t, d2 in c["cards"]],
                            lead=(TAIL_SCOPE[service] if featured else None)))
-    # The city slots. On heating/cooling/maintenance/duct-cleaning/IAQ that is one H2;
-    # on plumbing it is two, water supply and permit authority. They go directly after
-    # the shared "what we handle" grid so the local material is above the fold-ish
-    # rather than buried under the promos.
     if featured:
         for h2, body in d["slots"]:
             left.append(_qa_section(h2, body))
 
-    # The rotated angle set. Sits AFTER the researched local slots on the indexed ten,
-    # so genuinely local material still reads first and this is depth underneath it;
-    # on the twenty tail cities it is the whole of the body. Four per page, chosen
-    # deterministically by slug, so no two cities carry the same set — verified in
-    # angles.coverage() and asserted by the build.
     for a in angles.pick(slug, service, 4):
         left.append(_qa_section(a["h2"].replace("{C}", long), a["body"]))
     sec2 = c.get("sec2") if featured else None
-    # The noindexed tail drops sec2 entirely. Every one of those blocks is shared copy
-    # rendered identically on 38 pages, so cutting it from the suppressed set raises the
-    # unique-to-boilerplate ratio on exactly the pages that need it and makes the tail
-    # measurably thinner, which is the point of suppressing it.
     if sec2 == "decision":
         inner = "".join(f'<div class="xco-ccard"><span class="c">✓</span>'
                         f'<div class="t">{t}</div><div class="d">{d2}</div></div>'
@@ -2564,26 +2315,16 @@ def city_service(city, slug, group, service):
                                "steps": [{"title": t, "desc": d2} for t, d2 in c["steps"]]},
                               eyebrow=f(c["stepsEyebrow"])))
     elif sec2 == "xplan":
-        # The shared panel, not a copy of it. X-Plan pricing and member rates live in
-        # T.XPLAN, so a change there updates the hub, /maintenance and all 38 location
-        # maintenance pages together. The member service-fee line inside XPLAN["detail"]
-        # is a card body, which is where client decision 2026-08-02 allows it.
+        # Shared panel, not a copy: X-Plan pricing lives in T.XPLAN.
         left.append(T.xplan_panel(detail=True))
 
-    # One city-specific FAQ per indexed service page, on top of everything the shared
-    # scaffold already answers. The tail gets no FAQ block at all.
     if featured:
-        # The contract caps the city name at two H2s per page. Plumbing is the only
-        # service with two city slots, so on those pages naming the city a third time
-        # in the booking heading would break it. Counted rather than hardcoded, because
-        # not every city slot happens to name its city.
+        # City name is capped at two H2s; drop it from this heading when the slots used both.
         book = GEO_SCAFFOLD_H2[service]["book"]
         named = sum(1 for h2, _ in d["slots"] if long in h2)
         left.append(_qa_section(
             book.replace(" in {C}", "").replace("{C}", long) if named >= 2
             else book.replace("{C}", long), GEO_SERVICE_BOOK))
-        # The fee belongs on the trades someone picks up the phone about. Maintenance,
-        # duct cleaning and air quality are planned work, booked without this question.
         _qa = [{"q": d["faq"][0], "a": d["faq"][1]}]
         if service in ("heating", "cooling", "plumbing"):
             _qa.append(dict(D.SERVICE_CALL_FAQ))
@@ -2593,10 +2334,6 @@ def city_service(city, slug, group, service):
             (f"{long} HVAC and plumbing services", f"/locations/{slug}"),
             ("X-Plan maintenance membership", "/maintenance")]))
     else:
-        # The tail pages are deliberately thin on local research, but "what does it
-        # cost to get someone out" is not local research — it is the same answer
-        # everywhere and it is the question standing between a reader and the phone.
-        # Withholding it here would be thinness that costs the customer something.
         if service in ("heating", "cooling", "plumbing"):
             left.append(T.faq([dict(D.SERVICE_CALL_FAQ)], "COMMON QUESTIONS",
                               h2=f"What does a visit to {city} cost?"))
@@ -2615,7 +2352,6 @@ def city_service(city, slug, group, service):
     rail = {"photo": T.cdn_asset(c["photo"]), "photoAlt": c["photoAlt"],
             "photoPos": c.get("photoPos"), "promos": promos}
     left.append(T.mobile_inline_rail({"rail": rail}))
-    # The photo goes to the top of the body on mobile, not inline with the promos.
     left.insert(0, T.mobile_photo(rail))
 
     body = f'''{_hero(city,
@@ -2634,11 +2370,7 @@ def city_service(city, slug, group, service):
 
 def hub():
     metros = []
-    # The metro card names the metro itself, not whatever happens to sort first in the
-    # list — L.CINCINNATI leads with Blue Ash, which is not the metro.
-    # Atlist service-area maps, carried over from the previous hub — same embed IDs.
-    # These are the client's own maps; the photo cards the mockup showed are replaced
-    # by them at the client's direction.
+    # Metro names are hard-coded: L.CINCINNATI starts with Blue Ash, not Cincinnati.
     MAPS = {
         "dayton": ("d1e71909-39c0-4d7e-ab21-5d63f440a852", "Dayton service area map"),
         "cincinnati": ("010b1b45-cc77-4644-b0e8-8492892ea87b", "Cincinnati service area map"),
@@ -2683,8 +2415,6 @@ def hub():
   <div class="xlc-zipmsg" id="xlc-zipmsg" role="status" aria-live="polite"></div>
   <div class="trust"><span><span class="st">★</span> 4.9 average rating</span><span class="bar">|</span><span>24/7 emergency line</span></div>
 </div>'''
-    # The hub answer block and its H2 outline are copy-locations.md §1. Four offices,
-    # one phone number, and the towns list underneath.
     hub_answer = ("We cover the Dayton and Cincinnati, Ohio metros for heating, cooling, air "
                   "quality and plumbing, working out of four offices: Beavercreek, Mason, Troy "
                   "and Waynesville. One number reaches all four, and the emergency line never "
@@ -2721,13 +2451,8 @@ def hub():
        "One call settles it — and if we can't help, we'll point you to someone who can.")}'''
     return shell("xsp-locations", body + ZIP_JS, extra_css=LOC_CSS)
 
-# The hub's lookup box. Emitted at the end of the hub body so the markup it binds to
-# already exists — sitting it in the <style> block put it ahead of the input, and it
-# bailed out silently every time.
-#
-# It matches town names, not ZIP codes: exact, then prefix, then contains. There is no
-# ZIP data yet, so a five-digit entry gets the phone number rather than a guess about
-# whether we serve someone. TODO: add ZIPs to cities.py and match them here.
+# Must be emitted after the hub markup; placed earlier it finds no input and silently bails.
+# TODO: add ZIPs to cities.py and match them here.
 ZIP_JS = """
 <script>
 (function(){
@@ -2780,7 +2505,6 @@ ZIP_JS = """
 </script>
 """
 
-# ---------------------------------------------------------------- registry
 def pages(root):
     out = [(os.path.join(root, "pages", "locations", "overview.html"),
             lambda d, rc: hub(), {}, "xsp-locations")]

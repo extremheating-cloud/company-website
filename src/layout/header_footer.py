@@ -1,17 +1,3 @@
-"""Header and footer — rewritten from scratch as single responsive components.
-
-Framer carried three headers and three footers and swapped them per breakpoint, which
-is why none of them had a media query. Off Framer that approach breaks: all three
-footers use the same `.xf-footer` root class, so loading them together would collide.
-These are one of each, with real breakpoints.
-
-Breakpoints match the rest of the site: 1024 and 810.
-  >= 1024   full nav with mega-menus
-  810-1023  condensed nav, mega-menus still open on hover/focus
-  < 810     hamburger, full-screen panel, sticky call bar
-
-Everything comes from business.py. No copy or URLs are authored here.
-"""
 from data import business as D
 from layout import components as T
 from pages.locations import cities as L
@@ -21,13 +7,12 @@ LOGO_TIGHT = T.cdn_asset("brand/logo-white-tight.png")
 X_MARK = T.cdn_asset("brand/x-mark.png")
 
 CSS = """
-/* ============================== header ============================== */
+
 .xh-hd{position:sticky;top:0;z-index:900;background:#5E2C7E;color:#fff;
 font-family:"Montserrat",ui-sans-serif,system-ui,sans-serif}
 .xh-hd *{box-sizing:border-box}
 .xh-hd a{text-decoration:none}
-/* Color inheritance is scoped to the purple bar and the mobile panel. Applying it to
-   every descendant forced the white dropdown's links to render white-on-lavender. */
+/* Scoped to the bar and panel so the white dropdown's links don't inherit white. */
 .xh-bar a,.xh-panel a{color:inherit}
 .xh-bar{max-width:1280px;margin:0 auto;padding:14px 40px;display:flex;align-items:center;
 justify-content:space-between;gap:24px}
@@ -40,8 +25,7 @@ justify-content:space-between;gap:24px}
 .xh-navbtn{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:10px 0;
 color:#fff;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
 .xh-navbtn .car{font-size:9px;opacity:.6;transition:transform .18s ease}
-/* NEW rides above the label, centred on it. The button is 44px tall for the tap
-   target while the text is ~17px, so the chip sits in space the row already had. */
+
 .xh-navbtn.has-new{position:relative}
 .xh-navbtn .xh-new{position:absolute;left:50%;top:2px;transform:translateX(-50%);
 background:#6BB85C;color:#0F172A;font-size:8.5px;font-weight:800;letter-spacing:1px;
@@ -58,7 +42,7 @@ line-height:1;border-radius:4px;padding:3px 5px;white-space:nowrap}
 border-radius:10px;border:0;cursor:pointer;font-family:inherit;min-height:44px;white-space:nowrap}
 .xh-cta:hover{background:#8FD481}
 
-/* ---- mega menu: full-width panel, matching the Framer desktop header ---- */
+
 .xh-navbtn{position:relative}
 .xh-navbtn .bar{position:absolute;left:0;right:0;bottom:-14px;height:3px;background:#6BB85C;
 transform:scaleX(0);transform-origin:center;transition:transform .15s ease;border-radius:2px}
@@ -117,7 +101,7 @@ background:none;border:0;padding:0;cursor:pointer;font-family:inherit}
 .xm-promo.mint a,.xm-promo.mint button{color:#3D7A33}
 .xm-promo a:hover,.xm-promo button:hover{text-decoration:underline}
 
-/* ---- mobile: bar trigger + full-screen panel, matching the Framer mobile header ---- */
+
 .xh-burger{display:none;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.4);
 border-radius:12px;background:transparent;cursor:pointer;align-items:center;justify-content:center}
 .xh-burger span{display:block;width:18px;height:2px;background:#fff;
@@ -135,7 +119,7 @@ background:transparent;color:#fff;font-size:16px;cursor:pointer;display:grid;pla
 .xh-close:active{transform:scale(.96)}
 .xh-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:4px 20px 16px}
 
-/* Rows are large italic display type, one per line with a rule beneath. */
+
 .xh-acc>button,.xh-simple a{width:100%;display:flex;align-items:center;
 justify-content:space-between;gap:10px;padding:16px 2px;min-height:44px;background:none;
 border:0;border-bottom:1px solid rgba(255,255,255,.12);cursor:pointer;text-align:left;
@@ -148,7 +132,7 @@ text-decoration:none}
 color:#0F172A;font-style:normal;font-weight:800;font-size:9.5px;letter-spacing:1px;
 border-radius:5px;padding:3px 7px}
 
-/* Expanded content sits in an inset card, two columns, green section labels. */
+
 .xh-acc>div{display:none}
 .xh-acc[data-open="true"]>div{display:block;margin:12px 0 16px;
 background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
@@ -163,7 +147,7 @@ border-bottom:0}
 .xh-all{display:inline-block;font-weight:800;font-size:13px;color:#8FD481;
 text-decoration:none;padding:6px 2px;min-height:32px}
 
-/* Pinned actions at the foot of the panel. */
+
 .xh-pinned{flex:none;background:rgba(15,23,42,.25);border-top:1px solid rgba(255,255,255,.12);
 padding:14px 20px calc(14px + env(safe-area-inset-bottom));display:grid;gap:10px}
 .xh-pinned .cta{width:100%;min-height:48px;border:0;border-radius:12px;cursor:pointer;
@@ -175,23 +159,7 @@ color:#fff;font-weight:800;font-size:15px;text-decoration:none}
 font-weight:700;font-size:12px;color:rgba(255,255,255,.82)}
 .xh-pinned .trust .s{color:#F6A723;letter-spacing:1px}
 
-/* --------------------------- chat widget theme ---------------------------
-   The widget renders in a shadow root, so these are the only styles of ours that
-   reach it: custom properties pierce the boundary, and every one below is a
-   documented token with a default, so setting them is configuration rather than
-   override. We used to append a whole stylesheet into the shadow root instead.
-   That is gone as of 2026-08-13 — FollowUp Pro shipped the fixes it was patching
-   around, including the .card p / .fine specificity bug that kept the consent
-   disclosure from ever rendering as fine print, and the missing safe-area insets.
-   Do not reintroduce it. If the widget looks wrong, report it upstream; a patch
-   here is invisible to them and breaks silently when they rename a class.
-
-   BOTH TAG NAMES ON PURPOSE. The element was <extreme-chat>; the build shipped on
-   2026-08-13 renamed it to <extreme-chat-v3>, which silently killed every rule below
-   — the tokens stopped applying and the menu-open hide stopped matching, with no
-   error anywhere. Nothing in their docs mentions the rename; it was found by reading
-   the live DOM. Keep old names here when they add v4, and do not assume a selector
-   that worked last week still resolves. */
+/* Keep both tag names: the widget host was silently renamed to extreme-chat-v3. */
 extreme-chat,
 extreme-chat-v3{
   --exc-purple:#5F2980; --exc-green:#6BB85C; --exc-border:#E7E7EA;
@@ -214,38 +182,13 @@ extreme-chat-v3{
   .xh-burger{display:flex}
   .xh-logo img{height:38px}
 
-  /* The widget sits wherever it puts itself. We used to lift it clear of a sticky
-     dock of our own; the dock went on 2026-08-13 because the widget now carries Call
-     and Chat itself, so there is nothing left to clear and no offset to set.
-
-     What stays is getting it out of the way when a modal of ours owns the screen.
-     This hides the HOST element rather than ::part(launcher): the widget renders two
-     buttons now, and a rule aimed at one named part would leave the other one sitting
-     over the menu. The host is an ordinary light-DOM element and hiding it takes the
-     whole widget, whatever it grows next.
-
-     Safe on mobile specifically, which is all this block covers: the chat panel is
-     full screen there, so neither the menu nor the wizard can be opened behind it,
-     and this can never hide the only control that closes an open chat.
-     :has() is the live-updating half — the wizard mounts .xw-root when it opens and
-     unmounts it on close. Browsers without :has() keep today's behavior. */
+  /* Hide the host, not ::part(launcher): the widget renders two buttons. */
   .xh-menu-open extreme-chat, .xh-menu-open extreme-chat-v3,
   html:has(.xw-root) extreme-chat, html:has(.xw-root) extreme-chat-v3{display:none}
 }
 @media (prefers-reduced-motion:reduce){.xh-hd *{transition:none!important}}
 
-/* ========================= Text Us consent sheet =========================
-   Every Text Us button on the site is still an <a href="sms:...">, and this only
-   intercepts the click. With JS off, or if this script fails, the anchor works
-   exactly as it always did and opens the composer — the consent capture is an
-   enhancement on top, never a gate in front.
 
-   The checkbox does NOT gate the button. Telnyx rejected the chat widget on
-   2026-08-13 for making the number mandatory with no optional checkbox beside the
-   opt-in language, and a sheet that refuses to open Messages until someone ticks a
-   box is the same defect wearing our brand. Name and number are required because
-   the reviewer explicitly allows a mandatory field when the checkbox is optional;
-   consent itself never is. */
 .xt-back{position:fixed;inset:0;z-index:9998;display:none;align-items:center;
 justify-content:center;padding:20px;background:rgba(15,23,42,.55);
 -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
@@ -271,7 +214,7 @@ font-family:inherit;font-weight:800;font-size:15.5px;cursor:pointer}
 .xt-note{margin:11px 0 0;font-size:11.5px;line-height:1.45;color:#94A3B8;text-align:center}
 @media (max-width:359px){.xt-card{padding:22px 18px 18px}}
 
-/* ============================== footer ============================== */
+
 .xf{position:relative;background:#3A1A4E;color:#fff;overflow:hidden;
 font-family:"Montserrat",ui-sans-serif,system-ui,sans-serif}
 .xf *{box-sizing:border-box}
@@ -293,8 +236,7 @@ border:0;cursor:pointer;font-family:inherit;white-space:nowrap}
 .xf-btn-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4)}
 .xf-btn-outline:hover{border-color:#6BB85C;color:#8FD481}
 .xf-grid{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr 1fr;gap:32px;padding:34px 0 30px}
-/* The tight file, not logo-white.png: that one is 55% transparent padding, so a
-   76px box only ever drew a 34px logo. Same box, nearly twice the mark. */
+
 .xf-logo{height:64px;width:auto;display:block}
 .xf-blurb{margin:14px 0 0;font-size:13px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.72)}
 .xf-247{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12.5px;font-weight:700}
@@ -308,8 +250,7 @@ display:inline-flex;align-items:center}
 color:rgba(255,255,255,.78);min-height:32px}
 .xf-col a:hover{color:#fff}
 .xf-phone{font-weight:800!important;font-size:16px!important;color:#fff!important}
-/* The sitewide NAP. `address` because that is what it is; font-style reset because
-   the element italicises by default and the rest of the column does not. */
+
 .xf-nap{font-style:normal;font-size:13.5px;font-weight:600;line-height:1.6;
 color:rgba(255,255,255,.78);margin:0 0 8px}
 .xf-nap b{display:block;color:#fff;font-weight:800;margin-bottom:2px}
@@ -319,8 +260,7 @@ font-size:12px;line-height:1.7;color:rgba(255,255,255,.55);display:grid;gap:8px}
 .xf-areas b{color:rgba(255,255,255,.8);font-weight:800;letter-spacing:.4px;margin-right:6px}
 .xf-areas a{color:rgba(255,255,255,.62);text-decoration:none}
 .xf-areas a:hover{color:#8FD481;text-decoration:underline}
-/* The office row is the one line in this band that points at premises rather than at
-   service areas, so it reads a step brighter than the towns beneath it. */
+
 .xf-offices a{color:rgba(255,255,255,.85);font-weight:700}
 .xf-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;
 padding:18px 0 30px;border-top:1px solid rgba(255,255,255,.12);
@@ -350,8 +290,6 @@ font-size:12px;color:rgba(255,255,255,.55)}
 @media (max-width:479px){ .xf-grid{grid-template-columns:1fr} }
 """
 
-# ---------------------------------------------------------------- header
-# Promo asides, verbatim from the Framer desktop header.
 PROMOS = {
     "hvac": [
         ("lav", "Want to spread out the cost?",
@@ -366,7 +304,7 @@ PROMOS = {
         ("lav", "Need a plumber today?",
          "Burst pipe or a drain backing up? We come out same day across Dayton and "
          "Cincinnati, and we answer the emergency line at night.",
-         "Schedule Service →", None),          # None = opens the schedule dialog
+         "Schedule Service →", None),
         ("mint", "Plumbing Specials",
          "What we have running on plumbing work right now. Worth a look before you book.",
          "View Specials →", "/specials"),
@@ -418,9 +356,6 @@ def _panel(key, core, additional, alt_label, viewall_label, viewall_href):
     </div>'''
 
 def _nav_item(label, key, badge=""):
-    """badge rides above the label rather than beside it — the nav bar has room in
-    the button's top padding, and a chip on the baseline would push the row's
-    spacing around."""
     tag = f'<span class="xh-new">{badge}</span>' if badge else ""
     return f'''<button class="xh-navbtn{" has-new" if badge else ""}" type="button" data-menu="{key}"
         aria-expanded="false" aria-haspopup="true">
@@ -430,8 +365,6 @@ def _nav_item(label, key, badge=""):
 def _panel_acc(label, core, additional, all_label, all_href, badge=""):
     core_links = "".join(f'<a href="{h}">{t}</a>' for t, d, h, c in core)
     add_links = "".join(f'<a href="{h}">{t}</a>' for t, h, b in additional)
-    # Inline here, not stacked as on desktop: these rows are full-width and the chip
-    # sits naturally after the label, the same way SAVE does on Specials.
     tag = f'<span class="xh-save">{badge}</span>' if badge else ""
     return f'''<div class="xh-acc">
       <button type="button" aria-expanded="false">
@@ -447,12 +380,10 @@ def _panel_acc(label, core, additional, all_label, all_href, badge=""):
     </div>'''
 
 def header(current=""):
-    """current is a top-level route ('/locations') so the active item can be marked."""
     def cls(href):
         return ' is-current' if current and current.startswith(href) else ''
     simple = "".join(
         f'<a class="xh-link{cls(h)}" href="{h}">{l}</a>' for l, h in D.NAV_SIMPLE)
-    # Specials carries a SAVE badge in the mobile panel.
     panel_simple = "".join(
         f'<a href="{h}"><span>{l}'
         f'{"<span class=\'xh-save\'>SAVE</span>" if l == "Specials" else ""}</span></a>'
@@ -510,12 +441,7 @@ def header(current=""):
     <h2 id="xt-h">Text us</h2>
     <p class="sub">We&rsquo;ll open your messaging app with our number ready to go. Whatever
     you send reaches the office, and someone answers 24/7.</p>
-    <!-- "at the number I text from", NOT the approved form's "at the number above".
-         That phrasing belongs to the booking form, where a phone field sits directly
-         above the checkbox. There is no field here, so "above" would point at nothing
-         and the sentence would be false. Everything a disclosure has to carry is still
-         here: consent is not a condition, rates, frequency, HELP and STOP, and both
-         links. Aaron should read this line before the campaign is resubmitted. -->
+    <!-- A2P consent copy is quoted verbatim in the carrier filing; do not reword. -->
     <label class="xt-check" for="xt-ok">
       <input type="checkbox" id="xt-ok" aria-describedby="xt-copy">
       <span class="xt-copy" id="xt-copy">Yes, {D.COMPANY} may text me about my service request
@@ -529,34 +455,12 @@ def header(current=""):
   </div>
 </div>'''
 
-# ---------------------------------------------------------------- footer
+# Plain place names only: keyword anchor text on a sitewide link reads as manipulation.
 def _area_links(items):
-    """Service-area towns in the footer link to their own location pages. They are the
-    deepest crawlable path into the /locations tree, so leaving them as plain text
-    wastes the one place every page links from.
-
-    Anchor text is always the plain place name. A boilerplate link repeated on ~311
-    pages is discounted anyway, and dressing it as "Dayton Furnace Repair" is the
-    clearest manipulated-linking tell available for no gain."""
     return " · ".join(f'<a href="/locations/{slug}">{name}</a>' for slug, name in items)
 
+# Only the towns head.py leaves indexed; never return an empty list.
 def _core_only(items):
-    """The footer carries the core metros, not all 38 towns.
-
-    38 towns x ~311 pages was ~11,800 identical boilerplate links spread evenly over
-    every town the company has a page for, which is the same as spreading them over
-    none. The other towns stay one click away on /locations and keep their links from
-    every town in their own metro, so nothing is orphaned — the footer just stops
-    spending its ~311 links on pages nobody is trying to rank.
-
-    The set of towns this keeps is the same set `head.py` leaves indexed, read from
-    `cities.py` rather than restated here — a footer that promoted a town whose
-    service pages are noindexed would be spending ~311 links on a dead end. It answers
-    to whichever name that module settles on (`is_core`, `CORE`, or the `FEATURED` set
-    head.py already reads), and until one of them lands it returns the full list,
-    which is the behavior that shipped before. A footer that is too generous is a
-    missed opportunity; a footer that silently empties itself is a broken site.
-    """
     is_core = getattr(L, "is_core", None)
     if callable(is_core):
         keep = [(s, n) for s, n in items if is_core(s)]
@@ -570,22 +474,12 @@ def _core_only(items):
     return keep or items
 
 def _office_links():
-    """The four office cities, linked from every page.
-
-    These are premises, not service areas, and they are the only location pages
-    carrying a postal address. Sitewide links are what keeps them the first thing
-    reachable from anywhere on the site. An office with no location page yet is still
-    named here — it is a real premises and the rest of the site counts it — it just
-    renders as text rather than being linked into a 404."""
     return " · ".join(
         f'<a href="{href}">{name}</a>' if href else f'<span>{name}</span>'
         for name, href in D.FOOTER_NAP["offices"])
 
+# Every link here repeats on every page; add one only after removing one.
 def footer():
-    """Rendered on every page, so every link here costs ~311 links of boilerplate.
-
-    Budget: ~18 column links + 4 contact + 4 social + 4 offices + 10 core metros +
-    /locations + terms ≈ 42. Add to it only after subtracting something."""
     nap = D.FOOTER_NAP
     cols = ""
     for heading, links in D.FOOTER_COLUMNS:
@@ -641,9 +535,7 @@ def footer():
     <div class="xf-bottom">
       <div>{D.FOOTER_LEGAL}</div>
       <div class="links">
-        <!-- The route exists now (builder/privacy.py) and the client asked for it to be
-             published, so the link is restored. The page carries a visible draft notice
-             until counsel signs off — see privacy.PRIVACY_GAPS. -->
+        
         <a href="/privacy">Privacy</a>
         <a href="/terms">Terms</a>
       </div>
@@ -651,9 +543,7 @@ def footer():
   </div>
 </footer>'''
 
-# ---------------------------------------------------------------- behaviour
-# Where build.py publishes the schedule wizard bundle (built from
-# src/scheduler/mount.tsx by `npm run build:schedule`).
+# Must match SCHEDULE_SRC in the JS below and where build.py copies the bundle.
 SCHEDULE_SRC = "/js/schedule.js"
 
 JS = """
@@ -663,10 +553,7 @@ JS = """
   var hd = document.querySelector('.xh-hd');
   if (!hd) return;
 
-  /* --- mega menus. State lives on the header root, not the nav item, because the
-         panels sit in .xm-shell outside the bar. Nesting them inside the bar meant the
-         bar's color reset reached in and rendered the dropdown's links white on
-         white. --- */
+  
   var btns = hd.querySelectorAll('.xh-navbtn');
   function setMenu(key){
     if (key) hd.setAttribute('data-menu', key); else hd.removeAttribute('data-menu');
@@ -685,8 +572,7 @@ JS = """
     });
   });
   var shell = hd.querySelector('.xm-shell');
-  /* Close on leaving the bar+panel together, so moving the pointer from the button
-     down into the panel does not dismiss it. */
+  
   [hd.querySelector('.xh-bar'), shell].forEach(function(el){
     if (!el) return;
     el.addEventListener('mouseleave', function(e){
@@ -701,13 +587,11 @@ JS = """
   if (scrim) scrim.addEventListener('click', closeAll);
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ closeAll(); closePanel(); } });
 
-  /* --- mobile panel --- */
+  
   var panel = hd.querySelector('.xh-panel'),
       burger = hd.querySelector('.xh-burger'),
       closeBtn = hd.querySelector('.xh-close');
-  /* The menu-open flag also hides the sticky call bar — the panel pins its own
-     Schedule and Call buttons to the bottom and the two were stacking on top of
-     each other. */
+  
   function openPanel(){ panel.dataset.open='true'; burger.setAttribute('aria-expanded','true');
                         document.documentElement.classList.add('xh-menu-open');
                         document.body.style.overflow='hidden'; }
@@ -727,17 +611,7 @@ JS = """
     });
   });
 
-  /* --- Text Us: capture consent, then hand off to the SMS composer ----------
-     Progressive enhancement, deliberately. Every trigger is a real <a href="sms:...">,
-     so with JS off the composer opens directly and nothing is lost. This only runs
-     when the sheet is actually in the DOM and the click was a plain left click, so
-     cmd-click and long-press-copy still behave like a link.
-
-     The Open Messages button is enabled by name + number ONLY. The checkbox is never
-     part of that test — see the CSS note. Ticking it is what makes the difference
-     between "they texted us first" and "they told us we may text them", and both are
-     legitimate; refusing to open Messages until someone consents would turn an
-     optional agreement into a toll gate. */
+  
   var tb = document.getElementById('xt-back');
   if (tb) {
     var tOk = document.getElementById('xt-ok'),
@@ -753,8 +627,7 @@ JS = """
       tHref = a;
       tb.setAttribute('data-open', 'true');
       document.body.style.overflow = 'hidden';
-      /* Focus the checkbox, not the button: it is the only thing here to decide, and
-         a keyboard user should land on the choice rather than past it. */
+      
       setTimeout(function(){ tOk.focus(); }, 30);
     }
 
@@ -773,11 +646,7 @@ JS = """
     });
 
     tGo.addEventListener('click', function(){
-      /* No validation, because there is nothing left to validate and nothing is
-         transmitted. The sheet exists to put the disclosure in front of someone before
-         they text us and to let them agree or not; the tick is read by nobody today.
-         If a consent record is ever needed, tOk.checked is the value to send and this
-         is the line to send it from. */
+      /* The checkbox is optional by carrier rule; never gate this on tOk.checked. */
       window.location.href = (tHref && tHref.getAttribute('href')) || 'sms:';
       tClose();
     });
@@ -810,7 +679,7 @@ JS = """
     s.defer = true;
     s.onerror = function(){
       loading = false;
-      /* No wizard, no dead end: the contact page has the form and the phone number. */
+      
       if (window.__xhScheduleWanted) { window.__xhScheduleWanted = false; location.href = '/contact'; }
     };
     document.head.appendChild(s);
@@ -825,13 +694,7 @@ JS = """
   });
 })();
 
-/* --- FAQ accordions ------------------------------------------------------
-   The generated pages carry this behavior inside their embed script, and the
-   self-hosted shell strips that script because the rest of it is iframe
-   plumbing (see shell._strip_embed). Without a handler here every answer but
-   the first stays shut on every page. Delegated from the document so it covers
-   any FAQ block on any page, in its own IIFE so a page without the header
-   still gets it. */
+/* FAQ accordions: own IIFE so pages without the header still get them. */
 (function(){
   document.addEventListener('click', function(e){
     var btn = e.target && e.target.closest ? e.target.closest('.xsp-qa > button') : null;

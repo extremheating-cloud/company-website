@@ -3,15 +3,10 @@ from layout import components as T
 from data import business as D
 from pages.company_shared import UPDATED, UPDATED_ISO, shell, section, prose_section
 
-# ================================================================
-# /specials — mockup 4d (full-width tier), copy verbatim
-# ================================================================
 T.PROMOS["spFinance"] = dict(cls="lav", t="Big job? Finance it.",
     d="Specials stack with monthly payment plans through our lenders.",
     lm="Financing Options →", href="/financing-options")
-# All six offers are PLACEHOLDERS per the handoff — swap in live promotions
-# by editing OFFERS below and re-running build.py. Keys: pill, value,
-# (optional) valueSuffix, title, desc, foot, cta ("schedule" | href).
+# TODO: placeholder offers; swap in live promotions.
 OFFERS = [
     {"pill": "HEATING &amp; AIR", "value": "$79", "title": "AC or Furnace Tune-Up",
      "desc": "Full seasonal inspection and tune-up. Regularly priced higher — X-Plan members get two a year included.",
@@ -19,12 +14,6 @@ OFFERS = [
     {"pill": "ANY SERVICE", "value": "$50 off", "title": "Any Repair Over $250",
      "desc": "HVAC or plumbing — take $50 off any qualifying repair when you mention this offer at booking.",
      "foot": "Limited time", "cta": "schedule"},
-    # Replaced the placeholder "Up to $500 off a New Comfort System" card: it offered double
-    # the Extreme Rewards give ($250) on the same job type, so a referred customer would have
-    # seen the public special beat the referral they were just promised. Built from approved
-    # Extreme Rewards numbers only — no invented promotional amount. If marketing wants a real
-    # new-system special back here, it needs a confirmed figure and a deliberate position
-    # against the $250 referral.
     {"pill": "REFERRALS", "value": f'{D.REWARDS["newSystem"]} off', "title": "When a Friend Refers You",
      "desc": f'New customers save {D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or {D.REWARDS["everythingElse"]} on any other job of {D.REWARDS["everythingElseMin"]} or more. Name whoever sent you when you book.',
      "foot": "Always available", "cta": "/referral", "ctaLabel": "See Extreme Rewards"},
@@ -34,15 +23,12 @@ OFFERS = [
     {"pill": "NEW SYSTEMS", "value": "Free", "title": "Second Opinion on Replacement",
      "desc": "Told you need a whole new system? Get a no-pressure second look before you commit.",
      "foot": "Limited time", "cta": "schedule"},
-    # "discounted service calls" implied a published rate this card cannot state.
-    # "a reduced member service fee" is the same fact without the implication.
     {"pill": "MEMBERSHIP", "value": D.XPLAN["annual"], "valueSuffix": "/yr", "title": "Join X-Plan Maintenance",
      "desc": "Two tune-ups a year, 15% off repairs, priority scheduling, and a reduced member service fee.",
      "foot": "Always available", "cta": "/maintenance", "ctaLabel": "Join X-Plan"},
 ]
 
-# Email signup panel (mockup 4d right column) — hidden until wired to an ESP.
-# TODO: wire to the email service provider, then flip to True and rebuild.
+# TODO: wire the form to an email provider before turning this on.
 SHOW_EMAIL_SIGNUP = False
 
 def coupon(o):
@@ -73,13 +59,10 @@ SPECIALS = {
     "breadcrumb": [("Home", "/"), ("Specials", "")],
     "h1": "HVAC and plumbing {X} in Dayton and Cincinnati",
     "h1Highlight": "specials",
-    # No offer amount in the answer block on purpose: it is the most-cited passage on
-    # the page and it should outlive the coupons. Amounts live in OFFERS and nowhere
-    # else, so swapping a promotion is a data edit rather than a copy rewrite.
+    # No offer amounts here or in the table: prices live only in OFFERS.
     "answer": ("These are the offers running right now on heating, cooling and plumbing work. "
                "One per household per visit, and you have to name it when you book. The "
                "discount then shows up in your quote, before anyone starts working."),
-    # The old H1, demoted to the deck line.
     "intro": "Seasonal specials, extreme savings.",
     "heroChips": ["Updated Seasonally", "Mention at Booking", "Combine with Financing"],
     "redeem": {
@@ -94,9 +77,6 @@ SPECIALS = {
         ],
     },
     "fineNote": "Offers cannot be combined with other discounts unless noted. One offer per household per visit. Must be mentioned at the time of booking. Expiration dates and full terms are set per promotion.",
-    # Column 2 names each offer by type rather than by price, so the table survives a
-    # promotion swap. The only amounts are the two Extreme Rewards numbers, which are
-    # the approved customer-facing pair.
     "table": {
         "eyebrow": "WHICH OFFER FITS",
         "h2": "Which offer saves the most on my job?",

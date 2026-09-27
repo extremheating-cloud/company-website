@@ -2,9 +2,7 @@ const ORIGIN = "https://followup-pro-37ed6.web.app";
 const CANONICAL = "https://www.extremeheating.com";
 const APEX = "https://extremeheating.com";
 
-// The onboarding page asks for /assets/X.png and /img/extreme-logo.png root-relative,
-// and /assets/* is the marketing site's own. Serving onboarding from the apex, which
-// serves nothing else, is what keeps those two from colliding.
+// Onboarding's root-relative /assets/ and /img/ would collide with the marketing site's on www.
 const PROXIED = ["/onboarding", "/assets/", "/img/"];
 
 export default {

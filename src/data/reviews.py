@@ -1,10 +1,4 @@
-# Curated Google reviews — the SAME set the homepage uses.
-#
-# SYNC NOTE: the canonical copy lives in reference/framer/homepage/AboutFaqReviews.tsx,
-# because that is a Framer component and cannot import Python. When the monthly
-# refresh happens, update BOTH. There is no way to share one list across a .tsx
-# component and this generator, so the duplication is deliberate and flagged.
-# Last synced from AboutFaqReviews.tsx: 2026-08-01 (20 reviews, updated 2026-07-23).
+# Duplicate of reference/framer/homepage/AboutFaqReviews.tsx (Framer can't import Python); update both.
 REVIEWS = [
     ("Had a last-minute emergency before a holiday weekend and gave them a call and they were out within an hour to take a look at our air-conditioning unit.", "Desiree Hardin", None),
     ("Our technician, Tristan, was knowledgeable, explained things well, pleasant and friendly, even answering kids questions, and work diligently to complete the job.", "Brad &amp; Jean Bisson", None),

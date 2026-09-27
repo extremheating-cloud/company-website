@@ -1,42 +1,3 @@
-"""Privacy Policy — /privacy.
-
-*** ATTORNEY-APPROVED as at 2026-08-03 and published with a real effective date. The
-*** visible draft notice has been removed on the client's instruction that counsel
-*** approved the page as it stood. PRIVACY_GAPS is retained: those items are no longer
-*** blockers, they are what a future revision should close.
-*** scratchpad/seo/privacy.md carries the full data inventory this page was written
-*** from and the client/attorney question list.
-
-Written from the code, not from a legal template. Every processor named here is one
-the browser actually contacts, and every data element described is one the schedule
-wizard actually sends:
-
-  ContactFlowDialog.tsx:1004-1116  bookVisit() — the exact Formspree field list
-  ContactFlowDialog.tsx:366-383    Cloudinary unsigned photo upload
-  ContactFlowDialog.tsx:436-470    Google Places address autocomplete
-  ContactFlowDialog.tsx:501-535    photon.komoot.io geocoder fallback
-  ContactFlowDialog.tsx:570-580    gclid/gbraid/wbraid in localStorage
-  ContactFlowDialog.tsx:892, 1180  "Online Booking Form Opened" / "Online Booking Completed" dataLayer events for GTM
-  head.py:18, 95-97                Google Fonts + jsDelivr on every page
-  home.py:383, components.py:726   YouTube embeds
-
-Deliberately absent: the dispatch fee amount (the acknowledgement is described without
-the figure), and any assertion about which state privacy statutes apply — that is an
-attorney determination, not a copywriting one.
-
-Two drafting mechanisms, both there so an unfinished fact can never reach a reader:
-
-  [NEEDS: ...]  inline in a paragraph. STRIPPED from the rendered page by _clean()
-                and collected into PRIVACY_GAPS. A paragraph that is nothing but a
-                marker, or that is left as a bare bold label once the marker comes
-                out, is dropped entirely.
-  HOLD::        prefix on a whole paragraph. The paragraph does NOT render at all,
-                because publishing it unverified would be worse than the gap. Its
-                text goes to PRIVACY_GAPS instead.
-
-Structure and helpers are shared with terms.py, so the two legal pages cannot drift
-apart visually.
-"""
 import os
 import re
 from layout import components as T
@@ -44,16 +5,9 @@ from pages import company_shared as CP
 from data import business as D
 from pages import terms as TM
 
-# The privacy page is visually identical to /terms — same summary card, same section
-# rules, same TOC. Reusing TERMS_CSS means a change to one page's treatment cannot
-# silently leave the other behind. The only page-specific rule is the draft banner.
 PRIVACY_CSS = """
 .xtm-h4{margin:26px 0 0;font-size:15.5px;font-weight:800;letter-spacing:-.1px;color:var(--ink)}
 .xtm-eff{font-size:13px;font-weight:700;color:var(--muted)}
-/* ------------------------------ /privacy ------------------------------ */
-/* The draft notice. Loud on purpose: this page carries legal weight it has not
-   earned yet, and a reader has to know that before the first clause. Remove this
-   block and DRAFT_NOTICE together, not separately. */
 .xpv-draft{border:2px solid #B4342A;background:#FDF3F2;border-radius:16px;
 padding:20px 24px;margin-top:24px}
 .xpv-draft .k{font-size:11.5px;font-weight:800;letter-spacing:2px;color:#B4342A}
@@ -79,28 +33,19 @@ ENTITY_SCOPE = TM.ENTITY_SCOPE
 
 EFFECTIVE = "September 27, 2026"
 
-# Address for privacy requests. Deliberately ONE address, not all four offices — a
-# request needs a single destination, and the primary office is the one the footer
-# and the schema already name.
 PRIVACY_ADDRESS = D.OFFICE_PRIMARY["oneline"]
 
-# No privacy@ alias exists yet; info@ is the published address in business.py.
 PRIVACY_EMAIL = D.EMAIL
 
 
-# --------------------------------------------------------------- draft plumbing
 _NEEDS_RE = re.compile(r"\[NEEDS:.*?\]", re.S)
 _TAG_RE = re.compile(r"<[^>]+>")
 
-# Everything _clean() pulls out of the rendered copy lands here, so a marker that is
-# stripped from the page is never silently lost.
 _STRIPPED = []
 
 
 def _clean(paras):
-    """Render-time filter. Removes [NEEDS: ...] markers, drops HOLD:: paragraphs and
-    drops any paragraph that is only a bare label once its marker is gone. Everything
-    removed is recorded in _STRIPPED and surfaces through PRIVACY_GAPS."""
+    # [NEEDS: ...] markers are stripped and HOLD:: paragraphs never render; both are logged to PRIVACY_GAPS.
     out = []
     for p in paras:
         if p.startswith("HOLD::"):
@@ -110,10 +55,6 @@ def _clean(paras):
         for m in markers:
             _STRIPPED.append(m.strip("[]").strip())
         cleaned = re.sub(r"\s+", " ", _NEEDS_RE.sub("", p)).strip()
-        # The short-paragraph rule applies ONLY where a marker was removed. A short
-        # paragraph with no marker is authored copy and is never dropped; a paragraph
-        # left as "<b>Photos.</b>" once its marker came out answers nothing. 80
-        # characters of plain text is the line between a real clause and a bare label.
         if markers and len(_TAG_RE.sub("", cleaned).strip()) < 80:
             if cleaned:
                 _STRIPPED.append("Dropped (nothing left once the marker came out): "
@@ -138,7 +79,6 @@ DRAFT_NOTICE = f'''<div class="xpv-draft">
 
 
 SECTIONS = [
-    # -----------------------------------------------------------------------
     ("who-this-covers", "Who This Policy Covers", [
         f"<b>The companies.</b> This Privacy Policy applies to {D.DOMAIN} and to "
         f"the information collected by {ENTITY_SCOPE}. In this policy, \"Extreme\" means "
@@ -158,7 +98,6 @@ SECTIONS = [
         "which has its own privacy policy.",
     ]),
 
-    # -----------------------------------------------------------------------
     ("information-we-collect", "Information Extreme Collects", [
         "<b>What you enter to schedule a visit.</b> Your first and last name, your mobile "
         "number, your email address if you choose to give one, and the service address "
@@ -209,7 +148,6 @@ SECTIONS = [
         "to be disclosed here and the vendor named in Service Providers.]",
     ]),
 
-    # -----------------------------------------------------------------------
     ("how-we-use", "How Extreme Uses It", [
         "<b>To do the work you asked for.</b> Scheduling the visit, routing the right "
         "technician, confirming the appointment, reaching you if something changes, "
@@ -242,7 +180,6 @@ SECTIONS = [
         "marketing.]",
     ]),
 
-    # -----------------------------------------------------------------------
     ("service-providers", "Service Providers Extreme Uses", [
         "Extreme uses a small number of outside companies to run the website and the "
         "scheduling form. Each one receives only what it needs to do its job. They are "
@@ -295,9 +232,7 @@ SECTIONS = [
         "Anything you type into one of those is received by that provider as well as by "
         "Extreme. Their own privacy terms apply to what they hold.",
 
-        # FollowUp Pro is the only one of the two that takes a name and a mobile number
-        # before it will do anything, and it is the A2P opt-in path, so what it keeps and
-        # why is stated rather than left to the sentence above.
+        # A2P opt-in disclosure, quoted verbatim in the carrier filing; do not reword.
         "<b>The chat window.</b> Before you can send a chat message, FollowUp Pro asks for "
         "your name and mobile number and shows you, above the send button, what you are "
         "agreeing to. Sending the message is the agreement. FollowUp Pro stores your number, "
@@ -317,7 +252,6 @@ SECTIONS = [
         "information only on Extreme's behalf.]",
     ]),
 
-    # -----------------------------------------------------------------------
     ("other-sharing", "When Else Extreme Shares Information", [
         "<b>With the people doing the work.</b> Your name, address, phone number and the "
         "job details go to the technician assigned to your visit and to the office staff "
@@ -355,7 +289,6 @@ SECTIONS = [
         "to a third-party crew should learn that from this page, not at the door.]",
     ]),
 
-    # -----------------------------------------------------------------------
     ("text-messages", "Calls and Text Messages", [
         "<b>Why Extreme needs your mobile number.</b> The number you give when you book is "
         "how Extreme confirms the appointment, tells you when the technician is on the way, "
@@ -365,16 +298,7 @@ SECTIONS = [
         "<b>Message rates.</b> Message and data rates may apply. Message frequency varies "
         "with your appointment.",
 
-        # The keyword sentence is restored 2026-08-12. It was held back because nobody
-        # had confirmed the texting platform honored STOP and HELP, and publishing
-        # keywords that do not work is worse than not publishing them. A2P 10DLC
-        # registration settles it: STOP and HELP handling is mandatory on a registered
-        # campaign, so the platform honors them by rule rather than by hope.
-        #
-        # This is one of exactly two places on the site where the texting number is
-        # rendered as readable text rather than behind a Text Us button. Regulatory: an
-        # opt-out instruction has to name the number it applies to. See
-        # business.SMS_DISPLAY for the other one and the reasoning.
+        # A2P opt-out text, quoted verbatim in the carrier filing; it must name the texting number.
         "<b>Stopping messages.</b> Reply STOP to any text message from "
         f"{D.SMS_DISPLAY} to opt out immediately, or call the office at "
         f"<a href=\"{T.PHONE_TEL}\">{T.PHONE_DISPLAY}</a> at any time and ask to be taken off "
@@ -392,7 +316,6 @@ SECTIONS = [
         "express consent line and this section needs to describe it.]",
     ]),
 
-    # -----------------------------------------------------------------------
     ("cookies", "Cookies, Local Storage and Analytics", [
         "<b>What this site stores on your device.</b> The site saves advertising click "
         "identifiers in your browser's local storage, as described above, so that a booking "
@@ -414,7 +337,6 @@ SECTIONS = [
         "signals, which several state statutes treat differently from Do Not Track.]",
     ]),
 
-    # -----------------------------------------------------------------------
     ("retention", "How Long Extreme Keeps It", [
         "<b>Service records.</b> Records of work performed — estimates, invoices, equipment "
         "installed and warranty coverage — are kept for as long as needed to honor "
@@ -441,7 +363,6 @@ SECTIONS = [
         "<a href=\"#your-choices\">Your Choices</a>.",
     ]),
 
-    # -----------------------------------------------------------------------
     ("your-choices", "Your Choices, and How to Request Deletion", [
         "<b>What you can ask for.</b> You can ask Extreme for a copy of the information it "
         "holds about you, ask for it to be corrected, ask for photos you uploaded to be "
@@ -475,7 +396,6 @@ SECTIONS = [
         "through your account settings with those companies.",
     ]),
 
-    # -----------------------------------------------------------------------
     ("security", "How Extreme Protects It", [
         "<b>Reasonable safeguards.</b> The website is served over an encrypted connection, "
         "and form submissions and photo uploads travel over encrypted connections to the "
@@ -495,7 +415,6 @@ SECTIONS = [
         "and in what terms, is a legal decision.]",
     ]),
 
-    # -----------------------------------------------------------------------
     ("children", "Children's Privacy", [
         "<b>This site is for adults.</b> Extreme's services are sold to homeowners and "
         "property owners. This website is not directed to children, and Extreme does not "
@@ -511,7 +430,6 @@ SECTIONS = [
         "other information.",
     ]),
 
-    # -----------------------------------------------------------------------
     ("other-sites", "Other Companies' Websites", [
         "This site links to websites Extreme does not control, including "
         "<a href=\"/financing-options\">financing lenders</a>, review platforms, manufacturer "
@@ -522,7 +440,6 @@ SECTIONS = [
         "there.",
     ]),
 
-    # -----------------------------------------------------------------------
     ("changes", "Changes to This Policy", [
         "Extreme may update this policy as the website, the services it uses, or the law "
         "change. The current version is always posted here with its effective date at the "
@@ -532,8 +449,7 @@ SECTIONS = [
         "changes, and by what channel.]",
     ]),
 
-    # Verbatim from ExtremeAppStore/privacy-policy-employee-app.md. Retention text depends
-    # on followup-pro purgeExpiredAppData (RETENTION_DAYS=365); change both together.
+    # Verbatim from ExtremeAppStore/privacy-policy-employee-app.md; 365 days must match followup-pro RETENTION_DAYS.
     ("employee-app", 'The Extreme Employee App', [
         '<span class="xtm-eff">Effective September 24, 2026</span>',
         'This section is for the technicians and office staff of Extreme Heating and Cooling Ltd ("Extreme") who use the Extreme app on an iPhone or iPad. The rest of this policy is about customers and this website.',
@@ -570,7 +486,6 @@ SECTIONS = [
     ]),
 ]
 
-# Contact section is built last so it can carry the live phone constant.
 CONTACT_SECTION = ("contact-us", "How to Contact Extreme", [
     f"<b>By phone.</b> <a href=\"{T.PHONE_TEL}\">{T.PHONE_DISPLAY}</a>. The office is staffed "
     f"{D.HOURS_STAFFED}, and the emergency line is answered 24/7.",
@@ -588,10 +503,6 @@ CONTACT_SECTION = ("contact-us", "How to Contact Extreme", [
 ])
 
 
-# Facts and decisions this page needs that nobody has supplied. Surfaced in the build
-# report rather than guessed at, exactly as TERMS_GAPS is. Everything _clean() strips
-# from the rendered page is appended to this list at render time, so the two can never
-# drift apart.
 PRIVACY_GAPS = [
     "ATTORNEY REVIEW — this entire page is an unreviewed draft and renders a visible draft "
     "notice saying so. It must not be linked from the sitewide footer, and the notice must "
@@ -627,7 +538,6 @@ PRIVACY_GAPS = [
     "Global Privacy Control response, or state-specific rights language is therefore needed.",
     "Breach notification: whether to describe a notification commitment on this page.",
     "A dedicated privacy@extremeheating.com alias, and an owner for the requests it receives.",
-    # Not a drafting gap — an engineering fix the policy currently has to disclose around.
     "ENGINEERING: Cloudinary photos are uploaded through an unsigned preset and returned as "
     "permanent public URLs with no expiry. The draft discloses this honestly, but the right "
     "answer is signed or expiring delivery URLs plus an automatic deletion rule. Fixing it "
@@ -695,8 +605,6 @@ def privacy_page(d, root_class):
     _STRIPPED.clear()
     all_sections = [(a, t, _clean(p)) for a, t, p in SECTIONS + [CONTACT_SECTION]]
     body_secs = "".join(TM.sec(a, t, p) for a, t, p in all_sections)
-    # Everything the draft filter pulled out is folded into the gap register, so a
-    # marker that never reaches a reader still reaches the client.
     for note in _STRIPPED:
         if note not in PRIVACY_GAPS:
             PRIVACY_GAPS.append(note)

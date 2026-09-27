@@ -1,36 +1,12 @@
-"""Company pages — design_handoff_company_pages (screens 4a-4d).
-
-/about · /contact · /financing-options · /specials, emitted to ".build/pages/company/"
-with the same embed conventions as the service pages.
-
-Rewritten 2026-08-02 against scratchpad/seo/copy-company.md and local-seo.md §4:
-
-  - Every page opens with an answer-first block (T.answer_block) as the first
-    element after the <h1>, and closes with a visible "Last updated" line.
-  - H2s are the questions a homeowner actually types, not slogans.
-  - Each page carries one real <table> (T.table_section) so an engine that
-    cannot parse a card grid can still cite the page.
-  - /contact renders ALL FOUR offices from business.OFFICES. It used to
-    hard-code two addresses, headed by metro ("Dayton") with a different city
-    in the address beneath ("Beavercreek"). That mismatch is the NAP defect
-    citation matchers trip over, and it is most of why Local SEO scored below
-    the Framer site this replaces. Addresses live in ONE place now: business.
-
-Facts come from business.py, which is the source of truth. Do not type an
-address, a phone number, a license number or a price into this file.
-"""
 from layout import components as T
 
-PHOTOS = T.PHOTOS  # real Extreme photography, commit-pinned — defined in components.py
+PHOTOS = T.PHOTOS
 
-# Visible "Last updated" stamp. Must match the schema dateModified for these
-# routes; never stamp it from the build clock (geo-contract §8.2).
+# must match the schema dateModified for these routes; never stamp from the build clock
 UPDATED = "August 2, 2026"
 UPDATED_ISO = "2026-08-02"
 
-# ---------------------------------------------------------------- CSS
 COMPANY_CSS = """
-/* ------------------------- company pages (4a-4d) ------------------------- */
 .xco-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
 .xco-bcard{border:1px solid var(--rule);border-radius:16px;padding:20px;background:#fff}
 .xco-bcard .t{font-weight:800;font-size:16.5px;margin-top:12px}
@@ -52,23 +28,13 @@ align-items:center;justify-content:center;font-size:12px;font-weight:700;color:v
 .xco-loc-body .addr.hrs{font-size:12.5px;margin-top:6px}
 .xco-loc-body a{display:inline-block;font-weight:800;font-size:13px;color:var(--purple);
 text-decoration:none;margin-top:10px}
-/* The local number reads as part of the address block, not as one of the two action
-   links under it, so it takes the address colour and sits tight to the hours. It is
-   still a tel: link, because on the device most of these are read on that is the
-   whole point of printing it. */
 .xco-loc-body a.tel{display:block;margin-top:6px;font-size:13.5px;color:var(--ink)}
-/* The readable call/text line. Reads as part of the contact block, not as a
-   CTA — it is there to be read, including by a carrier reviewer. */
 .xco-sms{margin-top:8px;font-size:14px;font-weight:600;color:var(--ink)}
 .xco-sms a{color:var(--purple);text-decoration:none}
 .xco-sms a:hover{text-decoration:underline}
 .xco-loc-body a.tel:hover{color:var(--purple)}
-/* The two links stack rather than sit side by side: at 4-up the card is ~300px and a
-   "Get directions" / "service area" pair wraps mid-phrase on the narrower ones. */
 .xco-loc-body a.alt{display:block;margin-top:6px}
 .xco-loc-body a:hover{color:var(--green-dark)}
-/* A card with no exterior photograph (Troy, Waynesville) has no image box at all. It
-   still has to line up with the two that do, so the body carries the shortfall. */
 .xco-loc:not(:has(.xco-loc-img)) .xco-loc-body{padding-top:22px}
 .xco-hours{border:1px solid var(--rule);border-radius:16px;margin-top:20px;overflow:hidden}
 .xco-hours .row{display:flex;justify-content:space-between;gap:16px;padding:14px 20px;
@@ -79,22 +45,13 @@ border-bottom:1px solid var(--rule)}
 .xco-hours .row.em{background:var(--green-tint)}
 .xco-hours .row.em span{font-weight:800;color:var(--promo-green)}
 .xco-body{max-width:1280px;margin:0 auto;padding:56px 40px;display:flex;flex-direction:column;gap:48px}
-/* Clearance for the hero booking card, which hangs into this section — only on the
-   pages that actually render one (see .xsp-bookcol in template.py). */
 .xhac-svc:has(.xsp-bookcol) .xco-body{padding-top:104px}
 .xco-split{display:grid;grid-template-columns:1fr 360px;gap:48px}
-/* The company photo is the one image on this site that is useless in a column: it is a
-   single line of 31 people, so in the old 400px hero slot each face was about 12px wide.
-   It takes the full content width at every viewport and gets its own row under the hero
-   copy. Height comes from the file's own 3.4:1 rather than a fixed pixel value, so it
-   never letterboxes, and it keeps the 16px radius every other image on the site has. */
 .xco-heroslot{width:100%;height:auto;aspect-ratio:1600/470;border-radius:16px;
 background:rgba(255,255,255,.08);
 border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
 font-size:12px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:1px;overflow:hidden}
 .xco-heroslot img{width:100%;height:100%;object-fit:cover;display:block}
-/* One column, so the photo can span the hero. The copy keeps a readable measure rather
-   than stretching to the full 1200px now that nothing sits beside it. */
 .xco-hero-grid-400{grid-template-columns:1fr;gap:30px}
 .xco-hero-grid-400 > div:first-child{max-width:70ch}
 .xco-ccard{border:1px solid var(--rule);border-radius:16px;padding:18px;background:#fff}
@@ -148,13 +105,6 @@ padding:32px 36px;position:relative;overflow:hidden}
 .xco-stats .n{font-style:italic;font-weight:900;font-size:30px;color:#fff}
 .xco-stats .n .st{color:var(--stars)}
 .xco-stats .cap{font-size:12.5px;line-height:1.5;font-weight:600;color:rgba(255,255,255,.75);margin-top:4px}
-/* Team. The grid minimum is set by the longest role rather than by taste: "Operations
-   Coordinator" is 22 characters and needs ~140px at 11.5px, and a role that wraps to a
-   second line pushes that one tile taller than the rest of its row, which is the single
-   most obvious way a portrait grid looks unfinished. 148 is that measurement plus a
-   little, checked in the browser at 320 / 360 / 390 / 768 / 1280 rather than estimated.
-   The 320px rule at the bottom of this file is the same constraint at the one width
-   where two columns cannot pay for it. */
 .xco-crew + .xco-crew{margin-top:30px}
 .xco-crew-hd{display:flex;align-items:center;gap:10px;padding-bottom:9px;
 border-bottom:2px solid var(--rule);margin-bottom:16px}
@@ -162,18 +112,13 @@ border-bottom:2px solid var(--rule);margin-bottom:16px}
 .xco-crew-hd .n{font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 .xco-team{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:20px 14px}
 .xco-mem{margin:0}
-/* height:auto is load-bearing. Every headshot carries width="440" height="550" so the
-   browser can reserve the box before the bytes land, and those attributes make the used
-   height definite — at which point aspect-ratio is ignored, because it only resolves a
-   dimension that is auto. Without this line all 31 tiles render 550px tall. */
+/* height:auto — aspect-ratio is ignored once the height attr is set */
 .xco-mem img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:12px;
 display:block;background:var(--tint)}
 .xco-mem figcaption{margin-top:9px}
 .xco-mem .nm{display:block;font-weight:800;font-size:13.5px;color:var(--ink);line-height:1.25}
 .xco-mem .rl{display:block;font-size:11.5px;font-weight:600;color:var(--body);line-height:1.3;
 margin-top:2px}
-/* The two owners run larger and stop at two columns — a four-across leadership row reads
-   as just another crew. */
 .xco-team-lead{grid-template-columns:repeat(2,minmax(0,1fr));max-width:460px;gap:20px}
 .xco-team-lead .nm{font-size:15px}
 .xco-team-lead .rl{font-size:12.5px}
@@ -191,11 +136,6 @@ margin-top:2px}
 .xco-stats{padding:26px 22px;border-radius:20px}
 .xco-stats .grid{grid-template-columns:1fr 1fr;gap:18px}
 }
-/* iPhone SE and friends. Measured: the content box is 280px here, so a 148px minimum
-   buys one column and turns this section into a 31-screen scroll. Two columns need the
-   minimum under (280 - 10) / 2 = 135, and at 130 the tile lands on 135. The longest
-   role needs 139 at 11.5px and 121 at 10px, so the type steps down with the grid —
-   both numbers move or neither works. */
 @media (max-width:359px){
 .xco-team{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:16px 10px}
 .xco-mem .nm{font-size:12.5px}
@@ -204,9 +144,6 @@ margin-top:2px}
 """
 
 def shell(root_class, body, extra_css=""):
-    """extra_css is for rules only one page needs. Keeping them out of COMPANY_CSS
-    means editing one page's styles doesn't change the other three files, so a
-    single-page revision stays a single Framer paste."""
     return f'''<section class="xhac-svc {root_class}">
   <style>{T.CSS}{COMPANY_CSS}{extra_css}</style>
 {body}
@@ -214,13 +151,7 @@ def shell(root_class, body, extra_css=""):
 </section>
 '''
 
-# ------------------------------------------------------- shared renderers
-# Per client decision the page-specific ink CTA bands from mockups 4a-4d are
-# omitted on all four company pages (the Footer component's CTA band covers it).
 def section(eyebrow, h2, inner, lead=None, sid=None):
-    """One page section. `lead` is the direct answer to the H2 question and goes
-    between the heading and whatever the section renders — a question heading with
-    a card grid under it and no sentence in between answers nothing."""
     anchor = f' id="{sid}"' if sid else ""
     return f'''<div{anchor}>
   <div class="xsp-eyebrow">{eyebrow}</div>
@@ -230,13 +161,9 @@ def section(eyebrow, h2, inner, lead=None, sid=None):
 </div>'''
 
 def prose_section(eyebrow, h2, body, sid=None):
-    """A section that is only a question and its answer."""
     return section(eyebrow, h2, "", lead=body, sid=sid)
 
 def slot_img(cls, photo, label, style=""):
-    """A fixed-height photo box that renders either a placeholder or a real image.
-    photo is a dict: {src, alt, pos?}. pos is object-position — the boxes here are
-    wide and short, so a photo whose subject isn't dead center needs it."""
     st = f' style="{style}"' if style else ""
     if not photo:
         return f'<div class="{cls}"{st} data-photo-slot>{label}</div>'

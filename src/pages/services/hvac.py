@@ -1,4 +1,3 @@
-"""Step-5 rollout — remaining pages as data objects (README copy formulas)."""
 from layout import components as T
 from data import business as D
 from pages.services.shared import call, steps, detail, sub, pillset, SPEED_FAQ, geo, sec, tbl, qa, COST_ROW
@@ -14,9 +13,6 @@ HVAC_CRUMB = ("Heating & Air", "/services")
 BRANDS_FAQ = {"q": "Do you service all brands?",
     "a": "Yes — every major make and model, regardless of who installed it."}
 
-# ======================================================================
-# HVAC details
-# ======================================================================
 HVAC_PAGES = {}
 
 HVAC_PAGES["furnace-heating.html"] = detail(
@@ -98,17 +94,13 @@ HVAC_PAGES["duct-cleaning.html"] = detail(
      {"title": "Air Conditioning", "href": "/air-conditioning"},
      {"title": "Humidifier Services", "href": "/humidifier"}])
 
-# Duct cleaning is the one service where the result is invisible until you look
-# inside the duct, so the page carries the proof: a real before/after frame from a
-# job, and the crew's own walkthrough video.
 HVAC_PAGES["duct-cleaning.html"]["media"] = [
     {"eyebrow": "BEFORE & AFTER",
      "h2": "See what a difference it can make.",
      "sub": "The same run of ductwork, photographed before the crew started and after "
             "they finished.",
      "photo": T.cdn_asset("service/before-after-ducts.jpg"),
-     # 50% 70% is the 16:9 band that keeps both BEFORE and AFTER labels in frame; a
-     # centred crop cuts them off.
+     # 50% 70% keeps both BEFORE and AFTER labels inside the 16:9 crop
      "photoPos": "50% 70%",
      "photoAlt": "The same length of ductwork before and after cleaning: heavy dust "
                  "coating the surfaces on the left, bare metal on the right",
@@ -222,7 +214,6 @@ HVAC_PAGES["indoor-air-quality.html"] = detail(
      {"title": "Air Conditioning", "href": "/air-conditioning"}],
     pills=pillset("INDOOR AIR QUALITY", IAQ_PILLS, "Overview"))
 
-# X-Plan page — restyled to tokens, membership content kept
 HVAC_PAGES["maintenance.html"] = detail(
     "maintenance", HVAC_CRUMB, "X-Plan Maintenance",
     "Never think about {X} again.", "tune-ups",
@@ -249,7 +240,6 @@ HVAC_PAGES["maintenance.html"] = detail(
      {"title": "Air Conditioning", "href": "/air-conditioning"},
      {"title": "Furnace & Heating", "href": "/furnace-heating"}])
 
-# ---- HVAC sub-pages (2d pattern) ----
 HVAC_SUBS = {}
 
 HVAC_SUBS["furnace-installation.html"] = sub(
@@ -361,12 +351,6 @@ HVAC_SUBS["iaq-faq.html"] = sub(
      {"title": "Air Quality Solutions", "href": "/indoor-air-quality-solutions"},
      {"title": "Why IAQ Matters", "href": "/importance-iaq"}])
 
-# ================================================================
-# AC and heat pump sub-pages — the same Overview / Installation / Repair split the
-# furnace family already had. Before these existed, the "AC Repair" and "Heat Pump
-# Installation" cards on the two overview pages pointed at /contact and
-# /financing-options, so a reader clicking a service name landed on a form.
-# ================================================================
 AC_CRUMB_PARENT = ("Air Conditioning", "/air-conditioning")
 HP_CRUMB_PARENT = ("Heat Pump Services", "/heat-pump")
 
@@ -537,10 +521,6 @@ HVAC_SUBS["heat-pump-installation.html"] = sub(
 R22_ROW = ("Refrigerant", "The system runs on R-410A or another refrigerant still in production",
            "The system runs on R-22, which has not been produced or imported in the US since 2020")
 
-
-# ======================================================================
-# HVAC detail pages
-# ======================================================================
 
 geo(HVAC_PAGES, "furnace-heating.html",
     h1="Furnace and heating service in {X}.", h1Highlight="Dayton &amp; Cincinnati",
@@ -1349,12 +1329,6 @@ geo(HVAC_PAGES, "humidifier.html",
          "members get 15% off any repair. Membership is $249 a year or $20.75 a month."),
     ))
 
-# ======================================================================
-# HVAC sub-pages
-# ----------------------------------------------------------------------
-# The sub-page hero chips come from components.SUB_CHIPS, not from this file,
-# so the "4.9 on Google" correction cannot be made here. See the handoff.
-# ======================================================================
 
 geo(HVAC_SUBS, "ac-repair.html",
     h1="AC repair in {X}, day or night.", h1Highlight="Dayton &amp; Cincinnati",
@@ -1469,9 +1443,6 @@ geo(HVAC_SUBS, "ac-installation.html",
             "insulation, window area and orientation, ceiling height, and duct condition. "
             "Matching the tonnage on the old label repeats whatever mistake was made last "
             "time. An oversized system short cycles, and a Dayton summer still feels clammy at "
-            # This sentence had been folded around the link phrase until it read
-            # "whether to fix or repair or replace" and stopped meaning anything. The
-            # link stays; the sentence is built around it now instead of through it.
             "the set temperature. Sizing only matters once you have settled the earlier "
             "question, which is whether to "
             "<a href=\"/ac-repair#repair-or-replace\">repair or replace the air conditioner</a> "
@@ -2124,34 +2095,6 @@ geo(HVAC_SUBS, "iaq-faq.html",
     ))
 
 
-# ============================================================================
-# Cost-intent sections on the installation pages
-# ============================================================================
-# "How much does a new furnace cost" is the highest-intent question in the trade
-# and the one this site has never answered anywhere. It is also the question the
-# blind reader review's price-shopper persona left over.
-#
-# We do not publish installed prices, and after checking, neither does the largest
-# competitor in this market: two of geteco.com's cost pages, ~3,200 words each with
-# "Cost" in the H1 and the URL, contain zero dollar figures between them (verified
-# 2026-08-02 against the Wayback copies, their live edge now blocks us). Their 120
-# cost URLs are a keyword play, not a disclosure. So the ranking value is in the
-# page answering the question in the shape it gets asked, not in a number.
-#
-# What goes here is therefore drivers, not dollars: the things that actually move a
-# quote, each one already established elsewhere on this site, plus how to get a real
-# number. Every row below traces to approved copy on the page it sits on.
-#
-# [NEEDS: a financing payment example. /financing-options names GoodLeap, Synchrony
-#  and Wright-Patt but publishes no APR, no term and no example payment, so one
-#  cannot be written without inventing lender terms. A single "from $X/month on
-#  approved credit" is a number a customer can act on and the only concrete figure
-#  a competitor here publishes anything like.]
-#
-# All three pages already answer "what does the installation include", in more detail
-# than anything added here would, so the cost block links the reader to that answer
-# rather than restating it a second time on the same page.
-
 _COST_H2 = "How much does {thing} cost in Dayton or Cincinnati?"
 
 _COST_LEAD = (
@@ -2159,9 +2102,7 @@ _COST_LEAD = (
     "guessing at your house. {lead} What we can do is tell you exactly what moves the "
     "figure, so the quote you get makes sense instead of arriving as a surprise.")
 
-def _cost_section(thing, lead, rows, includes, anchor):  # includes: kept for the lead
-    """A cost-intent block: the question in the shape it gets asked, an honest answer,
-    the drivers in a table, and what the number covers."""
+def _cost_section(thing, lead, rows, includes, anchor):
     return [
         {"eyebrow": "WHAT IT COSTS",
          "id": anchor,
@@ -2275,6 +2216,4 @@ for _key, _cost in (("furnace-installation.html", _FURNACE_COST),
     _d = HVAC_SUBS.get(_key)
     if not _d:
         continue
-    # Ahead of the booking and financing questions, which is the order someone reads
-    # in: what does it cost, what does that cover, then how do I pay for it.
     _d["sectionsTail"] = list(_cost) + list(_d.get("sectionsTail", []))

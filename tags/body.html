@@ -11,15 +11,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   src="https://embed.scheduler.servicetitan.com/scheduler-v1.js"
 ></script>
 
-<!-- FollowUp Pro chat widget. This is opt-in path 2 in the A2P 10DLC registration,
-     so it has to be on EVERY page: the registration says "available on every page of
-     https://www.extremeheating.com" and a homepage-only widget makes that false.
-     It renders in a shadow root on <extreme-chat>, so site CSS cannot reach in and it
-     cannot leak out. Nothing renders or hits the network until a visitor sends
-     something, so a bounce costs nothing.
-     Do not fork this script or self-host a modified build: the consent disclosure it
-     shows is quoted character for character in the registration and stored verbatim
-     as the TCPA record. Changes go through FollowUp Pro. -->
+<!-- Chat widget must stay on every page (A2P 10DLC opt-in); don't fork it, its consent text is quoted verbatim in the filing. -->
 <script src="https://followup-pro-37ed6.web.app/chat-widget.js"
         data-endpoint="https://us-central1-followup-pro-37ed6.cloudfunctions.net"
         data-phone="+18445847399"

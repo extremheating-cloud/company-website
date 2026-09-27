@@ -1,57 +1,30 @@
-"""Extreme Rewards referral page — /referral.
-
-Every amount, condition and term comes from the CUSTOMER-FACING sections of
-~/.claude/skills/extreme-brand/references/programs.md. Nothing from that file's
-internal-rules section appears here — no job-type table, no spend backstop, no
-payout mechanics, no tax handling, no cost per acquisition, and no stacking rule
-(stacking moved into the internal section in the 2026-07-31 revision).
-
-The program is deliberately two numbers: $250 on a new heating, cooling, or
-plumbing system, $100 on everything else, and the referrer earns
-whatever their friend saved. programs.md bans tiers, spend thresholds and job-type
-lists from customer copy — so this page carries no payout calculator, and no
-X-Plan referral bonuses (the +$30 / +$20 were removed from the program).
-
-Mechanism note: this program pays because the referred customer NAMES the
-referrer at booking. There is deliberately no "enter your friend's email" capture
-form — a form implies submitting it is what earns the reward, which is exactly
-what creates payout disputes. The share block is a copy-a-message convenience
-that repeats the naming instruction instead.
-"""
+# Customer-facing programs.md terms only. No capture form: naming the referrer at booking earns the reward.
 import os
 from layout import components as T
 from pages import company_shared as CP
 from data import business as D
 
-# Accessible green for type on light backgrounds (4.56:1). #6BB85C/#61BC47 are
-# fills only — they fail AA as text on white (2.43:1 / 2.39:1).
+# AA-safe text green on white (4.56:1); #6BB85C/#61BC47 are fills only.
 GREEN_TEXT = "#3F852B"
 
 REFERRAL_CSS = """
-/* ------------------------- Extreme Rewards (/referral) ------------------------- */
-/* Montserrat 400-800 only on this page — the shared template's 900 is capped. */
 .xsp-referral .xsp-h1,.xsp-referral .xsp-h2,.xsp-referral .xsp-step .n{font-weight:800}
-/* Every green glyph/eyebrow on white steps down to the accessible green. */
 .xsp-referral .xsp-eyebrow{color:#3F852B}
 .xsp-referral .xsp-check .c{background:#3F852B;color:#fff}
-/* breadcrumb sits on the lightest part of the hero gradient (#5E2C7E) where
-   --green lands at 4.04:1; the lighter token clears AA at 5.57:1. */
+/* --green is 4.04:1 on the hero gradient here; --green-hover clears AA */
 .xsp-referral .xsp-crumbs .cur{color:var(--green-hover)}
 /* 44px thumb target on the breadcrumb without shifting the hero layout */
 .xsp-referral .xsp-crumbs a{display:inline-block;padding:15px 6px;margin:-15px -6px}
 .xsp-referral :focus-visible{outline:3px solid #61BC47;outline-offset:2px}
 
-/* the mirror line under the H1 — the sentence the whole program rests on */
 .xrf-mirror-line{margin-top:14px;font-style:italic;font-weight:800;font-size:24px;
 letter-spacing:-.3px;color:var(--green-hover)}
 
-/* the mechanism — the single most important block on the page */
 .xrf-mech{background:#fff}
 .xrf-mech-in{max-width:1280px;margin:0 auto;padding:44px 40px 0}
 .xrf-mech-card{background:var(--tint);border-left:6px solid var(--green);border-radius:16px;
 padding:28px 32px}
-/* purple (not green-text) on the tint fill: #3F852B drops to 4.08:1 on #F4F1F8.
-   This is the brand's documented pairing — purple-tint callout + purple heading. */
+/* purple, not #3F852B: green text drops to 4.08:1 on the tint */
 .xrf-mech-card .k{font-size:11.5px;font-weight:800;letter-spacing:2px;color:var(--purple)}
 .xrf-mech-card h2{margin-top:10px;font-style:italic;font-weight:800;font-size:30px;
 line-height:1.15;letter-spacing:-.5px;color:var(--purple)}
@@ -59,7 +32,6 @@ line-height:1.15;letter-spacing:-.5px;color:var(--purple)}
 max-width:760px}
 .xrf-mech-card p b{font-weight:800}
 
-/* the two-number offer, shown as a mirror */
 .xrf-pairs{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
 .xrf-pair{border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#fff}
 .xrf-pair .head{background:var(--tint);padding:16px 20px;font-weight:800;font-size:16.5px;
@@ -67,8 +39,7 @@ color:var(--purple);line-height:1.35}
 .xrf-pair .cells{display:grid;grid-template-columns:1fr 1fr}
 .xrf-pair .cell{padding:22px 18px;text-align:center}
 .xrf-pair .cell.you{background:var(--green-tint);border-left:1px solid var(--rule)}
-/* Label stays --body on both sides: #3F852B on the green tint is only 4.16:1, which
-   fails AA at this 11px size. The tinted cell and the green numeral carry the signal. */
+/* --body, not #3F852B: green is 4.16:1 on the green tint and fails AA at 11px */
 .xrf-pair .lab{font-size:11px;font-weight:800;letter-spacing:1.6px;color:var(--body)}
 .xrf-pair .amt{font-style:italic;font-weight:800;font-size:36px;letter-spacing:-1px;
 color:var(--purple);margin-top:8px;line-height:1}
@@ -76,7 +47,6 @@ color:var(--purple);margin-top:8px;line-height:1}
 .xrf-nolimit{margin-top:16px;font-size:14px;line-height:1.6;font-weight:600;color:var(--body)}
 .xrf-nolimit b{color:var(--ink);font-weight:800}
 
-/* share */
 .xrf-share{border:1px solid var(--rule);border-radius:16px;background:#fff;padding:24px;margin-top:20px}
 .xrf-msg{background:var(--soft);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;
 font-size:16px;line-height:1.65;font-weight:500;color:var(--ink);margin-top:14px}
@@ -87,7 +57,6 @@ border:0;cursor:pointer;font-family:inherit;transition:background .15s}
 .xrf-copy:hover{background:var(--green-hover)}
 .xrf-copied{font-size:13px;font-weight:700;color:#3F852B}
 
-/* x-plan strip */
 .xrf-xp{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;
 background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:16px;padding:24px 28px;
 color:#fff;margin-top:20px}
@@ -96,7 +65,6 @@ color:#fff;margin-top:20px}
 max-width:60ch}
 .xrf-xp .xsp-cta{white-space:nowrap}
 
-/* terms */
 .xrf-terms{border:1px solid var(--rule);border-radius:16px;background:#fff;padding:24px;margin-top:20px}
 .xrf-terms-line{background:var(--tint);border-radius:12px;padding:16px 18px;font-size:14px;
 line-height:1.65;font-weight:700;color:var(--ink)}
@@ -170,14 +138,7 @@ def shell(root_class, body):
 '''
 
 
-# ---------------------------------------------------------------- content
-# Page title / meta description for Framer page settings (embeds cannot set these).
-# The generated build reads its title and description from head.CORE["/referral"];
-# these two constants are the Framer-side copy of the same strings and must match.
-#
-# The old title, "Extreme Rewards Referral Program | Give $250. Get $250.", omitted
-# the canonical business name and put "Extreme" in the SERP twice with no company
-# attached — the exact entity problem the GEO contract exists to fix.
+# Framer page-settings copy; keep in sync with head.CORE["/referral"].
 PAGE_TITLE = f"Refer a Friend & Earn $250 | {D.COMPANY}"
 PAGE_DESC = (
     f'Extreme Rewards: a friend saves {D.REWARDS["newSystem"]} on a new system or '
@@ -193,29 +154,17 @@ REFERRAL = {
     "h1": "Give {X}. Get $250.",
     "h1Highlight": "$250",
     "mirror": "Whatever they save, you earn.",
-    # The H1 stays the two-number promise; the eyebrow directly above it supplies
-    # "EXTREME REWARDS", so putting the program name in the H1 as well would read as
-    # a stutter. The canonical business name enters in the answer block instead,
-    # which is the passage that actually gets cited.
     "answer": ("A friend you send us saves "
                f'{D.REWARDS["newSystem"]} on a new heating, cooling or plumbing system, or '
                f'{D.REWARDS["everythingElse"]} on any other job of '
                f'{D.REWARDS["everythingElseMin"]} or more. You earn the same amount back '
                "on a Visa gift card once their job is done."),
-    # "everything else" is a client-directed change from the MD's approved wording ("any
-    # repair or installation"), applied site-wide on 2026-07-31 at the client's instruction:
-    # /referral, /specials and /terms all now say it. programs.md keeps the narrower phrasing
-    # on purpose as a commercial guard (a diagnostic that doesn't lead to work isn't a
-    # repair); "everything else" reads as covering a standalone diagnostic too. The client
-    # was told and chose to align. Update programs.md if this becomes the official wording.
     "intro": "There's no limit on how many people you send, and no form to fill in. They just have to give your name when they book.",
     "heroChips": [
         "No limit on how many friends you refer",
         "Paid on a Visa gift card",
         "New customers only",
     ],
-    # The heads carry the condition rather than a footnote: these two cards are the
-    # first thing read on the page and they are what gets screenshotted.
     "pairs": [
         {"head": "They're getting a new heating, cooling, or plumbing system",
          "they": D.REWARDS["newSystem"], "you": D.REWARDS["newSystem"]},
@@ -235,9 +184,6 @@ REFERRAL = {
              "desc": "Whatever your friend saved, you earn. We don't pay on the booking. We pay once the work is finished and the invoice is settled, and cards go out within 90 days of that."},
         ],
     },
-    # Written to sound like a text someone actually sends, not a brochure. Leads with what
-    # the friend gets: programs.md is explicit that a referrer hesitates over an offer that
-    # makes them look like they're collecting a commission on a friend.
     "shareMsg": f"I use Extreme for heating, cooling, and plumbing. They're local, and they price "
                 f"the work up front before they start. If you call them, mention my name: new "
                 f'customers get {D.REWARDS["newSystem"]} off a new system, or '
@@ -251,10 +197,6 @@ REFERRAL = {
         ("We issue cards within 90 days of the job being completed and paid.", "The work has to be finished and the invoice settled before a card goes out."),
         ("No referring yourself, and Extreme employees aren't eligible.", "The program is for customers sending us someone new."),
     ],
-    # The whole program, in a shape an engine can lift. Two rows. The tier table, the
-    # spend backstop, the job-type list, the retired X-Plan referral bonus and the
-    # stacking rule all live in the internal-only section of programs.md and none of
-    # them may appear here.
     "table": {
         "eyebrow": "THE TWO AMOUNTS",
         "h2": "How much does a referral pay?",
@@ -340,8 +282,6 @@ def pairs(d):
       <div class="cell you"><div class="lab">YOU EARN</div><div class="amt">{p["you"]}</div></div>
     </div>
   </div>''' for p in d["pairs"])
-    # The mirror cards are the visual form of the same two numbers the table below
-    # carries. The table is the parseable copy; the cards are the one people read.
     return f'''<div id="xrf-pairs">
   <div class="xsp-eyebrow">THE WHOLE PROGRAM</div>
   <h2 class="xsp-h2">What is the Extreme Rewards referral program?</h2>

@@ -3,16 +3,7 @@ from layout import components as T
 from data import business as D
 from pages.company_shared import PHOTOS, UPDATED, UPDATED_ISO, shell, section, prose_section, slot_img
 
-# ================================================================
-# /contact — mockup 4b (rail tier), copy verbatim
-# ================================================================
-# "same-day in most cases" was a response-time promise, and it is not one of the
-# approved proof tokens. The approved wording is "90% same-day service"; anything
-# looser reads as a guarantee the dispatcher cannot keep.
 T.PROMOS["contactCall"] = dict(cls="lav", t="Need help right now?",
-    # "Skip the form" pointed at a form that is not on the page — /contact books
-    # through the scheduling wizard, and there is no <form> element anywhere on it.
-    # The real alternative being offered is not typing it all out.
     d="Rather not type it all out? A real person answers, day or night.",
     lm=f"Call {T.PHONE_DISPLAY} →", href=T.PHONE_TEL)
 T.PROMOS["contactXplan"] = dict(cls="mint", t="X-Plan members skip the line",
@@ -20,20 +11,12 @@ T.PROMOS["contactXplan"] = dict(cls="mint", t="X-Plan members skip the line",
     lm="Explore X-Plan →", href="/maintenance")
 
 def contact_card():
-    # The 4.9 average is a Birdeye aggregate across the platforms customers post on,
-    # not a Google-only figure. The trust row used to call it a Google rating, which a
-    # competitor or a rater can check in thirty seconds. D.REVIEW_SOURCE is the
-    # approved wording, and the count is the half that was missing: a rating with no
-    # denominator is the shape of a claim rather than a claim.
+    # Birdeye aggregate across platforms, not a Google rating: never label it "on Google".
+    # .xco-sms is A2P opt-in path 1, quoted verbatim in the carrier filing: readable text, not a button.
     return f'''<div class="xsp-book">
   <div class="eyebrow">CONTACT US</div>
   <div class="xco-phone"><a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a></div>
   <div class="s">Office staffed {D.HOURS_STAFFED_SHORT} · emergencies 24/7.</div>
-  <!-- THE line the A2P reviewer has to be able to read. One plainly readable
-       statement that a specific number accepts texts, on the page a reviewer opens
-       first. Do not turn this into a button; the href of a button is not something a
-       human reviewer can be relied on to inspect, and without this sentence opt-in
-       path 1 in the registration ("published on our website") is simply false. -->
   <div class="xco-sms">Call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>
     &middot; Text <a href="{D.SMS_HREF}">{D.SMS_DISPLAY}</a></div>
   <div class="btns">
@@ -85,17 +68,9 @@ def book_cards(d):
                          "the phone after hours and on weekends. "
                          '<a href="/maintenance">X-Plan members get priority scheduling</a>.'])
 
-# Per-office presentation only. The addresses themselves live in business.OFFICES
-# and are read from there — two copies of an address in one repo is the NAP problem
-# starting at home.
-#
-# Troy and Waynesville have no exterior photograph yet. Those two cards ship
-# text-only rather than with an empty photo slot: a grey placeholder box on a
-# location card signals the premises may not exist, which is worse than a smaller
-# card. [NEEDS: exterior photographs of the Troy and Waynesville offices.]
+# Addresses come only from business.OFFICES; a second copy here is a NAP mismatch waiting to happen.
 OFFICE_PHOTOS = {
-    # 65% pushes the crop down onto the sign so the 712 street number stays in
-    # frame — it is the thing that makes this read as a location card.
+    # 65% keeps the 712 street number on the sign in frame.
     "beavercreek": {"src": PHOTOS["beavercreek"], "pos": "50% 65%",
                     "alt": f"An {D.COMPANY} service van at the Beavercreek office sign on North Fairfield Road"},
     "mason": {"src": PHOTOS["mason"],
@@ -103,16 +78,9 @@ OFFICE_PHOTOS = {
 }
 
 def location_card(o):
-    """One office card. Headed by `locality`, which is the city in the postal address
-    directly beneath it. The cards used to be headed by metro — a card headed "Dayton"
-    over a Beavercreek address is a NAP inconsistency, and it is exactly the pattern
-    citation-matching services flag."""
+    # Headed by locality, not metro, so it matches the postal address beneath it (NAP).
     photo = OFFICE_PHOTOS.get(o["slug"])
     img = slot_img("xco-loc-img", photo, "") if photo else ""
-    # Most offices describe themselves by metro. Waynesville is not a metro shop — the
-    # client's answer to "how is it presented" was that it is the plumbing hub — so it
-    # carries an explicit descriptor instead. An office with neither still renders
-    # nothing rather than a guessed region.
     label = o.get("descriptor") or (f'Our {o["metro"]}-area shop' if o.get("metro") else "")
     metro = f'<div class="meta">{label}</div>' if label else ""
     page = (f'<a href="{o["page"]}" class="alt">{o["locality"]} service area →</a>'
@@ -143,10 +111,6 @@ def location_cards(d):
                    lead=lead, sid="offices")
 
 def offices_table():
-    """The parseable copy of the office list. The cards carry the photos and the
-    directions links; this carries the same four addresses in a shape an engine can
-    lift whole. County comes from business, not from a coverage guess — dispatch
-    boundaries per office are still unconfirmed and are not published here."""
     return T.table_section({
         "eyebrow": "OFFICES AT A GLANCE",
         "h2": "Which office is closest to me?",
@@ -174,27 +138,13 @@ CONTACT = {
     "breadcrumb": [("Home", "/"), ("Contact", "")],
     "h1": "Contact {X} Heating, Air, Plumbing",
     "h1Highlight": "Extreme",
-    # The answer-first block. No phone number in it, per geo-contract §2.2 — which is
-    # a genuinely odd rule on a contact page. The number sits immediately below it in
-    # the booking card, in the first H2 answer, and in the FAQ.
+    # No phone number in the answer block (geo-contract §2.2).
     "answer": ("We book heating, cooling and plumbing service across the Dayton and Cincinnati "
                "metros, out of four Ohio offices that all route to one line. The office is open "
                "weekdays 8 to 5, and emergencies are answered 24/7."),
-    # The old H1, demoted to the deck line.
     "intro": "Get in touch with the Extreme Team.",
-    # "Same-Day in Most Cases" was a response-time promise. 90% same-day service is the
-    # approved proof token and it is a number, which is the point.
     "heroChips": [f"{D.SAME_DAY} Same-Day Service", "24/7 Emergency Line", "Dayton &amp; Cincinnati"],
-    # Addresses are NOT stored here. All four offices come from business.OFFICES, which
-    # is client-confirmed 2026-08-02 and is also what the footer, the location pages and
-    # the JSON-LD read. One written form, byte for byte, everywhere — a NAP audit compares
-    # the visible block against the schema on the same page and a mismatch is
-    # machine-detectable. See OFFICE_PHOTOS above for the per-card presentation.
-    #
-    # Hours confirmed by the client 2026-08-01, and now read from business. 8-5 weekdays
-    # is when the OFFICE is staffed; emergency service really does run around the clock.
-    # Keep these two rows distinct if this table is ever edited — collapsing them is what
-    # produced the contradiction with the 24/7 claims on the other 34 pages.
+    # Keep staffed and emergency hours as separate rows; merging them contradicts the 24/7 claims.
     "hours": [
         {"label": "Staffed office", "value": D.HOURS_STAFFED},
         {"label": "Emergency service", "value": D.HOURS_EMERGENCY, "em": True},
@@ -222,10 +172,7 @@ CONTACT = {
               "If it can't wait, call instead. That line is answered 24/7."},
     ],
     "rail": {
-        # PLACEHOLDER at the client's direction until dispatcher photos are shot —
-        # this is a van shot standing in for an office/dispatch image. Swap it for
-        # shot B3 (dispatcher at the desk) when the session delivers. The alt text
-        # describes what is actually in the frame, not what the slot wants.
+        # TODO: placeholder van shot; swap for B3 (dispatcher at the desk) once it's shot.
         "photo": PHOTOS["vans"],
         "photoAlt": f"{D.COMPANY} service vans heading out on calls",
         "promos": ["contactCall", "contactXplan"],

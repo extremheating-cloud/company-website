@@ -1,35 +1,3 @@
-"""Full HTML documents for the self-hosted site: head, meta, indexation and JSON-LD.
-
-The Framer build wraps each page's content in a `srcdoc` iframe, so the page itself
-has a title and meta description and then no headings at all — measured on the live
-site, `/locations/dayton` renders zero `<h1>` and 41x more copy inside iframes than
-outside. This module is what fixes that: same content, in the document, where a
-crawler reads it.
-
-Three things live here, and each one has a rule that governs it.
-
-1. **Titles and descriptions are authored data, not derived from the page.** A title
-   is keyword-first copy for someone deciding whether to click; an H1 is brand voice
-   for someone who already arrived. Deriving one from the other guarantees one of them
-   is wrong, and before this module it was the title on all 311 routes — `/ac-repair`
-   was titled "Cool air back — usually the same day." and did not contain the string
-   "AC repair". Titles are now generated from a per-route keyword phrase through a
-   length ladder, with `OVERRIDES` as the escape hatch.
-
-2. **Structured data is read out of the rendered HTML, never passed in beside it.**
-   Breadcrumb, FAQ, video and primary image are extracted from `body_html` with
-   regexes. That makes schema/visible-content mismatch — the thing that earns a manual
-   action — structurally impossible: delete an FAQ block and its `FAQPage` markup goes
-   with it. It also avoids threading a parallel data path through six page modules
-   that `build.py` would then throw away.
-
-3. **Nothing is asserted that is not confirmed.** Unknown values are `None` and are
-   pruned before output. A missing property costs a warning; a wrong one costs a
-   citation cleanup across every aggregator that scraped it.
-
-Output goes to site/, leaving .build/pages/ as the Framer embeds so both stay buildable
-until cutover.
-"""
 import atexit
 import datetime as _dt
 import hashlib
@@ -46,8 +14,6 @@ from layout import components as T
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-# Non-fatal problems worth seeing at the end of a build. Nothing in here stops the
-# build; everything in here is a thing a human has to supply.
 WARNINGS = []
 
 def _warn(msg):
@@ -65,13 +31,7 @@ font-family:"Montserrat","Montserrat Fallback",ui-sans-serif,system-ui,-apple-sy
 overflow-x:hidden}
 img{max-width:100%}
 main{display:block}
-/* "Montserrat Fallback" is named here and in template.py's .xhac-svc stack but is not
-   declared yet. An undeclared family is skipped by the browser, so this is inert until
-   the metric-overridden @font-face lands (performance.md 7.2, which measured this
-   site's CLS as fonts rather than unsized images). Naming it in both stacks now means
-   that swap is one @font-face block and no stack edits. */
-/* The header is sticky, so a hash link would otherwise land its target underneath
-   it. The embed script measured this at jump time; standalone it is one rule. */
+/* must clear the sticky header; retune if its height changes */
 [id]{scroll-margin-top:96px}
 :where(a,button,input,summary):focus-visible{outline:3px solid #61BC47;outline-offset:2px}
 .skip{position:absolute;left:-9999px;top:0;background:#fff;color:#5F2980;padding:12px 18px;
@@ -82,27 +42,14 @@ animation-iteration-count:1!important;transition-duration:.01ms!important;scroll
 """
 
 def _strip_embed(html):
-    """The generated pages are Framer embeds: a <section class="xhac-svc"> carrying its
-    own <style> and <script>. For the standalone site we keep all of it — the CSS and
-    behavior are the same — but the anchor script's cross-frame handling is dead
-    weight without an iframe, so it is removed rather than left to no-op."""
+    # This regex must match the opening of components.script(); change the two together.
     html = re.sub(r'\n?\s*<script>\s*\(\(\) => \{\s*const root = document\.currentScript'
                   r'.*?</script>', "", html, flags=re.S)
     return html.strip()
 
 
-# ============================================================ URLs
-# URL FORM: no trailing slash, except the homepage. Verified 2026-08-02 against the
-# live site — /about serves 200 and /about/ 308s to /about, and Cloudflare Pages does
-# the same with dir/index.html output. Keeping this form is what preserves parity with
-# every currently-indexed URL and every backlink; do not "fix" it to trailing slashes.
-#
-# One function turns a route into an absolute URL, so canonical, og:url, the sitemap
-# and every @id in the graph cannot drift apart.
-
+# No trailing slash except "/": matches every indexed URL and backlink. Don't "fix" it.
 def canonical(path="/"):
-    """Absolute canonical URL for a route. Delegates to business.canonical() if that
-    exists, so this file does not become a second definition of the host."""
     fn = getattr(D, "canonical", None)
     if callable(fn):
         return fn(path)
@@ -111,17 +58,7 @@ def canonical(path="/"):
 
 
 def route_for(rel):
-    """The URL a generated file is served at. The single definition — `meta_for` and
-    `build.py` both call this, so a route can never be computed two ways.
-
-    hvac/ and company/ are build-time grouping, not URL structure; the live site
-    serves those pages at the root. /locations/<city>/overview.html serves at
-    /locations/<city>, but the plumbing families genuinely live at
-    /plumbing/<family>/overview — that is the live URL and what every internal link
-    points at. Only the locations case collapses. The prefix strips are anchored
-    rather than global: a global .replace("/hvac/", "/") would also rewrite a route
-    that merely contained the segment.
-    """
+    # Only /locations/<city>/overview collapses; /plumbing/<family>/overview is the real live URL.
     url = "/" + rel.replace(os.sep, "/").replace("\\", "/")
     if url.startswith("/locations/") and url.endswith("/overview.html"):
         url = url[: -len("/overview.html")]
@@ -134,21 +71,11 @@ def route_for(rel):
     return "/" if url in ("", "/index") else url
 
 
-# ============================================================ indexation
-# The ten communities that get genuinely local, indexed city+service pages. Everywhere
-# else keeps its city+service pages for users and internal linking, noindexed rather
-# than competing with each other on near-identical copy. The nine county overviews go
-# too: a county page is always a superset of its city pages and is the likeliest
-# source of duplicate-content dilution.
-#
-# The list lives in cities.py when that file defines it; the copy here is a
-# fallback so this module can never noindex the wrong set because another module was
-# mid-edit.
 FEATURED_FALLBACK = {
-    "dayton", "cincinnati",                        # metro anchors
-    "beavercreek", "mason", "troy",                # office communities
-    "kettering", "centerville", "springboro",      # Dayton metro
-    "west-chester", "middletown",                  # Cincinnati metro
+    "dayton", "cincinnati",
+    "beavercreek", "mason", "troy",
+    "kettering", "centerville", "springboro",
+    "west-chester", "middletown",
 }
 
 _CITY_SLUGS = {s for s, _ in L.ALL}
@@ -157,38 +84,18 @@ _COUNTY_SLUGS = {s for s, _ in L.COUNTIES}
 
 FEATURED = set(getattr(L, "FEATURED", ()) or FEATURED_FALLBACK)
 
-# A sitewide noindex is the one failure mode that must be impossible, so the predicate
-# is disabled outright unless the featured set is recognisably sane: every slug has a
-# page, and the set is neither empty nor most of the site. A disabled predicate means
-# pages that should have been suppressed get indexed — recoverable in an afternoon. A
-# sitewide noindex is not.
+# A sitewide noindex must be impossible: the predicate is off unless FEATURED is a sane subset.
 NOINDEX_ENABLED = bool(FEATURED) and FEATURED <= _CITY_SLUGS and 5 <= len(FEATURED) <= 20
 if not NOINDEX_ENABLED:
     _warn("head.FEATURED is not a sane subset of cities.ALL "
           f"({sorted(FEATURED - _CITY_SLUGS)[:5]}) — noindex() is disabled and every "
           "page will be indexable. Fix locations.FEATURED before shipping.")
 
-# What build.py should assert its suppressed count against. Computed from the
-# same data the predicate reads, so the guardrail cannot disagree with the tag.
 NOINDEX_EXPECTED = (((len(_CITY_SLUGS) - len(FEATURED)) * len(_SERVICE_SLUGS))
                     + len(_COUNTY_SLUGS)) if NOINDEX_ENABLED else 0
 
 
 def noindex(url):
-    """True for the pages that stay crawlable but out of the index.
-
-    Two families, and nothing else:
-      * /locations/<city>/<service> outside the ten featured communities  (168)
-      * /locations/<county>                                                (9)
-
-    DELIBERATELY FAILS CLOSED TO INDEXABLE. It returns True only when the URL is
-    exactly two or three segments, the first is `locations`, and every remaining
-    segment is a slug that exists in cities.py. A typo, a renamed slug, an empty
-    FEATURED set or a future page at a new path therefore cannot noindex anything.
-
-    The /locations hub, the 38 city overviews, every root service page and the whole
-    /plumbing tree are unreachable from this function by construction.
-    """
     if not NOINDEX_ENABLED:
         return False
     parts = [p for p in str(url).strip("/").split("/") if p]
@@ -204,27 +111,15 @@ def noindex(url):
     return False
 
 
-# ============================================================ titles + descriptions
 TITLE_MAX, DESC_MAX = 59, 155
 
-# Longest brand suffix that still fits. Both strings are the canonical name or a clean
-# prefix of it, so no fifth entity variant is introduced.
 BRAND = [D.COMPANY, D.COMPANY_SHORT]
-# Longest metro token that still fits, for non-city pages.
 METRO = ["Dayton & Cincinnati, OH", "Dayton & Cincinnati", "Dayton, OH"]
 
 _PHONE = D.PHONE_DISPLAY
 
 
 def fit_title(cores, brand=None):
-    """Longest (keyword phrase, metro token, brand suffix) combination that fits.
-
-    Priority order is deliberate: degrade the keyword phrase BEFORE the metro token,
-    and the metro token before the brand suffix — and never drop the brand. Looping
-    these the other way costs five core pages their Cincinnati token for the sake of
-    words like "Replacement", which Google already resolves as a synonym. A phrase
-    that already names Extreme takes no suffix.
-    """
     brand = BRAND if brand is None else brand
     templated = any("{M}" in c for c in cores)
     for m in (METRO if templated else [""]):
@@ -241,7 +136,6 @@ def fit_title(cores, brand=None):
     raise ValueError(f"no title fits within {TITLE_MAX} chars: {cores!r}")
 
 
-# --- city pages -------------------------------------------------------------
 CITY_TITLE = {
     "": ["HVAC & Plumbing in {C}, OH", "HVAC in {C}, OH"],
     "heating": ["Furnace Repair & Heating in {C}, OH", "Furnace Repair in {C}, OH"],
@@ -252,9 +146,6 @@ CITY_TITLE = {
     "plumbing": ["Plumbers in {C}, OH"],
 }
 
-# Four variants per service, selected by the city's index in locations.ALL, so
-# adjacent city pages differ in sentence structure and not only in the substituted
-# city name. Every one is city-bearing and ends in the phone number.
 CITY_DESC = {
 "": [
  "Furnace, AC and plumbing in {C}, OH. You get a flat price before we start, and an emergency line answered at 2am. Call " + _PHONE + ".",
@@ -300,9 +191,6 @@ CITY_DESC = {
 ],
 }
 
-# The ten indexed communities get hand-written overview descriptions carrying office
-# and proof detail the template cannot. These are the pages that have to earn a click.
-# Every fact here comes from business.py or the approved proof points.
 CITY_DESC_OVERRIDE = {
  "dayton": "We've kept Dayton, OH homes warm, cool and dry for over 20 years. Heating, cooling and plumbing, with the phone answered at 2am.",
  "cincinnati": "Heating, cooling and plumbing across Cincinnati, OH, run out of our Mason office. Most calls get handled the same day.",
@@ -316,8 +204,6 @@ CITY_DESC_OVERRIDE = {
  "springfield": "Heating, cooling and plumbing for Springfield, OH. Locally owned for over 20 years, with an emergency line answered any hour.",
 }
 
-# --- the 45 non-city routes -------------------------------------------------
-# route -> (title core variants richest-first, description)
 CORE = {
 "/": (["HVAC & Plumbing in {M}"],
  "Heating, cooling and plumbing for homes across Dayton and Cincinnati. Over 20 years local, most calls same day, emergencies answered 24/7."),
@@ -340,7 +226,6 @@ CORE = {
 "/privacy": (["Privacy Policy"],
  "What we collect when you book a visit, who it goes to, how long we keep it, and how to ask us to delete it. Written from what the site actually does."),
 
-# --- HVAC detail ---
 "/air-conditioning": (["Air Conditioning Services in {M}"],
  "AC repair, replacement and tune-ups across Dayton and Cincinnati. Every make and model, a flat price before we start, and a 24/7 line."),
 "/furnace-heating": (["Heating & Furnace Services in {M}"],
@@ -360,7 +245,6 @@ CORE = {
 "/humidifier": (["Whole-House Humidifiers in {M}"],
  "A whole-house humidifier ends the static shocks, dry skin and cracking trim that Ohio winters bring. Installed and repaired, priced up front."),
 
-# --- HVAC sub-pages ---
 "/ac-repair": (["AC Repair in {M}"],
  "AC blowing warm? We repair every make and model across Dayton and Cincinnati, most of them the same day, at a flat price quoted first."),
 "/ac-installation": (["AC Installation & Replacement in {M}", "AC Installation in {M}"],
@@ -380,7 +264,6 @@ CORE = {
 "/iaq-faq": (["Indoor Air Quality FAQ: Filters, UV & Humidity"],
  "MERV ratings, how often to change a filter, UV lights, winter humidity, duct cleaning. Straight answers to what homeowners ask us most."),
 
-# --- Plumbing ---
 "/plumbing/services": (["Plumbers in {M}"],
  "Licensed plumbers across Dayton and Cincinnati for water heaters, drains, leaks, sewer lines and sump pumps. You hear the price first."),
 "/plumbing/clogged-drain": (["Drain Cleaning in {M}"],
@@ -409,8 +292,6 @@ CORE = {
  "Smell gas? Get everyone out and call the gas utility first. Then call us for licensed gas line repair in Dayton or Cincinnati."),
 "/plumbing/gas-line/installation": (["Gas Line Installation in {M}"],
  "Gas run out to a grill, range, garage heater or fire pit in Dayton or Cincinnati. Permitted, pressure tested and priced before we start."),
-    # 24/7 is a verified proof point and the whole value proposition of this page, so
-    # it outranks the ", OH" suffix in the metro token. A single variant keeps it.
 "/plumbing/emergency-plumbing": (["24/7 Emergency Plumbers in {M}"],
  "Burst pipe, no water, basement filling up? A real person picks up at 2am, anywhere in Dayton or Cincinnati. Call " + _PHONE + "."),
 "/plumbing/leak-detection": (["Leak Detection in {M}"],
@@ -421,10 +302,6 @@ CORE = {
  "Running, leaking, or clogged for the third time this month? We repair and replace toilets across Dayton and Cincinnati, priced up front."),
 }
 
-# The escape hatch. Per-field, keyed by route: a page can override its title and keep
-# the generated description, or the reverse. Deliberately empty — the generated set
-# matches the approved copy exactly today, and an override that duplicates its
-# generated value is a trap for whoever changes the generator next.
 OVERRIDES = {}
 
 _NAME_OF = dict(L.ALL)
@@ -432,18 +309,13 @@ _IDX_OF = {s: i for i, (s, _) in enumerate(L.ALL)}
 
 
 def _resolve_meta(url):
-    """{'title','description'} for a route, generated. Raises KeyError if unknown."""
     if url.startswith("/locations/"):
-        parts = url.strip("/").split("/")          # ['locations', slug, svc?]
+        parts = url.strip("/").split("/")
         slug = parts[1]
         svc = parts[2] if len(parts) > 2 else ""
         city = _NAME_OF[slug]
         if svc not in CITY_TITLE:
             raise KeyError(url)
-        # City pages pin the SHORT suffix on all 266 so the brand token never flips
-        # between siblings under one city — an early draft gave /locations/troy the
-        # full name and /locations/troy/cooling the short one. The freed characters go
-        # to the keyword phrase, which is what ranks.
         title = fit_title([v.replace("{C}", city) for v in CITY_TITLE[svc]],
                           brand=BRAND[1:])
         if svc == "" and slug in CITY_DESC_OVERRIDE:
@@ -458,12 +330,6 @@ def _resolve_meta(url):
 
 
 def meta_for_route(url):
-    """Route in, {'title','description','url','nav','noindex'} out.
-
-    Budgets are asserted rather than estimated: a title over 59 characters or a
-    description over 155 is a build error, not a thing to notice in Search Console
-    three months later.
-    """
     m = _resolve_meta(url)
     if url in OVERRIDES:
         m = dict(m, **OVERRIDES[url])
@@ -476,89 +342,36 @@ def meta_for_route(url):
 
 
 def meta_for(rel_path, html=None):
-    """Metadata for a generated embed, by route.
-
-    `html` is accepted and ignored. It used to be the source of the title (the page's
-    own H1) and of the description (the first intro paragraph, hard-sliced at 155
-    characters mid-word). Both are now authored per route above; the parameter stays
-    so `build.py` keeps working unchanged.
-    """
     return meta_for_route(route_for(rel_path))
 
 
-# ============================================================ structured data
-# Site-level @ids. Everything else fragment-scopes off canonical(), so no path is ever
-# concatenated onto SITE_URL directly and a change in URL form stays a one-line edit in
-# business.canonical().
 SITE = D.SITE_URL
 ORG_ID = canonical("/") + "#organization"
 WS_ID = canonical("/") + "#website"
 LOGO_ID = canonical("/") + "#logo"
 
-# Flip to False to keep office nodes off /locations/* entirely. Leaving them on is a
-# deliberate call: the node's @id is {SITE}/contact#office-beavercreek and its address
-# is Beavercreek, on a page whose Service.areaServed is Xenia. It names the office that
-# dispatches there; it never claims a Xenia storefront. Without it, 307 pages assert a
-# LocalBusiness with no address, which is the actual misrepresentation.
 OFFICE_ON_SERVICE_AREA_PAGES = True
 
-# NO aggregateRating. Removed deliberately on 2026-08-03, client-approved — do not
-# reinstate it without the same conversation.
-#
-# Google's review-snippet guidelines exclude reviews an organisation collects about
-# itself and marks up on its own pages. The 4.9 is real, and it stayed on the site as
-# visible copy; what came off is the machine-readable claim, which is the part that
-# earns a manual action. The rating was on 318 pages, it was self-serving by
-# definition, and a manual action would take the whole rich-result eligibility of the
-# domain with it, not just the stars.
-#
-# It is also a competitive read rather than a purely defensive one. Of the five
-# competitors audited on 2026-08-02, Butler, Logan and McAfee emit none, Five Star
-# emits almost no schema at all, and Eco Plumbers carry it on 529 pages with four
-# contradictory values that do not match their own on-page widgets. Carrying it made
-# us the most exposed party in a six-way field for a signal three of them had already
-# decided to live without.
-#
-# The visible "4.9 from 1,595 reviews" copy is untouched and stays. A customer reading
-# a number on a page is not the same thing as asserting it to a crawler.
+# No aggregateRating: Google's review-snippet rules exclude self-collected reviews. Don't add it back.
 
-# Founded 2004; the Mason office opened 2018 (client-confirmed 2026-08-02).
 FOUNDING_YEAR = str(getattr(D, "FOUNDED", "2004"))
 
-# The Organization logo must be a stable, same-origin, dark-on-light image. header_footer.LOGO
-# is logo-white.png — a white wordmark on transparency, which Google renders on white —
-# and every jsDelivr URL is pinned to ASSET_COMMIT, so an asset push would rewrite the
-# logo URL on all 311 pages and Google would re-crawl a "new" image with no history.
-# /apple-touch-icon.png is 180x180, already copied same-origin by build.py, and
-# above Google's 112x112 floor. [NEEDS: a 512x512 dark-on-light logo-schema.png.]
+# Must be same-origin and dark-on-light; the header's white logo vanishes on Google's white.
 SCHEMA_LOGO = getattr(D, "SCHEMA_LOGO", "/apple-touch-icon.png")
 SCHEMA_LOGO_W = int(getattr(D, "SCHEMA_LOGO_W", 180))
 SCHEMA_LOGO_H = int(getattr(D, "SCHEMA_LOGO_H", 180))
 
-# Social preview. Pages fall back to their own primary image, which is a real photo and
-# a better card than a letterboxed logo; this is the site-level default for the handful
-# of pages that render no content image.
-# assets/brand/og-default.jpg is a real 1200x630 card now, composited from the brand
-# files that were already here (logo-white, van, x-mark) on the brand purple. It is
-# copied to the site root by build.py alongside the favicons.
 OG_DEFAULT = getattr(D, "OG_IMAGE", "/og-default.jpg")
 
-# Keyed by YouTube id. A video not in this registry is NOT marked up: a VideoObject
-# without uploadDate is invalid and Google drops it, and a guessed date that disagrees
-# with YouTube's own is worse than no markup at all.
-#
-# Every value here was read off the video's own YouTube page on 2026-08-02 — title,
-# uploadDate and lengthSeconds from the watch page's own metadata, not estimated. Both
-# maxresdefault.jpg thumbnails were confirmed 200. If a video is re-uploaded it gets a
-# new id and drops out of this table, which is the correct failure mode.
+# Values read off each video's YouTube page; never guess an uploadDate.
 VIDEOS = getattr(D, "VIDEOS", None) or {
-    "E_cZVpgYvIw": {                      # /duct-cleaning
+    "E_cZVpgYvIw": {
         "name": "Extreme Heating - Duct Cleaning - How We Do It!",
         "description": ("A short walk-through of how a home's ducts get cleaned — the "
                         "process, the equipment, and why it leaves a healthier home."),
         "uploadDate": "2022-04-19T09:36:27-07:00", "duration": "PT30S",
     },
-    "lUjB1pt9yBw": {                      # homepage
+    "lUjB1pt9yBw": {
         "name": "Extreme Heating & Air - Serving Dayton, Cincinnati and Troy",
         "description": ("Heating, cooling and plumbing for homes across Dayton, "
                         "Cincinnati and Troy, Ohio — repairs, replacements, ductwork "
@@ -567,8 +380,6 @@ VIDEOS = getattr(D, "VIDEOS", None) or {
     },
 }
 
-# Which office dispatches where; anything unlisted falls to its metro's default.
-# [NEEDS: client confirmation — drawn from drive time, not the dispatch board.]
 OFFICE_FOR = getattr(D, "OFFICE_FOR", None) or {
     "troy": "troy", "tipp": "troy", "vandalia": "troy", "miami-county": "troy",
     "springboro": "waynesville", "franklin": "waynesville", "lebanon": "waynesville",
@@ -586,19 +397,12 @@ def _office_id(o, i=0):
     return o.get("slug") or o.get("id") or o["locality"].lower().replace(" ", "-")
 
 
-# All four offices are client-confirmed (facts.md, 2026-08-02), including Troy's street
-# address — which supersedes the UNCONFIRMED marking in local-seo.md 3. Offices are
-# still gated on a `confirmed` flag if business grows one, so a disputed address drops
-# out of the graph rather than being guessed at.
 _OFFICES = [dict(o, id=_office_id(o, i), hq=o.get("primary", o.get("hq", i == 0)),
                  confirmed=o.get("confirmed", True))
             for i, o in enumerate(D.OFFICES)]
 OFFICE_IDS_LIVE = tuple(getattr(D, "OFFICE_IDS_LIVE", None)
                         or [o["id"] for o in _OFFICES])
 
-# An office node's `url` has to be a page that exists. business gives each office a
-# `page` of /locations/<slug>, but Waynesville has no entry in locations.ALL and so has
-# no page — an office with no location page is a local-SEO hole in its own right.
 _OFFICE_PAGES = {o["id"]: (o["page"] if str(o.get("page") or "").rsplit("/", 1)[-1]
                            in _CITY_SLUGS else None) for o in _OFFICES}
 for _oid, _p in _OFFICE_PAGES.items():
@@ -617,15 +421,8 @@ def hq():
     return ([o for o in offices() if o["hq"]] or offices())[:1]
 
 
-# --- text and output --------------------------------------------------------
 def _t(s):
-    """Copy authored for HTML -> a plain string fit for JSON.
-
-    business and every page string carry HTML entities because they are written for
-    HTML. Inside <script type="application/ld+json"> nothing is entity-decoded, so
-    "Extreme Heating &amp; Cooling LLC" would reach Google with the literal five
-    characters "&amp;" sitting in the middle of the company name.
-    """
+    # Page copy carries HTML entities, and nothing inside JSON-LD is entity-decoded.
     if not s:
         return None
     s = re.sub(r"<[^>]+>", " ", str(s))
@@ -634,8 +431,6 @@ def _t(s):
 
 
 def _prune(o):
-    """Drop empty branches. json.dumps writes None as null, and a null value reads as
-    'Invalid value' in the validator rather than as an omission."""
     if isinstance(o, dict):
         return {k: _prune(v) for k, v in o.items() if v not in (None, "", [], {})}
     if isinstance(o, list):
@@ -646,13 +441,12 @@ def _prune(o):
 def _dump(graph):
     body = json.dumps({"@context": "https://schema.org", "@graph": _prune(graph)},
                       separators=(",", ":"), ensure_ascii=False)
-    # json.dumps does not escape < > &. One "</script>" inside any description would
-    # terminate the script element early and void the entire block.
+    # json.dumps leaves < > & alone; a "</script>" in any string would end the block.
     body = body.replace("<", "\\u003C").replace(">", "\\u003E").replace("&", "\\u0026")
     return '<script type="application/ld+json">' + body + "</script>"
 
 
-# --- extractors: everything below is read out of the rendered page ----------
+# These regexes parse components.py markup; change them together.
 _CRUMBS = re.compile(r'<div class="xsp-crumbs"[^>]*>(.*?)</div>', re.S)
 _CRUMB_I = re.compile(r'<a href="([^"]*)"[^>]*>(.*?)</a>|<span class="cur"[^>]*>(.*?)</span>', re.S)
 _QA = re.compile(r'<div class="xsp-qa[^"]*">\s*<button[^>]*>\s*<span>(.*?)</span>'
@@ -664,9 +458,6 @@ _ANSWER = re.compile(r'class="[^"]*\bxsp-answer\b|id="answer"')
 
 
 def read_crumbs(html_):
-    """[(name, absolute_url_or_None)] straight off the rendered trail, so schema and
-    visible text match by construction. The site-wide separators live in
-    <span class="sep"> and never reach a name."""
     m = _CRUMBS.search(html_)
     if not m:
         return []
@@ -689,23 +480,15 @@ def read_video(html_):
 
 
 def read_image(html_):
-    """First content image. Decorative marks all carry alt="" and are skipped by
-    construction, so this needs no allow-list to maintain."""
     m = _IMG.search(html_)
     return (m.group(1), _t(m.group(2))) if m else (None, None)
 
 
-# --- dateModified -----------------------------------------------------------
-# Never the build timestamp. build.py rewrites all 311 pages on every run, so a
-# build-time date tells Google 311 pages changed when one did — and a site that claims
-# that every day is a site whose dates get discounted entirely. Hash the content
-# instead and only move the date when the hash moves.
+# Never the build clock (every build rewrites every page): the date moves only when the content hash does.
 _DATES_PATH = os.path.normpath(os.path.join(HERE, "..", "data", "content_dates.json"))
 _dates = None
 _dates_dirty = [False]
 
-# The jsDelivr commit pin changes on every asset push and appears in ~30 image URLs per
-# page. Normalising it out means a photo upload does not restamp 311 content dates.
 _ASSET_PIN = re.compile(r"@[0-9a-f]{40}/")
 
 
@@ -721,9 +504,7 @@ def _load_dates():
 
 
 def flush_dates():
-    """Write the ledger back. Registered with atexit so it does not depend on a call
-    site in build.py. Commit content_dates.json — an uncommitted ledger restamps
-    every page as modified today on the next machine that builds."""
+    # Commit content_dates.json, or the next machine to build restamps every page as modified today.
     if not _dates_dirty[0]:
         return
     try:
@@ -741,26 +522,6 @@ _UPDATED = re.compile(r'<p class="xsp-updated"[^>]*>.*?<time datetime="([^"]+)"'
 
 
 def content_dates(url, body_html, page=None):
-    """(datePublished, dateModified).
-
-    dateModified resolves in three steps, in this order:
-
-      1. The date in the page's own visible "Last updated" line, read back out of the
-         rendered `<p class="xsp-updated"><time datetime="…">`. geo-contract 8.2 is
-         non-negotiable that the visible date and the schema date must be the same
-         date, and reading the rendered one is the only way that cannot drift.
-      2. `page["updatedISO"]` — the same value components.py was handed, for a page that
-         supplies the key without rendering the line.
-      3. The content-fingerprint ledger below, which is geo-contract 8.2's own primary
-         recommendation.
-
-    What it is never is the build clock. build.py rewrites all 311 pages on every
-    run, so a build-time date claims 311 pages changed when one did, and a site that
-    claims that every day is a site whose dates get discounted entirely.
-
-    datePublished has no rendered counterpart and is owned here: written once, on a
-    route's first appearance, and never moved after.
-    """
     digest = hashlib.sha1(
         _ASSET_PIN.sub("@ASSET/", body_html).encode("utf-8")).hexdigest()[:16]
     visible = _UPDATED.search(body_html)
@@ -779,14 +540,10 @@ def content_dates(url, body_html, page=None):
     published, modified = rec.get("published", rec["modified"]), rec["modified"]
     if stated:
         modified = stated
-        # dateModified must never precede datePublished. If the page states a date
-        # earlier than the ledger's first sighting, the stated one is the truth about
-        # the content and the ledger entry is just when this builder first saw it.
         published = min(published, stated[:10])
     return published, modified
 
 
-# --- places -----------------------------------------------------------------
 STATE = {"@type": "State", "name": "Ohio"}
 _GROUP_OF = {s: g for g, items in L.GROUPS for s, _ in items}
 
@@ -803,8 +560,7 @@ def office_id_for(slug):
     return OFFICE_FOR.get(slug) or DEFAULT_OFFICE.get(_GROUP_OF.get(slug), "beavercreek")
 
 
-# --- page typing ------------------------------------------------------------
-SERVICE_PARENT = {}          # child route -> parent route
+SERVICE_PARENT = {}
 for _label, _desc, _href, _chips in D.HVAC_CORE + D.PLUMB_CORE:
     for _cl, _cu in _chips:
         if _cu != _href:
@@ -834,7 +590,6 @@ def page_type(url):
     return "service-detail"
 
 
-# --- nodes ------------------------------------------------------------------
 WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 ALLWEEK = WEEK + ["Saturday", "Sunday"]
 
@@ -853,17 +608,14 @@ ORG_DESCRIPTION = ("Locally owned heating, cooling and plumbing contractor servi
 
 
 def _staffed(spec=None):
-    # ISO 8601 24-hour. The D.HOURS_STAFFED display string ("Monday – Friday, 8:00 AM –
-    # 5:00 PM", en dash and all) is silently ignored by every parser — build the array.
+    # A structured spec: parsers silently ignore the D.HOURS_STAFFED display string.
     spec = spec or getattr(D, "HOURS_SPEC", None) or {
         "dayOfWeek": list(WEEK), "opens": "08:00", "closes": "17:00"}
     return dict({"@type": "OpeningHoursSpecification"}, **spec)
 
 
 def _emergency_cp():
-    # 24/7 emergency cover is a contact channel, not office hours. Modelling it as
-    # openingHoursSpecification puts "Open now" on a closed office at 2am and
-    # contradicts the staffed hours printed in the footer.
+    # A contact point, not opening hours: 24/7 hours would show a closed office as "Open now".
     return {"@type": "ContactPoint", "contactType": "emergency",
             "telephone": D.PHONE_E164, "areaServed": "US-OH",
             "availableLanguage": "English",
@@ -885,8 +637,7 @@ def _geo(o):
 
 
 def _maps_link(o):
-    """Google Maps directions link for an office, or None if business has no builder.
-    Unescaped — an &amp; inside a JSON-LD URL is a broken URL."""
+    # html=False: an &amp; inside a JSON-LD URL breaks it.
     fn = getattr(D, "maps_dir", None)
     if not callable(fn):
         return None
@@ -907,9 +658,7 @@ def n_logo():
 
 
 def xplan_offers():
-    # Annual and monthly only. D.XPLAN["detail"] carries the member service-call rates
-    # and is never read here: those rates are publishable in a benefit list, but a
-    # price in an Offer is a headline claim about what the company charges.
+    # Annual and monthly only; member service-call rates never go in an Offer.
     def offer(kind, amount, unit):
         return {"@type": "Offer", "@id": canonical("/maintenance") + f"#xplan-{kind}",
                 "name": f"X-Plan Membership — {kind}",
@@ -929,31 +678,17 @@ def xplan_offers():
 def n_org(offers_=True):
     node = {
         "@type": "Organization", "@id": ORG_ID, "name": _t(D.COMPANY),
-        # The "&" variant never appears in rendered copy; it exists in the wild and is
-        # recorded here so the entity resolves rather than splitting in two.
         "alternateName": "Extreme Heating, Air & Plumbing",
         "legalName": _t(D.ENTITY_HVAC),
         "url": canonical("/"), "slogan": _t(D.TAGLINE),
         "description": ORG_DESCRIPTION,
         "foundingDate": FOUNDING_YEAR,
         "telephone": D.PHONE_E164, "email": D.EMAIL,
-        # Both point at the ImageObject sitting at the top of the graph rather than
-        # inlining it here, so the logo is one node with one @id, not two copies that
-        # can drift.
         "logo": {"@id": LOGO_ID}, "image": {"@id": LOGO_ID},
         "address": _addr(hq()[0]) if hq() else None,
-        # D.SAME_AS is the deliberately curated list — the profiles the company
-        # controls — kept separate from D.SOCIAL so a future footer-only link cannot
-        # leak into the graph. It includes the Google Business Profile short link,
-        # which stays on the Organization rather than being assigned to one of four
-        # offices on a guess.
         "sameAs": list(getattr(D, "SAME_AS", None)
                        or [u for _n, u in D.SOCIAL]),
         "areaServed": COUNTIES_SERVED,
-        # The one price the site publishes is the service call, so this is grounded in
-        # something the pages actually state rather than a guess at an average ticket.
-        # Google reads priceRange as a rough band, not a quote. Eco Plumbers carry it
-        # and we carried nothing.
         "priceRange": "$$",
         "identifier": _licences(),
         "contactPoint": [
@@ -969,50 +704,25 @@ def n_org(offers_=True):
 
 
 def n_website():
-    # No SearchAction: there is no site search, and a target template that 404s is a
-    # fabricated capability that Google drops anyway.
     return {"@type": "WebSite", "@id": WS_ID, "url": canonical("/"),
             "name": _t(D.COMPANY), "publisher": {"@id": ORG_ID},
             "inLanguage": "en-US"}
 
 
 def n_office(o, area=None):
-    # @type is an array: HVACBusiness alone under-describes a company holding an Ohio
-    # plumbing licence, both are LocalBusiness subtypes, and it is a real signal on
-    # plumbing queries. No aggregateRating here — four offices x 1,595 asserts 6,380
-    # reviews. The rating belongs once, on #organization.
     return {
         "@type": ["HVACBusiness", "Plumber"],
         "@id": canonical("/contact") + f"#office-{o['id']}",
-        # business's per-office `name` is the canonical company name plus a branch
-        # city, which keeps the four nodes distinguishable without introducing a name
-        # variant. [NEEDS: the listing string exactly as the Google Business Profile
-        # shows it — a name that differs from GBP by one character is a NAP mismatch,
-        # and GBP wins if the two disagree.]
         "name": _t(o.get("gbpName") or o.get("name") or D.COMPANY),
         "branchCode": o["id"],
         "parentOrganization": {"@id": ORG_ID},
         "url": canonical(_OFFICE_PAGES.get(o["id"]) or "/contact"),
-        # The office's OWN local number, falling back to the sitewide line for any
-        # office that has none. This is the single highest-value place the four local
-        # numbers can sit: a LocalBusiness node whose telephone matches the number on
-        # that premises' Google Business Profile is a NAP signal, and four nodes all
-        # carrying one 844 number was the opposite of one.
-        # Client-confirmed 2026-08-03: each of these matches the Google Business
-        # Profile listing for that office. Do not change one without changing the GBP
-        # in the same sitting — GBP wins when the two disagree, and a mismatch is worse
-        # than the single 844 number ever was.
+        # Each office number matches its Google Business Profile; change both together.
         "telephone": o.get("phone_e164") or D.PHONE_E164, "email": D.EMAIL,
         "image": {"@id": LOGO_ID},
         "address": _addr(o),
-        # [NEEDS: lat/lng from the GBP map pin. Do not geocode — a rooftop guess that
-        #  lands 40m off contradicts the pin Google already trusts.] business carries
-        # `geo` as None for all four, and None is pruned rather than substituted.
+        # Only from the GBP map pin; never geocode.
         "geo": _geo(o),
-        # A directions link built from the confirmed street address: derived, not
-        # guessed, and raw rather than HTML-escaped, because an &amp; inside a JSON-LD
-        # URL is a broken URL. sameAs stays empty until per-office Google Business
-        # Profile URLs arrive — a directions link is a map, not a profile.
         "hasMap": o.get("gbp") or o.get("hasMap") or _maps_link(o),
         "sameAs": [o["gbp"]] if o.get("gbp") else None,
         "openingHoursSpecification": [_staffed(o.get("hoursSpec"))],
@@ -1027,8 +737,6 @@ def n_webpage(page, body_html, faq, about=None, speakable=False):
     url = page["url"]
     can = canonical(url)
     base = WEBPAGE_TYPE.get(url) or WEBPAGE_TYPE.get(page_type(url), "WebPage")
-    # An FAQ page gets ["WebPage","FAQPage"] on this same node rather than a second
-    # node: one URL, one page entity.
     types = [base, "FAQPage"] if faq else base
     published, modified = content_dates(url, body_html, page)
     node = {
@@ -1044,10 +752,6 @@ def n_webpage(page, body_html, faq, about=None, speakable=False):
     if read_image(body_html)[0]:
         node["primaryImageOfPage"] = {"@id": can + "#primaryimage"}
     if speakable:
-        # Emitted only where the page actually renders an answer-first block, so the
-        # selector can never point at markup that is not there. Speakable has never
-        # produced a visible rich result; it is a cheap assistant-layer hint and the
-        # last 2% of the schema budget, not the first.
         node["speakable"] = {"@type": "SpeakableSpecification",
                              "cssSelector": ["h1", ".xsp-answer"]}
     if faq:
@@ -1061,9 +765,6 @@ def n_breadcrumb(can, trail):
     items = []
     for i, (name, url) in enumerate(trail, 1):
         it = {"@type": "ListItem", "position": i, "name": name}
-        # `item` is absolute — a relative item is an error in Rich Results Test. The
-        # final crumb renders as <span class="cur"> with no href, and omitting `item`
-        # on the last element is explicitly allowed.
         if url and i < len(trail):
             it["item"] = url
         items.append(it)
@@ -1072,8 +773,6 @@ def n_breadcrumb(can, trail):
 
 
 def n_service(can, name, area, category, parent=None, desc=None):
-    # No Offer here. An Offer needs price + priceCurrency, and repair and installation
-    # pricing is not published. X-Plan is the one priceable item on the site.
     return {
         "@type": "Service", "@id": can + "#service",
         "name": name, "serviceType": name, "description": desc,
@@ -1098,13 +797,9 @@ def n_video(can, vid, title):
     return {"@type": "VideoObject", "@id": f"{can}#video-{vid}",
             "name": _t(v.get("name") or title),
             "description": _t(v.get("description")),
-            # hqdefault always exists; maxresdefault only above a source resolution, so
-            # confirm it returns 200 before trusting it as the first entry.
             "thumbnailUrl": [f"https://i.ytimg.com/vi/{vid}/maxresdefault.jpg",
                              f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"],
             "uploadDate": v["uploadDate"], "duration": v.get("duration"),
-            # embedUrl only. contentUrl should point at a media file, and the watch page
-            # is a document.
             "embedUrl": f"https://www.youtube.com/embed/{vid}",
             "publisher": {"@id": ORG_ID},
             "mainEntityOfPage": {"@id": can + "#webpage"},
@@ -1112,14 +807,7 @@ def n_video(can, vid, title):
 
 
 def abs_img(src):
-    """Absolute URL for an image src.
-
-    Images became same-origin on 2026-08-03, so read_image() now returns paths like
-    /assets/service/x.jpg?v=0339725. og:image and schema contentUrl both REQUIRE an
-    absolute URL — a relative one is silently ignored by Facebook and dropped by
-    Google's structured-data parser, which would have taken every social preview and
-    every ImageObject on the site down without anything visibly breaking on the page.
-    Third-party stock URLs are already absolute and pass through untouched."""
+    # og:image and schema image URLs must be absolute; relative ones are silently dropped.
     if not src:
         return src
     return canonical(src) if src.startswith("/") else src
@@ -1133,8 +821,6 @@ def n_image(can, src, alt):
 
 
 def n_itemlist(can, name, rows, category="HVAC"):
-    # Noindexed routes never enter a list: asking Google to crawl what you told it to
-    # ignore is how a deliberate decision reads as a bug.
     rows = [(lbl, href) for lbl, href in rows if not noindex(href)]
     if not rows:
         return None
@@ -1148,9 +834,7 @@ def n_itemlist(can, name, rows, category="HVAC"):
 
 
 def n_xplan_service():
-    # The accrual sentence is used verbatim from D.XPLAN["zeroRisk"], which carries
-    # both required conditions — consecutive years AND capped at $2,500 or 10 years.
-    # Never truncate it to fit; drop it entirely rather than state half of it.
+    # Never truncate the accrual sentence; drop it rather than state one condition.
     accrual = _t(D.XPLAN["zeroRisk"])
     if accrual and not ("consecutive" in accrual and "$2,500" in accrual):
         _warn("XPLAN['zeroRisk'] no longer states both accrual conditions "
@@ -1169,7 +853,6 @@ def n_xplan_service():
 
 
 def jsonld(page, body_html):
-    """One <script type="application/ld+json"> carrying one @graph, for any page."""
     url = page["url"]
     pt = page_type(url)
     can = canonical(url)
@@ -1178,17 +861,11 @@ def jsonld(page, body_html):
     img_src, img_alt = read_image(body_html)
     vid, vtitle = read_video(body_html)
     speakable = bool(_ANSWER.search(body_html))
-    # makesOffer points itemOffered at {SITE}/maintenance#xplan, and that node is only
-    # emitted on the maintenance pages. Carrying the offers everywhere would leave a
-    # dangling @id on the other 272 pages; carrying the X-Plan catalog everywhere would
-    # add ~600 bytes to each. Google consolidates #organization across the site, so the
-    # offers reach the entity from the 39 pages that describe them.
+    # makesOffer points at #xplan, which only the maintenance pages emit.
     xplan = url == "/maintenance" or url.endswith("/maintenance")
 
-    # A rating on a legal page describes nothing, and makesOffer on /terms is noise.
     g = [n_logo(), n_org(offers_=xplan), n_website()]
 
-    # --- which office(s) --------------------------------------------------
     if pt in ("home", "locations-hub") or url == "/contact":
         g += [n_office(o) for o in offices()]
     elif pt in ("location-overview", "location-service"):
@@ -1199,7 +876,6 @@ def jsonld(page, body_html):
     elif pt != "legal":
         g += [n_office(o) for o in hq()]
 
-    # --- the page and its trail -------------------------------------------
     about = (can + "#service"
              if pt in ("service-detail", "service-sub",
                        "location-overview", "location-service") else ORG_ID)
@@ -1213,11 +889,7 @@ def jsonld(page, body_html):
         if node:
             g.append(node)
 
-    # --- what the page is about -------------------------------------------
     cat = "Plumbing" if ("/plumbing" in url or url.endswith("/plumbing")) else "HVAC"
-    # The entity name comes from the breadcrumb tail, not the <h1>. The H1s are
-    # marketing lines ("Smarter comfort, one tap away") and are useless as entity
-    # names; the last crumb is already the clean label.
     tail = trail[-1][0] if trail else None
 
     if pt in ("service-detail", "service-sub"):
@@ -1240,7 +912,6 @@ def jsonld(page, body_html):
                 + [(_t(t), h) for t, h, _p in D.PLUMB_ADDITIONAL])
         g.append(n_itemlist(can, _t(page["title"]), rows, cat))
     elif pt == "locations-hub":
-        # Only the indexed communities. The suppressed pages stay out of every list.
         g.append(n_itemlist(can, "Communities we serve",
                             [(n, f"/locations/{s}") for s, n in L.ALL
                              if s in FEATURED], "HVAC"))
@@ -1254,62 +925,37 @@ def jsonld(page, body_html):
     return _dump([n for n in g if n])
 
 
-# ============================================================ compliance gate
-# The one claim that must never ship half-stated. The accrual may only appear with BOTH
-# conditions — consecutive years AND capped at $2,500 or 10 years — because a sliced
-# version of that sentence becomes a dispute at the moment a customer is buying a
-# system. Nothing generated here states it, so this is a tripwire rather than a filter.
-# A dollar figure in a heading is only a problem when it is a fee. "$250" in the
-# Extreme Rewards headline is a rebate the customer receives, and the constraint is
-# about what the company charges to show up.
+# Compliance gate: the X-Plan accrual never ships half-stated, and fees stay out of h1/h2.
 _HEADING_FEE = re.compile(
     r'<(h1|h2)[^>]*>(?:(?!</\1>).)*?'
     r'(?:(?:service call|dispatch|diagnostic|trip|after[- ]hours)'
     r'(?:(?!</\1>).){0,60}\$\s?\d'
     r'|\$\s?\d(?:(?!</\1>).){0,60}(?:service call|dispatch|diagnostic|trip fee))'
     r'(?:(?!</\1>).)*?</\1>', re.S | re.I)
-# The accrual claim itself, not the mere mention of X-Plan. Naming the membership and
-# its price is fine; promising that money comes back is the sentence with conditions.
 _ACCRUAL = re.compile(r"appl(?:ied|ies)\s+toward|goes?\s+toward|credited\s+toward"
                       r"|100%\s+of\s+(?:the\s+)?(?:your\s+)?investment", re.I)
 
 
 def audit(url, html):
-    """Raises on the one thing that cannot be un-published by fixing it later."""
     head = html[:html.find("</head>")]
     m = re.search(r'<meta name="description" content="([^"]*)"', head)
     desc = m.group(1) if m else ""
     if _ACCRUAL.search(desc) and ("consecutive" not in desc or "$2,500" not in desc):
         raise SystemExit(f"ABORT {url}: meta description states the X-Plan accrual "
                          "without both conditions (consecutive years AND $2,500/10 years).")
-    # Dispatch and service-call fees are publishable in a benefit list or a card body,
-    # never in an h1, h2 or hero. Warn rather than abort: this is copy owned elsewhere.
     if _HEADING_FEE.search(html):
         _warn(f"{url}: a dollar figure appears inside an h1 or h2 — prices belong in "
               "body copy and benefit lists, not headings.")
 
 
-# ============================================================ the document
 def _esc(s):
-    """Escape at the render boundary rather than storing entities in the data, so a
-    quotation mark in a description cannot silently break the attribute it sits in."""
     return _html.escape(str(s), quote=True)
 
 
 def document(page, body_html):
-    """page: {url, title, description, nav?, noindex?}
-
-    Title and description are resolved from the route table when the route is known, so
-    a caller that passes a stale or H1-derived title cannot override the authored copy.
-    """
     url = page["url"]
     can = canonical(url)
 
-    # Every phone number in the page text becomes tappable. Done here rather than in
-    # each renderer because the number is written in a dozen places across five
-    # modules, and one that a copy edit leaves bare is unusable on the device most
-    # of these readers are holding. Runs on the body only — the head's JSON-LD and
-    # meta tags already carry the number in the form they need.
     body_html = T.autolink_phone(body_html)
 
     try:
@@ -1318,24 +964,15 @@ def document(page, body_html):
             authored = dict(authored, **OVERRIDES[url])
         title, desc = authored["title"], authored["description"]
     except (KeyError, ValueError):
-        # An unknown route (a 404 page, a route added without its meta) keeps whatever
-        # the caller supplied rather than failing the build.
         title, desc = page.get("title", D.COMPANY), page.get("description", "")
         _warn(f"{url}: no authored title/description — falling back to the caller's. "
               "Add the route to head.CORE or head.CITY_TITLE.")
 
-    # noindex,follow — never bare noindex. These pages carry ~84 internal links each,
-    # and the follow is how the ten indexed communities and the root service pages keep
-    # receiving them. The canonical stays self-referential: cross-canonicalising to the
-    # city overview would say "index that one instead" while noindex says "index none
-    # of them", and Google resolves the contradiction arbitrarily.
+    # noindex,follow, never bare noindex: these pages pass internal links. Canonical stays self-referential.
     suppressed = page["noindex"] if "noindex" in page else noindex(url)
     robots = ('<meta name="robots" content="noindex,follow">\n' if suppressed
               else '<meta name="robots" content="index,follow,max-image-preview:large">\n')
 
-    # Social preview: the page's own primary image beats a letterboxed logo, and it is
-    # already the ImageObject in the graph. Width/height are only asserted for the
-    # site-level default, whose dimensions are known.
     img_src, img_alt = read_image(body_html)
     if img_src:
         og_image = (f'<meta property="og:image" content="{_esc(abs_img(img_src))}">\n'
@@ -1369,7 +1006,6 @@ def document(page, body_html):
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{FONT}">
-<!-- GTM loads every Google tag, so it gets the one preconnect -->
 <link rel="preconnect" href="https://www.googletagmanager.com">
 <style>{BASE_CSS}{header_footer.CSS}</style>
 {jsonld(dict(page, title=title, description=desc), body_html)}

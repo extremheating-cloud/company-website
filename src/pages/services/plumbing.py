@@ -7,9 +7,6 @@ GAS_PILLS = [("Overview", "/plumbing/gas-line/overview"), ("Repair", "/plumbing/
 
 PLUMB_CRUMB = ("Plumbing", "/plumbing/services")
 
-# ======================================================================
-# Plumbing details (no pill nav)
-# ======================================================================
 PLUMB_PAGES = {}
 
 PLUMB_PAGES["clogged-drain.html"] = detail(
@@ -145,7 +142,6 @@ PLUMB_PAGES["water-treatment.html"] = detail(
      {"title": "Clogged Drain", "href": "/plumbing/clogged-drain"}],
     promos=["scheduleFast", "specials"])
 
-# ---- Plumbing multi-child families ----
 def family_overview(folder, name, h1, hl, intro, pills, sym_eyebrow, sym_h2, symptoms,
                     callout, wwd_h2, cards, last_step, faqs, related, safety=False, img=None):
     return detail(folder, PLUMB_CRUMB, name, h1, hl, intro,
@@ -446,20 +442,6 @@ PLUMB_FAMILIES["gas-line/installation.html"] = plumb_sub(
      {"title": "Water Heater Services", "href": "/plumbing/water-heater/overview"}],
     schedule_label="Schedule Estimate")
 
-
-# ======================================================================
-# Plumbing detail pages
-# ----------------------------------------------------------------------
-# Two things run through every plumbing page below.
-#
-# The Ohio plumbing licence number, OH LIC #13557 (facts.md, client-confirmed
-# 2026-08-02), appears in at least one body passage on every page. It is the
-# cheapest credibility signal available on a plumbing page and it is
-# checkable, which is what makes it worth citing.
-#
-# SPEED_FAQ is not reused here. It put one identical answer on nine plumbing
-# pages; each page now answers the speed question in its own terms.
-# ======================================================================
 
 LICENCE_LINE = "under Ohio plumbing license #13557"
 
@@ -856,15 +838,6 @@ geo(PLUMB_PAGES, "water-treatment.html",
             "treatment. What comes out of your tap depends entirely on which utility you are "
             "on, and three of them changed within the last four years.",
             sid="hardness",
-            # Restructured after the client read it and said it was confusing. It was:
-            # Water system | Communities served | Hardness delivered | Recent change.
-            # That asks a homeowner to know which utility they are on before they can
-            # find their row, then hands them a number in grains per gallon with
-            # nothing saying whether that is bad. The utility's project history had a
-            # column of its own and the Dayton row's answer was "go read the report".
-            # Now: find your town, see the number, read what it means. 7 gpg is the
-            # standard threshold for "hard", so every row here is hard water — which
-            # is the actual finding and is now impossible to miss.
             table=tbl("Water hardness by community, and what it means for your home.",
                       "Every municipal system across the Dayton and Cincinnati metros "
                       "delivers at least 7 grains per gallon, the point at which water "
@@ -990,10 +963,6 @@ geo(PLUMB_PAGES, "water-treatment.html",
          "valve failure are the usual end points, and a unit running on a badly wrong hardness "
          "setting wears out sooner."),
     ))
-
-# ======================================================================
-# Plumbing families
-# ======================================================================
 
 geo(PLUMB_FAMILIES, "sewer-line/overview.html",
     h1="Sewer line inspection, cleaning and repair in {X}.",

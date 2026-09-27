@@ -58,42 +58,15 @@ SPEED_FAQ = {"q": "How fast can you get here?",
     "a": "In most cases, same day — about 90% of our calls are handled the day you reach out, with 24/7 emergency service when it can't wait."}
 
 
-# ======================================================================
-# GEO content layer
-# ----------------------------------------------------------------------
-# Everything below rewrites the page data built above: answer-first blocks,
-# real H2/H3 body sections, decision tables, per-page FAQ headings and the
-# visible last-updated line. It is applied as a second pass rather than
-# threaded through detail()/sub()/plumb_sub() so the constructors above keep
-# their positional signatures and a copy change stays a one-key edit.
-#
-# Rules held throughout, from the client decisions of 2026-08-02:
-#   · No radon claims anywhere. The company does not do radon mitigation, so
-#     the radon H2, the radon table row and the radon FAQ from the research
-#     deliverables are dropped rather than softened.
-#   · No rebate or utility trade-ally claims.
-#   · Service-call and dispatch fees never appear in an h1, h2 or hero. They
-#     are not used below at all.
-#   · The repair-quote-approaching-a-third-of-replacement rule of thumb is
-#     approved and is used in the decision tables.
-#   · No team copy, no technician names, no author attribution. E-E-A-T leans
-#     on the company, its two Ohio licences and its history.
-#   · X-Plan accrual always carries BOTH conditions in one sentence:
-#     consecutive years AND capped at $2,500 or 10 years.
-# ======================================================================
+# Copy rules: no radon/rebate/trade-ally claims, no fees in h1/h2/hero, X-Plan accrual states both conditions.
 
 UPDATED, UPDATED_ISO = "August 2, 2026", "2026-08-02"
 
-# The hero chip used to read "4.9 on Google". The 1,595-review figure is a
-# Birdeye aggregate pooling several platforms, so naming Google is a claim a
-# competitor can disprove in a minute. The rating source comes off the chip
-# and the count goes on.
+# Birdeye aggregate across platforms, not Google-only: don't name Google.
 REVIEW_CHIP = "4.9 from 1,595 reviews"
 
 
 def sec(h2, body, h3s=None, table=None, sid=None, eyebrow=None):
-    """One body section: an H2 question, its direct answer, optional H3
-    sub-questions, optional table rendered inside the section."""
     s = {"h2": h2, "body": body}
     if h3s:
         s["h3s"] = [{"h3": h, "body": b} for h, b in h3s]
@@ -122,8 +95,6 @@ def qa(*pairs):
 
 
 def geo(store, key, callout=None, **fields):
-    """Apply the rewrite to one page. `callout` reaches into symptoms so a
-    page can hand off to a sibling from its callout without restating it."""
     d = store[key]
     d.update(fields)
     if callout is not None:
@@ -136,9 +107,5 @@ def geo(store, key, callout=None, **fields):
     return d
 
 
-# ---------------------------------------------------------------- shared rows
-# The third-of-replacement-cost row is the same judgement on every
-# repair-or-replace table, so it is written once. The age row never is: the
-# threshold differs by equipment type and that difference is the point.
 COST_ROW = ("Repair cost", "The quote is well under a third of replacement cost",
             "The quote is at or above roughly a third of replacement cost")

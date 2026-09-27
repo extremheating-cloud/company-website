@@ -3,48 +3,26 @@ from layout import components as T
 from data import business as D
 from pages.company_shared import PHOTOS, UPDATED, UPDATED_ISO, shell, section, prose_section, slot_img
 
-# ================================================================
-# /about — mockup 4a (full-width tier), copy verbatim
-# ================================================================
 ABOUT = {
     "breadcrumb": [("Home", "/"), ("About Us", "")],
     "h1": "About {X} Heating, Air, Plumbing",
     "h1Highlight": "Extreme",
-    # The two Ohio licence numbers are the single cheapest trust win on the site:
-    # externally verifiable, and no competitor in the Dayton SERP publishes theirs.
-    # Until the team section comes back after the photo shoot, the licences and the
-    # founding year are what this page's expertise signal actually rests on.
     "answer": ("We're a locally owned heating, cooling and plumbing company, working the Dayton "
                f"and Cincinnati metros out of four Ohio shops since {D.FOUNDED}. We hold Ohio "
                f"licenses in both trades, and we've done more than "
                f"{D.JOBS_COMPLETED_LONG.rstrip('+')} jobs."),
-    # The old H1, demoted to the deck line.
     "intro": "Locally owned. Extremely committed.",
-    # "4.9 on Google" was wrong: the aggregate is Birdeye across platforms. The licence
-    # chip is the only item on this row a customer can independently verify.
+    # The rating is a Birdeye aggregate across platforms; never label it "on Google".
     "heroChips": ["Family Owned &amp; Operated", f"{D.YEARS_LOCAL} Years Local",
                   f"{D.GOOGLE_RATING} from {D.REVIEW_COUNT} reviews",
                   f"{D.LICENSE_HVAC} &middot; {D.LICENSE_PLUMBING}"],
-    # The hero slot always wanted a team lineup and held a community-event photo until
-    # one existed. It exists now: the whole company in front of a service van, shot
-    # 2026-08-13. Cropped 3.4:1 from a 3:2 frame that was 40% empty asphalt and sky.
-    #
-    # The story slot below is STILL a placeholder. It wants founders or the first van,
-    # and neither was shot — the owners' frames are single portraits that belong in the
-    # leadership row, not in a wide short box. The story copy says "one van to the whole
-    # Miami Valley"; do NOT let the alt text imply this current van is that first one.
     "heroPhoto": {"src": PHOTOS["companyGroup"], "pos": "50% 42%",
                   "alt": f"The {D.COMPANY} team in front of a company service van"},
     "storyPhoto": {"src": PHOTOS["skyline"],
                    "alt": f"An {D.COMPANY} service van with the Dayton skyline behind it"},
     "story": {
         "h2": "How long have you been doing this?",
-        # Founding year and the Mason opening are client-confirmed (2026-08-02). Dates
-        # are worth stating plainly rather than as "two decades" — they are the kind of
-        # specific, checkable fact both readers and AI answers cite.
-        # [NEEDS: opening years for the Troy and Waynesville offices. Two more dates
-        # would turn this paragraph into a timeline, which is a far stronger citation
-        # target than a single founding year.]
+        # TODO: opening years for the Troy and Waynesville offices.
         "p1": f"We started in {D.FOUNDED} the way most good service companies do: one van, one toolbox, and a promise to show up when we said we would. Mason opened in {D.MASON_OPENED}. Today it's four Ohio shops and a full crew of licensed HVAC and plumbing techs covering the same two metros.",
         "p2": "The work got bigger. The way it's priced didn't. You get a flat quote and you approve it before we open anything up, and a real person still answers the phone, day or night.",
     },
@@ -60,37 +38,12 @@ ABOUT = {
     ],
     "stats": [
         {"n": D.YEARS_LOCAL, "cap": "years serving Ohio homes"},
-        # The 4.9 is a Birdeye aggregate across platforms, not a Google-only rating.
-        # The caption carries the denominator, because a rating with no review count
-        # is the shape of a claim rather than a claim.
         {"n": f'<span class="st">★</span> {D.GOOGLE_RATING}',
          "cap": f"average across {D.REVIEW_COUNT} {D.REVIEW_SOURCE}"},
         {"n": D.SAME_DAY, "cap": "of calls handled same-day"},
         {"n": "24/7", "cap": "emergency service line"},
     ],
-    # The whole company, from the 2026-08-13 shoot. Names and roles come from the
-    # photographer's filenames, confirmed by the client.
-    #
-    # ORDER IS THE DESIGN. The crew was shot against two backdrops: field staff outdoors
-    # against the van wrap, which reads purple and green, and office staff indoors against
-    # the lobby sign, which reads light grey. Interleaved in one grid that looks like a
-    # mistake. Grouped, it looks deliberate, because the backdrop changes exactly where
-    # the crew heading does. Leadership and In the office are the two indoor sections and
-    # they run first, so the page crosses that line once instead of five times.
-    #
-    # Jim Nix is the one person the split does not fit: office role, shot at the van. He
-    # sits with Plumbing, which is defensible on his title alone — Plumbing Dispatcher —
-    # and keeps the seam clean.
-    #
-    # Douglas and Ryan were both shot both ways; the indoor frames are used so the pair
-    # matches. He founded the company and Ryan bought in later, so the titles differ.
-    #
-    # ORDER WITHIN A CREW IS SENIORITY, HIGHEST FIRST, then last name alphabetically among
-    # people who share a title. Tenure is not recorded anywhere in this repo, so the title
-    # is the only thing that can be ranked without inventing a fact about a real person,
-    # and the alphabetical tiebreak keeps the order stable when a title is shared by nine
-    # people. Jim Nix sits last in Plumbing rather than by rank: dispatching is a
-    # different track from the trade, not a lower rung on it.
+    # Indoor-shot crews run first so the backdrop changes once; within a crew, title rank then last name.
     "team": [
         ("Leadership", [
             ("Douglas Washburn", "Founder &amp; Owner", "douglas-washburn"),
@@ -101,10 +54,6 @@ ABOUT = {
             ("Aaron Matthew", "Operations Coordinator", "aaron-matthew"),
             ("Samantha Desaro", "Office Coordinator", "samantha-desaro"),
             ("David Engelbrink", "Inventory Coordinator", "david-engelbrink"),
-            # "CSR" is what the trade calls this and what a homeowner does not. The tile
-            # is read by someone deciding whether to let us in the house, so it says the
-            # job. It fits: 20 characters against "Operations Coordinator"'s 22, which is
-            # what the grid was sized for.
             ("Aleasha King", "Customer Service Rep", "aleasha-king"),
         ]),
         ("Comfort Advisors", [
@@ -122,10 +71,7 @@ ABOUT = {
             ("Emmanuel Tshiala", "HVAC Technician", "emmanuel-tshiala"),
             ("Corey Witt", "HVAC Technician", "corey-witt"),
         ]),
-        # "HVAC Install", not "HVAC Installation", in the titles. The heading has a whole
-        # line to itself and can carry the longer word; the titles sit in a 135px tile on a
-        # 320px phone, where "HVAC Installation Helper" measures 132 and leaves 3px — the
-        # kind of fit that survives until the first font change.
+        # Titles must fit a 135px tile on a 320px phone, hence "Install" not "Installation".
         ("HVAC Installation", [
             ("Anthony Griffin", "HVAC Install Lead", "anthony-griffin"),
             ("Tyler Hardy", "HVAC Install Lead", "tyler-hardy"),
@@ -146,11 +92,6 @@ ABOUT = {
             ("Jason Scales", "Duct Cleaning Helper", "jason-scales"),
         ]),
     ],
-    # Both cards used to point at /locations, so two differently-labelled links went
-    # to the same place. The per-city pages exist; these are them.
-    #
-    # Loveland was removed from the Cincinnati card: it is not in locations/cities.py
-    # and has no page, so it was a coverage claim with nothing behind it.
     "areas": [
         {"t": "Dayton metro",
          "d": "Dayton, Kettering, Beavercreek, Centerville, Springboro, Huber Heights and the surrounding Miami Valley.",
@@ -166,9 +107,6 @@ ABOUT = {
         "takeaway": f"We've served the Dayton and Cincinnati metros since {D.FOUNDED}, under "
                     "Ohio HVAC license #37179.",
         "caption": "Company details at a glance",
-        # A key/value fact sheet, so the second column has no name of its own —
-        # "Detail | Extreme" read as though Extreme were one of several things being
-        # compared. The row header carries the meaning; this just labels the pair.
         "columns": ["What you're asking", "The answer"],
         "rows": [
             ["Founded", f"{D.FOUNDED}, locally owned ever since"],
@@ -186,10 +124,7 @@ ABOUT = {
     },
     "faqEyebrow": "ABOUT THE COMPANY",
     "faqH2": "What else do people ask?",
-    # [NEEDS: is commercial work in scope? Third-party directory listings describe
-    # Extreme as residential and commercial, and there is no commercial route on the
-    # site. Either answer is fine; the mismatch between the two is not. The question is
-    # deliberately absent until the client answers it.]
+    # TODO: add a commercial-work FAQ once the client confirms whether it is in scope.
     "faq": [
         {"q": "When did you start?",
          "a": f"{D.FOUNDED}, and we've been locally owned ever since. The Mason office opened "
@@ -252,9 +187,7 @@ def about_page(d, root_class):
          f'{D.ENTITY_PLUMBING}. Both sets of '
          '<a href="/terms">license numbers and program terms</a> are on the terms page.'],
         sid="licensed")
-    # [NEEDS: does the scheduler send a technician name and photo before arrival? It is
-    # one of the strongest trust signals in the trade and it costs nothing to state.
-    # Not written until the client confirms it happens.]
+    # TODO: mention the tech name and photo sent before arrival, if the client confirms it happens.
     who = prose_section(
         "AT YOUR DOOR", "Who will come to my house?",
         ["A licensed, insured technician in a marked company van. Shoe covers and drop cloths "
@@ -276,14 +209,6 @@ def about_page(d, root_class):
   <img class="mark" src="{T.X_MARK}" alt=""{T.dim_attrs(T.X_MARK)} loading="lazy" decoding="async" style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)">
   <div class="grid">{stats}</div>
 </div>'''
-    # Back on the page as of the 2026-08-13 shoot. It sits under "Who will come to my
-    # house?" rather than in a section of its own: that heading already asks the question
-    # 31 faces answer, and a reader who has just been told a licensed tech in a marked van
-    # is coming is exactly the reader who wants to see them.
-    #
-    # Every headshot is lazy-loaded and carries its intrinsic width and height, so 31
-    # images reserve their boxes without shifting the page and without downloading until
-    # they are scrolled to.
     def crew(title, members, lead=False):
         cards = "".join(
             f'''<figure class="xco-mem"><img src="{PHOTOS["team"][slug]}" alt="{name}, {role.replace("&amp;", "and")} at {D.COMPANY}"{T.dim_attrs(PHOTOS["team"][slug])} loading="lazy" decoding="async">
@@ -310,8 +235,7 @@ def about_page(d, root_class):
                     lead=["Probably. We work across nine Ohio counties between the two metros: "
                           "Montgomery, Greene, Miami, Warren, Butler, Clark, Hamilton, Preble "
                           "and Darke."])
-    # The full four-row address table lives on /contact only. Duplicating it here is a
-    # near-duplicate-content signal on the two pages most likely to be compared.
+    # The address table stays on /contact only; repeating it here reads as duplicate content.
     offices = prose_section(
         "OUR OFFICES", "Where are your offices?",
         ['Four of them, all in Ohio: '

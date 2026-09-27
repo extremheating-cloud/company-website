@@ -1,22 +1,8 @@
 import * as React from "react"
 
-/* =====================================================================
- * Schedule Service Wizard — 4 steps + confirmation
- * Redesign per design_handoff_schedule_wizard/README.md
- * Flow: Service+Details → Time → Property+Notes (skippable) → Contact+Review → Done
- * =================================================================== */
-
 type StepIdx = 0 | 1 | 2 | 3
 
-/* SMS consent, A2P 10DLC. This wording is the approved text from the requirements
- * doc and is stored verbatim alongside the number and a timestamp as the TCPA
- * record. If it changes here it changes in the campaign registration too, so treat
- * it the way the widget's disclosure is treated: do not reword it locally.
- *
- * Note the wizard already asks Call / Text / Email as a *preference*. A preference
- * is not consent, and the phone placeholder already promises "we text your
- * confirmation here", so before this the site was announcing texts with no
- * disclosure attached to them at all. */
+// Quoted verbatim in the A2P campaign filing; do not reword (the JSX label repeats it).
 const SMS_CONSENT_TEXT =
     "Yes, text me about my service request at the number above. Consent is not a " +
     "condition of purchase. Msg & data rates may apply, message frequency varies. " +
@@ -38,7 +24,6 @@ type FormState = {
     preferredContact?: "Call" | "Text" | "Email"
 }
 
-/* ---------- Design tokens (per handoff) ---------- */
 const T = {
     headerGradA: "#42285C",
     headerGradB: "#331E4A",
@@ -73,7 +58,6 @@ const EMERGENCY_PHONE_DISPLAY = "(844) 584-7399"
 const EMERGENCY_PHONE_TEL = "+18445847399"
 const DISPATCH_FEE = "$97"
 
-/* Dispatch-fee copy varies by service — "full system check" is HVAC language */
 function feeCopy(
     service: FormState["service"],
     mobile: boolean
@@ -127,7 +111,6 @@ const SERVICE_LABEL: Record<NonNullable<FormState["service"]>, string> = {
     xplan: "X-Plan Maintenance Plan",
 }
 
-/* HVAC step-1 chips (per handoff) */
 const HVAC_ISSUES = [
     "No Heat",
     "No Cool",
@@ -139,7 +122,6 @@ const HVAC_ISSUES = [
 ]
 const HVAC_DURATIONS = ["Today", "A few days", "A week or more", "Not sure"]
 
-/* Existing question sets, reused for Plumbing / Get a Quote / X-Plan */
 const SERVICE_OPTIONS: Record<string, string[]> = {
     plumbing: [
         "Drain Cleaning",
@@ -177,7 +159,6 @@ const DUCT_VENT_OPTIONS = ["1–10 vents", "11–20 vents", "20+ vents", "Not su
 
 /* One high-value follow-up per service, max — conversion first. */
 const DETAIL_QUESTIONS: Record<string, SubQuestion[]> = {
-    /* Plumbing */
     "Drain Cleaning": [
         {
             id: "which",
@@ -289,7 +270,6 @@ const DETAIL_QUESTIONS: Record<string, SubQuestion[]> = {
         },
     ],
 
-    /* Get a Quote */
     "New System Estimate": [
         {
             id: "scope",
@@ -325,7 +305,6 @@ const DETAIL_QUESTIONS: Record<string, SubQuestion[]> = {
         },
     ],
 
-    /* X-Plan */
     "Schedule Seasonal Tune-Up": [
         {
             id: "system",
@@ -342,7 +321,6 @@ function getSubQuestions(detail?: string): SubQuestion[] {
     return DETAIL_QUESTIONS[detail] || []
 }
 
-/* Step-3 option sets (per handoff — all optional) */
 const AGE_OPTIONS = [
     "Under 5 years",
     "5–10 years",
@@ -358,8 +336,6 @@ const UNIT_LOCATIONS = [
     "Not sure",
 ]
 
-/* HVAC-equipment questions only make sense for HVAC-related requests —
- * never for plumbing (e.g. Drain Cleaning). */
 function isHvacContext(
     service?: FormState["service"],
     detail?: string
@@ -375,7 +351,6 @@ function isHvacContext(
     return false
 }
 
-/* ---------- Cloudinary (existing backend: 5 photos / 10MB) ---------- */
 const CLOUDINARY_CLOUD = "dsbmasn0l"
 const CLOUDINARY_UNSIGNED_PRESET = "images"
 
@@ -398,12 +373,10 @@ async function uploadPhotosToCloudinary(files: File[]): Promise<string[]> {
 
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/mqadkggp"
 
-/* ---------- Address autocomplete (existing) ---------- */
 const GOOGLE_MAPS_API_KEY = "AIzaSyABVMGJ738G-WyGCCCr_YlIk2yEGln_jeY"
 const GEO_BIAS_LAT = 39.7589
 const GEO_BIAS_LON = -84.1916
 
-// Restrict suggestions to Ohio
 const OHIO_BOUNDS = {
     south: 38.4,
     west: -84.82,
@@ -414,8 +387,7 @@ const OHIO_RE = /,\s*(OH\b|Ohio)/i
 
 type AddressSuggestion = { id: string; label: string; src: "google" | "photon" }
 
-// Set when the Maps key is rejected (bad referrer restriction, billing, etc.)
-// so we stop retrying Google and use the free fallback for the session.
+// Google calls window.gm_authFailure by that exact name when the key is rejected.
 let googleUnavailable = false
 if (typeof window !== "undefined") {
     ;(window as any).gm_authFailure = () => {
@@ -473,8 +445,7 @@ async function googlePredictions(query: string): Promise<AddressSuggestion[]> {
                 } else if (status === S.ZERO_RESULTS) {
                     resolve([])
                 } else {
-                    // REQUEST_DENIED / OVER_QUERY_LIMIT / etc. — treat as a
-                    // real failure so the caller falls back to Photon.
+                    // Reject, not resolve([]), so the caller falls back to Photon.
                     console.warn("[XHAC] Places autocomplete status:", status)
                     reject(new Error(`Places status: ${status}`))
                 }
@@ -521,8 +492,7 @@ async function photonPredictions(query: string): Promise<AddressSuggestion[]> {
     if (!res.ok) return []
     const json = await res.json()
     const feats: any[] = json?.features || []
-    // OSM often lacks individual address points; keep the house number the
-    // customer typed and prepend it when a matched street doesn't have one.
+    // OSM often lacks house numbers, so reuse the one the customer typed.
     const typedHouseNum = (query.match(/^\s*(\d+)\s+/) || [])[1] || ""
     return feats
         .filter((f) => (f.properties?.state || "") === "Ohio")
@@ -565,7 +535,6 @@ async function fetchAddressSuggestions(
     }
 }
 
-/* ---------- Tracking (existing events, re-mapped to merged steps) ---------- */
 declare global {
     interface Window {
         dataLayer?: Record<string, any>[]
@@ -629,7 +598,6 @@ function splitAddress(raw: string): Record<string, string> {
     return out
 }
 
-/* ---------- Date helpers ---------- */
 function toISO(d: Date): string {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
         2,
@@ -658,7 +626,6 @@ function startOfToday(): Date {
     return d
 }
 
-/* Next N selectable weekdays starting tomorrow */
 function upcomingWeekdays(count: number): string[] {
     const out: string[] = []
     const d = startOfToday()
@@ -671,7 +638,6 @@ function upcomingWeekdays(count: number): string[] {
     return out
 }
 
-/* First 3 available slots for the quick-pick strip */
 function computeQuickPicks(): { label: string; iso: string; slot: string }[] {
     const days = upcomingWeekdays(2)
     const tomorrow = toISO(
@@ -704,7 +670,6 @@ function computeQuickPicks(): { label: string; iso: string; slot: string }[] {
     ]
 }
 
-/* .ics download for "Add to calendar" */
 function downloadICS(iso: string, slot: string, service: string) {
     const startHour: Record<string, number> = {
         [TIME_SLOTS[0]]: 8,
@@ -740,7 +705,6 @@ function downloadICS(iso: string, slot: string, service: string) {
     URL.revokeObjectURL(url)
 }
 
-/* ---------- Icons (2px stroke, deep purple, per handoff) ---------- */
 function IconHVAC({ dim = 22 }) {
     return (
         <svg width={dim} height={dim} viewBox="0 0 24 24" fill="none">
@@ -810,7 +774,6 @@ function IconPlan({ dim = 22 }) {
     )
 }
 
-/* ---------- Load Poppins once ---------- */
 function ensurePoppins() {
     if (typeof document === "undefined") return
     if (document.querySelector("link[data-xhac-poppins]")) return
@@ -822,9 +785,6 @@ function ensurePoppins() {
     document.head.appendChild(l)
 }
 
-/* =====================================================================
- * Component
- * =================================================================== */
 export default function ContactFlowDialog() {
     const [open, setOpen] = React.useState(false)
     const [appeared, setAppeared] = React.useState(false)
@@ -844,10 +804,7 @@ export default function ContactFlowDialog() {
     const [email, setEmail] = React.useState("")
     const [address, setAddress] = React.useState("")
     const [feeOk, setFeeOk] = React.useState(false)
-    // SMS consent for A2P 10DLC. MUST default to false: a pre-ticked consent box is
-    // rejection code 30925 by itself. Deliberately NOT part of stepComplete — consent
-    // is not a condition of purchase, so the wizard submits either way and the
-    // customer simply does not get texted.
+    // Must start false (a pre-ticked box is A2P rejection 30925) and must never gate stepComplete.
     const [smsOk, setSmsOk] = React.useState(false)
     const [submitting, setSubmitting] = React.useState(false)
 
@@ -884,7 +841,6 @@ export default function ContactFlowDialog() {
 
     React.useEffect(ensurePoppins, [])
 
-    /* dialog open tracking (existing event) */
     const openedOnceRef = React.useRef(false)
     React.useEffect(() => {
         if (open && !openedOnceRef.current) {
@@ -898,7 +854,6 @@ export default function ContactFlowDialog() {
         if (!open) openedOnceRef.current = false
     }, [open])
 
-    /* open bridge (existing) */
     React.useEffect(() => {
         const handler = () => {
             setOpen(true)
@@ -944,7 +899,6 @@ export default function ContactFlowDialog() {
 
     const close = () => setOpen(false)
 
-    /* ---------- validation + hints (per handoff) ---------- */
     const emailOk =
         email.trim() === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
     const phoneOk = phoneDigits.length === 10
@@ -952,13 +906,9 @@ export default function ContactFlowDialog() {
     function serviceStepComplete(d: FormState): boolean {
         if (!d.service) return false
         if (d.service === "heatingCooling") return !!d.hvacIssue
-        // Plumbing / Quote / X-Plan: only the sub-service is required here;
-        // their follow-up questions live on the Details step (all optional).
         return !!d.detail
     }
 
-    // Free estimates: New System, Duct Cleaning, Dryer Vent. HVAC
-    // Inspection still carries the dispatch fee.
     const freeEstimate =
         data.service === "quote" &&
         data.detail !== "HVAC Inspection Estimate"
@@ -996,10 +946,8 @@ export default function ContactFlowDialog() {
 
     const canContinue = stepComplete[step]
 
-    /* ---------- helpers ---------- */
     const patch = (p: Partial<FormState>) => setData((d) => ({ ...d, ...p }))
 
-    /* single-select chip w/ toggle-deselect (per handoff) */
     const toggle = (key: keyof FormState, value: string) =>
         setData((d) => ({
             ...d,
@@ -1045,7 +993,6 @@ export default function ContactFlowDialog() {
         setAddress(sugg.label)
         setAddrSuggestions([])
         setAddrOpen(false)
-        // Upgrade to the full formatted address (incl. ZIP) — Google results only.
         if (sugg.src === "google") {
             const full = await googlePlaceDetails(sugg.id)
             if (full) setAddress(full)
@@ -1055,7 +1002,6 @@ export default function ContactFlowDialog() {
     const goNext = () => setStep((s) => Math.min(s + 1, 3) as StepIdx)
     const goBack = () => setStep((s) => Math.max(s - 1, 0) as StepIdx)
 
-    /* ---------- submit (existing Formspree handoff) ---------- */
     async function bookVisit() {
         if (submitting || !canContinue) return
         setSubmitting(true)
@@ -1082,16 +1028,7 @@ export default function ContactFlowDialog() {
         fd.set("Phone Number", formatPhone(phoneDigits))
         if (email.trim()) fd.set("Email", email.trim())
         fd.set("Service Address", address.trim())
-        // SMS consent is deliberately NOT sent to Formspree (removed 2026-08-13).
-        // The checkbox still renders and still governs whether we may text this
-        // person, but nothing about it leaves the browser any more, so there is
-        // currently no stored record of who agreed. If that record is needed as
-        // the TCPA proof, it has to be captured somewhere first — reinstating
-        // these four fields is the smallest way back:
-        //   "SMS Consent"           smsOk ? "YES" : "NO"      (always, both ways)
-        //   "SMS Consent Timestamp" new Date().toISOString()  (only when true)
-        //   "SMS Consent Page"      window.location.href      (only when true)
-        //   "SMS Consent Text"      SMS_CONSENT_TEXT          (only when true)
+        // SMS consent is not sent anywhere, so there is no stored TCPA record of it yet.
         if (data.previousCustomer)
             fd.set("Previous Customer", data.previousCustomer)
         if (data.preferredContact)
@@ -1193,7 +1130,6 @@ export default function ContactFlowDialog() {
         }
     }
 
-    /* ---------- shared bits ---------- */
     const chip = (
         selected: boolean,
         label: string,
@@ -1243,7 +1179,6 @@ export default function ContactFlowDialog() {
         },
     ]
 
-    /* summary values for step 4 + done */
     const svcSummary = data.service
         ? `${SERVICE_LABEL[data.service].replace(" Maintenance Plan", "")}${
               data.service === "heatingCooling"
@@ -1263,7 +1198,6 @@ export default function ContactFlowDialog() {
         .filter(Boolean)
         .join(" · ")
 
-    /* =================================================================== */
     return (
         <div
             className="xw-root"
@@ -1278,7 +1212,6 @@ export default function ContactFlowDialog() {
         >
             <style>{XW_CSS}</style>
 
-            {/* backdrop */}
             <div
                 onClick={close}
                 style={{
@@ -1293,7 +1226,6 @@ export default function ContactFlowDialog() {
                 }}
             />
 
-            {/* modal */}
             <div
                 className="xw-modal"
                 style={{
@@ -1309,7 +1241,6 @@ export default function ContactFlowDialog() {
                 {/* ---------- HEADER ---------- */}
                 <div className="xw-header">
                     {isMobile ? (
-                        /* Compact mobile header (mockups 1c) */
                         <>
                             <div
                                 style={{
@@ -1675,7 +1606,6 @@ export default function ContactFlowDialog() {
                                     className="xw-fade"
                                     style={{ display: "grid", gap: 20 }}
                                 >
-                                    {/* quick-pick strip */}
                                     {isMobile ? (
                                         (() => {
                                             const qp = quickPicks[0]
@@ -1755,7 +1685,6 @@ export default function ContactFlowDialog() {
                                     )}
 
                                     <div className="xw-timecols">
-                                        {/* calendar */}
                                         <div>
                                             {groupLabel("Or pick a day")}
                                             {isMobile ? (
@@ -1814,7 +1743,6 @@ export default function ContactFlowDialog() {
                                             )}
                                         </div>
 
-                                        {/* windows */}
                                         <div>
                                             {groupLabel(
                                                 data.apptDate
@@ -1968,7 +1896,6 @@ export default function ContactFlowDialog() {
                                             </div>
                                         )}
 
-                                    {/* Service-specific follow-up — one per service, optional */}
                                     {data.service !== "heatingCooling" &&
                                         getSubQuestions(data.detail).map(
                                             (q) => (
@@ -1993,7 +1920,6 @@ export default function ContactFlowDialog() {
                                             )
                                         )}
 
-                                    {/* note & photos */}
                                     {!noteOpen ? (
                                         <button
                                             className="xw-noterow"
@@ -2160,7 +2086,6 @@ export default function ContactFlowDialog() {
                             {/* ============ STEP 4: CONFIRM ============ */}
                             {step === 3 && (
                                 <div className="xw-fade xw-confcols">
-                                    {/* form */}
                                     <div
                                         className="xw-c-form"
                                         style={{ display: "grid", gap: 12 }}
@@ -2220,11 +2145,7 @@ export default function ContactFlowDialog() {
                                                 e.stopPropagation()
                                             }
                                         />
-                                        {/* SMS consent. Sits DIRECTLY beneath the
-                                            mobile field, which is where a reviewer
-                                            looks for it and where it is legible as
-                                            applying to that number. Unchecked by
-                                            default and never gates submission. */}
+                                        {/* Must stay directly under the mobile field: the copy says "the number above". */}
                                         <div className="xw-sms">
                                             <button
                                                 type="button"
@@ -2394,7 +2315,6 @@ export default function ContactFlowDialog() {
                                         </div>
                                     </div>
 
-                                    {/* summary + fee */}
                                         <div className="xw-summary xw-c-summary">
                                             <div className="sh">
                                                 Your visit
@@ -2536,7 +2456,6 @@ export default function ContactFlowDialog() {
     )
 }
 
-/* ---------- Desktop calendar (Mon–Fri, per handoff spec) ---------- */
 function WizardCalendar({
     value,
     onSelect,
@@ -2647,7 +2566,6 @@ function WizardCalendar({
     )
 }
 
-/* ---------- Styles (design tokens per handoff) ---------- */
 const XW_CSS = `
 .xw-root, .xw-root *{ box-sizing:border-box; font-family:${FONT} }
 
@@ -2658,7 +2576,7 @@ const XW_CSS = `
   transition:opacity 220ms cubic-bezier(.2,.8,.2,1), transform 300ms cubic-bezier(.2,.8,.2,1);
 }
 
-/* header */
+
 .xw-header{ background:linear-gradient(180deg, ${T.headerGradA}, ${T.headerGradB}); padding:22px 28px 18px; flex-shrink:0 }
 .xw-headtop{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px }
 .xw-eyebrow{ font:600 10.5px ${FONT}; letter-spacing:.22em; text-transform:uppercase; color:${T.eyebrow} }
@@ -2680,7 +2598,7 @@ const XW_CSS = `
 .xw-seg .lab{ margin-top:7px; font:600 10px ${FONT}; letter-spacing:.14em; text-align:center }
 .xw-stepcount{ margin-left:6px; flex:none; font:600 10.5px ${FONT}; color:rgba(255,255,255,.7); white-space:nowrap }
 
-/* mobile in-body emergency pill (mockups 1c) */
+
 .xw-mpillwrap{ display:flex; justify-content:center; margin-bottom:14px }
 .xw-mpill{
   display:inline-flex; align-items:center; gap:6px; background:#FDF1F0; border-radius:999px;
@@ -2688,7 +2606,7 @@ const XW_CSS = `
 }
 .xw-mpill .dot{ width:7px; height:7px; border-radius:50%; background:${T.red} }
 
-/* mobile single next-available card (mockups 1c) */
+
 .xw-qpnext{
   width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px;
   border:1px solid ${T.qpCard}; background:${T.tint}; border-radius:12px; padding:12px 14px;
@@ -2702,14 +2620,14 @@ const XW_CSS = `
 }
 .xw-qpnext .pill.on{ border:2px solid ${T.selGreen}; padding:6px 13px; color:${T.chipGreen} }
 
-/* body */
+
 .xw-body{ padding:26px 28px 24px; overflow:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; flex:1 1 auto; min-height:0 }
 .xw-glabel{ font:600 14px ${FONT}; color:${T.ink}; margin-bottom:10px }
 .xw-glabel .opt{ font-weight:500; color:${T.muted} }
 .xw-micro{ font:400 12px ${FONT}; color:${T.muted} }
 .xw-chips{ display:flex; flex-wrap:wrap; gap:9px }
 
-/* chips */
+
 .xw-chip{
   border:1px solid ${T.border}; border-radius:999px; padding:9px 18px;
   font:500 13px ${FONT}; color:${T.ink}; background:#fff; cursor:pointer;
@@ -2718,7 +2636,7 @@ const XW_CSS = `
 .xw-chip:hover{ border-color:${T.dashed} }
 .xw-chip.sel{ border:2px solid ${T.selGreen}; background:${T.tint}; padding:8px 17px; font-weight:600; color:${T.chipGreen} }
 
-/* service cards */
+
 .xw-svcrow{ display:flex; gap:12px }
 .xw-svc{
   flex:1; border:1px solid ${T.border}; border-radius:14px; padding:19px 16px; background:#fff;
@@ -2731,7 +2649,7 @@ const XW_CSS = `
 .xw-svc .nm{ font:600 14.5px ${FONT}; color:${T.ink} }
 .xw-svc .sb{ font:400 11.5px ${FONT}; color:${T.muted} }
 
-/* quick picks */
+
 .xw-qp{ border:1px solid ${T.qpCard}; background:${T.tint}; border-radius:14px; padding:16px 18px }
 .xw-qp .qplabel{ font:600 13px ${FONT}; color:${T.chipGreen}; margin-bottom:10px }
 .xw-qp .qprow{ display:flex; flex-wrap:wrap; gap:9px }
@@ -2741,10 +2659,10 @@ const XW_CSS = `
 }
 .xw-qpchip.sel{ border:2px solid ${T.selGreen}; padding:8px 17px; font-weight:600; color:${T.chipGreen} }
 
-/* time layout */
+
 .xw-timecols{ display:grid; grid-template-columns:1.15fr 1fr; gap:28px; align-items:start }
 
-/* calendar */
+
 .xw-cal{ border:1px solid ${T.border}; border-radius:14px; padding:14px }
 .xw-cal .ch{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px }
 .xw-cal .mo{ font:600 14px ${FONT}; color:${T.ink} }
@@ -2764,7 +2682,7 @@ const XW_CSS = `
 .xw-cal .day.off{ color:${T.disabledDay}; cursor:default }
 .xw-cal .day.sel{ background:${T.deepPurple}; color:#fff; font-weight:600 }
 
-/* mobile day strip (mockups 1c: 5 equal cells, selected = deep purple) */
+
 .xw-daystrip{ display:flex; gap:7px; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch }
 .xw-stripday{
   flex:0 0 calc(20% - 5.6px); border:1px solid ${T.border}; border-radius:12px; background:#fff;
@@ -2776,7 +2694,7 @@ const XW_CSS = `
 .xw-stripday.sel .wd{ color:rgba(255,255,255,.7) }
 .xw-stripday.sel .dn{ color:#fff }
 
-/* arrival windows */
+
 .xw-window{
   width:100%; display:flex; align-items:center; justify-content:space-between;
   border:1px solid ${T.border}; border-radius:12px; padding:13px 16px; background:#fff;
@@ -2785,7 +2703,7 @@ const XW_CSS = `
 .xw-window:hover{ border-color:${T.dashed} }
 .xw-window.sel{ border:2px solid ${T.selGreen}; background:${T.tint}; padding:12px 15px; font-weight:600; color:${T.chipGreen} }
 
-/* step 3 */
+
 .xw-proprow{ display:grid; grid-template-columns:auto auto; gap:36px; justify-content:start }
 .xw-noterow{
   width:100%; display:flex; align-items:center; gap:12px; text-align:left;
@@ -2805,7 +2723,7 @@ const XW_CSS = `
   background:rgba(255,255,255,.92); color:${T.deepPurple}; font-weight:700; cursor:pointer; line-height:1;
 }
 
-/* inputs */
+
 .xw-input{
   width:100%; border:1px solid ${T.border}; border-radius:11px; padding:13px 15px;
   font:400 13px ${FONT}; color:${T.ink}; background:#fff;
@@ -2813,7 +2731,7 @@ const XW_CSS = `
 .xw-input::placeholder{ color:${T.placeholder} }
 .xw-input:focus{ outline:2px solid ${T.selGreen}; outline-offset:0; border-color:transparent }
 
-/* step 4 */
+
 .xw-confcols{
   display:grid; grid-template-columns:1.3fr 1fr; gap:26px; align-items:start;
   grid-template-areas:"form summary" "form fee";
@@ -2856,11 +2774,7 @@ const XW_CSS = `
 .xw-fee.xw-free{ border:1px solid ${T.qpCard}; background:${T.tint} }
 .xw-fee.xw-free .amt{ color:${T.chipGreen} }
 
-/* SMS consent. Reuses the fee checkbox's box geometry so the two read as the same
-   control, but the copy is legal text rather than a label: smaller, muted, and
-   allowed to wrap to several lines. The whole label toggles, which is what people
-   expect from a checkbox, while the two links stopPropagation so tapping Privacy
-   Policy opens it instead of silently ticking the box. */
+
 .xw-sms{ display:flex; align-items:flex-start; gap:9px; margin-top:10px }
 .xw-sms-btn{
   border:none; background:none; padding:0; margin:0; cursor:pointer; flex-shrink:0;
@@ -2877,7 +2791,7 @@ const XW_CSS = `
 }
 .xw-sms-copy a{ color:${T.linkGreen}; text-decoration:underline }
 
-/* footer */
+
 .xw-footer{
   border-top:1px solid ${T.hairline}; padding:16px 28px; display:flex; align-items:center;
   justify-content:space-between; gap:12px; background:#fff; flex-shrink:0;
@@ -2903,7 +2817,7 @@ const XW_CSS = `
   animation:xwspin 800ms linear infinite; vertical-align:middle;
 }
 
-/* done */
+
 .xw-done{ text-align:center; padding:26px 10px 12px; display:grid; justify-items:center; gap:10px }
 .xw-donecheck{
   width:64px; height:64px; border-radius:999px; background:${T.tint}; border:2px solid ${T.selGreen};
@@ -2918,11 +2832,11 @@ const XW_CSS = `
 @keyframes xwfade{ from{ opacity:0; transform:translateY(6px) } to{ opacity:1; transform:none } }
 .xw-fade{ animation:xwfade .18s ease both }
 
-/* ---- Mobile (mockups 1c, 390px) ---- */
+
 @media (max-width: 809px){
   .xw-modal{ margin:12px auto; max-width:calc(100vw - 16px); max-height:calc(100dvh - 24px); border-radius:20px }
 
-  /* compact header: eyebrow + close on one row, title, thin segments + "1 of 4" */
+  
   .xw-header{ padding:18px 20px 16px }
   .xw-eyebrow{ font-size:9.5px; letter-spacing:.2em }
   .xw-title{ font-size:21px; margin-top:4px }
@@ -2931,7 +2845,7 @@ const XW_CSS = `
 
   .xw-body{ padding:18px 20px 20px }
 
-  /* 2×2 service cards, smaller tiles, no subtitles */
+  
   .xw-svcrow{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
   .xw-svc{ padding:15px 12px }
   .xw-svc.sel{ padding:14px 11px }
@@ -2940,20 +2854,20 @@ const XW_CSS = `
   .xw-svc .nm{ font-size:13px }
   .xw-svc .sb{ display:none }
 
-  /* chips */
+  
   .xw-chip{ padding:10px 15px; font-size:12.5px }
   .xw-chip.sel{ padding:9px 14px; font-size:12.5px }
   .xw-glabel{ font-size:13.5px }
 
-  /* time step stacks; windows tighten */
+  
   .xw-timecols{ grid-template-columns:1fr; gap:16px }
   .xw-window{ padding:13px 15px; font-size:13px }
   .xw-window.sel{ padding:12px 14px }
 
-  /* step 3 */
+  
   .xw-proprow{ grid-template-columns:1fr; gap:16px }
 
-  /* confirm: summary → form → fee (name fields stay side-by-side) */
+  
   .xw-confcols{ grid-template-columns:1fr; grid-template-areas:"summary" "form" "fee"; gap:14px }
   .xw-namerow{ gap:9px }
   .xw-summary{ padding:14px 16px }
@@ -2961,18 +2875,17 @@ const XW_CSS = `
   .xw-fee{ padding:14px 16px }
   .xw-fee .amt{ font-size:19px }
 
-  /* 16px inputs prevent iOS focus-zoom (deliberate deviation from the
-     mock's 12.5px — zooming would break the layout on every field tap) */
+  /* 16px stops iOS focus-zoom; don't go smaller. */
   .xw-input{ font-size:16px; padding:13px 14px }
 
-  /* footer: Back + full-width CTA */
+  
   .xw-footer{ padding:14px 20px calc(18px + env(safe-area-inset-bottom)) }
   .xw-footright{ flex:1; display:flex }
   .xw-hint{ display:none }
   .xw-cta, .xw-cta.book{ flex:1; min-width:0; padding:15px 0 }
   .xw-back{ padding:0 8px; font-size:13px }
 
-  /* done screen buttons full width */
+  
   .xw-donebtns{ width:100%; flex-direction:column }
   .xw-donebtns .xw-cta, .xw-donebtns .xw-outline{ width:100% }
 }

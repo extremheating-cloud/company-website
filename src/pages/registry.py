@@ -1,4 +1,3 @@
-"""Build service pages from data objects. Run: python3 src/pages/registry.py [--check]"""
 import os, re, sys
 
 # build.py runs this as a subprocess, so it puts src/ on the import path itself
@@ -8,8 +7,6 @@ sys.path.insert(0, SRC)
 from layout import components as T
 from data import business as D
 
-# src/pages/ sits two levels below the repo root. The generated pages go into .build/pages/,
-# mirroring the site's own URL structure.
 ROOT = os.path.normpath(os.path.join(SRC, ".."))
 BUILD = os.path.join(ROOT, ".build")
 PAGES_DIR = os.path.join(BUILD, "pages")
@@ -22,43 +19,24 @@ import json
 _INV = json.load(open(os.path.join(SRC, "data", "image_inventory.json")))
 
 def old_img(page_rel, idx=0):
-    """First (or nth) CDN image from the pre-redesign version of a page.
-
-    The inventory stores whole URLs, and the ones pointing at our own repo carry the
-    commit that was pinned when it was captured. Left alone, those pages ignore
-    ASSET_COMMIT entirely — they kept serving bytes from an old commit while every
-    other page moved to the new pin, so re-encoding or replacing one of those files
-    would silently do nothing. Re-pin ours; leave third-party stock URLs alone.
-    """
     imgs = _INV.get(page_rel, [])
     url = imgs[idx] if idx < len(imgs) else None
     if url and T.ASSET_REPO in url:
-        # Ours: rewrite the captured jsDelivr URL to the same-origin path. The
-        # inventory stores whole URLs with whatever commit was pinned when it was
-        # captured, so without this these pages would keep pointing at jsDelivr after
-        # everything else moved. Third-party stock URLs are left exactly as they are.
+        # Captured URLs pin an old commit; re-point ours via cdn_asset. Stock URLs stay as-is.
         rel = re.sub(r"^.*?/assets/", "", url.split("?")[0])
         url = T.cdn_asset(rel)
     return url
 
-# ================================================================
-# /air-conditioning — mockup 2a (desktop) / 2b (mobile), copy verbatim
-# ================================================================
 AIR_CONDITIONING = {
     "trade": "hvac",
     "breadcrumb": [("Heating & Air", "/services"), ("Air Conditioning", "")],
     "h1": "Air conditioning service in {X}.",
     "h1Highlight": "Dayton & Cincinnati",
-    # The answer-first block: 31 words, second person, no self-naming. This is the
-    # passage an engine lifts, so it still stands alone — but it reads like something
-    # a person would say. Entity, licences and job count live in the JSON-LD.
     "answer": ("AC out? We repair, replace and tune up central air and heat pumps across "
                "Dayton and Cincinnati — every major brand, whoever installed it. We handle "
                "most calls the same day."),
     "intro": "Repair, replacement and tune-ups, from a locally owned crew. You'll know the price before anything gets touched.",
-    # The 1,595-review figure is a Birdeye aggregate pooling several platforms, so the
-    # chip cannot say "on Google" — that is the one review claim a competitor can
-    # disprove in thirty seconds. facts.md confirms 4.9 / 1,595 for on-site display.
+    # 1,595 is a Birdeye aggregate across platforms, so never label it "on Google".
     "heroChips": ["4.9 from 1,595 reviews", "90% Same-Day Service", "24/7 Emergency"],
     "bookingCard": {
         "eyebrow": "BOOK AC SERVICE",
@@ -92,11 +70,6 @@ AIR_CONDITIONING = {
              "href": "/maintenance"},
         ],
     },
-    # The decision table and the lifespan/brand questions sit before Process; the two
-    # "how do I actually book this" questions sit after it, in sectionsTail. Symptoms
-    # and emergencies belong to /ac-repair and cost and sizing to /ac-installation —
-    # every section that brushes one of those hands off with a link instead of
-    # competing with it.
     "sections": [
         {"eyebrow": "DECIDING",
          "id": "repair-or-replace",
@@ -105,8 +78,7 @@ AIR_CONDITIONING = {
                   "failed capacitor or contactor is a repair. An older one facing a "
                   "compressor or coil is usually where a new unit costs you less over the "
                   "years it has left."),
-         # No dollar figures anywhere in this table, by design: the one-third rule of
-         # thumb is client-approved, a published repair price is not.
+         # No dollar figures: a published repair price isn't client-approved.
          "table": {
              "caption": "Repair or replace an air conditioner: what we weigh on a service call.",
              "takeaway": ("We'll point you to replacement when the system is past its "
@@ -126,7 +98,6 @@ AIR_CONDITIONING = {
                   "Cooling bills climb with no change at home"],
                  ["Comfort", "One room or one symptom",
                   "Uneven temperatures throughout the house"],
-                 # Deliverable wrote "labour"; the rest of the site is US spelling.
                  ["Warranty", "Parts are still under manufacturer warranty",
                   "Parts and labor warranties have both run out"],
              ],
@@ -177,15 +148,10 @@ AIR_CONDITIONING = {
         {"q": "How long does an air conditioner replacement take?",
          "a": "Most straight swaps are a one-day job. Adding or reworking ductwork, moving the indoor unit, or changing system type adds time. Sizing and pricing live on our <a href=\"/ac-installation\">AC installation</a> page."},
     ],
-    # The copy on this page was rewritten 2026-08-02. head.py prefers this stated date
-    # over its content-hash ledger, so it must move only when the copy actually does.
+    # head.py trusts this date over its content hash; change it only when the copy changes.
     "updated": "August 2, 2026",
     "updatedISO": "2026-08-02",
     "rail": {
-        # Was a hardcoded @main URL with a ?v=2 cache-buster — the query string does
-        # nothing on jsDelivr; the commit pin is what actually busts the cache.
-        # service/ac-repair.jpg was stock (and the same frame as service/maintenance.jpg);
-        # this is a real Extreme diagnostic — gauges and meter on an open condenser.
         "photo": T.PHOTOS["acRepairGauges"],
         "photoPos": "50% 45%",
         "photoAlt": "Refrigerant gauges and a multimeter connected to an open air conditioner control panel during a service call",
@@ -196,32 +162,18 @@ AIR_CONDITIONING = {
         {"title": "Duct Cleaning", "href": "/duct-cleaning"},
         {"title": "Indoor Air Quality", "href": "/indoor-air-quality"},
     ],
-    # pillNav is attached after the services import below — the pill set lives there.
 }
 PAGES.append((os.path.join(HVAC, "air-conditioning.html"), T.detail_page, AIR_CONDITIONING, "xsp-air-conditioning"))
 
-# ================================================================
-# /services — mockup 2c (HVAC hub), copy verbatim
-# ================================================================
 HVAC_HUB = {
     "eyebrow": "OUR HVAC SERVICES",
-    # /services and /plumbing/services were the only two non-top-level pages on the
-    # site rendering no breadcrumb trail, so they were also the only two with no
-    # BreadcrumbList in their schema (head.py reads the rendered trail, it does not
-    # invent one). The data is here now; hub_hero() still has to render it —
-    # see handoff-build.md.
     "breadcrumb": [("Heating & Air", "")],
     "h1": "Every comfort system, {X}.",
     "h1Highlight": "one Extreme Team",
-    # 30 words, second person. The licence number and job count moved to the footer
-    # and the JSON-LD, where they belong — nothing is lost to a crawler.
     "answer": ("Heating, cooling and air quality for homes across Dayton and Cincinnati. We "
                "repair, replace and maintain every major brand, whoever installed it, and you "
                "agree the price before work starts."),
     "intro": "Heating, cooling, air quality, maintenance. Browse below, or just tell us what's wrong and we'll work out which one it is.",
-    # Replaced ac-install.jpg: that photo's condenser carries a visible CARRIER badge,
-    # so the HVAC hub was advertising a competitor's equipment. This is a real Ruud
-    # unit from a job, badge legible, no service stickers in frame.
     "photo": T.PHOTOS["ruudHeatPump"],
     "photoPos": "50% 40%",
     "photoAlt": "A Ruud condenser installed at a Dayton-area home",
@@ -252,25 +204,16 @@ HVAC_HUB = {
 }
 PAGES.append((os.path.join(HVAC, "services.html"), T.hub_page, HVAC_HUB, "xsp-hvac-hub"))
 
-# ================================================================
-# /plumbing/services — 2c template with README swaps (copy formulas)
-# ================================================================
 PLUMB_HUB = {
     "eyebrow": "OUR PLUMBING SERVICES",
-    # Same breadcrumb gap as the HVAC hub — see the note there.
     "breadcrumb": [("Plumbing", "")],
     "h1": "Licensed plumbers serving {X} homes.",
     "h1Highlight": "Dayton & Cincinnati",
-    # 31 words, second person. The Ohio plumbing licence number is still the cheapest
-    # checkable credibility signal this page has — it now sits in the footer and in
-    # LocalBusiness.hasCredential rather than mid-paragraph. facts.md: OH LIC #13557.
     "answer": ("Drains, water heaters, sewer lines, sump pumps and gas lines, for homes "
                "across Dayton and Cincinnati. Licensed plumbers, a price you agree before "
                "work starts, and an emergency line answered 24/7."),
     "intro": "Same trucks, same phone number, same people you already call about the furnace.",
-    # PLACEHOLDER: the slot wants a plumber on the job and no such photo exists yet
-    # (Block A of the shot list). A real branded van beats an empty grey box until
-    # then — swap it when the session delivers.
+    # TODO: placeholder until there's a photo of a plumber on the job.
     "photo": T.PHOTOS["vans"],
     "photoAlt": "Extreme Heating, Air, Plumbing service vans leaving the Beavercreek shop at the start of a work day",
     "coreH2": "What plumbing work do you do?",
@@ -300,23 +243,16 @@ PLUMB_HUB = {
 }
 PAGES.append((os.path.join(PLUMB, "services.html"), T.hub_page, PLUMB_HUB, "xsp-plumbing-hub"))
 
-# ================================================================
-# /furnace-repair — mockup 2d (sub-page tier), copy verbatim
-# ================================================================
 FURNACE_REPAIR = {
     "trade": "hvac",
     "breadcrumb": [("Heating & Air", "/services"), ("Furnace & Heating", "/furnace-heating"), ("Repair", "")],
     "h1": "Furnace repair in {X}, 24/7.",
     "h1Highlight": "Dayton & Cincinnati",
-    # 39 words, second person. Someone reads this at 9pm on a phone with no heat, so it
-    # leads with their problem and reaches the 24/7 line inside one short paragraph.
-    # Licences, job count and the entity name live in the JSON-LD and the footer.
     "answer": ("No heat? We repair gas and electric furnaces across Dayton and Cincinnati, "
                "and no-heat calls go out ahead of everything else. You get a flat price "
                "before we start, a safety check after, and an emergency line answered 24/7."),
     "intro": "No heat is an emergency in an Ohio winter. We diagnose fast, price upfront, and repair every make and model — 24/7.",
-    # Sub pages default to SUB_CHIPS, which says "4.9 on Google". The 1,595-review
-    # figure is a Birdeye aggregate, so the source is named accurately here instead.
+    # Overrides SUB_CHIPS' "on Google": 1,595 is a Birdeye aggregate.
     "heroChips": ["4.9 from 1,595 reviews", "Locally Owned", "24/7 Emergency"],
     "scheduleLabel": "Schedule Repair",
     "pillNav": {
@@ -339,12 +275,9 @@ FURNACE_REPAIR = {
             "Heating bills creeping up",
         ],
         "safety": True,
-        # [NEEDS: the gas utility 24-hour emergency numbers for the Dayton and the
-        # Cincinnati service areas. keywords.md flags them as must-not-guess, so the
-        # sentence says "the gas utility" until they are confirmed.]
+        # [NEEDS: gas utility 24-hour emergency numbers for Dayton and Cincinnati; don't guess them.]
         "callout": f'<b>Safety first:</b> smell gas or suspect carbon monoxide? Leave the house first. Call the gas utility from outside, then call <a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a>. The emergency line is answered 24/7.',
     },
-    # Diagnosis questions before Process, the decision and booking questions after it.
     "sections": [
         {"h2": "Why is my furnace blowing cold air?",
          "body": ("Cold air from a running furnace usually means the burners aren't lighting, "
@@ -364,9 +297,7 @@ FURNACE_REPAIR = {
                   "none of them work, the fault is inside the furnace and needs a tech. None "
                   "of them involve opening the gas train or the burner compartment."),
          "h3s": [
-             # Rendered as one paragraph with ticked lines rather than a <ul>: nothing
-             # in the page CSS styles a list, and an unstyled <ul> in the main column
-             # picks up browser defaults that match nothing else on the page.
+             # Not a <ul>: the page CSS has no list styles.
              {"h3": "The five-minute checklist",
               "body": ["✓ Thermostat set to Heat, set above room temperature, and set to Auto rather than Fan"
                        "<br>✓ Thermostat batteries, if it takes them"
@@ -429,9 +360,6 @@ FURNACE_REPAIR = {
         "linkLabel": "Furnace Installation →",
         "href": "/furnace-installation",
     },
-    # The decision card asks the repair-or-replace question; the table two blocks below
-    # answers it. Both stay on this page rather than on /furnace-heating — see the
-    # cannibalization note in handoff-build.md.
     "sectionsTail": [
         {"h2": "What does a furnace repair visit include?",
          "body": ("Your tech finds the failure, explains it in plain terms, and prices the "
@@ -489,7 +417,7 @@ FURNACE_REPAIR = {
         {"q": "Can I keep running a furnace with a cracked heat exchanger?",
          "a": "No. A crack can put combustion gases, including carbon monoxide, into the air your house breathes. A <a href=\"/inspection\">combustion safety check</a> is what confirms it, and the furnace should stay off until that's done. A cracked exchanger gets replaced, not repaired."},
     ],
-    # Copy rewritten 2026-08-02. Move this only when the copy moves.
+    # head.py trusts this date; change it only when the copy changes.
     "updated": "August 2, 2026",
     "updatedISO": "2026-08-02",
     "bookingCard": {
@@ -500,9 +428,7 @@ FURNACE_REPAIR = {
     },
     "rail": {
         "promos": ["xplanSub"],
-        # Set here, not in PHOTO_OVERRIDES: this page is appended to PAGES directly
-        # rather than through _wire_image(), so an override entry for it would never
-        # be read. The stock frame it used to carry is replaced by a real job photo.
+        # Set here: this page skips _wire_image(), so PHOTO_OVERRIDES never reaches it.
         "photo": T.PHOTOS["furnaceRepairOpen"],
         "photoPos": "50% 60%",
         "photoAlt": "An older gas furnace opened up during a repair call, burner compartment and flame sensor exposed",
@@ -518,18 +444,13 @@ FURNACE_REPAIR = {
 }
 PAGES.append((os.path.join(HVAC, "furnace-repair.html"), T.sub_page, FURNACE_REPAIR, "xsp-furnace-repair"))
 
-# ================================================================
-# /plumbing/water-heater/overview — mockup 2e (detail + pill nav), verbatim
-# ================================================================
 WATER_HEATER_OVERVIEW = {
     "trade": "plumbing",
     "breadcrumb": [("Plumbing", "/plumbing/services"), ("Water Heater Services", "")],
     "h1": "Hot water, {X}.",
     "h1Highlight": "back fast",
     "intro": "Repair, replacement, and tankless upgrades for every water heater — from the same people who handle your heating and air.",
-    # "4.9 on Google" was wrong here the same way it was wrong on the two pages above:
-    # the 1,595-review figure is a Birdeye aggregate pooling several platforms, so it
-    # cannot be attributed to Google. facts.md confirms 4.9 / 1,595 for display.
+    # 1,595 is a Birdeye aggregate across platforms, so never label it "on Google".
     "heroChips": ["4.9 from 1,595 reviews", "Same-Day Replacement", "Licensed Plumbers"],
     "bookingCard": {
         "eyebrow": "BOOK WATER HEATER SERVICE",
@@ -593,8 +514,7 @@ WATER_HEATER_OVERVIEW = {
          "a": "Depends on the household — a family of four usually needs 40 to 50 gallons. We size it to how much hot water you actually use, not a guess."},
     ],
     "rail": {
-        # Carried over from the old page (hotlinked stock preview) — replace
-        # with a licensed copy in this repo's assets/ folder when available.
+        # TODO: hotlinked stock preview; replace with a licensed copy in assets/.
         "photo": "https://media.istockphoto.com/id/1487523781/photo/tankless-water-heater-connected-to-recirculator.jpg?s=612x612&w=0&k=20&c=VedTUMp5wz-1hlZ2q395jWE8rjiI1LlCWOfnscc0Gac=",
         "photoAlt": "Tankless water heater installation",
         "promos": ["scheduleFast", "specials"],
@@ -607,28 +527,18 @@ WATER_HEATER_OVERVIEW = {
 }
 PAGES.append((os.path.join(PLUMB, "water-heater", "overview.html"), T.detail_page, WATER_HEATER_OVERVIEW, "xsp-water-heater"))
 
-# ================================================================
-# Step-5 rollout — remaining pages from services/hvac.py and services/plumbing.py data objects
-# ================================================================
 from pages.services import hvac, plumbing, shared
-# maintenance.html is now built from mockup 3a below — drop the interim version
+# maintenance.html comes from MAINTENANCE_3A below.
 del hvac.HVAC_PAGES["maintenance.html"]
 
-# The AC overview is authored above, before the services are imported, so its pill nav is
-# attached here — same Overview / Installation / Repair bar the furnace and heat
-# pump families carry. PAGES holds the dict by reference, so this still lands.
+# AIR_CONDITIONING is defined before this import, so its pill nav is attached here.
 AIR_CONDITIONING["pillNav"] = shared.pillset("AIR CONDITIONING", hvac.AC_PILLS, "Overview")
 
-# ================================================================
-# /maintenance — mockup 3a (X-Plan membership page), copy verbatim
-# ================================================================
 MAINTENANCE_3A = {
     "breadcrumb": [("Heating & Air", "/services"), ("X-Plan Maintenance", "")],
     "h1": "Never think about {X} again.",
     "h1Highlight": "tune-ups",
-    # Leads with Zero Risk Investment per programs.md — it is the only benefit
-    # competitors don't also offer. Both conditions (consecutive years, $2,500 or
-    # 10 years) must appear wherever the accrual is stated.
+    # Wherever the accrual is stated, keep both conditions: consecutive years, and $2,500 or 10 years.
     "intro": "X-Plan is our maintenance membership, and it pays you back. Every dollar you spend on it in consecutive years goes toward replacing your system at the end of its life — up to $2,500 or 10 years. Plus two visits a year, 15% off repairs, and priority scheduling.",
     "heroChips": ["2 Tune-Ups a Year", "15% Off Repairs", "Priority Scheduling"],
     "benefits": {
@@ -662,11 +572,7 @@ MAINTENANCE_3A = {
     "value": {
         "h2": "Most members come out ahead in year one.",
         "stats": [
-            # The old caption claimed two tune-ups booked separately cost more than the
-            # membership. They do not: /specials sells a tune-up at $79, so two is $158
-            # against a $249 membership. The claim was wrong by $91 on our own price
-            # list. What the tune-ups are actually worth is $158, and the membership
-            # earns the rest back through the other three benefits — so say that.
+            # $158 = two $79 tune-ups from /specials; update both together.
             {"n": "2×", "cap": "tune-ups a year, spring and fall, worth $158 on their own."},
             {"n": "15%", "cap": "off one mid-size repair usually covers the rest."},
             {"n": "$20", "cap": "off every service call, emergencies included, when the timing is worst."},
@@ -704,21 +610,7 @@ PAGES.append((os.path.join(HVAC, "maintenance.html"), T.xplan_page, MAINTENANCE_
 def _slug(fname):
     return fname.replace(".html", "").replace("/", "-")
 
-# Pages whose legacy inventory image is replaced by real Extreme photography.
-# These win over old_img(); everything else keeps whatever the old page carried.
 PHOTO_OVERRIDES = {
-    # Both gas-line pages led with a stock photo captioned "a technician checking a
-    # boiler system in a basement". We do not work on boilers (client, 2026-08-03) and
-    # the site now says so in two places, so those pages were opening with an image of
-    # a service we decline. It was also the og:image and the schema primaryimage, so it
-    # was what got shared and what Google indexed for a gas-line query.
-    #
-    # This URL is not new: it is already the second image in gas-line/overview's own
-    # legacy inventory and already the hero on gas-line/installation. Same licensing
-    # exposure as before, no worse, and it is genuinely the right subject.
-    # Client 2026-08-03: licences for the stock comps are being acquired, so these are
-    # no longer a licensing exposure. Replacing them with real gas-line photography at
-    # the shoot is still worth doing, but it is now a quality choice rather than a risk.
     "Plumbing Service Pages/gas-line/overview.html": {
         "photo": "https://media.istockphoto.com/id/1272276339/photo/ceiling-with-multiple-utility-lines-gas-electrical-water-internet-and-sewer.jpg?s=612x612&w=0&k=20&c=rEtMb6DNqRx5JxjmCtLb7n_ZkzGIAT8ya0Z250G7640=",
         "photoAlt": "Gas, water and electrical lines running along a basement ceiling",
@@ -727,24 +619,16 @@ PHOTO_OVERRIDES = {
         "photo": "https://media.istockphoto.com/id/1272276339/photo/ceiling-with-multiple-utility-lines-gas-electrical-water-internet-and-sewer.jpg?s=612x612&w=0&k=20&c=rEtMb6DNqRx5JxjmCtLb7n_ZkzGIAT8ya0Z250G7640=",
         "photoAlt": "Gas, water and electrical lines running along a basement ceiling",
     },
-    # The legacy heatpump.jpg is a generic stock condenser. This is an actual Ruud
-    # heat pump from a job, badge legible — right equipment and right brand for the
-    # one page on the site that is specifically about heat pumps.
     "HVAC Service Pages/heat-pump.html": {
         "photo": T.PHOTOS["ruudHeatPump"],
         "photoPos": "50% 40%",
         "photoAlt": "A Ruud heat pump installed at a Dayton-area home",
     },
-    # The legacy furnace-install.jpg is 379px and, on the page selling new installs,
-    # shows a dirty OLD furnace. This is a real Ruud air handler from a job.
     "HVAC Service Pages/furnace-installation.html": {
         "photo": T.PHOTOS["ruudInstall"],
         "photoPos": "50% 55%",
         "photoAlt": "A newly installed Ruud air handler in a Dayton-area home",
     },
-    # service/furnace-repair.jpg is stock (a technician in an unbranded blue shirt).
-    # This is a real Extreme job. (/furnace-repair gets its own photo inline above —
-    # that page never passes through _wire_image.)
     "HVAC Service Pages/furnace-heating.html": {
         "photo": T.PHOTOS["furnaceService"],
         "photoPos": "50% 45%",
@@ -752,17 +636,9 @@ PHOTO_OVERRIDES = {
     },
 }
 
-# Alt text for the rail photos, keyed by a distinctive piece of the image URL.
-# services/shared.py's detail()/sub() take a photo but never took an alt, so every page that
-# got its image this way rendered alt="" — 25 pages whose lead content photo said
-# nothing at all to a screen reader. Each line below was written after looking at the
-# actual image, except where noted, where the stock title in the URL is the
-# photographer's own description and the subject is unambiguous.
 IMAGE_ALTS = {
-    # Extreme's own photography
     "duct-cleaning-truck.jpg": "The Extreme air duct cleaning truck parked outside a home",
     "muv-401h.jpg": "A PremierOne MUV-401H UV air purifier with its lamp lit",
-    # Licensed/carried-over stock — described from the image, not the page topic
     "furnace-repair.jpg": "A technician working inside an open gas furnace",
     "humidifier.jpg": "A whole-home humidifier and furnace in a basement utility area",
     "dirty-duct.jpg": "The inside of an air duct heavily coated with dust",
@@ -777,7 +653,6 @@ IMAGE_ALTS = {
     "360_F_53961667": "A technician adjusting the thermostat dial on a water heater",
     "360_F_632498826": "A technician working on the valves of a wall-mounted water heater",
     "360_F_507146518": "A plumber installing an under-sink water filtration system",
-    # From the stock title in the URL; subject unambiguous, image not opened
     "ceiling-with-multiple-utility-lines": "Gas, water and electrical lines running along a basement ceiling",
     "male-engineer-checking-boiler-system": "A technician checking a boiler system in a basement",
     "home-inspector-use-thermal-imager": "An inspector scanning for leaks with a thermal imaging camera",
@@ -793,7 +668,6 @@ def _alt_for(url):
     return None
 
 def _wire_image(data, rel):
-    """Attach the page's own legacy image (CDN or carried-over stock), with alt text."""
     override = PHOTO_OVERRIDES.get(rel)
     if override:
         data["rail"].update(override)
@@ -827,47 +701,25 @@ for fname, data in plumbing.PLUMB_FAMILIES.items():
     PAGES.append((os.path.join(PLUMB, *fname.split("/")), builder,
                   _wire_image(data, rel), f"xsp-{_slug(fname)}"))
 
-# ---------------- company pages (4a-4d) — Other pages/ ----------------
 from pages import contact, financing, specials, about
 PAGES.extend(contact.pages(BUILD))
 PAGES.extend(financing.pages(BUILD))
 PAGES.extend(specials.pages(BUILD))
 PAGES.extend(about.pages(BUILD))
 
-# ---------------- Extreme Rewards referral page — Other pages/ ----------------
 from pages import referral
 PAGES.extend(referral.pages(BUILD))
 
-# ---------------- Terms of Service & Limited Warranty — Other pages/ ----------------
 from pages import terms
 PAGES.extend(terms.pages(BUILD))
 
-# ---------------- Privacy Policy — Other pages/ ----------------
-# Published on the client's explicit instruction. The page still renders its own
-# DRAFT / PENDING ATTORNEY REVIEW notice, and privacy.PRIVACY_GAPS still lists what
-# counsel has to resolve; neither is removed here. Publishing it also clears the one
-# live broken internal link on the site — /terms pointed at /privacy and 404ed.
 from pages import privacy
 PAGES.extend(privacy.pages(BUILD))
 
-# ---------------- Location pages (5h, 5a-5g) — .build/pages/locations/ ----------------
-# 267 pages from one template: the hub, 38 city overviews, and 6 service pages each.
 from pages.locations import page
 PAGES.extend(page.pages(BUILD))
 
-# ------------------------------------------------- the one published price
-# The service-call fee goes on every page where someone is deciding whether to pick up
-# the phone, which is not the same set as the pages that mention money today. Before
-# this it appeared only on /maintenance and the ten location maintenance pages, framed
-# as a membership discount — so the only visitor who could find out what a visit costs
-# was one already shopping for a membership. Eleven pages promised "a flat price before
-# we start" without a number anywhere near them.
-#
-# Injected here rather than typed into each page's data, because these dicts live
-# across registry.py, services/ and locations/page.py and a hand-copied fee in forty
-# places is the exact drift this file exists to prevent. Appended last so it reads as
-# the closing practical question after the diagnostic ones, and it lands in an FAQ
-# answer — never an h1, h2 or hero, per the client's constraint.
+# Service-call fee FAQ, added in one place so the price can't drift; FAQ only, never a heading or hero.
 def _route_of(path):
     url = "/" + os.path.relpath(path, PAGES_DIR).replace(os.sep, "/")
     if url.endswith("/overview.html") and url.startswith("/locations/"):
@@ -902,7 +754,6 @@ for _path, _builder, _data, _root in PAGES:
     _fee_pages += 1
 print(f"service-call fee added to {_fee_pages} pages")
 
-# ---------------------------------------------------------------- build
 def main():
     for path, builder, data, root_class in PAGES:
         html = builder(data, root_class)

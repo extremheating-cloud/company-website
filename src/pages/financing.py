@@ -3,20 +3,10 @@ from layout import components as T
 from data import business as D
 from pages.company_shared import UPDATED, UPDATED_ISO, shell, section
 
-# ================================================================
-# /financing-options — mockup 4c (rail tier), copy verbatim
-# ================================================================
-# Scoped to this page only (see shell(extra_css=...)) so the lender application
-# styling doesn't churn /about, /contact and /specials.
+# Page-scoped on purpose: its .xco-fine overrides the shared one, which must not change on other pages.
 FINANCING_CSS = """
-/* --------------------- financing: lender application --------------------- */
-/* Screen-reader-only. The apply controls read as "Apply Online" / "Start
-   Application" visually; the extra span carries the new-tab warning and, on the
-   chip, what the link actually does, since a lender name alone isn't a purpose. */
 .xsp-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
 clip:rect(0,0,0,0);white-space:nowrap;border:0}
-/* A lender chip that is also the application link. Reads as a chip, behaves as a
-   button: 44px target, arrow affordance, green border on hover. */
 .xco-lchips a.chip{display:inline-flex;align-items:center;gap:7px;min-height:44px;
 text-decoration:none;transition:background .15s ease,border-color .15s ease}
 .xco-lchips a.chip:hover{background:rgba(255,255,255,.2);border-color:var(--green)}
@@ -35,10 +25,6 @@ box-shadow:0 6px 18px rgba(107,184,92,.28);transition:background .15s ease}
 .xco-apply-btn .arw{font-size:14px;line-height:1}
 .xco-apply-btn:focus-visible,.xco-lchips a.chip:focus-visible{outline:3px solid #61BC47;
 outline-offset:2px}
-/* The fine print under the Apply button now carries a legal disclosure rather than
-   a single throwaway line, so it gets readable weight and a real line height. The
-   shared .xco-fine is 11px at 45% white, which is fine for a one-liner and not for
-   this. Scoped here so nothing else on the site moves. */
 .xco-fine{font-size:11.5px;line-height:1.6;color:rgba(255,255,255,.62);max-width:66ch}
 .xco-fine a{color:rgba(255,255,255,.88);font-weight:700;text-decoration:underline;
 text-underline-offset:2px}
@@ -58,25 +44,14 @@ T.PROMOS["finXplan"] = dict(cls="mint", t="Protect the new system",
     d="X-Plan keeps your warranty valid with two documented tune-ups a year.",
     lm="Explore X-Plan →", href="/maintenance")
 
-# Apply Online CTA target — the live merchant application link, client-supplied
-# 2026-07-31. It is Wright-Patt Credit Union's MerchantLinq portal, so it is one
-# lender's application, not an aggregator across all three. Every apply CTA on
-# this page names Wright-Patt for that reason; do not relabel them to a generic
-# "our lenders" without a link that actually covers GoodLeap and Synchrony.
-#
-# TODO (marketing): confirm whether GoodLeap and Synchrony have their own customer
-# application links. If they do, this becomes a three-way chooser rather than one
-# button. Every apply control is marked data-apply-cta for a one-pass swap.
+# Wright-Patt's application only, not all three lenders: CTAs must name Wright-Patt, not "our lenders".
 APPLY_HREF = ("https://wpcu.merchantlinq.com/customer?t=Sk0wSVBrdjV0VUxsUnJwbXNwWWtpaFhRdmNxN0o1S1"
               "V2V2E3NlVnM0xyKjFrODNIKlN1eDlQbElZNEpRT25lOWNBQnJvajUyYTVBNGduaDdwNWJqNDJzZFNLSGQq"
               "U3dkVUlKWmxSRUNlTmZIblZtUkowY1ZUWm8qU2RHSW1WM0JFUnFONXZINlN4cGxSQk1QcTdHeEpXZlB5RH"
               "laS3drYjVJZXdBREJFVGNwemkzeUtaVFRpTGR2QWxRc1FBMHZ1RTNPdzhydW9iWHdhTHJqTExGNWVzQWFl"
               "bWc9PQ==")
 APPLY_LENDER = "Wright-Patt Credit Union"
-# The page renders inside a Framer embed iframe. Left to itself, components.py's link
-# handler retargets every off-site link to _top, which would replace the whole site
-# with the lender's portal. An application the customer may abandon belongs in its
-# own tab, so these carry an explicit target the handler now leaves alone.
+# Explicit target: components.py retargets off-site links without one to _top, replacing the site.
 APPLY_ATTRS = f'href="{APPLY_HREF}" target="_blank" rel="noopener noreferrer" data-apply-cta'
 
 def apply_card():
@@ -88,10 +63,6 @@ def apply_card():
     <a class="xsp-btn-green" {APPLY_ATTRS}>Apply Online</a>
     {T.call_btn(f"Call {T.PHONE_DISPLAY}")}
   </div>
-  <!-- The mockup's trust row read "Secure application | No obligation". The first
-       item now duplicates the sub-copy above it ("A quick, secure application…"),
-       so it gives up its slot to the terms link rather than wrapping to a second
-       line in a 360px card. -->
   <div class="trust"><span>No obligation</span><span class="bar">|</span><a href="/terms#financing">Financing terms</a></div>
 </div>'''
 
@@ -125,9 +96,6 @@ def checks_only(eyebrow, h2, items, lead=None, sid=None):
     return section(eyebrow, h2, f'<div class="xsp-checks">{inner}</div>', lead=lead, sid=sid)
 
 def lender_chip(name):
-    """The lender that has a live application link gets a clickable chip; the
-    others stay plain. Same visual weight either way, so the row still reads as
-    three equal lenders rather than one endorsed one."""
     if name != APPLY_LENDER:
         return f'<div class="chip">{name}</div>'
     return (f'<a class="chip" {APPLY_ATTRS}>{name}'
@@ -150,10 +118,7 @@ def lenders_panel(v):
     stats = "".join(
         f'<div><div class="n">{s["n"]}</div><div class="cap">{s["cap"]}</div></div>' for s in v["stats"])
     chips = "".join(lender_chip(l) for l in v["lenders"])
-    # No rates, APRs, or program terms here — by client instruction 2026-08-01,
-    # Extreme is not permitted to advertise them. This is a standing constraint, not
-    # a gap waiting to be filled: do not add a rate later thinking it was an
-    # oversight. The lender states its own terms on its own application.
+    # No rates, APRs or program terms: Extreme isn't permitted to advertise them.
     return f'''<div class="xsp-value" id="xco-lenders">
   <div class="eyebrow">GOOD TO KNOW</div>
   <h3>{v["h2"]}</h3>
@@ -170,17 +135,8 @@ FINANCING = {
     "answer": ("You can finance heating, cooling and plumbing work, and three lenders look at "
                "your application instead of one. Applying only asks for pre-approval, so it "
                "doesn't commit you to buying, and the lender sets the rate and the term."),
-    # The old H1, demoted to the deck line.
     "intro": "A new system now. Payments that fit.",
-    # REG Z. "$0 Down Options" and the "$0 down" stat below state an amount of down
-    # payment. Under 12 CFR 1026.24(d)(1) that is a triggering term for closed-end
-    # credit: an ad that states it must ALSO disclose the terms of repayment and the
-    # APR, and Extreme is not permitted to publish either. Both were replaced with
-    # non-triggering wording on 2026-08-02 per scratchpad/seo/copy-company.md §0a.5.
-    #
-    # MARKETING + LENDER SIGN-OFF STILL REQUIRED. This is a change to approved
-    # marketing copy made on a legal-risk basis, not a copy preference. If the lender
-    # confirms the claim can carry its required disclosures, it can come back.
+    # No "$0 down" here or in the stats: it's a Reg Z triggering term and we can't publish the APR/terms it requires.
     "heroChips": ["Apply in Minutes", "No Prepayment Penalty", "Options for Most Credit"],
     "why": [
         {"t": "One bill becomes a monthly payment",
@@ -215,30 +171,17 @@ FINANCING = {
         "h2": "Financing that works like you'd hope.",
         "stats": [
             {"n": "Minutes", "cap": "to apply and get a decision — right from your kitchen table."},
-            # Was "$0 down" — see the REG Z note on heroChips above. "Three lenders" is a
-            # count of who reviews the application, not a term of credit, so it triggers
-            # no disclosure obligation.
             {"n": "Three", "cap": "lenders reviewing your application, not one."},
             {"n": "No penalty", "cap": "for paying your plan off early."},
         ],
         "lenders": D.LENDERS,
-        # Sits directly under the Apply button, which is where a customer decides.
-        # Says the one thing that most often gets misunderstood — that applying is
-        # a pre-approval, not a commitment — and links the full financing terms.
         "fine": ('Financing subject to credit approval. Applying is a request for pre-approval, '
                  'not an agreement to buy or to lend, and rates and terms are set by the lender. '
                  'See <a href="/terms#financing">full financing terms</a>.'),
     },
     "faqEyebrow": "FINANCING QUESTIONS",
     "faqH2": "What do people ask before applying?",
-    # First Q&A is verbatim from mockup 4c; the others are authored from approved
-    # claims (soft pull, no early-payoff penalty, stacks with specials, plural
-    # lenders, lender sets the rate).
-    #
-    # [VERIFY] The soft-inquiry and no-early-payoff-penalty answers are asserted for
-    # all three lenders. Confirm each one individually — if one runs a hard pull at
-    # the options stage, the first answer has to be narrowed to the lenders it is
-    # true for.
+    # TODO: confirm each lender soft-pulls and has no payoff penalty; narrow these answers if not.
     "faq": [
         {"q": "Does applying affect my credit score?",
          "a": "Checking your options starts with a soft inquiry that doesn't affect your score. A full application follows only if you decide to move forward."},
@@ -251,8 +194,6 @@ FINANCING = {
         {"q": "Can I combine financing with specials?",
          "a": 'Yes. Whatever <a href="/specials">offer is running</a> comes off the price first, and the rest goes on the monthly plan.'},
     ],
-    # The kitchen-table framing, with no dollar figure, no APR and no monthly amount,
-    # so nothing in it triggers a Reg Z disclosure obligation.
     "table": {
         "eyebrow": "FINANCE OR PAY UPFRONT",
         "h2": "Is financing worth it compared with paying upfront?",
@@ -275,16 +216,10 @@ FINANCING = {
         ],
     },
     "rail": {
-        # The cropped file — the uncropped original frames a competitor's service
-        # sticker, phone number and all. Do not swap this back.
+        # Cropped on purpose: the original shows a competitor's sticker and phone number.
         "photo": T.PHOTOS["ruudInstall"],
-        # Was "in a Dayton-area home", which nothing in the repo establishes about this
-        # frame. The alt describes what is in the photograph.
         "photoAlt": f"A Ruud air handler installed by {D.COMPANY}",
-        # 625x1600 portrait in a 360x220 landscape slot: object-fit:cover fits the
-        # width exactly and crops the height, so only the vertical axis does anything
-        # here. 55% lands the visible band on the Ruud badge and spec plate — measured
-        # against the crop, not the original.
+        # 55% frames the Ruud badge in the cropped file; re-measure if the photo changes.
         "photoPos": "50% 55%",
         "promos": ["finSpecials", "finXplan"],
     },
@@ -295,12 +230,6 @@ def financing_page(d, root_class):
         T.mobile_photo(d["rail"]),
         check_cards("WHY FINANCE", "Can I finance a new furnace or AC?", d["why"],
                     sid="why",
-                    # The three advertised payments belong here, on the page someone
-                    # opens specifically to find out whether they can afford this. The
-                    # page previously said "the lender sets the rate" four times and
-                    # never named a single figure, which is what the blind reader
-                    # review's price shopper walked away from. No rate and no term
-                    # appear, here or anywhere — see business.FINANCE_* on why.
                     lead=[f"Yes. An air conditioner starts "
                           f"{D.finance_line(D.FINANCE_AC, 'an AC')}, a heat pump "
                           f"{D.finance_line(D.FINANCE_HEAT_PUMP, 'a heat pump')}, and a "

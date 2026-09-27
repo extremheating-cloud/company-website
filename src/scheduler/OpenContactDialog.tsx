@@ -16,15 +16,12 @@ if (typeof window !== "undefined") {
     if (!w.__xhacScheduleBridgeInit) {
         w.__xhacScheduleBridgeInit = true
 
-        const onCustomEventCapture = () => {
-            // Allow the original schedule engine to handle this event normally
-        }
+        const onCustomEventCapture = () => {}
 
         const onMessageCapture = (event: MessageEvent) => {
             try {
                 if (!event?.data || event.data.type !== "open-contact-dialog")
                     return
-                // Allow the original schedule engine to handle this message normally
             } catch {}
         }
 

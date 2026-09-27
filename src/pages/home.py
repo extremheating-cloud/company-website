@@ -1,12 +1,3 @@
-"""Homepage — the four Framer components combined into one HTML page.
-
-Ported from reference/framer/homepage/{Hero,AboutFaqReviews,XPlan,Brands}.tsx. Copy is verbatim;
-what changed is that the four separate React islands, each with its own <style> block
-and its own copy of the theme tokens, are now one document with one stylesheet.
-
-Prices, phone numbers and the review list come from business.py and reviews.py, so
-the homepage no longer carries its own copies of facts that appear elsewhere.
-"""
 from data import business as D
 from layout import components as T
 from data.reviews import REVIEWS
@@ -15,9 +6,6 @@ X_MARK = T.cdn_asset("brand/x-mark.png")
 LOGO_WHITE = T.cdn_asset("brand/logo-white.png")
 VAN = T.cdn_asset("brand/van.png")
 
-# Reverted to the original wording at the client's request. The rewrite traded a
-# line that reads well for one that named services, and the client's call was that
-# the original was worth more than the ranking difference.
 ROTATING = ["Repairs", "Installs", "Tune-Ups", "Plumbing"]
 
 HVAC_SERVICES = [
@@ -36,10 +24,6 @@ PLUMBING_SERVICES = [
     ("Gas Line", "Safe installation and repair for gas piping.", "/plumbing/gas-line/overview"),
     ("Water Treatment", "Filtration and conditioning for cleaner water.", "/plumbing/water-treatment"),
 ]
-# These were the last four answers on the site still written in the pre-voice-pass
-# register: "receive ongoing training" where /about gives the actual license numbers,
-# and one answer that named the company in the third person. The facts were always
-# available — they were just being described instead of stated.
 FAQS = [
     ("Are your technicians licensed and insured?",
      f"Yes. HVAC work runs under Ohio license {D.LICENSE_HVAC.replace('OH LIC ', '')} and plumbing "
@@ -61,7 +45,6 @@ FAQS = [
 BRANDS = [("Trane", "trane.png"), ("Ruud", "ruud.png"), ("Daikin", "daikin.png")]
 
 CSS = """
-/* ================================ hero ================================ */
 .hp-hero{position:relative;padding-bottom:0;background:linear-gradient(150deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);
 color:#fff;overflow:hidden}
 .hp-hero-mark{position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;
@@ -69,45 +52,24 @@ transform:rotate(-8deg);filter:brightness(0) invert(1);pointer-events:none}
 .hp-wrap{position:relative;max-width:1280px;margin:0 auto;padding:0 40px}
 .hp-hero-grid{display:grid;grid-template-columns:1fr 1.45fr;gap:16px;align-items:center;
 padding:48px 0 0}
-/* The slash is decorative and bleeds left out of the van column. Copy sits above
-   it unconditionally so a wider van can never cut into the text. */
 .hp-hero-in{padding:0 0 64px;max-width:640px;position:relative;z-index:2}
 
-/* Van column. The slash is a rotated + skewed bar behind the van — the same geometry
-   the Framer hero used, expressed as percentages so it tracks the column at any width. */
 .hp-van-col{position:relative;width:100%;align-self:center;min-height:0;
 aspect-ratio:569 / 360;max-height:none}
 .hp-slash{position:absolute;left:-4%;right:-16%;bottom:20%;height:13.3%;
 background:#6BB85C;transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .hp-slash-w{position:absolute;left:1%;right:-23%;bottom:17.5%;height:3.75%;
 background:#fff;opacity:.25;transform:rotate(-9deg) skewX(-16deg)}
-/* Bleeds past the column edge on purpose — the hero is overflow:hidden, so the
-   van reads as driving out of frame rather than sitting in a box.
-   These three numbers are not eyeballed. The van artwork is 1024x576 with the
-   vehicle itself occupying x 189-825, y 166-441 — roughly 62% of the width and 48%
-   of the height, the rest transparent. Width, bottom and translateX were solved so
-   that painted region lands on the box marked on the design screenshot: at 1440 the
-   van reads 736x318 at x 661, y 239. Change one, re-solve the other two. */
+/* width, bottom and translateX are solved together against the artwork (hp-drive repeats the translateX): change one, re-solve all */
 .hp-van{position:absolute;left:50%;bottom:-25.7%;transform:translateX(-44.5%);
 width:169%;max-width:none;filter:drop-shadow(0 26px 34px rgba(0,0,0,.38))}
-/* Mobile stage: van sits under the copy instead of beside it. The image carries
-   ~29% empty space above the van and ~23% below, so the element is much taller than
-   what reads as the van — width:140% is what puts the van itself at ~78% of the
-   viewport. The stage is decorative, so the transparent top overlapping the trust
-   pills is fine as long as it can't swallow a tap. */
+/* pointer-events:none: the image's transparent top overlaps the copy and must not swallow taps */
 .hp-van-stage{display:none;position:relative;aspect-ratio:350 / 250;margin-top:22px;
 pointer-events:none}
 .hp-van-stage .hp-slash{left:-11.4%;right:-11.4%;bottom:25.7%;height:19%}
 .hp-van-stage .hp-van{bottom:16%;transform:translateX(-50%);width:140%;max-width:none;
 filter:drop-shadow(0 16px 20px rgba(0,0,0,.35))}
 
-/* The van drives into frame on load. It faces left, so it enters from the right and
-   decelerates into the resting position solved above. The start offset is in vw so
-   it clears the right edge at any width instead of at one, and the whole run is
-   clipped by .hp-hero{overflow:hidden} — no horizontal scrollbar at any point.
-   prefers-reduced-motion is handled globally in shell.py: the animation collapses to
-   its end state, which is the resting transform, so nothing moves and nothing is
-   left out of place. */
 @keyframes hp-drive{from{transform:translateX(calc(-44.5% + 75vw))}
 to{transform:translateX(-44.5%)}}
 @keyframes hp-drive-mb{from{transform:translateX(calc(-50% + 100vw))}
@@ -132,19 +94,13 @@ font-family:inherit;text-decoration:none;white-space:nowrap}
 .hp-btn-green:hover{background:#8FD481}
 .hp-btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.45)}
 .hp-btn-ghost:hover{border-color:#6BB85C;color:#8FD481}
-/* Five items plus the label need 1053px of text and the bar has 1200 inside its
-   padding, so the column gap is what decides whether this is one line or two.
-   At 30px it came to 1203 and X-Plan dropped to a row of its own, which the
-   mobile note below already calls ragged. 24px leaves 27px of slack. Shortening
-   an item was the other option and the wrong one: "Free Replacement Estimates"
-   is not "Free Estimates" — estimates are free on replacements, not repairs. */
+/* the 24px column gap keeps all five items on one line (30px wraps); don't shorten "Free Replacement Estimates", repairs aren't free */
 .hp-promise{background:#0F172A;color:#fff}
 .hp-promise-in{max-width:1280px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;
 gap:12px 24px;flex-wrap:wrap}
 .hp-promise .lab{font-size:11px;font-weight:800;letter-spacing:1.8px;color:rgba(255,255,255,.45)}
 .hp-promise .item{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85)}
 
-/* ============================== sections ============================== */
 .hp-sec{padding:64px 0}
 .hp-sec.alt{background:#F7F6FA}
 .hp-eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:#5F2980}
@@ -167,7 +123,6 @@ text-decoration:none;transition:box-shadow .15s ease,transform .15s ease}
 .hp-x i:first-child{background:#5F2980;transform:rotate(45deg)}
 .hp-x i:last-child{background:#6BB85C;transform:rotate(-45deg)}
 
-/* ================================ about ================================ */
 .hp-about{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
 .hp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:26px}
 .hp-stats .n{font-style:italic;font-weight:900;font-size:28px;color:#5F2980}
@@ -175,7 +130,6 @@ text-decoration:none;transition:box-shadow .15s ease,transform .15s ease}
 .hp-video{position:relative;border-radius:18px;overflow:hidden;background:#0F172A;aspect-ratio:16/10}
 .hp-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 
-/* ================================= faq ================================= */
 .hp-faq{border-top:1px solid #E7E7EA;margin-top:26px}
 .hp-faq details{border-bottom:1px solid #E7E7EA}
 .hp-faq summary{list-style:none;cursor:pointer;padding:18px 0;font-weight:700;font-size:15.5px;
@@ -185,7 +139,6 @@ color:#0F172A;display:flex;align-items:center;justify-content:space-between;gap:
 .hp-faq details[open] summary::after{content:"−"}
 .hp-faq p{margin:0 0 18px;font-size:14.5px;line-height:1.7;font-weight:500;color:#475569;max-width:70ch}
 
-/* =============================== reviews =============================== */
 .hp-revs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
 .hp-rev{border:1px solid #E7E7EA;border-radius:16px;padding:20px;background:#fff}
 .hp-rev .stars{color:#F6A723;font-size:14px;letter-spacing:2px}
@@ -193,7 +146,6 @@ color:#0F172A;display:flex;align-items:center;justify-content:space-between;gap:
 .hp-rev .who{font-size:12.5px;font-weight:700;color:#0F172A;margin-top:14px}
 .hp-rev .who span{color:#94A3B8;font-weight:600}
 
-/* =============================== x-plan =============================== */
 .hp-xp{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
 padding:38px 40px;color:#fff;position:relative;overflow:hidden}
 .hp-xp-mark{position:absolute;right:-40px;bottom:-40px;width:260px;opacity:.06;
@@ -219,7 +171,6 @@ padding:8px 14px;font-size:12.5px;font-weight:700}
 .hp-inc .c{width:18px;height:18px;flex:none;border-radius:50%;background:#3F852B;color:#fff;
 font-size:10px;font-weight:800;display:grid;place-items:center}
 
-/* =============================== brands =============================== */
 .hp-brands{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:880px;
 margin:30px auto 0;align-items:center}
 .hp-brand{display:flex;align-items:center;justify-content:center;min-height:88px}
@@ -228,7 +179,6 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
 @media (hover:hover) and (pointer:fine){.hp-brand img:hover{filter:none;transform:scale(1.03)}}
 @media (hover:none){.hp-brand img{filter:none}}
 
-/* ============================= responsive ============================= */
 @media (max-width:1023px){
   .hp-wrap{padding:0 24px}
   .hp-cards,.hp-revs{grid-template-columns:1fr 1fr}
@@ -242,17 +192,7 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
   .hp-wrap{padding:0 20px}
   .hp-hero-grid{grid-template-columns:1fr;gap:0;padding:38px 0 0}
   .hp-hero-in{padding:0 0 8px;max-width:none}
-  /* The shared clamp bottoms out at 34px on a phone, which left the headline
-     smaller than the buttons under it. Both numbers below are measured at 320px, the
-     narrowest viewport still in use.
-     The binding line is "Trusted Team", not the rotating word. The roll's widest
-     ("Plumbing") needs 175px of the 280px available, while "Trusted Team" needs 272px
-     at 12vw and wraps onto two lines just past that, which reads badly. 11.5vw puts
-     it at 261px, so there is real margin rather than a single pixel.
-     The 72px cap is the half that mattered. The old 46px cap bound from about 420px
-     upward, which is the whole band between a large phone and the 810px breakpoint,
-     and it left a 46px headline sitting in a 700px-wide column.
-     Re-measure both if the headline or the rotating list changes. */
+  /* measured at 320px so "Trusted Team" stays on one line; re-measure if the headline or ROTATING changes */
   .hp-h1{font-size:min(11.5vw,72px)}
   .hp-van-col{display:none}
   .hp-van-stage{display:block}
@@ -264,17 +204,10 @@ filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease
   .hp-xp{padding:26px 22px;border-radius:20px}
   .hp-head-row{flex-direction:column;align-items:flex-start;gap:10px}
   .hp-brand img{height:38px;max-width:150px}
-  /* Wrapping put two items on some rows and one on others, which read as ragged.
-     One per line on mobile. */
   .hp-promise-in{padding:16px 20px;flex-direction:column;align-items:flex-start;gap:9px}
   .hp-promise .lab{margin-bottom:2px}
 }
-/* ---- desktop / mobile copy swap -------------------------------------------------
-   The hero carries two versions of the lede: the desktop copy is too long for a phone,
-   and the Framer hero swapped it rather than wrapping onto four lines. The badge and
-   the trust chips used to swap the same way; both are gone now, the chips folded into
-   the promise bar below the hero. The selector stays element+class — a bare .hp-mb
-   would lose to any later display rule on source order. */
+/* keep element+class selectors: a bare .hp-mb loses to later display rules */
 p.hp-lede.hp-mb{display:none}
 @media (max-width:809px){
   p.hp-lede.hp-dt{display:none}
