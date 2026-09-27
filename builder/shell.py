@@ -1369,13 +1369,8 @@ def document(page, body_html):
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{FONT}">
-<!-- The tag origins. preconnect for the two that are on the critical path and
-     block nothing else; dns-prefetch for the rest, which is cheaper and enough
-     for scripts that are async or deferred. Six preconnects would be worse than
-     none: each one costs a connection the browser could have spent on content. -->
+<!-- GTM loads every Google tag, so it gets the one preconnect -->
 <link rel="preconnect" href="https://www.googletagmanager.com">
-<link rel="preconnect" href="https://connect.facebook.net">
-<link rel="dns-prefetch" href="https://cdn.broccoli.com">
 <style>{BASE_CSS}{chrome.CSS}</style>
 {jsonld(dict(page, title=title, description=desc), body_html)}
 {analytics.HEAD}
