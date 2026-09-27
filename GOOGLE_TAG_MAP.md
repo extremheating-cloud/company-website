@@ -5,13 +5,86 @@
 
 ---
 
-## What Google will most likely flag
+## The diagnosis (checked in the live accounts, Sep 27)
 
-1. **No enhanced conversions.** Nothing in the code sends `user_data` or sets `allow_enhanced_conversions`.
-2. **No Google Ads conversion fires from the code for bookings or phone clicks.**
-   - The phone-click conversion function is defined on every page and **never called**. There are 2,289 `tel:` links and none of them are wired to it.
-   - Since **2026-09-21**, the Schedule buttons open **ServiceTitan**, which only pushes events to `dataLayer`. Our own wizard's submit event now runs only as a fallback, and it has no `send_to`.
-3. **GTM and a hard-coded gtag both load.** If the GTM container also has GA4 or Ads tags for the same IDs, conversions double count, and it's unclear which one owns what.
+**The Demand Gen campaign has recorded 0 conversions since it launched on Aug 20.** It has spent **$4,048** in the last 30 days (Aug 28–Sep 26) and got 390k impressions. Google's own diagnostic on it reads *"Your campaign may not reach stabilized performance,"* with the fix listed as **"Conversion goals: Improve tag performance,"** and estimated conversions **"Low."**
+
+Why, in order:
+
+1. **It bids on the wrong goal.** The campaign-specific goal is **Phone call leads only**. Five of that goal's six primary actions are *calls from ad extensions*, which come from Search, not from YouTube, Discover or Gmail where Demand Gen runs. The only one it could actually earn is "Website Calls -- (844) 584-7399."
+2. **The account expects enhanced conversions from GTM, and GTM has nothing to give.** Goals → Settings says *"Managed through Google Tag Manager."* The GTM container has no Google Ads tag and no user-data variable.
+3. **Bookings reach no campaign.** The action that counted bookings ("Schedule Service", imported from GA4) sits in the **Submit lead form** goal, which **0 of 56 campaigns** use, and it has stopped receiving data since the ServiceTitan switch. Meanwhile the **Book appointment** goal, used by **40 of 56 campaigns**, contains only a dead action.
+
+This predates the ServiceTitan switch. The campaign was set up this way on Aug 20.
+
+---
+
+## 0. What's in the accounts
+
+### GTM `GTM-TG8GZWXC`: live version 2, published Dec 9, 2025
+
+The whole container is **1 tag, 1 trigger and 0 variables.** Backup: `~/Downloads/GTM-TG8GZWXC_v2.json`.
+
+| Tag | Type | Fires on | Problem |
+|---|---|---|---|
+| Broccoli Booking Completed | GA4 Event `broccoli_booking_completed` | Custom event `bookingCompleted` | **Measurement ID is set to `{{Event}}`**, which resolves to the event name, not `G-GCH0RVQ88Y`. The event is sent nowhere |
+
+No Google Ads tags, no GA4 config, no conversion linker, no `tel:` click trigger, and nothing listening for ServiceTitan. **GTM can't cause double counting.**
+
+### Google Ads 887-338-2120: goals
+
+| Goal | Used by | Primary actions | Status | Results (Aug) |
+|---|---|---|---|---|
+| **Phone call lead** | 42 of 56 campaigns | 6 | Needs attention | 176 |
+| **Book appointment** | 40 of 56 campaigns | **0** | **Misconfigured** | **0** |
+| Submit lead form | **0 of 56** campaigns | 2 | Needs attention | 16 |
+| Get directions | 0 of 56 | 1 | Active | 68 |
+| Page view | 0 of 56 | 1 | Active | 82 |
+
+### The actions inside the goals that matter
+
+| Action | Goal | Primary? | Source | Conv. | Status |
+|---|---|---|---|---|---|
+| DAY (937) 431-7399 (ad extension) | Phone call lead | Primary | Call from Ads | 73.35 | Active |
+| Cin (513) 640-7399 (ad extension) | Phone call lead | Primary | Call from Ads | 49.27 | Active |
+| **Website Calls -- (844) 584-7399** | Phone call lead | Primary | Website | **26.00** | **Active**: the forwarding-number swap works |
+| Plumbing (513) 214-0392 (ad extension) | Phone call lead | Primary | Call from Ads | 18.98 | Active |
+| Phone call (call only ads) \| Both | Phone call lead | Primary | Call from Ads | 9.00 | Active |
+| Business profile - Tracked call | Phone call lead | Primary | Other | 0 | Awaiting conversions |
+| **Phone call (website) actual** | Phone call lead | Secondary | Website | **0** | Awaiting: almost certainly the click conversion nothing calls |
+| **Schedule service** (lowercase s) | Book appointment | **Secondary** | Website | **0** | **Misconfigured** |
+| **Schedule Service** (capital S) | Submit lead form | Primary | **GA4 import** | **15.60** | **Awaiting conversions**, stopped since the ServiceTitan switch |
+| Lead form - Submit | Submit lead form | Primary | Google hosted | 0 | Awaiting conversions |
+
+### Settings (Goals → Settings)
+
+| Setting | Value |
+|---|---|
+| Enhanced conversions | **"Managed through Google Tag Manager. Recording Enhanced Conversions."** GTM has no Ads tag to record them |
+| Enhanced conversions for leads | **Not configured yet** |
+| Call conversion action | **Not set yet** |
+| Customer data terms | Accepted |
+
+### Demand Gen campaign 24159969587
+
+| | |
+|---|---|
+| Conversion goal | **Campaign-specific: Phone call leads** |
+| Bidding | Maximize conversions, no target CPA |
+| Budget / start | $120/day, started **Aug 20, 2026**, runs Mon–Fri |
+| View-through conversion optimization | On (beta) |
+| Last 30 days | **$4,048.63 · 390,227 impr · 0 conversions** |
+| Google's diagnostic | "May not reach stabilized performance" → **Improve tag performance**. Estimated conversions: **Low** |
+
+### ServiceTitan scheduler: events it pushes to `dataLayer`
+
+Captured on the live site by opening the scheduler:
+
+```
+{ event: "BookingStarted", event_category: "Scheduling Pro - Booking", schedulerName: "Website Scheduler" }
+```
+
+The booking-complete event name is **not yet confirmed**. It only fires on a real submitted booking.
 
 ---
 
@@ -70,11 +143,11 @@ No CallRail, CallTrackingMetrics, or other call tracking. No Microsoft, TikTok, 
 | # | Check | Result | Detail |
 |---|---|---|---|
 | 1 | Google tag on every page, in `<head>`, before conversion events | **PASS** | 320/320. It sits at the end of `<head>` after CSS and schema; Google recommends as high as possible |
-| 2 | Enhanced conversions enabled in the tag | **FAIL** in code | No `allow_enhanced_conversions`, no `user_data`. The Ads UI setting and GTM are **unclear** |
+| 2 | Enhanced conversions enabled in the tag | **FAIL** | Ads says *"Managed through Google Tag Manager"*, but GTM has no Ads tag and no user-data variable, and the code sends no `user_data`. EC for leads: *Not configured yet* |
 | 3 | Forms send email + phone into the conversion | **FAIL** | The wizard has name, phone and email in memory but sends a bare event. ServiceTitan keeps them inside its iframe, so our page never sees them |
 | 4 | Consent Mode | **ABSENT** | No `gtag('consent', …)`. The privacy policy's open notes already flag the Ohio consent question for counsel |
-| 5 | `send_to` values in code | **Listed** | Only two: `AW-974361798/mAc6CKqtoa0bEMapztAD` (phone click, never fires) and `AW-974361798/mC9aCLvK9rkbEMapztAD` (calls from website). Compare against Ads, Goals, Conversions |
-| 6 | No duplicate tags | **RISK** | GTM loads **and** gtag.js loads GA4 + Ads directly. If GTM also carries them, it double counts. gtag.js is also loaded twice |
+| 5 | `send_to` values in code | **Matched** | `mC9aCLvK9rkbEMapztAD` = "Website Calls -- (844) 584-7399" (26 conv, working). `mAc6CKqtoa0bEMapztAD` = almost certainly "Phone call (website) actual" (Secondary, 0, never called). Confirm the second one's label on the call |
+| 6 | No duplicate tags | **PASS** | GTM carries no GA4 or Ads tags, so nothing doubles. gtag.js is loaded twice (two script tags), which is redundant but harmless |
 | 7 | `tel:` conversion fires on click, once | **FAIL** | Doesn't fire at all from code. The function is correct (fires on the call, not on load) but nothing calls it |
 
 ---
@@ -124,12 +197,20 @@ Open `http://localhost:8099`, then connect Tag Assistant (tagassistant.google.co
 
 ---
 
-## 8. Couldn't tell from code: check before noon Monday
+## 8. What's still open
 
-1. **What's inside `GTM-TG8GZWXC`**: GA4 or Ads tags, a `tel:` click trigger, triggers on ServiceTitan or Broccoli events. This is the biggest unknown.
-2. Which conversion actions exist, which are **Primary**, and which one the Demand Gen campaign bids toward.
-3. Whether `schedule_form_submit` is a GA4 key event imported into Ads.
-4. The enhanced conversions setting: Goals, Settings, Enhanced conversions (automatic, manual or off).
-5. ServiceTitan's booking-complete event name, and whether it can hand the customer's email and phone to the page. Book a test appointment with Tag Assistant open to see it.
-6. Whether Google forwarding numbers are actually swapping (check the "Calls from website" action's diagnostics).
-7. **When the warning first appeared.** If it was on or after 2026-09-21, the ServiceTitan switch is the prime suspect.
+Answered on Sep 27: the GTM contents, which conversion actions exist, what Demand Gen bids on, the enhanced conversions setting, and when the problem started (Aug 20).
+
+Still open:
+
+1. **ServiceTitan's booking-complete event name.** Only a real submitted booking reveals it, and that creates a real job in dispatch. Either ask ServiceTitan, or book one yourself and cancel it.
+2. **Can ServiceTitan hand the customer's email and phone to the page?** Enhanced conversions for bookings depend on it. Ask ServiceTitan.
+3. **Confirm `mAc6CKqtoa0bEMapztAD` is "Phone call (website) actual".** Open that action in Ads and check its tag label.
+4. **Why "Schedule service" (Book appointment goal) is Misconfigured.** Click its Troubleshoot link on the call.
+
+## 9. Questions to put to Google on the call
+
+1. Demand Gen bids only on **Phone call leads**, and five of its six primary actions are ad-extension calls it can't generate. Should it bid on a **booking** goal instead?
+2. Enhanced conversions say **"Managed through GTM"**, but GTM has no Ads tag. Should EC be moved to the Google tag in code, or should an Ads conversion tag go into GTM?
+3. Bookings now happen in **ServiceTitan's iframe**, which pushes `BookingStarted` etc. to `dataLayer`. What's the right way to turn its completion event into a Primary Ads conversion with enhanced conversions?
+4. There are two near-duplicate actions: **"Schedule Service"** (GA4 import, Primary, in a goal no campaign uses) and **"Schedule service"** (Secondary, Misconfigured, in the goal 40 campaigns use). Which one should survive?
