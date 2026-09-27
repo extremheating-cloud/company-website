@@ -34,6 +34,8 @@ src/        browser JavaScript sources
   schedule/     mount.tsx — the self-hosted entry for the booking wizard
 
 builder/    the Python generator
+tags/       tracking tags, on every page: head.html goes in <head>, body.html
+            right after <body>. disabled/ is kept for rollback and never built.
 design/     mockups and design handoff docs
 ```
 
