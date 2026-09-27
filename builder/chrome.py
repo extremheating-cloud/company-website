@@ -801,7 +801,7 @@ JS = """
   /* backup scheduler, fetched only when ServiceTitan is unavailable */
   var loading = false;
   function loadWizard(replay){
-    if (window.XHSchedule) { if (replay) window.XHSchedule.open(); return; }
+    if (window.XHSchedule) return;
     if (replay) window.__xhScheduleWanted = true;
     if (loading) return;
     loading = true;
@@ -815,7 +815,8 @@ JS = """
     };
     document.head.appendChild(s);
   }
-  window.addEventListener('open-contact-dialog', function(){ loadWizard(true); });
+  /* once loaded, the dialog listens for this itself */
+  window.addEventListener('open-contact-dialog', function(){ if (!window.XHSchedule) loadWizard(true); });
   ['pointerover','touchstart','focusin'].forEach(function(evt){
     document.addEventListener(evt, function(e){
       if (window.ScheduleEngine) return;
