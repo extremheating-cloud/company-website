@@ -78,13 +78,24 @@ No Google Ads tags, no GA4 config, no conversion linker, no `tel:` click trigger
 
 ### ServiceTitan scheduler: events it pushes to `dataLayer`
 
-Captured on the live site by opening the scheduler:
+Captured on the live site from a real test booking on Sep 27 (appointment 150981661, Aaron to cancel). Every event has `event_category: "Scheduling Pro - Booking"` and `schedulerName: "Website Scheduler"`.
 
-```
-{ event: "BookingStarted", event_category: "Scheduling Pro - Booking", schedulerName: "Website Scheduler" }
-```
+| Order | `event` | `event_label` | `value` |
+| --- | --- | --- | --- |
+| 1 | `BookingStarted` | | |
+| 2 | `BookingProcessStarted` | | |
+| 3 | `BookingAddressSelected` | | |
+| 4 | `BookingIssueStarted` | `HVAC` | |
+| 5 | `BookingIssueCompleted` | `HVAC` | issue id, plus `issuePath` |
+| 6 | `BookingSchedule` | `Timeslot` | e.g. `Tue, Sep 29, 12 PM - 4 PM` |
+| 7 | `BookingDetailsMore` | | |
+| 8 | **`BookingBooked`** | `Appointment id` | **the ServiceTitan appointment id** |
 
-The booking-complete event name is **not yet confirmed**. It only fires on a real submitted booking.
+**`BookingBooked` is the conversion event.** Its `value` is the appointment id, which makes a clean `transaction_id` for dedup. It is not a dollar value.
+
+**None of these reach Google today.** They're plain `dataLayer` objects, which gtag.js ignores; only a GTM trigger would pick them up, and GTM has none. During the test booking the only GA4 hit was `page_view`, and nothing went to Ads.
+
+**No email or phone in any event**, so enhanced conversions can't read them from `dataLayer`.
 
 ---
 
@@ -126,7 +137,7 @@ No CallRail, CallTrackingMetrics, or other call tracking. No Microsoft, TikTok, 
 |---|---|---|---|---|
 | **Phone click** | 2,289 `tel:` links on 320 pages: header, footer, hero, content, mobile menu. 2,255 go to (844) 584-7399; 34 go to the four office lines | **Nothing fires on click.** `gtag_report_conversion()` exists but no link calls it | would be `AW-974361798/mAc6CKqtoa0bEMapztAD` | **No**, from code. Check GTM for a click trigger |
 | **Calls from website** | "(844) 584-7399" as text on 319 pages | gtag swaps the number for ad clickers, and Google counts the call | `AW-974361798/mC9aCLvK9rkbEMapztAD` | **Unclear.** Config is present; depends on the Ads conversion action. Office numbers are not swapped |
-| **Booking: ServiceTitan** (primary since 2026-09-21) | Every Schedule button (7 on the homepage) calls `ScheduleEngine.show()`, `chrome.py:786` | ST pushes `{event, event_category, event_label, schedulerName, uniqueEventId, value}` to `dataLayer` from its iframe | Event names come from ServiceTitan and aren't visible in code | **No**, from code. Only if GTM has a trigger on ST's events |
+| **Booking: ServiceTitan** (primary since 2026-09-21) | Every Schedule button (7 on the homepage) calls `ScheduleEngine.show()`, `chrome.py:786` | ST pushes `{event, event_category, event_label, schedulerName, uniqueEventId, value}` to `dataLayer` from its iframe | Completion is **`BookingBooked`** (captured Sep 27, see §0) | **No.** gtag.js ignores these and GTM has no trigger |
 | **Booking: our wizard** (fallback, only when ST fails to load) | Same buttons | After a successful Formspree POST (`formspree.io/f/mqadkggp`): `gtag('event','schedule_form_submit')` **with no `send_to`**, plus Meta `Lead` | `schedule_form_submit`, `ContactFlowDialog.tsx:1128` | **GA4 only**, unless it's a GA4 key event imported into Ads. Inline success message, no thank-you page |
 | Wizard opened | Same | `gtag('event','schedule_dialog_open')` | `ContactFlowDialog.tsx:856` | GA4 only |
 | **Chat** (FollowUp Pro) | Bottom right, every page | Fires nothing | n/a | **No** |
@@ -203,8 +214,8 @@ Answered on Sep 27: the GTM contents, which conversion actions exist, what Deman
 
 Still open:
 
-1. **ServiceTitan's booking-complete event name.** Only a real submitted booking reveals it, and that creates a real job in dispatch. Either ask ServiceTitan, or book one yourself and cancel it.
-2. **Can ServiceTitan hand the customer's email and phone to the page?** Enhanced conversions for bookings depend on it. Ask ServiceTitan.
+1. ~~ServiceTitan's booking-complete event name.~~ **Answered Sep 27: `BookingBooked`** (see §0).
+2. **Can ServiceTitan hand the customer's email and phone to the page?** Its `dataLayer` events carry neither. Ask ServiceTitan whether there's another hook; otherwise EC for bookings needs a different route.
 3. **Confirm `mAc6CKqtoa0bEMapztAD` is "Phone call (website) actual".** Open that action in Ads and check its tag label.
 4. **Why "Schedule service" (Book appointment goal) is Misconfigured.** Click its Troubleshoot link on the call.
 
@@ -212,5 +223,5 @@ Still open:
 
 1. Demand Gen bids only on **Phone call leads**, and five of its six primary actions are ad-extension calls it can't generate. Should it bid on a **booking** goal instead?
 2. Enhanced conversions say **"Managed through GTM"**, but GTM has no Ads tag. Should EC be moved to the Google tag in code, or should an Ads conversion tag go into GTM?
-3. Bookings now happen in **ServiceTitan's iframe**, which pushes `BookingStarted` etc. to `dataLayer`. What's the right way to turn its completion event into a Primary Ads conversion with enhanced conversions?
+3. Bookings now happen in **ServiceTitan's iframe**, which pushes **`BookingBooked`** (value = appointment id) to `dataLayer` on completion, and nothing reaches Google. Should a GTM trigger on `BookingBooked` fire the Ads conversion, and how do we get enhanced conversions when the event carries no email or phone?
 4. There are two near-duplicate actions: **"Schedule Service"** (GA4 import, Primary, in a goal no campaign uses) and **"Schedule service"** (Secondary, Misconfigured, in the goal 40 campaigns use). Which one should survive?
