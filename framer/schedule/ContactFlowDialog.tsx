@@ -890,7 +890,7 @@ export default function ContactFlowDialog() {
         if (open && !openedOnceRef.current) {
             openedOnceRef.current = true
             ;(window.dataLayer = window.dataLayer || []).push({
-                event: "online_booking_form_opened",
+                event: "Online Booking Form Opened",
                 booking_source: "website_form",
                 device_type: getDeviceType(),
             })
@@ -1178,7 +1178,7 @@ export default function ContactFlowDialog() {
                 if (phone) userData.phone_number = phone
                 userData.address = addr
                 ;(window.dataLayer = window.dataLayer || []).push({
-                    event: "online_booking_completed",
+                    event: "Online Booking Completed",
                     booking_source: "website_form",
                     lead_id: newLeadId(),
                     service: serviceLabel,

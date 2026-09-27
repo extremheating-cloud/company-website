@@ -16,7 +16,7 @@ wizard actually sends:
   ContactFlowDialog.tsx:436-470    Google Places address autocomplete
   ContactFlowDialog.tsx:501-535    photon.komoot.io geocoder fallback
   ContactFlowDialog.tsx:570-580    gclid/gbraid/wbraid in localStorage
-  ContactFlowDialog.tsx:892, 1180  online_booking_form_opened / online_booking_completed dataLayer events for GTM
+  ContactFlowDialog.tsx:892, 1180  "Online Booking Form Opened" / "Online Booking Completed" dataLayer events for GTM
   shell.py:18, 95-97               Google Fonts + jsDelivr on every page
   homepage.py:383, template.py:726 YouTube embeds
 
