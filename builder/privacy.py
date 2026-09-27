@@ -16,7 +16,7 @@ wizard actually sends:
   ContactFlowDialog.tsx:436-470    Google Places address autocomplete
   ContactFlowDialog.tsx:501-535    photon.komoot.io geocoder fallback
   ContactFlowDialog.tsx:570-580    gclid/gbraid/wbraid in localStorage
-  ContactFlowDialog.tsx:837, 1099  gtag / fbq conversion events (fire only if a tag exists)
+  ContactFlowDialog.tsx:892, 1181  wizard_open / wizard_submit dataLayer events for GTM
   shell.py:18, 95-97               Google Fonts + jsDelivr on every page
   homepage.py:383, template.py:726 YouTube embeds
 
@@ -77,7 +77,7 @@ ENTITY = TM.ENTITY
 ENTITY_PLUMBING = TM.ENTITY_PLUMBING
 ENTITY_SCOPE = TM.ENTITY_SCOPE
 
-EFFECTIVE = "September 24, 2026"
+EFFECTIVE = "September 27, 2026"
 
 # Address for privacy requests. Deliberately ONE address, not all four offices — a
 # request needs a single destination, and the primary office is the one the footer
@@ -274,26 +274,28 @@ SECTIONS = [
 
         # Written from tags/head.html and tags/body.html. New vendor there, add it here.
         "<b>Analytics and advertising measurement.</b> Every page loads Google Tag Manager, "
-        "which in turn loads Google Analytics 4 and Google Ads conversion tracking, and the "
-        "Meta (Facebook) Pixel. These record that pages were viewed, that a booking form was "
-        "opened and that a booking was completed, along with general device and location "
-        "information, and they set cookies in your browser. Google and Meta receive that "
-        "information directly. It is used to measure which advertising produces calls and "
-        "bookings, not to identify you by name.",
+        "which in turn loads Google Analytics 4 and Google Ads conversion tracking. These "
+        "record that pages were viewed, that a booking form was opened and that a booking was "
+        "completed, along with general device and location information, and they set cookies "
+        "in your browser. Google receives that information directly. It is used to measure "
+        "which advertising produces calls and bookings, not to identify you by name. When you "
+        "submit our online booking form, your email, phone number, name and address may be "
+        "hashed and shared with Google to measure how our ads perform (Google Ads enhanced "
+        "conversions).",
 
         "<b>Call measurement.</b> Google Ads may replace the phone number shown on the site "
         "with a forwarding number so that a call can be attributed to the advertising that "
         "produced it. The call still reaches the same office. The local numbers listed for "
         "each office are not replaced.",
 
-        "<b>Booking and messaging widgets.</b> Three further providers load on every page: "
-        "Broccoli, which powers on-site messaging, FollowUp Pro, which powers the chat "
+        "<b>Booking and messaging widgets.</b> Two further providers load on every page: "
+        "FollowUp Pro, which powers the chat "
         "window in the corner of the page, and the ServiceTitan online scheduler, which "
         "opens in a window on this site when you book. "
         "Anything you type into one of those is received by that provider as well as by "
         "Extreme. Their own privacy terms apply to what they hold.",
 
-        # FollowUp Pro is the only one of the three that takes a name and a mobile number
+        # FollowUp Pro is the only one of the two that takes a name and a mobile number
         # before it will do anything, and it is the A2P opt-in path, so what it keeps and
         # why is stated rather than left to the sentence above.
         "<b>The chat window.</b> Before you can send a chat message, FollowUp Pro asks for "
@@ -468,7 +470,7 @@ SECTIONS = [
         "choices.",
 
         "<b>A note on the third parties above.</b> Deleting your information from Extreme's "
-        "records does not by itself delete copies held by Google, Meta or other advertising "
+        "records does not by itself delete copies held by Google or other advertising "
         "services from their own tracking. Those are controlled through your browser and "
         "through your account settings with those companies.",
     ]),
@@ -599,7 +601,7 @@ PRIVACY_GAPS = [
     "open questions a future revision should close, and several of them are answers only the\n"
     "business can give.",
     "RESOLVED 2026-08-03: the tag inventory is confirmed and disclosed — GTM, GA4, "
-    "Google Ads with call measurement, Meta Pixel, Broccoli, FollowUp Pro and the "
+    "Google Ads with call measurement, FollowUp Pro and the "
     "ServiceTitan scheduler. Counsel should still review whether the advertising "
     "tags require a consent mechanism for Ohio visitors, which is a separate "
     "question from disclosure and is still open below.",

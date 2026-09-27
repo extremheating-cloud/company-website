@@ -568,8 +568,7 @@ async function fetchAddressSuggestions(
 /* ---------- Tracking (existing events, re-mapped to merged steps) ---------- */
 declare global {
     interface Window {
-        gtag?: (...args: any[]) => void
-        fbq?: (...args: any[]) => void
+        dataLayer?: Record<string, any>[]
         google?: any
     }
 }
@@ -592,6 +591,43 @@ function storeClickIds() {
     if (wbraid) localStorage.setItem("xhac_wbraid", wbraid)
 }
 storeClickIds()
+
+function newLeadId(): string {
+    try {
+        if (window.crypto?.randomUUID) return window.crypto.randomUUID()
+    } catch {}
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+}
+
+// Google wants E.164; anything that isn't a US number is left out
+function toE164(raw: string): string | undefined {
+    const d = raw.replace(/\D/g, "")
+    if (d.length === 10 && /^[2-9]/.test(d)) return "+1" + d
+    if (d.length === 11 && /^1[2-9]/.test(d)) return "+" + d
+    return undefined
+}
+
+// One address box, so pull the parts out of "street, city, ST ZIP"
+function splitAddress(raw: string): Record<string, string> {
+    const out: Record<string, string> = {}
+    const s = raw.replace(/,\s*(USA|United States)\s*$/i, "")
+    const zip = s.match(/\b(\d{5})(?:-\d{4})?\s*$/)
+    if (zip) out.postal_code = zip[1]
+    const parts = s
+        .split(",")
+        .map((p) => p.trim())
+        .filter((p) => p && !/^\d{5}(-\d{4})?$/.test(p))
+    const st = (parts[parts.length - 1] || "").replace(
+        /\s*\d{5}(-\d{4})?$/,
+        ""
+    )
+    if (parts.length >= 2 && /^([A-Za-z]{2}|Ohio)$/i.test(st)) {
+        out.region = /^ohio$/i.test(st) ? "OH" : st.toUpperCase()
+        out.city = parts[parts.length - 2]
+        if (parts.length > 2) out.street = parts.slice(0, -2).join(", ")
+    }
+    return out
+}
 
 /* ---------- Date helpers ---------- */
 function toISO(d: Date): string {
@@ -853,7 +889,8 @@ export default function ContactFlowDialog() {
     React.useEffect(() => {
         if (open && !openedOnceRef.current) {
             openedOnceRef.current = true
-            window.gtag?.("event", "schedule_dialog_open", {
+            ;(window.dataLayer = window.dataLayer || []).push({
+                event: "wizard_open",
                 event_category: "Schedule Engine",
                 event_label: "Dialog Opened",
                 device_type: getDeviceType(),
@@ -1125,18 +1162,30 @@ export default function ContactFlowDialog() {
 
         setSubmitting(false)
         if (ok) {
-            window.gtag?.("event", "schedule_form_submit", {
-                event_category: "Schedule Engine",
-                event_label: "Form Submitted",
-                device_type: getDeviceType(),
-            })
+            // user_data is for Ads enhanced conversions; it goes nowhere but here
             try {
-                window.fbq?.("track", "Lead", {
-                    event_source: "schedule_engine",
-                    device_type: getDeviceType(),
+                const addr: Record<string, string> = {
+                    first_name: firstName.trim(),
+                    last_name: lastName.trim(),
+                    ...splitAddress(address.trim()),
+                    country: "US",
+                }
+                Object.keys(addr).forEach((k) => {
+                    if (!addr[k]) delete addr[k]
+                })
+                const userData: Record<string, any> = {}
+                if (email.trim()) userData.email = email.trim().toLowerCase()
+                const phone = toE164(phoneDigits)
+                if (phone) userData.phone_number = phone
+                userData.address = addr
+                ;(window.dataLayer = window.dataLayer || []).push({
+                    event: "wizard_submit",
+                    lead_id: newLeadId(),
+                    service: serviceLabel,
+                    user_data: userData,
                 })
             } catch (err) {
-                console.warn("Meta fbq error", err)
+                console.warn("dataLayer push error", err)
             }
             setBooked(true)
         } else {
