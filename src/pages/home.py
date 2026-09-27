@@ -1,0 +1,456 @@
+"""Homepage — the four Framer components combined into one HTML page.
+
+Ported from reference/framer/homepage/{Hero,AboutFaqReviews,XPlan,Brands}.tsx. Copy is verbatim;
+what changed is that the four separate React islands, each with its own <style> block
+and its own copy of the theme tokens, are now one document with one stylesheet.
+
+Prices, phone numbers and the review list come from business.py and reviews.py, so
+the homepage no longer carries its own copies of facts that appear elsewhere.
+"""
+from data import business as D
+from layout import components as T
+from data.reviews import REVIEWS
+
+X_MARK = T.cdn_asset("brand/x-mark.png")
+LOGO_WHITE = T.cdn_asset("brand/logo-white.png")
+VAN = T.cdn_asset("brand/van.png")
+
+# Reverted to the original wording at the client's request. The rewrite traded a
+# line that reads well for one that named services, and the client's call was that
+# the original was worth more than the ranking difference.
+ROTATING = ["Repairs", "Installs", "Tune-Ups", "Plumbing"]
+
+HVAC_SERVICES = [
+    ("Cooling", "AC repair, replacement, and tune-ups.", "/air-conditioning"),
+    ("Heating", "Furnace repairs, installs, and safety checks.", "/furnace-heating"),
+    ("Maintenance Plans", "Bi-annual tune-ups and priority service.", "/maintenance"),
+    ("Airflow &amp; Ducts", "Duct cleaning and air balancing.", "/duct-cleaning"),
+    ("Heat Pumps", "Year-round efficiency with heat pump systems.", "/heat-pump"),
+    ("Indoor Air Quality", "Filtration, UV, and humidity control.", "/indoor-air-quality"),
+]
+PLUMBING_SERVICES = [
+    ("Drain Cleaning", "Fast help for clogged and slow drains.", "/plumbing/clogged-drain"),
+    ("Sump Pump", "Protection against basement water issues.", "/plumbing/sump-pump/overview"),
+    ("Water Heaters", "Repair and replacement for hot water systems.", "/plumbing/water-heater/overview"),
+    ("Leak Detection", "Find and repair hidden plumbing leaks quickly.", "/plumbing/leak-detection"),
+    ("Gas Line", "Safe installation and repair for gas piping.", "/plumbing/gas-line/overview"),
+    ("Water Treatment", "Filtration and conditioning for cleaner water.", "/plumbing/water-treatment"),
+]
+# These were the last four answers on the site still written in the pre-voice-pass
+# register: "receive ongoing training" where /about gives the actual license numbers,
+# and one answer that named the company in the third person. The facts were always
+# available — they were just being described instead of stated.
+FAQS = [
+    ("Are your technicians licensed and insured?",
+     f"Yes. HVAC work runs under Ohio license {D.LICENSE_HVAC.replace('OH LIC ', '')} and plumbing "
+     f"under {D.LICENSE_PLUMBING.replace('OH LIC ', '')}, both insured. Every tech is drug-tested "
+     "and background-checked before they set foot in your house."),
+    ("Do you offer free estimates?",
+     "Yes, on system replacements, new installations and major repair work. A diagnostic visit on a "
+     "system that has already failed is a service call rather than an estimate, and you hear that "
+     "price before we come out."),
+    ("Do you offer financing options?",
+     "Yes, on qualifying equipment and repair work. The lender sets the rate and the term, so what "
+     "you're offered depends on your credit rather than on us. Applying takes a few minutes and "
+     "does not commit you to the work."),
+    ("Which areas do you serve?",
+     "Dayton, Cincinnati, Troy, Tipp City and the Miami Valley communities around them, out of four "
+     "offices. If you're not sure whether your town is in range, check the locations page or just "
+     "call and ask."),
+]
+BRANDS = [("Trane", "trane.png"), ("Ruud", "ruud.png"), ("Daikin", "daikin.png")]
+
+CSS = """
+/* ================================ hero ================================ */
+.hp-hero{position:relative;padding-bottom:0;background:linear-gradient(150deg,#5E2C7E 0%,#542770 45%,#3A1A4E 100%);
+color:#fff;overflow:hidden}
+.hp-hero-mark{position:absolute;right:-90px;top:-40px;width:620px;opacity:.06;
+transform:rotate(-8deg);filter:brightness(0) invert(1);pointer-events:none}
+.hp-wrap{position:relative;max-width:1280px;margin:0 auto;padding:0 40px}
+.hp-hero-grid{display:grid;grid-template-columns:1fr 1.45fr;gap:16px;align-items:center;
+padding:48px 0 0}
+/* The slash is decorative and bleeds left out of the van column. Copy sits above
+   it unconditionally so a wider van can never cut into the text. */
+.hp-hero-in{padding:0 0 64px;max-width:640px;position:relative;z-index:2}
+
+/* Van column. The slash is a rotated + skewed bar behind the van — the same geometry
+   the Framer hero used, expressed as percentages so it tracks the column at any width. */
+.hp-van-col{position:relative;width:100%;align-self:center;min-height:0;
+aspect-ratio:569 / 360;max-height:none}
+.hp-slash{position:absolute;left:-4%;right:-16%;bottom:20%;height:13.3%;
+background:#6BB85C;transform:rotate(-9deg) skewX(-16deg);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.hp-slash-w{position:absolute;left:1%;right:-23%;bottom:17.5%;height:3.75%;
+background:#fff;opacity:.25;transform:rotate(-9deg) skewX(-16deg)}
+/* Bleeds past the column edge on purpose — the hero is overflow:hidden, so the
+   van reads as driving out of frame rather than sitting in a box.
+   These three numbers are not eyeballed. The van artwork is 1024x576 with the
+   vehicle itself occupying x 189-825, y 166-441 — roughly 62% of the width and 48%
+   of the height, the rest transparent. Width, bottom and translateX were solved so
+   that painted region lands on the box marked on the design screenshot: at 1440 the
+   van reads 736x318 at x 661, y 239. Change one, re-solve the other two. */
+.hp-van{position:absolute;left:50%;bottom:-25.7%;transform:translateX(-44.5%);
+width:169%;max-width:none;filter:drop-shadow(0 26px 34px rgba(0,0,0,.38))}
+/* Mobile stage: van sits under the copy instead of beside it. The image carries
+   ~29% empty space above the van and ~23% below, so the element is much taller than
+   what reads as the van — width:140% is what puts the van itself at ~78% of the
+   viewport. The stage is decorative, so the transparent top overlapping the trust
+   pills is fine as long as it can't swallow a tap. */
+.hp-van-stage{display:none;position:relative;aspect-ratio:350 / 250;margin-top:22px;
+pointer-events:none}
+.hp-van-stage .hp-slash{left:-11.4%;right:-11.4%;bottom:25.7%;height:19%}
+.hp-van-stage .hp-van{bottom:16%;transform:translateX(-50%);width:140%;max-width:none;
+filter:drop-shadow(0 16px 20px rgba(0,0,0,.35))}
+
+/* The van drives into frame on load. It faces left, so it enters from the right and
+   decelerates into the resting position solved above. The start offset is in vw so
+   it clears the right edge at any width instead of at one, and the whole run is
+   clipped by .hp-hero{overflow:hidden} — no horizontal scrollbar at any point.
+   prefers-reduced-motion is handled globally in shell.py: the animation collapses to
+   its end state, which is the resting transform, so nothing moves and nothing is
+   left out of place. */
+@keyframes hp-drive{from{transform:translateX(calc(-44.5% + 75vw))}
+to{transform:translateX(-44.5%)}}
+@keyframes hp-drive-mb{from{transform:translateX(calc(-50% + 100vw))}
+to{transform:translateX(-50%)}}
+.hp-van-col .hp-van{animation:hp-drive 1.15s cubic-bezier(.17,.84,.34,1) .12s both}
+.hp-van-stage .hp-van{animation:hp-drive-mb 1s cubic-bezier(.17,.84,.34,1) .12s both}
+.hp-h1{margin:0;font-style:italic;font-weight:900;font-size:clamp(34px,5.4vw,54px);
+line-height:1.06;letter-spacing:-1.2px}
+.hp-roll{display:inline-block;height:1.06em;overflow:hidden;vertical-align:bottom}
+.hp-roll ul{list-style:none;margin:0;padding:0;animation:hp-roll 9s infinite}
+.hp-roll li{height:1.06em;color:#6BB85C;white-space:nowrap}
+@keyframes hp-roll{0%,18%{transform:translateY(0)}25%,43%{transform:translateY(-1.06em)}
+50%,68%{transform:translateY(-2.12em)}75%,93%{transform:translateY(-3.18em)}100%{transform:translateY(-4.24em)}}
+@media (prefers-reduced-motion:reduce){.hp-roll ul{animation:none}}
+.hp-lede{margin:18px 0 0;max-width:560px;font-size:16px;line-height:1.65;font-weight:500;
+color:rgba(255,255,255,.84)}
+.hp-cta-row{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+.hp-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;
+padding:13px 24px;border-radius:12px;font-weight:800;font-size:15px;border:0;cursor:pointer;
+font-family:inherit;text-decoration:none;white-space:nowrap}
+.hp-btn-green{background:#6BB85C;color:#0F172A;box-shadow:0 8px 24px rgba(107,184,92,.32)}
+.hp-btn-green:hover{background:#8FD481}
+.hp-btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.45)}
+.hp-btn-ghost:hover{border-color:#6BB85C;color:#8FD481}
+/* Five items plus the label need 1053px of text and the bar has 1200 inside its
+   padding, so the column gap is what decides whether this is one line or two.
+   At 30px it came to 1203 and X-Plan dropped to a row of its own, which the
+   mobile note below already calls ragged. 24px leaves 27px of slack. Shortening
+   an item was the other option and the wrong one: "Free Replacement Estimates"
+   is not "Free Estimates" — estimates are free on replacements, not repairs. */
+.hp-promise{background:#0F172A;color:#fff}
+.hp-promise-in{max-width:1280px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;
+gap:12px 24px;flex-wrap:wrap}
+.hp-promise .lab{font-size:11px;font-weight:800;letter-spacing:1.8px;color:rgba(255,255,255,.45)}
+.hp-promise .item{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85)}
+
+/* ============================== sections ============================== */
+.hp-sec{padding:64px 0}
+.hp-sec.alt{background:#F7F6FA}
+.hp-eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:#5F2980}
+.hp-h2{margin:10px 0 0;font-style:italic;font-weight:900;font-size:clamp(24px,3.4vw,32px);
+letter-spacing:-.7px;color:#0F172A}
+.hp-sub{margin:12px 0 0;max-width:62ch;font-size:15px;line-height:1.65;font-weight:500;color:#475569}
+.hp-head-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.hp-more{font-weight:800;font-size:14px;color:#5F2980;text-decoration:none;white-space:nowrap;
+min-height:44px;display:inline-flex;align-items:center}
+.hp-more:hover{color:#3F852B}
+.hp-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
+.hp-card{display:block;border:1px solid #E7E7EA;border-radius:16px;padding:20px;background:#fff;
+text-decoration:none;transition:box-shadow .15s ease,transform .15s ease}
+.hp-card:hover{box-shadow:0 12px 30px rgba(84,39,112,.12);transform:translateY(-2px)}
+.hp-card .t{font-weight:800;font-size:16.5px;color:#0F172A}
+.hp-card .d{font-size:13.5px;line-height:1.55;font-weight:500;color:#475569;margin-top:6px}
+.hp-card .lm{display:inline-block;margin-top:14px;font-weight:800;font-size:13.5px;color:#5F2980}
+.hp-x{display:inline-block;position:relative;width:26px;height:26px}
+.hp-x i{position:absolute;inset:9.5px 2px;border-radius:2px}
+.hp-x i:first-child{background:#5F2980;transform:rotate(45deg)}
+.hp-x i:last-child{background:#6BB85C;transform:rotate(-45deg)}
+
+/* ================================ about ================================ */
+.hp-about{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
+.hp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:26px}
+.hp-stats .n{font-style:italic;font-weight:900;font-size:28px;color:#5F2980}
+.hp-stats .l{font-size:12.5px;font-weight:600;color:#475569;margin-top:2px}
+.hp-video{position:relative;border-radius:18px;overflow:hidden;background:#0F172A;aspect-ratio:16/10}
+.hp-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* ================================= faq ================================= */
+.hp-faq{border-top:1px solid #E7E7EA;margin-top:26px}
+.hp-faq details{border-bottom:1px solid #E7E7EA}
+.hp-faq summary{list-style:none;cursor:pointer;padding:18px 0;font-weight:700;font-size:15.5px;
+color:#0F172A;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:56px}
+.hp-faq summary::-webkit-details-marker{display:none}
+.hp-faq summary::after{content:"＋";color:#5F2980;font-weight:800;flex:none}
+.hp-faq details[open] summary::after{content:"−"}
+.hp-faq p{margin:0 0 18px;font-size:14.5px;line-height:1.7;font-weight:500;color:#475569;max-width:70ch}
+
+/* =============================== reviews =============================== */
+.hp-revs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
+.hp-rev{border:1px solid #E7E7EA;border-radius:16px;padding:20px;background:#fff}
+.hp-rev .stars{color:#F6A723;font-size:14px;letter-spacing:2px}
+.hp-rev .q{font-size:14px;line-height:1.6;font-weight:500;color:#475569;margin-top:10px}
+.hp-rev .who{font-size:12.5px;font-weight:700;color:#0F172A;margin-top:14px}
+.hp-rev .who span{color:#94A3B8;font-weight:600}
+
+/* =============================== x-plan =============================== */
+.hp-xp{background:linear-gradient(135deg,#5E2C7E,#542770 45%,#3E1C54);border-radius:24px;
+padding:38px 40px;color:#fff;position:relative;overflow:hidden}
+.hp-xp-mark{position:absolute;right:-40px;bottom:-40px;width:260px;opacity:.06;
+transform:rotate(-8deg);filter:brightness(0) invert(1)}
+.hp-xp-grid{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:36px;align-items:center}
+.hp-xp .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:2px;color:#8FD481}
+.hp-xp h2{margin:10px 0 0;font-style:italic;font-weight:900;font-size:28px;letter-spacing:-.6px}
+.hp-zri{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);
+border-radius:14px;padding:16px 18px;margin-top:18px}
+.hp-zri .lab{font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:#8FD481}
+.hp-zri p{margin:6px 0 0;font-size:13.5px;line-height:1.6;font-weight:500;color:rgba(255,255,255,.88)}
+.hp-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.hp-chip{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:999px;
+padding:8px 14px;font-size:12.5px;font-weight:700}
+.hp-price{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-top:22px}
+.hp-price .amt{font-style:italic;font-weight:900;font-size:34px;letter-spacing:-.6px}
+.hp-price .per{font-size:15px;font-weight:700}
+.hp-price .alt{font-size:13.5px;font-weight:700;color:rgba(255,255,255,.75)}
+.hp-inc{background:#fff;border-radius:16px;padding:24px;color:#0F172A}
+.hp-inc .lab{font-size:11.5px;font-weight:800;letter-spacing:2px;color:#5F2980;margin-bottom:14px}
+.hp-inc ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.hp-inc li{display:flex;gap:9px;font-size:13.5px;font-weight:600;color:#475569;line-height:1.45}
+.hp-inc .c{width:18px;height:18px;flex:none;border-radius:50%;background:#3F852B;color:#fff;
+font-size:10px;font-weight:800;display:grid;place-items:center}
+
+/* =============================== brands =============================== */
+.hp-brands{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:880px;
+margin:30px auto 0;align-items:center}
+.hp-brand{display:flex;align-items:center;justify-content:center;min-height:88px}
+.hp-brand img{max-width:200px;width:100%;height:52px;object-fit:contain;display:block;
+filter:grayscale(1) opacity(.55);transition:filter .22s ease,transform .22s ease}
+@media (hover:hover) and (pointer:fine){.hp-brand img:hover{filter:none;transform:scale(1.03)}}
+@media (hover:none){.hp-brand img{filter:none}}
+
+/* ============================= responsive ============================= */
+@media (max-width:1023px){
+  .hp-wrap{padding:0 24px}
+  .hp-cards,.hp-revs{grid-template-columns:1fr 1fr}
+  .hp-hero-grid{grid-template-columns:1fr .95fr;gap:18px}
+  .hp-van{width:126%}
+  .hp-about{grid-template-columns:1fr;gap:28px}
+  .hp-xp-grid{grid-template-columns:1fr;gap:26px}
+  .hp-promise-in{padding:14px 24px}
+}
+@media (max-width:809px){
+  .hp-wrap{padding:0 20px}
+  .hp-hero-grid{grid-template-columns:1fr;gap:0;padding:38px 0 0}
+  .hp-hero-in{padding:0 0 8px;max-width:none}
+  /* The shared clamp bottoms out at 34px on a phone, which left the headline
+     smaller than the buttons under it. Both numbers below are measured at 320px, the
+     narrowest viewport still in use.
+     The binding line is "Trusted Team", not the rotating word. The roll's widest
+     ("Plumbing") needs 175px of the 280px available, while "Trusted Team" needs 272px
+     at 12vw and wraps onto two lines just past that, which reads badly. 11.5vw puts
+     it at 261px, so there is real margin rather than a single pixel.
+     The 72px cap is the half that mattered. The old 46px cap bound from about 420px
+     upward, which is the whole band between a large phone and the 810px breakpoint,
+     and it left a 46px headline sitting in a 700px-wide column.
+     Re-measure both if the headline or the rotating list changes. */
+  .hp-h1{font-size:min(11.5vw,72px)}
+  .hp-van-col{display:none}
+  .hp-van-stage{display:block}
+  .hp-sec{padding:44px 0}
+  .hp-cards,.hp-revs,.hp-brands{grid-template-columns:1fr;gap:12px}
+  .hp-stats{grid-template-columns:1fr 1fr;gap:16px}
+  .hp-cta-row{flex-direction:column;align-items:stretch;gap:10px;margin-top:24px}
+  .hp-btn{width:100%;min-height:52px;font-size:15.5px}
+  .hp-xp{padding:26px 22px;border-radius:20px}
+  .hp-head-row{flex-direction:column;align-items:flex-start;gap:10px}
+  .hp-brand img{height:38px;max-width:150px}
+  /* Wrapping put two items on some rows and one on others, which read as ragged.
+     One per line on mobile. */
+  .hp-promise-in{padding:16px 20px;flex-direction:column;align-items:flex-start;gap:9px}
+  .hp-promise .lab{margin-bottom:2px}
+}
+/* ---- desktop / mobile copy swap -------------------------------------------------
+   The hero carries two versions of the lede: the desktop copy is too long for a phone,
+   and the Framer hero swapped it rather than wrapping onto four lines. The badge and
+   the trust chips used to swap the same way; both are gone now, the chips folded into
+   the promise bar below the hero. The selector stays element+class — a bare .hp-mb
+   would lose to any later display rule on source order. */
+p.hp-lede.hp-mb{display:none}
+@media (max-width:809px){
+  p.hp-lede.hp-dt{display:none}
+  p.hp-lede.hp-mb{display:block}
+}
+"""
+
+def _cards(items):
+    return "".join(
+        f'''<a class="hp-card" href="{href}">
+      <span class="hp-x" aria-hidden="true"><i></i><i></i></span>
+      <div class="t">{t}</div><div class="d">{d}</div>
+      <span class="lm">Learn more →</span></a>''' for t, d, href in items)
+
+def homepage():
+    roll = "".join(f"<li>{w}</li>" for w in ROTATING + [ROTATING[0]])
+    stats = "".join(f'<div><div class="n">{n}</div><div class="l">{l}</div></div>'
+                    for n, l in D.STATS)
+    faqs = "".join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in FAQS)
+    revs = "".join(
+        f'<div class="hp-rev"><div class="stars">★★★★★</div><div class="q">“{q}”</div>'
+        f'<div class="who">{who}{f" <span>· {c}</span>" if c else ""}</div></div>'
+        for q, who, c in REVIEWS[:3])
+    perks = "".join(f'<span class="hp-chip">{p}</span>' for p in D.XPLAN["perks"])
+    inc = "".join(f'<li><span class="c">✓</span><span>{i}</span></li>'
+                  for i in D.XPLAN["includes"])
+    brands = "".join(
+        f'<div class="hp-brand"><img src="{T.cdn_asset("brands/"+f)}" alt="{n}" '
+        f'loading="lazy" decoding="async"></div>' for n, f in BRANDS)
+
+    return f'''<style>{CSS}</style>
+
+<section class="hp-hero">
+  <img class="hp-hero-mark" src="{X_MARK}" alt="" aria-hidden="true">
+  <div class="hp-wrap"><div class="hp-hero-grid"><div class="hp-hero-in">
+    <h1 class="hp-h1">Trusted Team <br>for
+      <span class="hp-roll"><ul>{roll}</ul></span>
+    </h1>
+    <p class="hp-lede hp-dt">Heating, cooling and plumbing across Dayton and Cincinnati. About 90%
+    of calls get handled the same day, you hear the price before anyone starts, and at 2am the
+    emergency line is answered by a person.</p>
+    <p class="hp-lede hp-mb">Dayton and Cincinnati. About 90% of calls handled the same day, and
+    at 2am someone still answers.</p>
+    <div class="hp-cta-row">
+      <button class="hp-btn hp-btn-green js-schedule" type="button">Schedule Service&nbsp;&nbsp;→</button>
+      <a class="hp-btn hp-btn-ghost" href="{D.PHONE_TEL}">Call {D.PHONE_DISPLAY}</a>
+    </div>
+
+    <div class="hp-van-stage" aria-hidden="true">
+      <div class="hp-slash"></div>
+      <img class="hp-van" src="{VAN}" alt="">
+    </div>
+  </div>
+
+  <div class="hp-van-col">
+    <div class="hp-slash" aria-hidden="true"></div>
+    <div class="hp-slash-w" aria-hidden="true"></div>
+    <img class="hp-van" src="{VAN}" alt="Extreme service van">
+  </div>
+  </div></div>
+</section>
+
+<div class="hp-promise"><div class="hp-promise-in">
+  <span class="lab">THE EXTREME PROMISE</span>
+  <span class="item">◆ Locally Owned &amp; Operated</span>
+  <span class="item">◆ Licensed &amp; Insured</span>
+  <span class="item">◆ Free Replacement Estimates</span>
+  <span class="item">◆ Financing Available</span>
+  <span class="item">◆ X-Plan from {D.XPLAN["monthly"]}/mo</span>
+</div></div>
+
+<section class="hp-sec"><div class="hp-wrap">
+  <div class="hp-head-row">
+    <div>
+      <div class="hp-eyebrow">OUR HVAC SERVICES</div>
+      <h2 class="hp-h2">What kind of HVAC work do you need?</h2>
+      <p class="hp-sub">Repair, replacement, tune-ups and air quality. Pick whichever one sounds like
+      your problem. If none of them do, call and describe it and we'll work out which it is.</p>
+    </div>
+    <a class="hp-more" href="/services">View All HVAC Services →</a>
+  </div>
+  <div class="hp-cards">{_cards(HVAC_SERVICES)}</div>
+</div></section>
+
+<section class="hp-sec alt"><div class="hp-wrap">
+  <div class="hp-head-row">
+    <div>
+      <div class="hp-eyebrow">OUR PLUMBING SERVICES</div>
+      <h2 class="hp-h2">Do you handle plumbing too?</h2>
+      <p class="hp-sub">Drains, water heaters, leaks, sump pumps and gas lines, booked through the
+      same number as the furnace. Plumbing {D.LICENSE_PLUMBING}.</p>
+    </div>
+    <a class="hp-more" href="/plumbing/services">View All Plumbing Services →</a>
+  </div>
+  <div class="hp-cards">{_cards(PLUMBING_SERVICES)}</div>
+</div></section>
+
+<section class="hp-sec"><div class="hp-wrap">
+  <div class="hp-about">
+    <div>
+      <div class="hp-eyebrow">ABOUT EXTREME</div>
+      <h2 class="hp-h2">Locally owned since {D.FOUNDED}.</h2>
+      <p class="hp-sub">Four shops between Dayton and Cincinnati, and one number whether it's
+      the furnace or the water heater. Whoever knocks on your door has been drug-tested and
+      background-checked. And if the honest answer is that you don't need what you called us
+      about, that's the answer you'll get.</p>
+      <div class="hp-stats">{stats}</div>
+      <div class="hp-cta-row"><a class="hp-btn hp-btn-green" href="/about">About Us&nbsp;&nbsp;→</a></div>
+    </div>
+    <div class="hp-video">
+      <iframe src="https://www.youtube.com/embed/lUjB1pt9yBw?rel=0&amp;modestbranding=1"
+        title="Meet the Extreme Team" loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+    </div>
+  </div>
+</div></section>
+
+<section class="hp-sec alt"><div class="hp-wrap">
+  <div class="hp-eyebrow">EQUIPMENT WE INSTALL</div>
+  <h2 class="hp-h2">The brands we stand behind.</h2>
+  <p class="hp-sub">We install and service Trane, Ruud and Daikin systems, and we repair every major brand,
+  whoever put it in.</p>
+  <div class="hp-brands">{brands}</div>
+</div></section>
+
+<section class="hp-sec"><div class="hp-wrap">
+  <div class="hp-xp">
+    <img class="hp-xp-mark" src="{LOGO_WHITE}" alt="" aria-hidden="true">
+    <div class="hp-xp-grid">
+      <div>
+        <div class="eyebrow">X-PLAN MEMBERSHIP</div>
+        <h2>Two tune-ups a year, and you stop waiting behind everyone else.</h2>
+        <div class="hp-zri">
+          <div class="lab">ZERO RISK INVESTMENT</div>
+          <p>{D.XPLAN["zeroRisk"]}</p>
+        </div>
+        <div class="hp-chips">{perks}</div>
+        <div class="hp-price">
+          <span class="amt">{D.XPLAN["annual"]}<span class="per">/year</span></span>
+          <span class="alt">or {D.XPLAN["monthly"]}/month {D.XPLAN["monthlyNote"]}</span>
+        </div>
+        <div class="hp-cta-row">
+          <button class="hp-btn hp-btn-green js-schedule" type="button">Join X-Plan&nbsp;&nbsp;→</button>
+        </div>
+      </div>
+      <div class="hp-inc">
+        <div class="lab">WHAT'S INCLUDED</div>
+        <ul>{inc}</ul>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section class="hp-sec alt"><div class="hp-wrap">
+  <div class="hp-eyebrow">CUSTOMER REVIEWS</div>
+  <h2 class="hp-h2">What do customers actually say?</h2>
+  <p class="hp-sub">Straight from our Google profile, {D.GOOGLE_RATING} across Dayton, Cincinnati and
+  the Miami Valley.</p>
+  <div class="hp-revs">{revs}</div>
+</div></section>
+
+<section class="hp-sec"><div class="hp-wrap">
+  <div class="hp-faq">
+    <div class="hp-eyebrow">FAQ</div>
+    <h2 class="hp-h2">Questions we get asked most.</h2>
+    <p class="hp-sub">If yours isn't here, call and ask. Someone picks up.</p>
+    {faqs}
+  </div>
+</div></section>
+'''
+
+META = {
+    "url": "/",
+    "title": f"HVAC &amp; Plumbing in Dayton &amp; Cincinnati | {D.COMPANY}",
+    "description": ("Trusted heating, cooling and plumbing across Dayton and Cincinnati. "
+                    "Same-day service in most cases, upfront pricing, 24/7 emergency line."),
+    "nav": "",
+}

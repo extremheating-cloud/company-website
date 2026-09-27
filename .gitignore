@@ -10,8 +10,9 @@ _preview*.html
 _p.jpg
 _ruud-cropped.jpg
 
-# Built self-hosted site — regenerate with: cd builder && python3 build_site.py
+# Built self-hosted site — regenerate with: python3 build.py
 site/
+.build/
 
 # npm — the built bundle and the lockfile are committed, the tree that produced
 # them is not
