@@ -272,11 +272,7 @@ SECTIONS = [
         "<b>jsDelivr — images.</b> Photographs and graphics on the site are delivered by "
         "the jsDelivr content network, which receives your IP address.",
 
-        # Released 2026-08-03. The inventory was held back because a policy that
-        # under-names its advertising tags is worse than one that over-names them, and
-        # nobody had confirmed what was actually installed. The client supplied the tags
-        # that day and they are now in builder/analytics.py; this paragraph is written
-        # from that file. If a tag is added there, add it here in the same commit.
+        # Written from tags/head.html and tags/body.html. New vendor there, add it here.
         "<b>Analytics and advertising measurement.</b> Every page loads Google Tag Manager, "
         "which in turn loads Google Analytics 4 and Google Ads conversion tracking, and the "
         "Meta (Facebook) Pixel. These record that pages were viewed, that a booking form was "
