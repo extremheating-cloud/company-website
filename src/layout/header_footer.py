@@ -658,16 +658,17 @@ JS = """
     try { se.show(); return true; } catch (err) { return false; }
   }
 
-  /* ServiceTitan first; our wizard only if their script didn't load */
+  /* Our scheduler (books straight into ServiceTitan, /js/schedule.js) opens on
+     every Schedule button. ServiceTitan's own embed stays on the page only as
+     the fallback for a browser that could not load ours. */
   document.querySelectorAll('.js-schedule').forEach(function(el){
     el.addEventListener('click', function(e){
       e.preventDefault();
       closePanel();
-      if (!openServiceTitan()) window.dispatchEvent(new CustomEvent('open-contact-dialog'));
+      window.dispatchEvent(new CustomEvent('open-contact-dialog'));
     });
   });
 
-  /* backup scheduler, fetched only when ServiceTitan is unavailable */
   var loading = false;
   function loadWizard(replay){
     if (window.XHSchedule) return;
@@ -679,8 +680,10 @@ JS = """
     s.defer = true;
     s.onerror = function(){
       loading = false;
-      
-      if (window.__xhScheduleWanted) { window.__xhScheduleWanted = false; location.href = '/contact'; }
+      if (window.__xhScheduleWanted) {
+        window.__xhScheduleWanted = false;
+        if (!openServiceTitan()) location.href = '/contact';
+      }
     };
     document.head.appendChild(s);
   }
@@ -688,10 +691,12 @@ JS = """
   window.addEventListener('open-contact-dialog', function(){ if (!window.XHSchedule) loadWizard(true); });
   ['pointerover','touchstart','focusin'].forEach(function(evt){
     document.addEventListener(evt, function(e){
-      if (window.ScheduleEngine) return;
       if (e.target && e.target.closest && e.target.closest('.js-schedule')) loadWizard(false);
     }, {passive:true});
   });
+  /* and fetched once the page is idle, so the first tap opens at once */
+  var idle = window.requestIdleCallback || function(fn){ return setTimeout(fn, 2500); };
+  idle(function(){ loadWizard(false); });
 })();
 
 /* FAQ accordions: own IIFE so pages without the header still get them. */
