@@ -1,4 +1,5 @@
 from layout import components as T
+from data import business as D
 
 TEL, PH = T.PHONE_TEL, T.PHONE_DISPLAY
 
@@ -63,7 +64,7 @@ SPEED_FAQ = {"q": "How fast can you get here?",
 UPDATED, UPDATED_ISO = "August 2, 2026", "2026-08-02"
 
 # Birdeye aggregate across platforms, not Google-only: don't name Google.
-REVIEW_CHIP = "4.9 from 1,595 reviews"
+REVIEW_CHIP = f"{D.GOOGLE_RATING} from {D.REVIEW_COUNT} reviews"
 
 
 def sec(h2, body, h3s=None, table=None, sid=None, eyebrow=None):

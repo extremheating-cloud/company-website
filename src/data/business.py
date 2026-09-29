@@ -142,8 +142,7 @@ SAME_AS = [u for _, u in SOCIAL]
 
 GOOGLE_RATING = "4.9"
 
-REVIEW_COUNT = "1,595"
-REVIEW_COUNT_N = 1595
+REVIEW_COUNT = "2,000+"
 # multi-source Birdeye aggregate: "customer reviews", never "Google reviews"
 REVIEW_SOURCE = "customer reviews"
 

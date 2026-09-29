@@ -242,7 +242,7 @@ SECTIONS = [
 
         "[NEEDS: whether Extreme sends customer names, phone numbers or email addresses to "
         "Birdeye — or any other review platform — to request a review after a job. The site "
-        "cites 1,595 Birdeye reviews, so this flow probably exists. If it does, Birdeye "
+        "cites 2,000+ Birdeye reviews, so this flow probably exists. If it does, Birdeye "
         "belongs in this list and the review-request must be described in How Extreme Uses "
         "It. This is the most likely disclosure gap on the page.]",
 
@@ -520,7 +520,7 @@ PRIVACY_GAPS = [
     "honors them. The clause tells customers to call the office instead. Restore the keyword "
     "sentence once the platform is confirmed.",
     "Birdeye: whether customer contact details are sent to a review platform after a job. "
-    "The site cites 1,595 Birdeye reviews, so this flow probably exists and is undisclosed.",
+    "The site cites 2,000+ Birdeye reviews, so this flow probably exists and is undisclosed.",
     "Call recording and call tracking on " + D.PHONE_DISPLAY + ".",
     "Retention periods: canceled/unbooked requests, the Formspree submission archive, and "
     "uploaded photos on Cloudinary.",

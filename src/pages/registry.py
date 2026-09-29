@@ -36,8 +36,8 @@ AIR_CONDITIONING = {
                "Dayton and Cincinnati — every major brand, whoever installed it. We handle "
                "most calls the same day."),
     "intro": "Repair, replacement and tune-ups, from a locally owned crew. You'll know the price before anything gets touched.",
-    # 1,595 is a Birdeye aggregate across platforms, so never label it "on Google".
-    "heroChips": ["4.9 from 1,595 reviews", "90% Same-Day Service", "24/7 Emergency"],
+    # the review count is a Birdeye aggregate across platforms, so never label it "on Google"
+    "heroChips": [f"{D.GOOGLE_RATING} from {D.REVIEW_COUNT} reviews", "90% Same-Day Service", "24/7 Emergency"],
     "bookingCard": {
         "eyebrow": "BOOK AC SERVICE",
         "title": "Get a tech to your door.",
@@ -252,8 +252,8 @@ FURNACE_REPAIR = {
                "and no-heat calls go out ahead of everything else. You get a flat price "
                "before we start, a safety check after, and an emergency line answered 24/7."),
     "intro": "No heat is an emergency in an Ohio winter. We diagnose fast, price upfront, and repair every make and model — 24/7.",
-    # Overrides SUB_CHIPS' "on Google": 1,595 is a Birdeye aggregate.
-    "heroChips": ["4.9 from 1,595 reviews", "Locally Owned", "24/7 Emergency"],
+    # overrides SUB_CHIPS' "on Google": the review count is a Birdeye aggregate
+    "heroChips": [f"{D.GOOGLE_RATING} from {D.REVIEW_COUNT} reviews", "Locally Owned", "24/7 Emergency"],
     "scheduleLabel": "Schedule Repair",
     "pillNav": {
         "label": "FURNACE & HEATING",
@@ -450,8 +450,8 @@ WATER_HEATER_OVERVIEW = {
     "h1": "Hot water, {X}.",
     "h1Highlight": "back fast",
     "intro": "Repair, replacement, and tankless upgrades for every water heater — from the same people who handle your heating and air.",
-    # 1,595 is a Birdeye aggregate across platforms, so never label it "on Google".
-    "heroChips": ["4.9 from 1,595 reviews", "Same-Day Replacement", "Licensed Plumbers"],
+    # the review count is a Birdeye aggregate across platforms, so never label it "on Google"
+    "heroChips": [f"{D.GOOGLE_RATING} from {D.REVIEW_COUNT} reviews", "Same-Day Replacement", "Licensed Plumbers"],
     "bookingCard": {
         "eyebrow": "BOOK WATER HEATER SERVICE",
         "title": "Get a plumber to your door.",
