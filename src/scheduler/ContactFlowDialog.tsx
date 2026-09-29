@@ -1814,15 +1814,19 @@ export default function ContactFlowDialog() {
  * open window is selectable, a full day says so, everything else is blank. */
 function WizardCalendar({ days, value, onSelect }: { days: Day[]; value?: string; onSelect: (iso: string) => void }) {
     const byDate = React.useMemo(() => new Map(days.map((d) => [d.date, d])), [days])
-    const first = days[0] ? fromISO(days[0].date) : new Date()
+    // Open on the month of the first day that has a window, so a board that is
+    // full through the end of this month does not open on a page of grey.
+    const firstOpen = days.find((d) => d.windows.length) || days[0]
+    const first = firstOpen ? fromISO(firstOpen.date) : new Date()
+    const firstAll = days[0] ? fromISO(days[0].date) : first
     const last = days.length ? fromISO(days[days.length - 1].date) : new Date()
-    const minIdx = first.getFullYear() * 12 + first.getMonth()
+    const minIdx = firstAll.getFullYear() * 12 + firstAll.getMonth()
     const maxIdx = last.getFullYear() * 12 + last.getMonth()
 
     const [view, setView] = React.useState({ y: first.getFullYear(), m: first.getMonth() })
     React.useEffect(() => {
         setView({ y: first.getFullYear(), m: first.getMonth() })
-    }, [days.length && days[0].date]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [firstOpen && firstOpen.date]) // eslint-disable-line react-hooks/exhaustive-deps
     const viewIdx = view.y * 12 + view.m
     const canPrev = viewIdx > minIdx
     const canNext = viewIdx < maxIdx
