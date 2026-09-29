@@ -3,12 +3,12 @@ import * as React from "react"
 /* ══════════════════════════════════════════════════════════════════════════
  * The Schedule Service wizard — extremeheating.com's own scheduler.
  *
- * Four steps: what's wrong, when (real ServiceTitan arrival windows), about
- * the home, and confirm. The confirm step looks the visitor up by mobile
- * number in ServiceTitan, shows the STREETS on their account (never the
- * name or the house number), and books the job the moment they confirm
- * their house number. A new customer types their address and is created in
- * ServiceTitan on booking. Everything server-side lives in FollowUp Pro's
+ * Four steps, in the order Aaron set on 2026-09-29: who (ZIP, current
+ * customer or not, then the customer lookup or a new customer's details),
+ * what's wrong, when (real ServiceTitan arrival windows with the fee on
+ * each), and confirm. The lookup shows the STREETS on the account (never the
+ * name or the house number) and books the moment the visitor confirms their
+ * house number. Everything server-side lives in FollowUp Pro's
  * web-scheduler.js; this file draws and asks.
  *
  * When the live schedule cannot be read, the wizard still takes the booking
@@ -36,17 +36,18 @@ type Win = {
     localStart?: string
     localEnd?: string
     remaining?: number | null
-    fee: number
+    fee: number | null
+    feeLabel: string
     afterHours?: boolean
     requested?: boolean // the live schedule was not readable; this is a request
 }
 type Day = { date: string; weekday: string; windows: Win[]; closed: string[] }
+type FeeInfo = { kind: "service" | "tuneup" | "estimate" | "commercial"; amount: number | null; label: string; text: string; afterHours: number | null }
 type Avail = {
     status: "idle" | "loading" | "ok" | "no_capacity" | "unavailable" | "callback"
     days: Day[]
     first: (Win & { date: string; weekday: string }) | null
-    pricing: { dispatch: number; dispatchAfterHours: number; tuneUp: number }
-    fee: "dispatch" | "tuneup" | "free" | null
+    feeInfo: FeeInfo | null
     key: string
 }
 type LookupLoc = {
@@ -57,6 +58,7 @@ type LookupLoc = {
     zip: string
     hasHouseNumber: boolean
     member: boolean
+    inZip?: boolean
 }
 type Lookup =
     | { status: "idle" | "checking" | "new" | "unavailable" | "invalid" }
@@ -69,7 +71,8 @@ type FormState = {
     hvacDuration?: string
     detail?: string
     answers?: Record<string, string>
-    propertyType?: string
+    propertyType?: "Residential" | "Commercial"
+    isCustomer?: "yes" | "no"
     occupant?: string
     systemAge?: string
     unitLocation?: string
@@ -114,13 +117,8 @@ const FONT = "Poppins, system-ui, sans-serif"
 const EMERGENCY_PHONE_DISPLAY = "(844) 584-7399"
 const EMERGENCY_PHONE_TEL = "+18445847399"
 
-const STEP_LABELS = ["SERVICE", "TIME", "DETAILS", "CONFIRM"]
-const STEP_TITLES = [
-    "What's going on?",
-    "When works for you?",
-    "About your home",
-    "Confirm & book",
-]
+const STEP_LABELS = ["YOU", "SERVICE", "TIME", "CONFIRM"]
+const STEP_TITLES = ["Let's find you", "What's going on?", "When works for you?", "Confirm & book"]
 
 const SERVICE_LABEL: Record<ServiceKey, string> = {
     heatingCooling: "Heating & Cooling",
@@ -129,40 +127,13 @@ const SERVICE_LABEL: Record<ServiceKey, string> = {
     xplan: "X-Plan Maintenance Plan",
 }
 
-const HVAC_ISSUES = [
-    "No Heat",
-    "No Cool",
-    "Making Noise",
-    "Thermostat",
-    "Leaking Water",
-    "Air Quality",
-    "Tune-Up",
-]
+const HVAC_ISSUES = ["No Heat", "No Cool", "Making Noise", "Thermostat", "Leaking Water", "Air Quality", "Tune-Up"]
 const HVAC_DURATIONS = ["Today", "A few days", "A week or more", "Not sure"]
 
 const SERVICE_OPTIONS: Record<string, string[]> = {
-    plumbing: [
-        "Drain Cleaning",
-        "Water Heater Issue",
-        "Sump Pump Issue",
-        "Leak Detection",
-        "Gas Line Issue",
-        "Water Treatment",
-        "Pipe Leak",
-        "General Plumbing Repair",
-    ],
-    quote: [
-        "New System Estimate",
-        "Duct Cleaning Estimate",
-        "Dryer Vent Cleaning Estimate",
-        "HVAC Inspection Estimate",
-    ],
-    xplan: [
-        "Schedule Seasonal Tune-Up",
-        "Enroll in Plan",
-        "Questions About Benefits",
-        "Billing / Payment Question",
-    ],
+    plumbing: ["Drain Cleaning", "Water Heater Issue", "Sump Pump Issue", "Leak Detection", "Gas Line Issue", "Water Treatment", "Pipe Leak", "General Plumbing Repair"],
+    quote: ["New System Estimate", "Duct Cleaning Estimate", "Dryer Vent Cleaning Estimate", "HVAC Inspection Estimate"],
+    xplan: ["Schedule Seasonal Tune-Up", "Enroll in Plan", "Questions About Benefits", "Billing / Payment Question"],
 }
 
 /* The server's service menu keys (web-scheduler.js SERVICES). The wizard's
@@ -195,13 +166,6 @@ const DETAIL_KEY: Record<string, string> = {
     "Billing / Payment Question": "xplan:billing",
 }
 const CALLBACK_KEYS = new Set(["xplan:benefits", "xplan:billing"])
-const FREE_KEYS = new Set([
-    "quote:new_system",
-    "quote:duct_cleaning",
-    "quote:dryer_vent",
-    "plumbing:water_treatment",
-])
-const TUNEUP_KEYS = new Set(["hvac:tune_up", "xplan:tune_up", "xplan:enroll"])
 
 function serviceKeyOf(d: FormState): string {
     if (!d.service) return ""
@@ -209,105 +173,25 @@ function serviceKeyOf(d: FormState): string {
     return DETAIL_KEY[d.detail || ""] || ""
 }
 
-type SubQuestion = {
-    id: string
-    label: string
-    field: string
-    options: string[]
-    optional?: boolean
-}
+type SubQuestion = { id: string; label: string; field: string; options: string[]; optional?: boolean }
 
 const DUCT_VENT_OPTIONS = ["1–10 vents", "11–20 vents", "20+ vents", "Not sure"]
 
 /* One high-value follow-up per service, max — conversion first. */
 const DETAIL_QUESTIONS: Record<string, SubQuestion[]> = {
-    "Drain Cleaning": [
-        {
-            id: "which",
-            label: "Which drain is affected?",
-            field: "Affected drain",
-            options: ["Kitchen", "Bathroom", "Toilet", "Shower / Tub", "Main line", "Multiple", "Not sure"],
-        },
-    ],
-    "Water Heater Issue": [
-        {
-            id: "problem",
-            label: "What's the problem?",
-            field: "Problem",
-            options: ["No hot water", "Not enough hot water", "Leaking", "Other"],
-        },
-    ],
-    "Sump Pump Issue": [
-        {
-            id: "problem",
-            label: "What's happening?",
-            field: "Problem",
-            options: ["Not running", "Running constantly", "Pit overflowing", "Not sure"],
-        },
-    ],
-    "Leak Detection": [
-        {
-            id: "where",
-            label: "Where do you suspect the leak?",
-            field: "Suspected location",
-            options: ["Under a sink", "Wall / ceiling", "Floor / slab", "Outdoor", "Not sure"],
-        },
-    ],
-    "Gas Line Issue": [
-        {
-            id: "need",
-            label: "What do you need?",
-            field: "Request",
-            options: ["Smell of gas", "New appliance hookup", "Suspected leak", "Other"],
-        },
-    ],
-    "Water Treatment": [
-        {
-            id: "interest",
-            label: "What are you interested in?",
-            field: "Interest",
-            options: ["Water softener", "Filtration", "Water testing", "Not sure"],
-        },
-    ],
-    "Pipe Leak": [
-        {
-            id: "where",
-            label: "Where is the leak?",
-            field: "Leak location",
-            options: ["Under a sink", "Wall / ceiling", "Basement", "Outdoor", "Not sure"],
-        },
-    ],
-    "General Plumbing Repair": [
-        {
-            id: "fixture",
-            label: "What needs attention?",
-            field: "Fixture",
-            options: ["Faucet", "Toilet", "Garbage disposal", "Shower / Tub", "Other"],
-        },
-    ],
-    "New System Estimate": [
-        {
-            id: "scope",
-            label: "What's the quote for?",
-            field: "Quote scope",
-            options: ["AC only", "Furnace only", "Full system (AC + furnace)"],
-        },
-    ],
-    "Duct Cleaning Estimate": [
-        { id: "vents", label: "Roughly how many vents?", field: "Vent count", options: DUCT_VENT_OPTIONS },
-    ],
+    "Drain Cleaning": [{ id: "which", label: "Which drain is affected?", field: "Affected drain", options: ["Kitchen", "Bathroom", "Toilet", "Shower / Tub", "Main line", "Multiple", "Not sure"] }],
+    "Water Heater Issue": [{ id: "problem", label: "What's the problem?", field: "Problem", options: ["No hot water", "Not enough hot water", "Leaking", "Other"] }],
+    "Sump Pump Issue": [{ id: "problem", label: "What's happening?", field: "Problem", options: ["Not running", "Running constantly", "Pit overflowing", "Not sure"] }],
+    "Leak Detection": [{ id: "where", label: "Where do you suspect the leak?", field: "Suspected location", options: ["Under a sink", "Wall / ceiling", "Floor / slab", "Outdoor", "Not sure"] }],
+    "Gas Line Issue": [{ id: "need", label: "What do you need?", field: "Request", options: ["Smell of gas", "New appliance hookup", "Suspected leak", "Other"] }],
+    "Water Treatment": [{ id: "interest", label: "What are you interested in?", field: "Interest", options: ["Water softener", "Filtration", "Water testing", "Not sure"] }],
+    "Pipe Leak": [{ id: "where", label: "Where is the leak?", field: "Leak location", options: ["Under a sink", "Wall / ceiling", "Basement", "Outdoor", "Not sure"] }],
+    "General Plumbing Repair": [{ id: "fixture", label: "What needs attention?", field: "Fixture", options: ["Faucet", "Toilet", "Garbage disposal", "Shower / Tub", "Other"] }],
+    "New System Estimate": [{ id: "scope", label: "What's the quote for?", field: "Quote scope", options: ["AC only", "Furnace only", "Full system (AC + furnace)"] }],
+    "Duct Cleaning Estimate": [{ id: "vents", label: "Roughly how many vents?", field: "Vent count", options: DUCT_VENT_OPTIONS }],
     "Dryer Vent Cleaning Estimate": [],
-    "HVAC Inspection Estimate": [
-        {
-            id: "reason",
-            label: "Reason for inspection?",
-            field: "Reason",
-            options: ["Home purchase", "Routine check", "Performance concern", "Other"],
-        },
-    ],
-    "Schedule Seasonal Tune-Up": [
-        { id: "system", label: "Which system?", field: "System", options: ["Heating", "Cooling", "Both"] },
-    ],
+    "HVAC Inspection Estimate": [{ id: "reason", label: "Reason for inspection?", field: "Reason", options: ["Home purchase", "Routine check", "Performance concern", "Other"] }],
+    "Schedule Seasonal Tune-Up": [{ id: "system", label: "Which system?", field: "System", options: ["Heating", "Cooling", "Both"] }],
     "Enroll in Plan": [],
 }
 
@@ -328,8 +212,7 @@ function isHvacContext(service?: ServiceKey, detail?: string): boolean {
 }
 function asksAge(service?: ServiceKey, detail?: string): { ask: boolean; label: string } {
     if (isHvacContext(service, detail)) return { ask: true, label: "How old is the system?" }
-    if (service === "plumbing" && detail === "Water Heater Issue")
-        return { ask: true, label: "How old is the water heater?" }
+    if (service === "plumbing" && detail === "Water Heater Issue") return { ask: true, label: "How old is the water heater?" }
     return { ask: false, label: "" }
 }
 
@@ -342,10 +225,7 @@ async function uploadPhotosToCloudinary(files: File[]): Promise<string[]> {
         const fd = new FormData()
         fd.append("file", f)
         fd.append("upload_preset", CLOUDINARY_UNSIGNED_PRESET)
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, {
-            method: "POST",
-            body: fd,
-        })
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, { method: "POST", body: fd })
         if (!res.ok) throw new Error("Upload failed")
         const json = await res.json()
         urls.push(json.secure_url)
@@ -395,24 +275,11 @@ async function googlePredictions(query: string): Promise<AddressSuggestion[]> {
     const svc = new google.maps.places.AutocompleteService()
     return new Promise((resolve, reject) => {
         svc.getPlacePredictions(
-            {
-                input: query,
-                componentRestrictions: { country: "us" },
-                types: ["address"],
-                locationRestriction: OHIO_BOUNDS,
-            },
+            { input: query, componentRestrictions: { country: "us" }, types: ["address"], locationRestriction: OHIO_BOUNDS },
             (preds: any[], status: string) => {
                 const S = google.maps.places.PlacesServiceStatus
                 if (status === S.OK && preds) {
-                    resolve(
-                        preds
-                            .filter((p) => OHIO_RE.test(p.description))
-                            .map((p) => ({
-                                id: p.place_id,
-                                label: p.description.replace(/,\s*USA$/, ""),
-                                src: "google" as const,
-                            }))
-                    )
+                    resolve(preds.filter((p) => OHIO_RE.test(p.description)).map((p) => ({ id: p.place_id, label: p.description.replace(/,\s*USA$/, ""), src: "google" as const })))
                 } else if (status === S.ZERO_RESULTS) {
                     resolve([])
                 } else {
@@ -438,12 +305,7 @@ async function googlePlaceParts(placeId: string): Promise<AddressParts | null> {
                 }
                 const num = get("street_number"), route = get("route")
                 const city = get("locality") || get("sublocality") || get("administrative_area_level_3") || get("neighborhood")
-                resolve({
-                    street: [num, route].filter(Boolean).join(" "),
-                    city,
-                    state: get("administrative_area_level_1", true),
-                    zip: get("postal_code"),
-                })
+                resolve({ street: [num, route].filter(Boolean).join(" "), city, state: get("administrative_area_level_1", true), zip: get("postal_code") })
             })
         })
     } catch {
@@ -495,10 +357,7 @@ function splitAddress(raw: string): AddressParts {
     const s = raw.replace(/,\s*(USA|United States)\s*$/i, "")
     const zip = s.match(/\b(\d{5})(?:-\d{4})?\s*$/)
     if (zip) out.zip = zip[1]
-    const parts = s
-        .split(",")
-        .map((p) => p.trim())
-        .filter((p) => p && !/^\d{5}(-\d{4})?$/.test(p))
+    const parts = s.split(",").map((p) => p.trim()).filter((p) => p && !/^\d{5}(-\d{4})?$/.test(p))
     const st = (parts[parts.length - 1] || "").replace(/\s*\d{5}(-\d{4})?$/, "")
     if (parts.length >= 2 && /^([A-Za-z]{2}|Ohio)$/i.test(st)) {
         out.state = /^ohio$/i.test(st) ? "OH" : st.toUpperCase()
@@ -509,6 +368,26 @@ function splitAddress(raw: string): AddressParts {
     }
     return out
 }
+
+/* The city and state for a ZIP, so a new customer types less. Free service,
+ * no key; any failure just leaves the fields for the visitor. */
+const zipCache = new Map<string, { city: string; state: string } | null>()
+async function lookupZip(zip: string): Promise<{ city: string; state: string } | null> {
+    if (zipCache.has(zip)) return zipCache.get(zip) || null
+    let out: { city: string; state: string } | null = null
+    try {
+        const res = await fetch(`https://api.zippopotam.us/us/${zip}`)
+        if (res.ok) {
+            const j = await res.json()
+            const p = (j.places || [])[0]
+            if (p) out = { city: p["place name"] || "", state: p["state abbreviation"] || "" }
+        }
+    } catch {}
+    zipCache.set(zip, out)
+    return out
+}
+// Ohio ZIPs run 430xx–459xx; the office confirms anything else by phone.
+const inServiceArea = (zip: string) => /^4[345]\d{3}$/.test(zip)
 
 declare global {
     interface Window {
@@ -560,10 +439,7 @@ function toISO(d: Date): string {
 }
 function fmtDay(iso: string, style: "short" | "long" = "short"): string {
     const d = fromISO(iso)
-    return d.toLocaleDateString(
-        "en-US",
-        style === "short" ? { weekday: "short", month: "short", day: "numeric" } : { weekday: "long", month: "long", day: "numeric" }
-    )
+    return d.toLocaleDateString("en-US", style === "short" ? { weekday: "short", month: "short", day: "numeric" } : { weekday: "long", month: "long", day: "numeric" })
 }
 function todayISO(): string {
     return toISO(new Date())
@@ -579,7 +455,6 @@ function relDay(iso: string): string {
     return fromISO(iso).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
 }
 function shortLabel(label: string): string {
-    // "8am–12pm" → "8–12 AM"-ish stays readable as is; keep the server's label.
     return label.replace(/am/g, " AM").replace(/pm/g, " PM").replace(/\s+/g, " ").trim()
 }
 function money(n: number): string {
@@ -587,8 +462,8 @@ function money(n: number): string {
 }
 
 /* Arrival windows to offer when the live schedule cannot be read: the same
- * shape as the server's, flagged `requested`. Company-local times are taken
- * from the visitor's clock, which is right for a customer in Ohio. */
+ * three blocks as the boards, flagged `requested`. Company-local times are
+ * taken from the visitor's clock, which is right for a customer in Ohio. */
 function requestedWindows(): Day[] {
     const out: Day[] = []
     const d = new Date()
@@ -606,7 +481,7 @@ function requestedWindows(): Day[] {
                     const s = new Date(d), e = new Date(d)
                     s.setHours(h1, 0, 0, 0)
                     e.setHours(h2, 0, 0, 0)
-                    return { label, start: s.toISOString(), end: e.toISOString(), fee: h1 >= 17 ? 197 : 97, afterHours: h1 >= 17, requested: true }
+                    return { label, start: s.toISOString(), end: e.toISOString(), fee: null, feeLabel: h1 >= 17 ? "Evening" : "", afterHours: h1 >= 17, requested: true }
                 }),
                 closed: [],
             })
@@ -660,26 +535,24 @@ async function apiPost(path: string, body: any): Promise<any> {
     return j
 }
 
+const EMPTY_AVAIL: Avail = { status: "idle", days: [], first: null, feeInfo: null, key: "" }
 const availCache = new Map<string, Avail>()
-async function fetchAvailability(key: string, age?: string, member?: boolean): Promise<Avail> {
+async function fetchAvailability(key: string, age?: string, member?: boolean, commercial?: boolean): Promise<Avail> {
     const q = new URLSearchParams({ service: key })
     if (age) q.set("age", age)
     if (member) q.set("member", "1")
+    if (commercial) q.set("commercial", "1")
     const ck = q.toString()
     const hit = availCache.get(ck)
     if (hit && hit.status !== "unavailable") return hit
     let out: Avail
     try {
         const j = await apiGet("/schedulerAvailability?" + ck)
-        if (j.status === "callback") {
-            out = { status: "callback", days: [], first: null, pricing: { dispatch: 97, dispatchAfterHours: 197, tuneUp: 119 }, fee: null, key }
-        } else if (j.status === "ok" || j.status === "no_capacity") {
-            out = { status: j.status, days: j.days || [], first: j.first || null, pricing: j.pricing, fee: j.fee, key }
-        } else {
-            out = { status: "unavailable", days: [], first: null, pricing: j.pricing || { dispatch: 97, dispatchAfterHours: 197, tuneUp: 119 }, fee: j.fee || null, key }
-        }
+        if (j.status === "callback") out = { status: "callback", days: [], first: null, feeInfo: null, key }
+        else if (j.status === "ok" || j.status === "no_capacity") out = { status: j.status, days: j.days || [], first: j.first || null, feeInfo: j.feeInfo || null, key }
+        else out = { status: "unavailable", days: [], first: null, feeInfo: j.feeInfo || null, key }
     } catch {
-        out = { status: "unavailable", days: [], first: null, pricing: { dispatch: 97, dispatchAfterHours: 197, tuneUp: 119 }, fee: null, key }
+        out = { status: "unavailable", days: [], first: null, feeInfo: null, key }
     }
     availCache.set(ck, out)
     return out
@@ -735,7 +608,10 @@ type Booked = {
     emailed?: boolean
     callback?: boolean
     address?: string
-    fee?: number
+    fee?: number | null
+    feeText?: string
+    feeKind?: string
+    firstName?: string
 }
 
 export default function ContactFlowDialog() {
@@ -749,6 +625,8 @@ export default function ContactFlowDialog() {
     const [noteOpen, setNoteOpen] = React.useState(false)
     const [note, setNote] = React.useState("")
     const [photos, setPhotos] = React.useState<File[]>([])
+    const [zip, setZip] = React.useState("")
+    const [zipPlace, setZipPlace] = React.useState<{ city: string; state: string } | null>(null)
     const [firstName, setFirstName] = React.useState("")
     const [lastName, setLastName] = React.useState("")
     const [phoneDigits, setPhoneDigits] = React.useState("")
@@ -772,7 +650,7 @@ export default function ContactFlowDialog() {
     const lookupDebounce = React.useRef<number | null>(null)
 
     // When: the live schedule.
-    const [avail, setAvail] = React.useState<Avail>({ status: "idle", days: [], first: null, pricing: { dispatch: 97, dispatchAfterHours: 197, tuneUp: 119 }, fee: null, key: "" })
+    const [avail, setAvail] = React.useState<Avail>(EMPTY_AVAIL)
     const availSeq = React.useRef(0)
 
     const [addrSuggestions, setAddrSuggestions] = React.useState<AddressSuggestion[]>([])
@@ -822,6 +700,8 @@ export default function ContactFlowDialog() {
             setNoteOpen(false)
             setNote("")
             setPhotos([])
+            setZip("")
+            setZipPlace(null)
             setFirstName("")
             setLastName("")
             setPhoneDigits("")
@@ -839,7 +719,7 @@ export default function ContactFlowDialog() {
             setAsNew(false)
             setAddrSuggestions([])
             setAddrOpen(false)
-            setAvail({ status: "idle", days: [], first: null, pricing: { dispatch: 97, dispatchAfterHours: 197, tuneUp: 119 }, fee: null, key: "" })
+            setAvail(EMPTY_AVAIL)
             requestIdRef.current = newId()
         }
         window.addEventListener("open-contact-dialog", handler as EventListener)
@@ -863,21 +743,31 @@ export default function ContactFlowDialog() {
     }, [open])
 
     /* ── The live schedule: asked as soon as a service is picked, so the time
-     * step opens with the windows already there. ─────────────────────────── */
+     * step opens with the windows already there. The customer is known by
+     * then, so the member and commercial rates are on the windows; the age
+     * matters too, because ServiceTitan's capacity is per job type. ───────── */
     const serviceKey = serviceKeyOf(data)
     const isCallback = CALLBACK_KEYS.has(serviceKey)
-    const isMember = lookup.status === "found" && !asNew && !!locKey && lookup.locations.some((l) => l.key === locKey && l.member)
+    const knownCustomer = lookup.status === "found" && !asNew
+    const chosenLoc = lookup.status === "found" ? lookup.locations.find((l) => l.key === locKey) : undefined
+    const isMember = knownCustomer && !!chosenLoc && chosenLoc.member
+    const isCommercial = data.propertyType === "Commercial"
     React.useEffect(() => {
         if (!open || !serviceKey || isCallback) return
         const seq = ++availSeq.current
         setAvail((a) => (a.key === serviceKey && a.status !== "idle" && a.status !== "unavailable" ? a : { ...a, status: "loading", key: serviceKey }))
-        fetchAvailability(serviceKey, data.systemAge, isMember).then((a) => {
+        fetchAvailability(serviceKey, data.systemAge, isMember, isCommercial).then((a) => {
             if (seq !== availSeq.current) return
             setAvail(a)
-            // A window picked for another service is not a window for this one.
-            setData((d) => (d.window && d.window.requested !== (a.status !== "ok") ? { ...d, window: null, apptDate: undefined } : d))
+            // A window picked for another answer may not exist for this one.
+            setData((d) => {
+                if (!d.window) return d
+                const still = a.status === "ok" && a.days.some((day) => day.date === d.apptDate && day.windows.some((w) => w.start === d.window!.start))
+                const stillRequested = a.status !== "ok" && !!d.window.requested
+                return still || stillRequested ? d : { ...d, window: null, apptDate: undefined }
+            })
         })
-    }, [open, serviceKey, isCallback, isMember]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [open, serviceKey, isCallback, isMember, isCommercial, data.systemAge]) // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!open) return null
 
@@ -885,6 +775,7 @@ export default function ContactFlowDialog() {
 
     const emailOk = email.trim() === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
     const phoneOk = phoneDigits.length === 10
+    const zipOk = /^\d{5}$/.test(zip)
 
     function serviceStepComplete(d: FormState): boolean {
         if (!d.service) return false
@@ -892,44 +783,42 @@ export default function ContactFlowDialog() {
         return !!d.detail
     }
 
-    const svcFee: "dispatch" | "tuneup" | "free" = FREE_KEYS.has(serviceKey) ? "free" : TUNEUP_KEYS.has(serviceKey) ? "tuneup" : "dispatch"
-    const feeFor = (w: Win | null | undefined): number => {
-        if (!w) return 0
-        if (svcFee === "free") return 0
-        if (svcFee === "tuneup") return isMember ? 0 : avail.pricing.tuneUp
-        return w.afterHours ? avail.pricing.dispatchAfterHours : avail.pricing.dispatch
-    }
-    const fee = feeFor(data.window)
-    const feeRequired = fee > 0
-
-    const knownCustomer = lookup.status === "found" && !asNew
-    const identityOk = knownCustomer
-        ? !!locKey && (houseNumber.trim().length > 0 || !lookup.locations.find((l) => l.key === locKey)?.hasHouseNumber)
-        : addrParts.street.trim().length >= 3 && addrParts.city.trim().length >= 2 && /^\d{5}$/.test(addrParts.zip)
     const blockedByOffice = lookup.status === "office" && !asNew
+    const identityOk = knownCustomer
+        ? !!locKey && (houseNumber.trim().length > 0 || !chosenLoc?.hasHouseNumber)
+        : firstName.trim().length > 0 && lastName.trim().length > 0 && addrParts.street.trim().length >= 3 && addrParts.city.trim().length >= 2 && /^\d{5}$/.test(addrParts.zip)
+    const whoComplete = Boolean(
+        zipOk && data.propertyType && data.isCustomer && phoneOk && !blockedByOffice && lookup.status !== "checking" &&
+        (data.isCustomer === "no" || asNew || lookup.status === "found" || lookup.status === "new" || lookup.status === "unavailable") &&
+        identityOk && emailOk
+    )
+
+    // The fee card and the window tags come from the server's fee schedule.
+    const feeInfo = avail.feeInfo
+    const winFee = data.window
+    const feeAmount: number | null = winFee ? winFee.fee : feeInfo ? feeInfo.amount : 0
+    const feeNeedsAck = !isCallback && (feeAmount === null || (feeAmount || 0) > 0)
 
     const stepComplete: boolean[] = [
+        whoComplete,
         serviceStepComplete(data),
         isCallback ? !!data.callbackTime : !!data.window,
-        true,
-        Boolean(
-            firstName.trim() && lastName.trim() && phoneOk && !blockedByOffice && lookup.status !== "checking" &&
-            identityOk && (feeOk || !feeRequired) && emailOk
-        ),
+        Boolean(!feeNeedsAck || feeOk),
     ]
 
     const hints: string[] = [
-        !data.service ? "Pick a service to continue" : !stepComplete[0] ? (data.service === "heatingCooling" ? "Pick the issue to continue" : "Pick what you need to continue") : "",
-        !stepComplete[1] ? (isCallback ? "Pick a good time to call" : "Pick a day and arrival window") : "",
-        "Everything here is skippable",
-        !stepComplete[3]
-            ? blockedByOffice ? "Please call us to book this one"
+        !zipOk ? "Enter your ZIP code"
+            : !data.propertyType ? "Home or business?"
+            : !data.isCustomer ? "Been a customer before?"
+            : blockedByOffice ? "Please call us to book this one"
             : !phoneOk ? "Add your mobile number"
             : lookup.status === "checking" ? "Checking your number…"
-            : !identityOk ? (knownCustomer ? "Pick your address and confirm the house number" : "Add your service address")
-            : !firstName.trim() || !lastName.trim() ? "Add your name"
-            : feeRequired && !feeOk ? "Accept the visit fee to book" : ""
-            : "",
+            : knownCustomer && !identityOk ? "Pick your address and confirm the house number"
+            : !identityOk ? "Add your name and service address"
+            : !emailOk ? "Check the email address" : "",
+        !data.service ? "Pick a service to continue" : !stepComplete[1] ? (data.service === "heatingCooling" ? "Pick the issue to continue" : "Pick what you need to continue") : "",
+        !stepComplete[2] ? (isCallback ? "Pick a good time to call" : "Pick a day and arrival window") : "",
+        !stepComplete[3] ? "Accept the visit fee to book" : "",
     ]
 
     const canContinue = stepComplete[step]
@@ -952,26 +841,29 @@ export default function ContactFlowDialog() {
         return `${s.slice(0, 3)}-${s.slice(3, 6)}-${s.slice(6)}`
     }
 
-    /* ── The phone lookup ──────────────────────────────────────────────────── */
-    function onPhoneChange(v: string) {
-        const digits = v.replace(/\D/g, "").replace(/^1(?=\d{10})/, "").slice(0, 10)
-        setPhoneDigits(digits)
-        setSubmitError("")
-        if (lookupDebounce.current) window.clearTimeout(lookupDebounce.current)
-        if (digits.length !== 10) {
-            lookupSeq.current++
-            setLookup({ status: "idle" })
-            setLocKey("")
-            setHouseNumber("")
-            setAsNew(false)
-            return
+    /* ── ZIP first ──────────────────────────────────────────────────────────── */
+    function onZipChange(v: string) {
+        const z = v.replace(/\D/g, "").slice(0, 5)
+        setZip(z)
+        setZipPlace(null)
+        setAddrParts((p) => ({ ...p, zip: z }))
+        if (z.length === 5) {
+            lookupZip(z).then((place) => {
+                setZipPlace(place)
+                if (place) setAddrParts((p) => ({ ...p, city: p.city || place.city, state: place.state || p.state || "OH", zip: z }))
+            })
         }
+    }
+
+    /* ── The phone lookup ──────────────────────────────────────────────────── */
+    function runLookup(digits: string) {
         setLookup({ status: "checking" })
+        if (lookupDebounce.current) window.clearTimeout(lookupDebounce.current)
         lookupDebounce.current = window.setTimeout(async () => {
             const seq = ++lookupSeq.current
             let r: any
             try {
-                r = await apiPost("/schedulerLookup", { phone: digits })
+                r = await apiPost("/schedulerLookup", { phone: digits, zip })
             } catch {
                 r = { status: "unavailable" }
             }
@@ -993,10 +885,28 @@ export default function ContactFlowDialog() {
             }
         }, 250)
     }
+    function onPhoneChange(v: string) {
+        const digits = v.replace(/\D/g, "").replace(/^1(?=\d{10})/, "").slice(0, 10)
+        setPhoneDigits(digits)
+        setSubmitError("")
+        if (digits.length !== 10) {
+            lookupSeq.current++
+            if (lookupDebounce.current) window.clearTimeout(lookupDebounce.current)
+            setLookup({ status: "idle" })
+            setLocKey("")
+            setHouseNumber("")
+            setAsNew(false)
+            return
+        }
+        // Only a returning customer is looked up while typing; a new customer's
+        // number is still checked for duplicates on the server when they book.
+        if (data.isCustomer === "yes") runLookup(digits)
+    }
 
     function onAddressChange(v: string) {
         setAddrLine(v)
-        setAddrParts((p) => ({ ...p, ...splitAddress(v), state: splitAddress(v).state || p.state || "OH" }))
+        const sp = splitAddress(v)
+        setAddrParts((p) => ({ street: sp.street || v, city: sp.city || p.city, state: sp.state || p.state || "OH", zip: sp.zip || p.zip }))
         setAddrOpen(true)
         if (addrDebounce.current) window.clearTimeout(addrDebounce.current)
         if (v.trim().length < 3) {
@@ -1017,15 +927,18 @@ export default function ContactFlowDialog() {
 
     async function selectAddress(sugg: AddressSuggestion) {
         setAddrLine(sugg.label)
-        setAddrParts((p) => ({ ...p, ...splitAddress(sugg.label) }))
+        const sp = splitAddress(sugg.label)
+        setAddrParts((p) => ({ street: sp.street || p.street, city: sp.city || p.city, state: sp.state || p.state || "OH", zip: sp.zip || p.zip }))
         setAddrSuggestions([])
         setAddrOpen(false)
         if (sugg.src === "google") {
             const parts = await googlePlaceParts(sugg.id)
             if (parts && parts.street) {
-                setAddrParts({ street: parts.street, city: parts.city, state: parts.state || "OH", zip: parts.zip })
-                setAddrLine([parts.street, parts.city, [parts.state, parts.zip].filter(Boolean).join(" ")].filter(Boolean).join(", "))
+                setAddrParts({ street: parts.street, city: parts.city, state: parts.state || "OH", zip: parts.zip || zip })
+                setAddrLine(parts.street)
             }
+        } else {
+            setAddrLine(sp.street || sugg.label)
         }
     }
 
@@ -1039,11 +952,12 @@ export default function ContactFlowDialog() {
     const whenSummary = isCallback
         ? data.callbackTime ? `We'll call · ${data.callbackTime}` : ""
         : data.window && data.apptDate ? `${relDay(data.apptDate)} · ${shortLabel(data.window.label)}` : ""
-    const homeSummary = [data.propertyType, data.occupant].filter(Boolean).join(" · ")
-    const chosenLoc = lookup.status === "found" ? lookup.locations.find((l) => l.key === locKey) : undefined
     const whereSummary = knownCustomer
         ? chosenLoc ? `${houseNumber.trim() ? houseNumber.trim() + " " : ""}${chosenLoc.street}, ${chosenLoc.city}` : ""
         : addrParts.street ? `${addrParts.street}${unit ? " " + unit : ""}, ${addrParts.city}` : ""
+    const whoSummary = knownCustomer
+        ? `${firstName.trim() ? firstName.trim() + " · " : ""}${formatPhone(phoneDigits)}${isMember ? " · X-Plan" : ""}`
+        : `${[firstName.trim(), lastName.trim()].filter(Boolean).join(" ")} · ${formatPhone(phoneDigits)}`
 
     /* ── Book ───────────────────────────────────────────────────────────────── */
     async function bookVisit() {
@@ -1072,6 +986,7 @@ export default function ContactFlowDialog() {
             detail: serviceRequired,
             duration: data.service === "heatingCooling" ? data.hvacDuration || "" : "",
             answers,
+            zip,
             propertyType: data.propertyType || "",
             occupant: data.occupant || "",
             systemAge: data.systemAge || "",
@@ -1084,7 +999,7 @@ export default function ContactFlowDialog() {
             phone: phoneDigits,
             email: email.trim(),
             preferredContact: data.preferredContact,
-            feeOk: feeOk || !feeRequired,
+            feeOk: feeOk || !feeNeedsAck,
             smsOk,
             smsConsentText: smsOk ? SMS_CONSENT_TEXT : "",
             member: isMember,
@@ -1095,9 +1010,8 @@ export default function ContactFlowDialog() {
             body.token = lookup.token
             body.locationKey = locKey
             body.houseNumber = houseNumber.trim()
-            body.zip = chosenLoc?.zip || ""
         } else {
-            body.address = { street: addrParts.street.trim(), unit: unit.trim(), city: addrParts.city.trim(), state: (addrParts.state || "OH").trim(), zip: addrParts.zip.trim() }
+            body.address = { street: addrParts.street.trim(), unit: unit.trim(), city: addrParts.city.trim(), state: (addrParts.state || "OH").trim(), zip: (addrParts.zip || zip).trim() }
         }
 
         let r: any
@@ -1110,17 +1024,13 @@ export default function ContactFlowDialog() {
 
         if (r && (r.status === "booked" || r.status === "received")) {
             try {
-                const addr: Record<string, string> = {
-                    first_name: firstName.trim(),
-                    last_name: lastName.trim(),
-                    country: "US",
-                }
+                const addr: Record<string, string> = { first_name: firstName.trim(), last_name: lastName.trim(), country: "US", postal_code: zip }
                 if (!knownCustomer) {
                     if (addrParts.street) addr.street = addrParts.street
                     if (addrParts.city) addr.city = addrParts.city
                     if (addrParts.state) addr.region = addrParts.state
-                    if (addrParts.zip) addr.postal_code = addrParts.zip
                 }
+                Object.keys(addr).forEach((k) => { if (!addr[k]) delete addr[k] })
                 const userData: Record<string, any> = { address: addr }
                 if (email.trim()) userData.email = email.trim().toLowerCase()
                 const phone = toE164(phoneDigits)
@@ -1140,26 +1050,28 @@ export default function ContactFlowDialog() {
             setBooked({
                 status: r.status,
                 jobNumber: r.jobNumber,
-                window: r.arrivalWindow ? { ...r.arrivalWindow, fee: r.fee ?? fee } : data.window,
+                window: r.arrivalWindow ? { ...data.window, ...r.arrivalWindow, fee: r.fee ?? feeAmount, feeLabel: r.feeLabel || "" } : data.window,
                 date: (r.arrivalWindow && r.arrivalWindow.date) || data.apptDate,
                 emailed: !!r.emailed,
                 callback: !!r.callback || isCallback,
                 address: r.address || whereSummary,
-                fee: typeof r.fee === "number" ? r.fee : fee,
+                fee: typeof r.fee === "number" ? r.fee : r.fee === null ? null : feeAmount,
+                feeText: r.feeText || feeInfo?.text,
+                feeKind: r.feeKind || feeInfo?.kind,
+                firstName: r.firstName || firstName.trim(),
             })
             return
         }
-        // Another attempt gets a fresh id only when this one was refused for
-        // a reason the visitor can fix; a network failure keeps it, so the
-        // server can replay rather than book twice.
         if (r?.status === "house_number_mismatch") {
             setHouseError(r.error || "That house number doesn't match the address on file.")
             requestIdRef.current = newId()
+            setStep(0)
         } else if (r?.status === "lookup_expired") {
             setSubmitError("Your lookup timed out — re-enter your mobile number.")
             setLookup({ status: "idle" })
             setLocKey("")
             requestIdRef.current = newId()
+            setStep(0)
         } else if (r?.status === "rate_limited") {
             setSubmitError(r.error || `Too many requests just now. Give it a minute, or call ${EMERGENCY_PHONE_DISPLAY}.`)
         } else if (r?.status === "bad_request") {
@@ -1198,29 +1110,25 @@ export default function ContactFlowDialog() {
     const fallbackMode = avail.status === "unavailable" || avail.status === "no_capacity"
     const days: Day[] = liveDays.length ? liveDays : fallbackMode ? requestedWindows() : []
     const openDays = days.filter((d) => d.windows.length)
-    const quickPicks = openDays
-        .flatMap((d) => d.windows.map((w) => ({ date: d.date, win: w })))
-        .slice(0, 3)
+    const quickPicks = openDays.flatMap((d) => d.windows.map((w) => ({ date: d.date, win: w }))).slice(0, 3)
     const selectedDay = days.find((d) => d.date === data.apptDate)
     const pickWindow = (date: string, w: Win) => patch({ apptDate: date, window: w })
     const winSel = (date: string, w: Win) => data.apptDate === date && data.window?.start === w.start
-    const feeTag = (w: Win) => {
-        const f = feeFor(w)
-        if (svcFee === "free") return "Free"
-        if (svcFee === "tuneup") return isMember ? "Included" : money(f)
-        return w.afterHours ? `Evening · ${money(f)}` : money(f)
-    }
 
-    const feeCopyText = (() => {
-        if (svcFee === "free") return "There's no charge for this visit. Your estimate is free."
-        if (svcFee === "tuneup") return isMember
-            ? "Included with your X-Plan membership."
-            : "Flat-rate tune-up, quoted up front. No dispatch fee on top."
-        const evening = !!data.window?.afterHours
-        const what = data.service === "plumbing" ? "a complete plumbing diagnosis" : "a full system check"
-        return isMobile
-            ? `Travel + ${data.service === "plumbing" ? "plumbing diagnosis" : "system check"}, quoted up front${evening ? " (evening rate)" : ""}.`
-            : `Covers your technician's travel and ${what}${evening ? " at the evening rate" : ""} — quoted up front, no surprises at the door.`
+    const feeHeadline = (() => {
+        if (!feeInfo) return { amt: "", lbl: "" }
+        if (feeInfo.kind === "estimate") return { amt: "Free", lbl: "estimate" }
+        if (feeInfo.kind === "tuneup") return { amt: feeInfo.amount === 0 ? "Included" : money(feeInfo.amount || 0), lbl: "tune-up" }
+        if (feeInfo.kind === "commercial") return { amt: feeInfo.label, lbl: "commercial rate" }
+        const amt = winFee && winFee.fee != null ? winFee.fee : feeInfo.amount || 0
+        return { amt: money(amt), lbl: winFee?.afterHours ? "evening visit fee" : "visit fee" }
+    })()
+    const feeText = (() => {
+        if (!feeInfo) return ""
+        if (feeInfo.kind === "service" && winFee?.afterHours && feeInfo.afterHours != null) {
+            return `${money(feeInfo.afterHours)} after-hours visit fee${isMember ? " (X-Plan member rate)" : ""}. Covers your technician's travel and ${data.service === "plumbing" ? "a complete plumbing diagnosis" : "a full system check"}, quoted up front, no surprises at the door.`
+        }
+        return feeInfo.text
     })()
 
     return (
@@ -1325,29 +1233,27 @@ export default function ContactFlowDialog() {
                                 <>
                                     <div className="xw-doneh">
                                         See you {booked.date ? fmtDay(booked.date, "long") : "soon"}
-                                        {firstName.trim() ? `, ${firstName.trim()}` : ""}!
+                                        {booked.firstName ? `, ${booked.firstName}` : ""}!
                                     </div>
                                     <div className="xw-donesub">
                                         {[svcSummary, booked.window ? `Arrival ${shortLabel(booked.window.label)}` : ""].filter(Boolean).join(" · ")}
                                     </div>
                                     {booked.address ? <div className="xw-donesub">{booked.address}</div> : null}
-                                    {booked.jobNumber ? (
-                                        <div className="xw-donejob">Job #{booked.jobNumber}</div>
-                                    ) : null}
+                                    {booked.jobNumber ? <div className="xw-donejob">Job #{booked.jobNumber}</div> : null}
                                     <div className="xw-donesub">
-                                        {booked.emailed
-                                            ? `Confirmation sent to ${email.trim()}. `
-                                            : ""}
-                                        {typeof booked.fee === "number" && booked.fee > 0
-                                            ? `Your technician will quote the ${money(booked.fee)} visit fee before any work begins.`
-                                            : "There's no charge for this visit."}
+                                        {booked.emailed ? `Confirmation sent to ${email.trim()}. ` : ""}
+                                        {booked.feeKind === "commercial"
+                                            ? booked.feeText
+                                            : typeof booked.fee === "number" && booked.fee > 0
+                                              ? `Your technician will quote the ${money(booked.fee)} ${booked.feeKind === "tuneup" ? "tune-up price" : "visit fee"} before any work begins.`
+                                              : "There's no charge for this visit."}
                                     </div>
                                 </>
                             ) : (
                                 <>
                                     <div className="xw-doneh">
                                         {booked.callback ? "We'll give you a call" : "We'll confirm your time shortly"}
-                                        {firstName.trim() ? `, ${firstName.trim()}` : ""}
+                                        {booked.firstName ? `, ${booked.firstName}` : ""}
                                     </div>
                                     <div className="xw-donesub">
                                         {booked.callback
@@ -1373,8 +1279,192 @@ export default function ContactFlowDialog() {
                         </div>
                     ) : (
                         <>
-                            {/* ============ STEP 1: SERVICE ============ */}
+                            {/* ============ STEP 1: YOU ============ */}
                             {step === 0 && (
+                                <div className="xw-fade" style={{ display: "grid", gap: 20 }}>
+                                    <div className="xw-zipgrid">
+                                        <div>
+                                            {groupLabel("ZIP code")}
+                                            <input
+                                                className="xw-input xw-zip"
+                                                inputMode="numeric"
+                                                autoComplete="postal-code"
+                                                placeholder="45400"
+                                                maxLength={5}
+                                                value={zip}
+                                                onChange={(e) => onZipChange(e.target.value)}
+                                            />
+                                            {zipOk && (
+                                                <div className={"xw-micro" + (!inServiceArea(zip) ? " warn" : "")} style={{ marginTop: 6 }}>
+                                                    {zipPlace ? `${zipPlace.city}, ${zipPlace.state}` : ""}
+                                                    {inServiceArea(zip) ? (zipPlace ? " · we're nearby" : "") : ` — outside our usual area; we'll confirm by phone.`}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div>
+                                            {groupLabel("Home or business?")}
+                                            <div className="xw-chips">
+                                                {chip(data.propertyType === "Residential", "Home", () => patch({ propertyType: "Residential" }))}
+                                                {chip(data.propertyType === "Commercial", "Business", () => patch({ propertyType: "Commercial" }))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {zipOk && data.propertyType && (
+                                        <div className="xw-fade">
+                                            {groupLabel("Have we been out before?")}
+                                            <div className="xw-chips">
+                                                {chip(data.isCustomer === "yes", "Yes, I'm a customer", () => { patch({ isCustomer: "yes" }); setAsNew(false); if (phoneDigits.length === 10) runLookup(phoneDigits) })}
+                                                {chip(data.isCustomer === "no", "No, first time", () => { patch({ isCustomer: "no" }); setLookup({ status: "idle" }); setLocKey(""); setAsNew(false) })}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {zipOk && data.propertyType && data.isCustomer && (
+                                        <div className="xw-fade" style={{ display: "grid", gap: 14 }}>
+                                            <div>
+                                                {groupLabel("Mobile number")}
+                                                <div style={{ position: "relative" }}>
+                                                    <input
+                                                        className="xw-input"
+                                                        inputMode="tel"
+                                                        autoComplete="tel"
+                                                        placeholder="937-555-0100"
+                                                        value={formatPhone(phoneDigits)}
+                                                        onChange={(e) => onPhoneChange(e.target.value)}
+                                                    />
+                                                    {lookup.status === "checking" && <span className="xw-inspin" aria-hidden="true" />}
+                                                </div>
+                                                {lookup.status === "checking" && <div className="xw-micro" style={{ marginTop: 6 }}>Looking you up…</div>}
+                                                {data.isCustomer === "yes" && (lookup.status === "new" || lookup.status === "unavailable") && (
+                                                    <div className="xw-micro" style={{ marginTop: 6 }}>
+                                                        {lookup.status === "new" ? "We couldn't find that number — no problem." : "We couldn't check that number just now."} Add your address below and we'll match you up.
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {lookup.status === "office" && !asNew && (
+                                                <div className="xw-notice warn">
+                                                    We'd like to talk to you about this one — call{" "}
+                                                    <a href={`tel:${EMERGENCY_PHONE_TEL}`} style={{ color: T.red, fontWeight: 600 }}>{lookup.phone}</a>{" "}
+                                                    and we'll book it right away.
+                                                </div>
+                                            )}
+
+                                            {lookup.status === "found" && !asNew && (
+                                                <div className="xw-lookup xw-fade">
+                                                    <div className="xw-lkhead">
+                                                        <span>Welcome back! Which address?</span>
+                                                        {lookup.member && <span className="xw-memberchip">X-Plan member</span>}
+                                                    </div>
+                                                    <div style={{ display: "grid", gap: 8 }}>
+                                                        {lookup.locations.map((l) => {
+                                                            const sel = locKey === l.key
+                                                            return (
+                                                                <button key={l.key} type="button" className={"xw-loc" + (sel ? " sel" : "")} onClick={() => { setLocKey(l.key); setHouseError("") }}>
+                                                                    <span className="radio" aria-hidden="true" />
+                                                                    <span>
+                                                                        <span className="st">{l.hasHouseNumber ? "•••• " : ""}{l.street}</span>
+                                                                        <span className="ct">{[l.city, [l.state, l.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ")}{l.inZip === false && zipOk ? " · different ZIP" : ""}</span>
+                                                                    </span>
+                                                                </button>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                    {chosenLoc && chosenLoc.hasHouseNumber && (
+                                                        <div className="xw-fade" style={{ marginTop: 12 }}>
+                                                            {groupLabel("Confirm your house number")}
+                                                            <input
+                                                                className={"xw-input" + (houseError ? " err" : "")}
+                                                                inputMode="numeric"
+                                                                placeholder={`House number on ${chosenLoc.street}`}
+                                                                value={houseNumber}
+                                                                maxLength={8}
+                                                                onChange={(e) => { setHouseNumber(e.target.value.replace(/[^0-9A-Za-z]/g, "")); setHouseError("") }}
+                                                            />
+                                                            {houseError && <div className="xw-fielderr">{houseError}</div>}
+                                                            {!houseError && <div className="xw-micro" style={{ marginTop: 6 }}>Just so we know it's you.</div>}
+                                                        </div>
+                                                    )}
+                                                    <div className="xw-namerow" style={{ marginTop: 12 }}>
+                                                        <div>
+                                                            {groupLabel("First name", true)}
+                                                            <input className="xw-input" autoComplete="given-name" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                                                        </div>
+                                                        <div>
+                                                            {groupLabel("Email", true)}
+                                                            <input className={"xw-input" + (!emailOk ? " err" : "")} type="email" autoComplete="email" placeholder="For your confirmation" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" className="xw-linkbtn" onClick={() => { setAsNew(true); setLocKey(""); setHouseNumber("") }}>
+                                                        Not you, or a different address? Book as a new address
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {!knownCustomer && !blockedByOffice && lookup.status !== "checking" && (data.isCustomer === "no" || asNew || lookup.status === "new" || lookup.status === "unavailable") && (
+                                                <div className="xw-fade" style={{ display: "grid", gap: 14 }}>
+                                                    {asNew && lookup.status === "found" && (
+                                                        <button type="button" className="xw-linkbtn" style={{ padding: 0 }} onClick={() => setAsNew(false)}>← Back to the addresses on file</button>
+                                                    )}
+                                                    <div className="xw-namerow">
+                                                        <div>
+                                                            {groupLabel("First name")}
+                                                            <input className="xw-input" autoComplete="given-name" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                                                        </div>
+                                                        <div>
+                                                            {groupLabel("Last name")}
+                                                            <input className="xw-input" autoComplete="family-name" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ position: "relative" }}>
+                                                        {groupLabel("Street address")}
+                                                        <input
+                                                            className="xw-input"
+                                                            autoComplete="off"
+                                                            placeholder="123 Main St"
+                                                            value={addrLine}
+                                                            onChange={(e) => onAddressChange(e.target.value)}
+                                                            onFocus={() => addrSuggestions.length && setAddrOpen(true)}
+                                                            onBlur={() => setTimeout(() => setAddrOpen(false), 160)}
+                                                        />
+                                                        {addrOpen && (addrLoading || addrSuggestions.length > 0) && (
+                                                            <div className="xw-addrdrop">
+                                                                {addrLoading && !addrSuggestions.length && <div className="ld">Searching…</div>}
+                                                                {addrSuggestions.map((s) => (
+                                                                    <div key={s.id} className="it" onMouseDown={(e) => { e.preventDefault(); selectAddress(s) }}>{s.label}</div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="xw-addrgrid">
+                                                        <div>
+                                                            {groupLabel("Apt / unit", true)}
+                                                            <input className="xw-input" placeholder="Apt 2B" value={unit} onChange={(e) => setUnit(e.target.value)} />
+                                                        </div>
+                                                        <div>
+                                                            {groupLabel("City")}
+                                                            <input className="xw-input" autoComplete="address-level2" placeholder="City" value={addrParts.city} onChange={(e) => setAddrParts((p) => ({ ...p, city: e.target.value }))} />
+                                                        </div>
+                                                        <div>
+                                                            {groupLabel("ZIP")}
+                                                            <input className="xw-input" inputMode="numeric" autoComplete="postal-code" placeholder={zip || "45400"} maxLength={5} value={addrParts.zip} onChange={(e) => setAddrParts((p) => ({ ...p, zip: e.target.value.replace(/\D/g, "").slice(0, 5) }))} />
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        {groupLabel("Email", true)}
+                                                        <input className={"xw-input" + (!emailOk ? " err" : "")} type="email" autoComplete="email" placeholder="For your confirmation" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                    {submitError && <div className="xw-notice warn" role="alert">{submitError}</div>}
+                                </div>
+                            )}
+
+                            {/* ============ STEP 2: SERVICE ============ */}
+                            {step === 1 && (
                                 <div className="xw-fade" style={{ display: "grid", gap: 20 }}>
                                     <div className="xw-svcrow">
                                         {svcCards.map((c) => {
@@ -1385,18 +1475,7 @@ export default function ContactFlowDialog() {
                                                     type="button"
                                                     className={"xw-svc" + (sel ? " sel" : "")}
                                                     onClick={() =>
-                                                        patch({
-                                                            service: c.key,
-                                                            hvacIssue: undefined,
-                                                            hvacDuration: undefined,
-                                                            detail: undefined,
-                                                            answers: {},
-                                                            systemAge: undefined,
-                                                            unitLocation: undefined,
-                                                            window: null,
-                                                            apptDate: undefined,
-                                                            callbackTime: undefined,
-                                                        })
+                                                        patch({ service: c.key, hvacIssue: undefined, hvacDuration: undefined, detail: undefined, answers: {}, systemAge: undefined, unitLocation: undefined, window: null, apptDate: undefined, callbackTime: undefined })
                                                     }
                                                 >
                                                     <span className="tile">{c.icon}</span>
@@ -1413,12 +1492,6 @@ export default function ContactFlowDialog() {
                                                 {groupLabel("What's the issue?")}
                                                 <div className="xw-chips">
                                                     {HVAC_ISSUES.map((o) => chip(data.hvacIssue === o, o, () => patch({ hvacIssue: data.hvacIssue === o ? undefined : o, window: null, apptDate: undefined })))}
-                                                </div>
-                                            </div>
-                                            <div>
-                                                {groupLabel("How long has it been happening?", true)}
-                                                <div className="xw-chips">
-                                                    {HVAC_DURATIONS.map((o) => chip(data.hvacDuration === o, o, () => toggle("hvacDuration", o)))}
                                                 </div>
                                             </div>
                                         </div>
@@ -1445,7 +1518,20 @@ export default function ContactFlowDialog() {
                                         </div>
                                     )}
 
-                                    {stepComplete[0] && (
+                                    {stepComplete[1] && ageQ.ask && (
+                                        <div className="xw-fade">
+                                            {groupLabel(ageQ.label, true)}
+                                            <div className="xw-chips">{AGE_OPTIONS.map((o) => chip(data.systemAge === o, o, () => toggle("systemAge", o)))}</div>
+                                        </div>
+                                    )}
+                                    {stepComplete[1] && data.service === "heatingCooling" && data.hvacIssue !== "Tune-Up" && (
+                                        <div className="xw-fade">
+                                            {groupLabel("How long has it been happening?", true)}
+                                            <div className="xw-chips">{HVAC_DURATIONS.map((o) => chip(data.hvacDuration === o, o, () => toggle("hvacDuration", o)))}</div>
+                                        </div>
+                                    )}
+
+                                    {stepComplete[1] && (
                                         <div className="xw-micro">
                                             {isCallback
                                                 ? "No visit needed for this one — next, tell us when to call."
@@ -1459,21 +1545,17 @@ export default function ContactFlowDialog() {
                                 </div>
                             )}
 
-                            {/* ============ STEP 2: TIME ============ */}
-                            {step === 1 && isCallback && (
+                            {/* ============ STEP 3: TIME ============ */}
+                            {step === 2 && isCallback && (
                                 <div className="xw-fade" style={{ display: "grid", gap: 20 }}>
-                                    <div className="xw-notice">
-                                        This doesn't need a visit — someone from the office will call you back.
-                                    </div>
+                                    <div className="xw-notice">This doesn't need a visit — someone from the office will call you back.</div>
                                     <div>
                                         {groupLabel("When's a good time to call?")}
-                                        <div className="xw-chips">
-                                            {CALLBACK_TIMES.map((o) => chip(data.callbackTime === o, o, () => toggle("callbackTime", o)))}
-                                        </div>
+                                        <div className="xw-chips">{CALLBACK_TIMES.map((o) => chip(data.callbackTime === o, o, () => toggle("callbackTime", o)))}</div>
                                     </div>
                                 </div>
                             )}
-                            {step === 1 && !isCallback && (
+                            {step === 2 && !isCallback && (
                                 <div className="xw-fade" style={{ display: "grid", gap: 20 }}>
                                     {(avail.status === "loading" || avail.status === "idle") && (
                                         <div className="xw-qp xw-skelwrap" aria-busy="true">
@@ -1486,9 +1568,7 @@ export default function ContactFlowDialog() {
                                         </div>
                                     )}
                                     {avail.status === "unavailable" && (
-                                        <div className="xw-notice warn">
-                                            Our live schedule isn't loading right now. Pick a time that works and we'll confirm it by text or phone.
-                                        </div>
+                                        <div className="xw-notice warn">Our live schedule isn't loading right now. Pick a time that works and we'll confirm it by text or phone.</div>
                                     )}
                                     {avail.status === "no_capacity" && (
                                         <div className="xw-notice warn">
@@ -1539,13 +1619,7 @@ export default function ContactFlowDialog() {
                                                             const full = !d.windows.length
                                                             const dt = fromISO(d.date)
                                                             return (
-                                                                <button
-                                                                    key={d.date}
-                                                                    type="button"
-                                                                    className={"xw-stripday" + (sel ? " sel" : "") + (full ? " full" : "")}
-                                                                    disabled={full}
-                                                                    onClick={() => patch({ apptDate: d.date, window: null })}
-                                                                >
+                                                                <button key={d.date} type="button" className={"xw-stripday" + (sel ? " sel" : "") + (full ? " full" : "")} disabled={full} onClick={() => patch({ apptDate: d.date, window: null })}>
                                                                     <span className="wd">{dt.toLocaleDateString("en-US", { weekday: "short" })}</span>
                                                                     <span className="dn">{dt.getDate()}</span>
                                                                     <span className="st">{full ? "Full" : d.date === todayISO() ? "Today" : dt.toLocaleDateString("en-US", { month: "short" })}</span>
@@ -1568,7 +1642,7 @@ export default function ContactFlowDialog() {
                                                             return (
                                                                 <button key={w.start} type="button" className={"xw-window" + (sel ? " sel" : "")} onClick={() => pickWindow(selectedDay.date, w)}>
                                                                     <span>{sel ? "✓ " : ""}{shortLabel(w.label)}</span>
-                                                                    <span className="fee">{feeTag(w)}</span>
+                                                                    <span className="fee">{w.feeLabel}</span>
                                                                 </button>
                                                             )
                                                         })}
@@ -1578,103 +1652,14 @@ export default function ContactFlowDialog() {
                                                                 <span className="fee">Full</span>
                                                             </button>
                                                         ))}
-                                                        {selectedDay && !selectedDay.windows.length && !selectedDay.closed.length && (
-                                                            <div className="xw-micro">Nothing open this day.</div>
-                                                        )}
+                                                        {selectedDay && !selectedDay.windows.length && !selectedDay.closed.length && <div className="xw-micro">Nothing open this day.</div>}
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
                                     )}
                                     {avail.status === "ok" && (
-                                        <div className="xw-micro">
-                                            Live from our dispatch board — what you pick here is held for you the moment you book.
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* ============ STEP 3: DETAILS ============ */}
-                            {step === 2 && (
-                                <div className="xw-fade" style={{ display: "grid", gap: 22 }}>
-                                    <div className="xw-proprow">
-                                        <div>
-                                            {groupLabel("Property type")}
-                                            <div className="xw-chips">{["Residential", "Commercial"].map((o) => chip(data.propertyType === o, o, () => toggle("propertyType", o)))}</div>
-                                        </div>
-                                        <div>
-                                            {groupLabel("You are the…")}
-                                            <div className="xw-chips">{["Owner / Landlord", "Tenant"].map((o) => chip(data.occupant === o, o, () => toggle("occupant", o)))}</div>
-                                        </div>
-                                    </div>
-
-                                    {ageQ.ask && (
-                                        <div>
-                                            {groupLabel(ageQ.label, true)}
-                                            <div className="xw-chips">{AGE_OPTIONS.map((o) => chip(data.systemAge === o, o, () => toggle("systemAge", o)))}</div>
-                                            <div className="xw-micro" style={{ marginTop: 8 }}>Helps us send a technician who knows your system's generation.</div>
-                                        </div>
-                                    )}
-
-                                    {isHvacContext(data.service, data.detail) && (
-                                        <div>
-                                            {groupLabel("Where's the outdoor unit?", true)}
-                                            <div className="xw-chips">{UNIT_LOCATIONS.map((o) => chip(data.unitLocation === o, o, () => toggle("unitLocation", o)))}</div>
-                                        </div>
-                                    )}
-
-                                    {!isCallback && (
-                                        <div>
-                                            {groupLabel("Photos", true)}
-                                            <input
-                                                ref={photoInputRef}
-                                                type="file"
-                                                accept="image/*"
-                                                multiple
-                                                style={{ display: "none" }}
-                                                onChange={(e) => {
-                                                    const files = Array.from(e.target.files || [])
-                                                    setPhotos((p) => [...p, ...files].slice(0, 3))
-                                                    e.target.value = ""
-                                                }}
-                                            />
-                                            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-                                                {photoPreviews.map((p, i) => (
-                                                    <div key={i} className="xw-thumb">
-                                                        <img src={p.url} alt="" />
-                                                        <button type="button" aria-label="Remove photo" onClick={() => setPhotos((ps) => ps.filter((_, j) => j !== i))}>×</button>
-                                                    </div>
-                                                ))}
-                                                {photos.length < 3 && (
-                                                    <button type="button" className="xw-upload" onClick={() => photoInputRef.current?.click()}>
-                                                        + Add a photo of the problem
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {!noteOpen ? (
-                                        <button type="button" className="xw-noterow" onClick={() => setNoteOpen(true)}>
-                                            <span className="plus">+</span>
-                                            <span>
-                                                <span className="nt">Add a note for the technician</span>
-                                                <span className="ns">Gate codes, pets, where the unit is, anything useful</span>
-                                            </span>
-                                        </button>
-                                    ) : (
-                                        <div>
-                                            {groupLabel("Note for the technician", true)}
-                                            <textarea
-                                                className="xw-input"
-                                                rows={3}
-                                                maxLength={600}
-                                                value={note}
-                                                onChange={(e) => setNote(e.target.value)}
-                                                placeholder="Gate codes, pets, where the unit is, anything useful"
-                                                style={{ resize: "vertical" }}
-                                            />
-                                        </div>
+                                        <div className="xw-micro">Live from our dispatch board — what you pick here is held for you the moment you book.</div>
                                     )}
                                 </div>
                             )}
@@ -1682,134 +1667,81 @@ export default function ContactFlowDialog() {
                             {/* ============ STEP 4: CONFIRM ============ */}
                             {step === 3 && (
                                 <div className="xw-fade xw-confcols">
-                                    <div className="xw-c-form" style={{ display: "grid", gap: 14 }}>
-                                        <div>
-                                            {groupLabel("Mobile number")}
-                                            <div style={{ position: "relative" }}>
-                                                <input
-                                                    className="xw-input"
-                                                    inputMode="tel"
-                                                    autoComplete="tel"
-                                                    placeholder="937-555-0100"
-                                                    value={formatPhone(phoneDigits)}
-                                                    onChange={(e) => onPhoneChange(e.target.value)}
-                                                />
-                                                {lookup.status === "checking" && <span className="xw-inspin" aria-hidden="true" />}
-                                            </div>
-                                            {lookup.status === "checking" && <div className="xw-micro" style={{ marginTop: 6 }}>Checking if we've been out before…</div>}
-                                            {lookup.status === "new" && <div className="xw-micro" style={{ marginTop: 6 }}>Looks like you're new here — welcome! Add your address below.</div>}
-                                        </div>
-
-                                        {lookup.status === "office" && !asNew && (
-                                            <div className="xw-notice warn">
-                                                We'd like to talk to you about this one — call{" "}
-                                                <a href={`tel:${EMERGENCY_PHONE_TEL}`} style={{ color: T.red, fontWeight: 600 }}>{lookup.phone}</a>{" "}
-                                                and we'll book it right away.
+                                    <div className="xw-c-form" style={{ display: "grid", gap: 18 }}>
+                                        {!isCallback && (
+                                            <div className={"xw-fee" + (!feeNeedsAck ? " xw-free" : "")}>
+                                                <div className="fh">
+                                                    <span className="amt">{feeHeadline.amt}</span>
+                                                    <span className="lbl">{feeHeadline.lbl}</span>
+                                                </div>
+                                                <div className="fb">{feeText}</div>
+                                                {feeNeedsAck && (
+                                                    <button type="button" className="fack" onClick={() => setFeeOk((v) => !v)}>
+                                                        <span className={"box" + (feeOk ? " on" : "")}>{feeOk ? "✓" : ""}</span>
+                                                        {feeInfo?.kind === "commercial" ? "I understand the hourly rate" : `I understand the ${feeHeadline.amt} ${feeInfo?.kind === "tuneup" ? "tune-up price" : "visit fee"}`}
+                                                    </button>
+                                                )}
                                             </div>
                                         )}
 
-                                        {lookup.status === "found" && !asNew && (
-                                            <div className="xw-lookup xw-fade">
-                                                <div className="xw-lkhead">
-                                                    <span>Welcome back! Which address?</span>
-                                                    {lookup.member && <span className="xw-memberchip">X-Plan member</span>}
+                                        {!isCallback && (
+                                            <div className="xw-proprow">
+                                                <div>
+                                                    {groupLabel("You are the…", true)}
+                                                    <div className="xw-chips">{["Owner / Landlord", "Tenant", "Property manager"].map((o) => chip(data.occupant === o, o, () => toggle("occupant", o)))}</div>
                                                 </div>
-                                                <div style={{ display: "grid", gap: 8 }}>
-                                                    {lookup.locations.map((l) => {
-                                                        const sel = locKey === l.key
-                                                        return (
-                                                            <button key={l.key} type="button" className={"xw-loc" + (sel ? " sel" : "")} onClick={() => { setLocKey(l.key); setHouseError("") }}>
-                                                                <span className="radio" aria-hidden="true" />
-                                                                <span>
-                                                                    <span className="st">{l.hasHouseNumber ? "•••• " : ""}{l.street}</span>
-                                                                    <span className="ct">{[l.city, [l.state, l.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ")}</span>
-                                                                </span>
-                                                            </button>
-                                                        )
-                                                    })}
-                                                </div>
-                                                {chosenLoc && chosenLoc.hasHouseNumber && (
-                                                    <div className="xw-fade" style={{ marginTop: 12 }}>
-                                                        {groupLabel("Confirm your house number")}
-                                                        <input
-                                                            className={"xw-input" + (houseError ? " err" : "")}
-                                                            inputMode="numeric"
-                                                            placeholder={`House number on ${chosenLoc.street}`}
-                                                            value={houseNumber}
-                                                            maxLength={8}
-                                                            onChange={(e) => { setHouseNumber(e.target.value.replace(/[^0-9A-Za-z]/g, "")); setHouseError("") }}
-                                                        />
-                                                        {houseError && <div className="xw-fielderr">{houseError}</div>}
-                                                        {!houseError && <div className="xw-micro" style={{ marginTop: 6 }}>Just so we know it's you.</div>}
+                                                {isHvacContext(data.service, data.detail) && (
+                                                    <div>
+                                                        {groupLabel("Where's the outdoor unit?", true)}
+                                                        <div className="xw-chips">{UNIT_LOCATIONS.map((o) => chip(data.unitLocation === o, o, () => toggle("unitLocation", o)))}</div>
                                                     </div>
                                                 )}
-                                                <button type="button" className="xw-linkbtn" onClick={() => { setAsNew(true); setLocKey(""); setHouseNumber("") }}>
-                                                    Not you, or a different address? Book as a new address
-                                                </button>
                                             </div>
                                         )}
 
-                                        {(lookup.status === "unavailable") && (
-                                            <div className="xw-micro">We couldn't check your number just now — no problem, add your address below.</div>
-                                        )}
-
-                                        <div className="xw-namerow">
+                                        {!isCallback && (
                                             <div>
-                                                {groupLabel("First name")}
-                                                <input className="xw-input" autoComplete="given-name" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                                            </div>
-                                            <div>
-                                                {groupLabel("Last name")}
-                                                <input className="xw-input" autoComplete="family-name" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                                            </div>
-                                        </div>
-
-                                        {!knownCustomer && !blockedByOffice && (
-                                            <>
-                                                {asNew && lookup.status === "found" && (
-                                                    <button type="button" className="xw-linkbtn" onClick={() => setAsNew(false)}>← Back to the addresses on file</button>
-                                                )}
-                                                <div style={{ position: "relative" }}>
-                                                    {groupLabel("Service address")}
-                                                    <input
-                                                        className="xw-input"
-                                                        autoComplete="off"
-                                                        placeholder="Street address, City, OH ZIP"
-                                                        value={addrLine}
-                                                        onChange={(e) => onAddressChange(e.target.value)}
-                                                        onFocus={() => addrSuggestions.length && setAddrOpen(true)}
-                                                        onBlur={() => setTimeout(() => setAddrOpen(false), 160)}
-                                                    />
-                                                    {addrOpen && (addrLoading || addrSuggestions.length > 0) && (
-                                                        <div className="xw-addrdrop">
-                                                            {addrLoading && !addrSuggestions.length && <div className="ld">Searching…</div>}
-                                                            {addrSuggestions.map((s) => (
-                                                                <div key={s.id} className="it" onMouseDown={(e) => { e.preventDefault(); selectAddress(s) }}>{s.label}</div>
-                                                            ))}
+                                                {groupLabel("Photos", true)}
+                                                <input
+                                                    ref={photoInputRef}
+                                                    type="file"
+                                                    accept="image/*"
+                                                    multiple
+                                                    style={{ display: "none" }}
+                                                    onChange={(e) => {
+                                                        const files = Array.from(e.target.files || [])
+                                                        setPhotos((p) => [...p, ...files].slice(0, 3))
+                                                        e.target.value = ""
+                                                    }}
+                                                />
+                                                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                                                    {photoPreviews.map((p, i) => (
+                                                        <div key={i} className="xw-thumb">
+                                                            <img src={p.url} alt="" />
+                                                            <button type="button" aria-label="Remove photo" onClick={() => setPhotos((ps) => ps.filter((_, j) => j !== i))}>×</button>
                                                         </div>
+                                                    ))}
+                                                    {photos.length < 3 && (
+                                                        <button type="button" className="xw-upload" onClick={() => photoInputRef.current?.click()}>+ Add a photo of the problem</button>
                                                     )}
                                                 </div>
-                                                <div className="xw-addrgrid">
-                                                    <div>
-                                                        {groupLabel("Apt / unit", true)}
-                                                        <input className="xw-input" placeholder="Apt 2B" value={unit} onChange={(e) => setUnit(e.target.value)} />
-                                                    </div>
-                                                    <div>
-                                                        {groupLabel("City")}
-                                                        <input className="xw-input" autoComplete="address-level2" placeholder="City" value={addrParts.city} onChange={(e) => setAddrParts((p) => ({ ...p, city: e.target.value }))} />
-                                                    </div>
-                                                    <div>
-                                                        {groupLabel("ZIP")}
-                                                        <input className="xw-input" inputMode="numeric" autoComplete="postal-code" placeholder="45400" maxLength={5} value={addrParts.zip} onChange={(e) => setAddrParts((p) => ({ ...p, zip: e.target.value.replace(/\D/g, "").slice(0, 5) }))} />
-                                                    </div>
-                                                </div>
-                                            </>
+                                            </div>
                                         )}
 
-                                        <div>
-                                            {groupLabel("Email", true)}
-                                            <input className={"xw-input" + (!emailOk ? " err" : "")} type="email" autoComplete="email" placeholder="For your confirmation" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                        </div>
+                                        {!noteOpen ? (
+                                            <button type="button" className="xw-noterow" onClick={() => setNoteOpen(true)}>
+                                                <span className="plus">+</span>
+                                                <span>
+                                                    <span className="nt">Add a note for the technician</span>
+                                                    <span className="ns">Gate codes, pets, where the unit is, anything useful</span>
+                                                </span>
+                                            </button>
+                                        ) : (
+                                            <div>
+                                                {groupLabel("Note for the technician", true)}
+                                                <textarea className="xw-input" rows={3} maxLength={600} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Gate codes, pets, where the unit is, anything useful" style={{ resize: "vertical" }} />
+                                            </div>
+                                        )}
 
                                         <div>
                                             {groupLabel("Preferred contact", true)}
@@ -1833,34 +1765,20 @@ export default function ContactFlowDialog() {
 
                                     <div className="xw-c-summary xw-summary">
                                         <div className="sh">Your visit</div>
+                                        <div className="row"><span>Who</span><b>{whoSummary}</b></div>
+                                        {!isCallback && <div className="row"><span>Where</span><b>{whereSummary || "—"}</b></div>}
                                         <div className="row"><span>Service</span><b>{svcSummary || "—"}</b></div>
                                         <div className="row"><span>{isCallback ? "Call" : "When"}</span><b>{whenSummary || "—"}</b></div>
-                                        {!isCallback && <div className="row"><span>Where</span><b>{whereSummary || "—"}</b></div>}
-                                        {homeSummary && <div className="row"><span>Home</span><b>{homeSummary}</b></div>}
+                                        <div className="row"><span>Property</span><b>{data.propertyType === "Commercial" ? "Business" : "Home"}{data.systemAge ? ` · ${data.systemAge}` : ""}</b></div>
                                         {!isCallback && data.window?.requested && (
                                             <div className="xw-micro" style={{ marginTop: 8 }}>Requested time — the office will confirm it with you.</div>
                                         )}
                                         <div className="links">
-                                            <button type="button" onClick={() => setStep(0)}>Change service</button>
-                                            {!isCallback && <button type="button" onClick={() => setStep(1)}>Change time</button>}
+                                            <button type="button" onClick={() => setStep(0)}>Change details</button>
+                                            <button type="button" onClick={() => setStep(1)}>Change service</button>
+                                            {!isCallback && <button type="button" onClick={() => setStep(2)}>Change time</button>}
                                         </div>
                                     </div>
-
-                                    {!isCallback && (
-                                        <div className={"xw-c-fee xw-fee" + (!feeRequired ? " xw-free" : "")}>
-                                            <div className="fh">
-                                                <span className="amt">{feeRequired ? money(fee) : isMember && svcFee === "tuneup" ? "Included" : "Free"}</span>
-                                                <span className="lbl">{svcFee === "tuneup" ? "tune-up" : svcFee === "free" ? "estimate" : data.window?.afterHours ? "evening visit fee" : "visit fee"}</span>
-                                            </div>
-                                            <div className="fb">{feeCopyText}</div>
-                                            {feeRequired && (
-                                                <button type="button" className="fack" onClick={() => setFeeOk((v) => !v)}>
-                                                    <span className={"box" + (feeOk ? " on" : "")}>{feeOk ? "✓" : ""}</span>
-                                                    I understand the {money(fee)} {svcFee === "tuneup" ? "tune-up price" : "visit fee"}
-                                                </button>
-                                            )}
-                                        </div>
-                                    )}
                                 </div>
                             )}
                         </>
@@ -1882,9 +1800,7 @@ export default function ContactFlowDialog() {
                                     ) : isCallback ? "Request a call" : data.window?.requested ? "Request this time" : "Book my visit"}
                                 </button>
                             ) : (
-                                <button className="xw-cta" disabled={!canContinue} onClick={goNext} type="button">
-                                    Continue
-                                </button>
+                                <button className="xw-cta" disabled={!canContinue} onClick={goNext} type="button">Continue</button>
                             )}
                         </div>
                     </div>
@@ -1943,9 +1859,7 @@ function WizardCalendar({ days, value, onSelect }: { days: Day[]; value?: string
                 <div className="mo">{monthLabel}</div>
                 <button className="nav" type="button" disabled={!canNext} onClick={() => canNext && shift(1)} aria-label="Next month">›</button>
             </div>
-            <div className="wk">
-                {["Mon", "Tue", "Wed", "Thu", "Fri"].map((d) => <div key={d}>{d}</div>)}
-            </div>
+            <div className="wk">{["Mon", "Tue", "Wed", "Thu", "Fri"].map((d) => <div key={d}>{d}</div>)}</div>
             <div style={{ display: "grid", gap: 4 }}>
                 {weeks.map((week, wi) => (
                     <div key={wi} className="row5">
@@ -1957,14 +1871,7 @@ function WizardCalendar({ days, value, onSelect }: { days: Day[]; value?: string
                             const full = !!row && !row.windows.length
                             const sel = iso === value
                             return (
-                                <button
-                                    key={ci}
-                                    type="button"
-                                    className={"day" + (sel ? " sel" : "") + (!selectable ? " off" : "") + (full ? " full" : "")}
-                                    disabled={!selectable}
-                                    onClick={() => onSelect(iso)}
-                                    title={full ? "Full" : undefined}
-                                >
+                                <button key={ci} type="button" className={"day" + (sel ? " sel" : "") + (!selectable ? " off" : "") + (full ? " full" : "")} disabled={!selectable} onClick={() => onSelect(iso)} title={full ? "Full" : undefined}>
                                     {d.getDate()}
                                     {selectable && !sel ? <span className="dot" /> : null}
                                 </button>
@@ -2030,9 +1937,11 @@ const XW_CSS = `
 .xw-qpnext .pill.on{ border:2px solid ${T.selGreen}; padding:6px 13px; color:${T.chipGreen} }
 
 .xw-body{ padding:26px 28px 24px; overflow:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; flex:1 1 auto; min-height:0 }
+.xw-body > .xw-fade{ min-width:0; max-width:100% }
 .xw-glabel{ font:600 14px ${FONT}; color:${T.ink}; margin-bottom:10px }
 .xw-glabel .opt{ font-weight:500; color:${T.muted} }
 .xw-micro{ font:400 12px ${FONT}; color:${T.muted} }
+.xw-micro.warn{ color:${T.amber} }
 .xw-chips{ display:flex; flex-wrap:wrap; gap:9px }
 
 .xw-chip{
@@ -2042,6 +1951,9 @@ const XW_CSS = `
 }
 .xw-chip:hover{ border-color:${T.dashed} }
 .xw-chip.sel{ border:2px solid ${T.selGreen}; background:${T.tint}; padding:8px 17px; font-weight:600; color:${T.chipGreen} }
+
+.xw-zipgrid{ display:grid; grid-template-columns:200px 1fr; gap:24px; align-items:start }
+.xw-zip{ font-size:18px; letter-spacing:.08em; font-weight:600 }
 
 .xw-svcrow{ display:flex; gap:12px }
 .xw-svc{
@@ -2072,7 +1984,6 @@ const XW_CSS = `
 
 .xw-timecols{ display:grid; grid-template-columns:1.15fr 1fr; gap:28px; align-items:start }
 .xw-timecols > div{ min-width:0 }
-.xw-body > .xw-fade{ min-width:0; max-width:100% }
 
 .xw-cal{ border:1px solid ${T.border}; border-radius:14px; padding:14px }
 .xw-cal .ch{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px }
@@ -2124,7 +2035,7 @@ const XW_CSS = `
 .xw-window.off{ color:${T.disabledDay}; cursor:default; background:${T.surface2}; border-style:dashed }
 .xw-window.off .fee{ color:${T.disabledDay} }
 
-.xw-proprow{ display:grid; grid-template-columns:auto auto; gap:36px; justify-content:start }
+.xw-proprow{ display:grid; grid-template-columns:auto auto; gap:24px 36px; justify-content:start }
 .xw-noterow{
   width:100%; display:flex; align-items:center; gap:12px; text-align:left;
   border:1.5px dashed ${T.dashed}; border-radius:12px; padding:14px 18px; background:#fff; cursor:pointer;
@@ -2174,11 +2085,10 @@ const XW_CSS = `
 
 .xw-confcols{
   display:grid; grid-template-columns:1.3fr 1fr; gap:26px; align-items:start;
-  grid-template-areas:"form summary" "form fee";
+  grid-template-areas:"form summary";
 }
 .xw-c-form{ grid-area:form }
 .xw-c-summary{ grid-area:summary }
-.xw-c-fee{ grid-area:fee; align-self:start }
 .xw-namerow{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
 .xw-addrdrop{
   position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:20; background:#fff;
@@ -2189,12 +2099,12 @@ const XW_CSS = `
 .xw-addrdrop .it{ padding:10px 12px; font:400 13px ${FONT}; color:${T.ink}; cursor:pointer; border-bottom:1px solid ${T.hairline} }
 .xw-addrdrop .it:hover{ background:${T.surface} }
 
-.xw-summary{ background:${T.surface2}; border-radius:14px; padding:18px 20px }
+.xw-summary{ background:${T.surface2}; border-radius:14px; padding:18px 20px; position:sticky; top:0 }
 .xw-summary .sh{ font:600 14px ${FONT}; color:${T.ink}; margin-bottom:10px }
 .xw-summary .row{ display:flex; justify-content:space-between; gap:14px; padding:5px 0 }
-.xw-summary .row span{ font:400 12.5px ${FONT}; color:${T.muted} }
-.xw-summary .row b{ font:600 12.5px ${FONT}; color:${T.ink}; text-align:right }
-.xw-summary .links{ display:flex; gap:14px; margin-top:10px }
+.xw-summary .row span{ font:400 12.5px ${FONT}; color:${T.muted}; flex:none }
+.xw-summary .row b{ font:600 12.5px ${FONT}; color:${T.ink}; text-align:right; min-width:0; overflow-wrap:anywhere }
+.xw-summary .links{ display:flex; gap:14px; margin-top:10px; flex-wrap:wrap }
 .xw-summary .links button{ border:none; background:none; padding:0; font:600 11.5px ${FONT}; color:${T.linkGreen}; cursor:pointer }
 
 .xw-fee{ background:#fff; border:1px solid ${T.border}; border-radius:14px; padding:16px 20px }
@@ -2275,6 +2185,7 @@ const XW_CSS = `
   .xw-close{ width:28px; height:28px; font-size:13px }
   .xw-progress{ gap:6px; margin-top:14px; align-items:center }
   .xw-body{ padding:18px 20px 20px }
+  .xw-zipgrid{ grid-template-columns:1fr; gap:16px }
   .xw-svcrow{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
   .xw-svc{ padding:15px 12px }
   .xw-svc.sel{ padding:14px 11px }
@@ -2291,9 +2202,9 @@ const XW_CSS = `
   .xw-proprow{ grid-template-columns:1fr; gap:16px }
   .xw-addrgrid{ grid-template-columns:1fr 1fr }
   .xw-addrgrid > div:first-child{ grid-column:1 / -1 }
-  .xw-confcols{ grid-template-columns:1fr; grid-template-areas:"summary" "form" "fee"; gap:14px }
+  .xw-confcols{ grid-template-columns:1fr; grid-template-areas:"summary" "form"; gap:14px }
   .xw-namerow{ gap:9px }
-  .xw-summary{ padding:14px 16px }
+  .xw-summary{ padding:14px 16px; position:static }
   .xw-summary .links{ margin-top:8px }
   .xw-fee{ padding:14px 16px }
   .xw-fee .amt{ font-size:19px }
