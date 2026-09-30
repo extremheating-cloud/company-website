@@ -9,8 +9,6 @@ export const SERVICE_AREA: Record<string, string> = {
     "43078": "Urbana",
     "43128": "Jeffersonville",
     "43160": "Washington Court House",
-    "43201": "Columbus",
-    "43215": "Columbus",
     "43348": "Russells Point",
     "45005": "Franklin",
     "45011": "Hamilton",
