@@ -1,4 +1,5 @@
 import * as React from "react"
+import { servedCity } from "./serviceArea"
 
 /* ══════════════════════════════════════════════════════════════════════════
  * The Schedule Service wizard — extremeheating.com's own scheduler.
@@ -44,7 +45,7 @@ type Win = {
 type Day = { date: string; weekday: string; windows: Win[]; closed: string[] }
 type FeeInfo = { kind: "service" | "tuneup" | "estimate" | "commercial"; amount: number | null; label: string; text: string; afterHours: number | null }
 type Avail = {
-    status: "idle" | "loading" | "ok" | "no_capacity" | "unavailable" | "callback"
+    status: "idle" | "loading" | "ok" | "no_capacity" | "unavailable" | "callback" | "out_of_area"
     days: Day[]
     first: (Win & { date: string; weekday: string }) | null
     feeInfo: FeeInfo | null
@@ -59,6 +60,7 @@ type LookupLoc = {
     hasHouseNumber: boolean
     member: boolean
     inZip?: boolean
+    serviced?: boolean // false = outside the service area; an older API leaves it out, which means served
 }
 type Lookup =
     | { status: "idle" | "checking" | "new" | "unavailable" | "invalid" }
@@ -132,7 +134,7 @@ const HVAC_DURATIONS = ["Today", "A few days", "A week or more", "Not sure"]
 
 const SERVICE_OPTIONS: Record<string, string[]> = {
     plumbing: ["Drain Cleaning", "Water Heater Issue", "Sump Pump Issue", "Leak Detection", "Gas Line Issue", "Water Treatment", "Pipe Leak", "General Plumbing Repair"],
-    quote: ["New System Estimate", "Duct Cleaning Estimate", "Dryer Vent Cleaning Estimate", "HVAC Inspection Estimate"],
+    quote: ["New System Estimate", "Second Opinion", "Duct Cleaning Estimate", "Dryer Vent Cleaning Estimate", "HVAC Inspection Estimate"],
     xplan: ["Schedule Seasonal Tune-Up", "Enroll in Plan", "Questions About Benefits", "Billing / Payment Question"],
 }
 
@@ -157,6 +159,7 @@ const DETAIL_KEY: Record<string, string> = {
     "Pipe Leak": "plumbing:pipe_leak",
     "General Plumbing Repair": "plumbing:general",
     "New System Estimate": "quote:new_system",
+    "Second Opinion": "quote:second_opinion",
     "Duct Cleaning Estimate": "quote:duct_cleaning",
     "Dryer Vent Cleaning Estimate": "quote:dryer_vent",
     "HVAC Inspection Estimate": "quote:inspection",
@@ -188,6 +191,7 @@ const DETAIL_QUESTIONS: Record<string, SubQuestion[]> = {
     "Pipe Leak": [{ id: "where", label: "Where is the leak?", field: "Leak location", options: ["Under a sink", "Wall / ceiling", "Basement", "Outdoor", "Not sure"] }],
     "General Plumbing Repair": [{ id: "fixture", label: "What needs attention?", field: "Fixture", options: ["Faucet", "Toilet", "Garbage disposal", "Shower / Tub", "Other"] }],
     "New System Estimate": [{ id: "scope", label: "What's the quote for?", field: "Quote scope", options: ["AC only", "Furnace only", "Full system (AC + furnace)"] }],
+    "Second Opinion": [],
     "Duct Cleaning Estimate": [{ id: "vents", label: "Roughly how many vents?", field: "Vent count", options: DUCT_VENT_OPTIONS }],
     "Dryer Vent Cleaning Estimate": [],
     "HVAC Inspection Estimate": [{ id: "reason", label: "Reason for inspection?", field: "Reason", options: ["Home purchase", "Routine check", "Performance concern", "Other"] }],
@@ -369,25 +373,11 @@ function splitAddress(raw: string): AddressParts {
     return out
 }
 
-/* The city and state for a ZIP, so a new customer types less. Free service,
- * no key; any failure just leaves the fields for the visitor. */
-const zipCache = new Map<string, { city: string; state: string } | null>()
-async function lookupZip(zip: string): Promise<{ city: string; state: string } | null> {
-    if (zipCache.has(zip)) return zipCache.get(zip) || null
-    let out: { city: string; state: string } | null = null
-    try {
-        const res = await fetch(`https://api.zippopotam.us/us/${zip}`)
-        if (res.ok) {
-            const j = await res.json()
-            const p = (j.places || [])[0]
-            if (p) out = { city: p["place name"] || "", state: p["state abbreviation"] || "" }
-        }
-    } catch {}
-    zipCache.set(zip, out)
-    return out
-}
-// Ohio ZIPs run 430xx–459xx; the office confirms anything else by phone.
-const inServiceArea = (zip: string) => /^4[345]\d{3}$/.test(zip)
+/* The service area is the company's own ZIP list (serviceArea.ts), so the
+ * answer is instant and costs no request. A ZIP is served exactly when it has
+ * a city there. The booking server holds the same list and has the last word. */
+const isServed = (zip: string) => servedCity(zip) !== null
+const outOfAreaLine = (zip: string) => `We don't serve ${zip} yet. Call ${EMERGENCY_PHONE_DISPLAY}.`
 
 declare global {
     interface Window {
@@ -537,11 +527,12 @@ async function apiPost(path: string, body: any): Promise<any> {
 
 const EMPTY_AVAIL: Avail = { status: "idle", days: [], first: null, feeInfo: null, key: "" }
 const availCache = new Map<string, Avail>()
-async function fetchAvailability(key: string, age?: string, member?: boolean, commercial?: boolean): Promise<Avail> {
+async function fetchAvailability(key: string, zip: string, age?: string, member?: boolean, commercial?: boolean): Promise<Avail> {
     const q = new URLSearchParams({ service: key })
     if (age) q.set("age", age)
     if (member) q.set("member", "1")
     if (commercial) q.set("commercial", "1")
+    if (zip) q.set("zip", zip)
     const ck = q.toString()
     const hit = availCache.get(ck)
     if (hit && hit.status !== "unavailable") return hit
@@ -549,6 +540,7 @@ async function fetchAvailability(key: string, age?: string, member?: boolean, co
     try {
         const j = await apiGet("/schedulerAvailability?" + ck)
         if (j.status === "callback") out = { status: "callback", days: [], first: null, feeInfo: null, key }
+        else if (j.status === "out_of_area") out = { status: "out_of_area", days: [], first: null, feeInfo: null, key }
         else if (j.status === "ok" || j.status === "no_capacity") out = { status: j.status, days: j.days || [], first: j.first || null, feeInfo: j.feeInfo || null, key }
         else out = { status: "unavailable", days: [], first: null, feeInfo: j.feeInfo || null, key }
     } catch {
@@ -626,7 +618,6 @@ export default function ContactFlowDialog() {
     const [note, setNote] = React.useState("")
     const [photos, setPhotos] = React.useState<File[]>([])
     const [zip, setZip] = React.useState("")
-    const [zipPlace, setZipPlace] = React.useState<{ city: string; state: string } | null>(null)
     const [firstName, setFirstName] = React.useState("")
     const [lastName, setLastName] = React.useState("")
     const [phoneDigits, setPhoneDigits] = React.useState("")
@@ -661,6 +652,21 @@ export default function ContactFlowDialog() {
 
     const photoInputRef = React.useRef<HTMLInputElement | null>(null)
     const requestIdRef = React.useRef<string>(newId())
+
+    // The city the ZIP last put in the address form, so a corrected ZIP can replace it.
+    const filledCity = React.useRef("")
+
+    // One event per ZIP, the first time the out-of-area panel shows for it.
+    const outOfAreaSeen = React.useRef<Set<string>>(new Set())
+    function noteOutOfArea(z: string) {
+        if (outOfAreaSeen.current.has(z)) return
+        outOfAreaSeen.current.add(z)
+        try {
+            ;(window.dataLayer = window.dataLayer || []).push({ event: "scheduler_out_of_area", zip: z })
+        } catch (err) {
+            console.warn("dataLayer push error", err)
+        }
+    }
 
     const photoPreviews = React.useMemo(() => photos.map((f) => ({ file: f, url: URL.createObjectURL(f) })), [photos])
     React.useEffect(() => {
@@ -701,7 +707,6 @@ export default function ContactFlowDialog() {
             setNote("")
             setPhotos([])
             setZip("")
-            setZipPlace(null)
             setFirstName("")
             setLastName("")
             setPhoneDigits("")
@@ -752,22 +757,26 @@ export default function ContactFlowDialog() {
     const chosenLoc = lookup.status === "found" ? lookup.locations.find((l) => l.key === locKey) : undefined
     const isMember = knownCustomer && !!chosenLoc && chosenLoc.member
     const isCommercial = data.propertyType === "Commercial"
+    // The ZIP of the address being booked: the street a customer picked, a new customer's address ZIP, else the one typed first.
+    const serviceZip = knownCustomer ? chosenLoc?.zip || zip : addrParts.zip || zip
     React.useEffect(() => {
-        if (!open || !serviceKey || isCallback) return
+        // A ZIP we do not serve never gets past the first step, so there is nothing to ask for.
+        if (!open || !serviceKey || isCallback || !isServed(serviceZip)) return
         const seq = ++availSeq.current
-        setAvail((a) => (a.key === serviceKey && a.status !== "idle" && a.status !== "unavailable" ? a : { ...a, status: "loading", key: serviceKey }))
-        fetchAvailability(serviceKey, data.systemAge, isMember, isCommercial).then((a) => {
+        setAvail((a) => (a.key === serviceKey && a.status !== "idle" && a.status !== "unavailable" && a.status !== "out_of_area" ? a : { ...a, status: "loading", key: serviceKey }))
+        fetchAvailability(serviceKey, serviceZip, data.systemAge, isMember, isCommercial).then((a) => {
             if (seq !== availSeq.current) return
             setAvail(a)
+            if (a.status === "out_of_area") noteOutOfArea(serviceZip)
             // A window picked for another answer may not exist for this one.
             setData((d) => {
                 if (!d.window) return d
                 const still = a.status === "ok" && a.days.some((day) => day.date === d.apptDate && day.windows.some((w) => w.start === d.window!.start))
-                const stillRequested = a.status !== "ok" && !!d.window.requested
+                const stillRequested = a.status !== "ok" && a.status !== "out_of_area" && !!d.window.requested
                 return still || stillRequested ? d : { ...d, window: null, apptDate: undefined }
             })
         })
-    }, [open, serviceKey, isCallback, isMember, isCommercial, data.systemAge]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [open, serviceKey, isCallback, isMember, isCommercial, data.systemAge, serviceZip]) // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!open) return null
 
@@ -776,6 +785,13 @@ export default function ContactFlowDialog() {
     const emailOk = email.trim() === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
     const phoneOk = phoneDigits.length === 10
     const zipOk = /^\d{5}$/.test(zip)
+    const zipCity = zipOk ? servedCity(zip) : null
+    const zipServed = zipCity !== null
+    const zipOut = zipOk && !zipServed
+    const addrZipOk = /^\d{5}$/.test(addrParts.zip)
+    const addrZipOut = addrZipOk && !isServed(addrParts.zip)
+    // The server holds the same list; if it disagrees, it wins.
+    const areaBlocked = !isCallback && avail.status === "out_of_area"
 
     function serviceStepComplete(d: FormState): boolean {
         if (!d.service) return false
@@ -785,10 +801,10 @@ export default function ContactFlowDialog() {
 
     const blockedByOffice = lookup.status === "office" && !asNew
     const identityOk = knownCustomer
-        ? !!locKey && (houseNumber.trim().length > 0 || !chosenLoc?.hasHouseNumber)
-        : firstName.trim().length > 0 && lastName.trim().length > 0 && addrParts.street.trim().length >= 3 && addrParts.city.trim().length >= 2 && /^\d{5}$/.test(addrParts.zip)
+        ? !!locKey && chosenLoc?.serviced !== false && (houseNumber.trim().length > 0 || !chosenLoc?.hasHouseNumber)
+        : firstName.trim().length > 0 && lastName.trim().length > 0 && addrParts.street.trim().length >= 3 && addrParts.city.trim().length >= 2 && addrZipOk && !addrZipOut
     const whoComplete = Boolean(
-        zipOk && data.propertyType && data.isCustomer && phoneOk && !blockedByOffice && lookup.status !== "checking" &&
+        zipServed && data.propertyType && data.isCustomer && phoneOk && !blockedByOffice && lookup.status !== "checking" &&
         (data.isCustomer === "no" || asNew || lookup.status === "found" || lookup.status === "new" || lookup.status === "unavailable") &&
         identityOk && emailOk
     )
@@ -806,22 +822,25 @@ export default function ContactFlowDialog() {
         Boolean(!feeNeedsAck || feeOk),
     ]
 
+    const areaHint = `We don't serve ${serviceZip} yet`
     const hints: string[] = [
         !zipOk ? "Enter your ZIP code"
+            : zipOut ? `We don't serve ${zip} yet`
             : !data.propertyType ? "Home or business?"
             : !data.isCustomer ? "Been a customer before?"
             : blockedByOffice ? "Please call us to book this one"
             : !phoneOk ? "Add your mobile number"
             : lookup.status === "checking" ? "Checking your number…"
             : knownCustomer && !identityOk ? "Pick your address and confirm the house number"
+            : !knownCustomer && addrZipOut ? `We don't serve ${addrParts.zip} yet`
             : !identityOk ? "Add your name and service address"
             : !emailOk ? "Check the email address" : "",
-        !data.service ? "Pick a service to continue" : !stepComplete[1] ? (data.service === "heatingCooling" ? "Pick the issue to continue" : "Pick what you need to continue") : "",
-        !stepComplete[2] ? (isCallback ? "Pick a good time to call" : "Pick a day and arrival window") : "",
-        !stepComplete[3] ? "Accept the visit fee to book" : "",
+        !data.service ? "Pick a service to continue" : !stepComplete[1] ? (data.service === "heatingCooling" ? "Pick the issue to continue" : "Pick what you need to continue") : areaBlocked ? areaHint : "",
+        areaBlocked ? areaHint : !stepComplete[2] ? (isCallback ? "Pick a good time to call" : "Pick a day and arrival window") : "",
+        areaBlocked ? areaHint : !stepComplete[3] ? "Accept the visit fee to book" : "",
     ]
 
-    const canContinue = stepComplete[step]
+    const canContinue = stepComplete[step] && !(areaBlocked && step > 0)
 
     const patch = (p: Partial<FormState>) => setData((d) => ({ ...d, ...p }))
     const toggle = (key: keyof FormState, value: string) =>
@@ -844,14 +863,16 @@ export default function ContactFlowDialog() {
     /* ── ZIP first ──────────────────────────────────────────────────────────── */
     function onZipChange(v: string) {
         const z = v.replace(/\D/g, "").slice(0, 5)
+        const city = z.length === 5 ? servedCity(z) : null
         setZip(z)
-        setZipPlace(null)
-        setAddrParts((p) => ({ ...p, zip: z }))
-        if (z.length === 5) {
-            lookupZip(z).then((place) => {
-                setZipPlace(place)
-                if (place) setAddrParts((p) => ({ ...p, city: p.city || place.city, state: place.state || p.state || "OH", zip: z }))
-            })
+        if (city) {
+            // The city an earlier ZIP filled in gives way to this one; a city the visitor typed stays.
+            const was = filledCity.current
+            filledCity.current = city
+            setAddrParts((p) => ({ ...p, city: !p.city || p.city === was ? city : p.city, state: "OH", zip: z }))
+        } else {
+            setAddrParts((p) => ({ ...p, zip: z }))
+            if (z.length === 5) noteOutOfArea(z)
         }
     }
 
@@ -873,7 +894,7 @@ export default function ContactFlowDialog() {
             setAsNew(false)
             if (r.status === "found" && Array.isArray(r.locations) && r.locations.length) {
                 setLookup({ status: "found", token: r.token, locations: r.locations, member: !!r.member })
-                if (r.locations.length === 1) setLocKey(r.locations[0].key)
+                if (r.locations.length === 1 && r.locations[0].serviced !== false) setLocKey(r.locations[0].key)
             } else if (r.status === "office") {
                 setLookup({ status: "office", phone: r.phone || EMERGENCY_PHONE_DISPLAY })
             } else if (r.status === "invalid") {
@@ -1072,6 +1093,10 @@ export default function ContactFlowDialog() {
             setLocKey("")
             requestIdRef.current = newId()
             setStep(0)
+        } else if (r?.status === "out_of_area") {
+            // The server's list decides. Say what it said, never the "received" screen.
+            setSubmitError(r.error || outOfAreaLine(serviceZip))
+            requestIdRef.current = newId()
         } else if (r?.status === "rate_limited") {
             setSubmitError(r.error || `Too many requests just now. Give it a minute, or call ${EMERGENCY_PHONE_DISPLAY}.`)
         } else if (r?.status === "bad_request") {
@@ -1093,6 +1118,14 @@ export default function ContactFlowDialog() {
         <div className="xw-glabel">
             {text}
             {optional ? <span className="opt"> — optional</span> : null}
+        </div>
+    )
+
+    const outOfAreaPanel = (z: string) => (
+        <div className="xw-notice warn xw-ooa xw-fade" role="status">
+            <div className="oh">We don't serve {z} yet</div>
+            <div>If you think that's a mistake, or the work is at a different address, call us and we'll sort it out.</div>
+            <a className="xw-cta" href={`tel:${EMERGENCY_PHONE_TEL}`}>Call {EMERGENCY_PHONE_DISPLAY}</a>
         </div>
     )
 
@@ -1294,23 +1327,24 @@ export default function ContactFlowDialog() {
                                                 value={zip}
                                                 onChange={(e) => onZipChange(e.target.value)}
                                             />
-                                            {zipOk && (
-                                                <div className={"xw-micro" + (!inServiceArea(zip) ? " warn" : "")} style={{ marginTop: 6 }}>
-                                                    {zipPlace ? `${zipPlace.city}, ${zipPlace.state}` : ""}
-                                                    {inServiceArea(zip) ? (zipPlace ? " · we're nearby" : "") : ` — outside our usual area; we'll confirm by phone.`}
-                                                </div>
+                                            {zipCity && (
+                                                <div className="xw-micro" style={{ marginTop: 6 }}>{zipCity}, OH · we serve your area</div>
                                             )}
                                         </div>
-                                        <div>
-                                            {groupLabel("Home or business?")}
-                                            <div className="xw-chips">
-                                                {chip(data.propertyType === "Residential", "Home", () => patch({ propertyType: "Residential" }))}
-                                                {chip(data.propertyType === "Commercial", "Business", () => patch({ propertyType: "Commercial" }))}
+                                        {zipOut ? (
+                                            outOfAreaPanel(zip)
+                                        ) : (
+                                            <div>
+                                                {groupLabel("Home or business?")}
+                                                <div className="xw-chips">
+                                                    {chip(data.propertyType === "Residential", "Home", () => patch({ propertyType: "Residential" }))}
+                                                    {chip(data.propertyType === "Commercial", "Business", () => patch({ propertyType: "Commercial" }))}
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
 
-                                    {zipOk && data.propertyType && (
+                                    {zipServed && data.propertyType && (
                                         <div className="xw-fade">
                                             {groupLabel("Have we been out before?")}
                                             <div className="xw-chips">
@@ -1320,7 +1354,7 @@ export default function ContactFlowDialog() {
                                         </div>
                                     )}
 
-                                    {zipOk && data.propertyType && data.isCustomer && (
+                                    {zipServed && data.propertyType && data.isCustomer && (
                                         <div className="xw-fade" style={{ display: "grid", gap: 14 }}>
                                             <div>
                                                 {groupLabel("Mobile number")}
@@ -1360,14 +1394,23 @@ export default function ContactFlowDialog() {
                                                     <div style={{ display: "grid", gap: 8 }}>
                                                         {lookup.locations.map((l) => {
                                                             const sel = locKey === l.key
+                                                            // Shown so the visitor sees we found it, but it cannot be booked online.
+                                                            const out = l.serviced === false
                                                             return (
-                                                                <button key={l.key} type="button" className={"xw-loc" + (sel ? " sel" : "")} onClick={() => { setLocKey(l.key); setHouseError("") }}>
-                                                                    <span className="radio" aria-hidden="true" />
-                                                                    <span>
-                                                                        <span className="st">{l.hasHouseNumber ? "•••• " : ""}{l.street}</span>
-                                                                        <span className="ct">{[l.city, [l.state, l.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ")}{l.inZip === false && zipOk ? " · different ZIP" : ""}</span>
-                                                                    </span>
-                                                                </button>
+                                                                <div key={l.key}>
+                                                                    <button type="button" className={"xw-loc" + (sel && !out ? " sel" : "") + (out ? " off" : "")} disabled={out} onClick={() => { if (out) return; setLocKey(l.key); setHouseError("") }}>
+                                                                        <span className="radio" aria-hidden="true" />
+                                                                        <span>
+                                                                            <span className="st">{l.hasHouseNumber ? "•••• " : ""}{l.street}</span>
+                                                                            <span className="ct">{[l.city, [l.state, l.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ")}{l.inZip === false && zipOk ? " · different ZIP" : ""}</span>
+                                                                        </span>
+                                                                    </button>
+                                                                    {out && (
+                                                                        <div className="xw-micro warn" style={{ marginTop: 6 }}>
+                                                                            Outside our service area. Call <a href={`tel:${EMERGENCY_PHONE_TEL}`} style={{ color: "inherit", fontWeight: 600, whiteSpace: "nowrap" }}>{EMERGENCY_PHONE_DISPLAY}</a>.
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             )
                                                         })}
                                                     </div>
@@ -1448,7 +1491,12 @@ export default function ContactFlowDialog() {
                                                         </div>
                                                         <div>
                                                             {groupLabel("ZIP")}
-                                                            <input className="xw-input" inputMode="numeric" autoComplete="postal-code" placeholder={zip || "45400"} maxLength={5} value={addrParts.zip} onChange={(e) => setAddrParts((p) => ({ ...p, zip: e.target.value.replace(/\D/g, "").slice(0, 5) }))} />
+                                                            <input className={"xw-input" + (addrZipOut ? " err" : "")} inputMode="numeric" autoComplete="postal-code" placeholder={zip || "45400"} maxLength={5} value={addrParts.zip} onChange={(e) => setAddrParts((p) => ({ ...p, zip: e.target.value.replace(/\D/g, "").slice(0, 5) }))} />
+                                                            {addrZipOut && (
+                                                                <div className="xw-fielderr" role="alert">
+                                                                    We don't serve {addrParts.zip} yet. Call <a href={`tel:${EMERGENCY_PHONE_TEL}`} style={{ color: "inherit", fontWeight: 600, whiteSpace: "nowrap" }}>{EMERGENCY_PHONE_DISPLAY}</a>.
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                     <div>
@@ -1531,7 +1579,8 @@ export default function ContactFlowDialog() {
                                         </div>
                                     )}
 
-                                    {stepComplete[1] && (
+                                    {stepComplete[1] && areaBlocked && outOfAreaPanel(serviceZip)}
+                                    {stepComplete[1] && !areaBlocked && (
                                         <div className="xw-micro">
                                             {isCallback
                                                 ? "No visit needed for this one — next, tell us when to call."
@@ -1567,6 +1616,7 @@ export default function ContactFlowDialog() {
                                             </div>
                                         </div>
                                     )}
+                                    {areaBlocked && outOfAreaPanel(serviceZip)}
                                     {avail.status === "unavailable" && (
                                         <div className="xw-notice warn">Our live schedule isn't loading right now. Pick a time that works and we'll confirm it by text or phone.</div>
                                     )}
@@ -1985,6 +2035,9 @@ const XW_CSS = `
 .xw-notice{ border:1px solid ${T.qpCard}; background:${T.tint}; border-radius:12px; padding:12px 14px; font:500 13px/1.5 ${FONT}; color:${T.ink} }
 .xw-notice.warn{ border-color:#F1D9A8; background:${T.amberBg}; color:${T.amber} }
 .xw-notice.warn a{ color:${T.red} }
+.xw-ooa{ display:grid; gap:8px; justify-items:start; padding:16px 18px }
+.xw-ooa .oh{ font:600 15.5px ${FONT}; color:${T.ink} }
+.xw-notice.warn a.xw-cta{ display:inline-block; margin-top:4px; color:#fff; text-decoration:none }
 
 .xw-timecols{ display:grid; grid-template-columns:1.15fr 1fr; gap:28px; align-items:start }
 .xw-timecols > div{ min-width:0 }
@@ -2085,6 +2138,8 @@ const XW_CSS = `
 .xw-loc.sel .radio::after{ content:""; width:8px; height:8px; border-radius:50%; background:${T.selGreen} }
 .xw-loc .st{ display:block; font:600 13.5px ${FONT}; color:${T.ink} }
 .xw-loc .ct{ display:block; font:400 12px ${FONT}; color:${T.muted}; margin-top:1px }
+.xw-loc.off{ cursor:default; background:${T.surface2}; border-style:dashed }
+.xw-loc.off .st{ color:${T.muted} }
 .xw-linkbtn{ border:none; background:none; padding:8px 0 0; font:600 12px ${FONT}; color:${T.linkGreen}; cursor:pointer; text-align:left }
 
 .xw-confcols{
@@ -2219,6 +2274,7 @@ const XW_CSS = `
   .xw-hint{ display:none }
   .xw-cta, .xw-cta.book{ flex:1; min-width:0; padding:15px 0 }
   .xw-back{ padding:0 8px; font-size:13px }
+  .xw-ooa .xw-cta{ justify-self:stretch; text-align:center }
   .xw-donebtns{ width:100%; flex-direction:column }
   .xw-donebtns .xw-cta, .xw-donebtns .xw-outline{ width:100% }
 }
