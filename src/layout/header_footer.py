@@ -658,13 +658,47 @@ JS = """
     try { se.show(); return true; } catch (err) { return false; }
   }
 
-  /* Our scheduler (books straight into ServiceTitan, /js/schedule.js) opens on
-     every Schedule button. ServiceTitan's own embed stays on the page only as
-     the fallback for a browser that could not load ours. */
+  /* ── Which booking window (A/B test, Ryan, 2026-09-30) ─────────────────
+     Ours (/js/schedule.js, books straight into ServiceTitan) or
+     ServiceTitan's own embed. One coin flip per browser, remembered, so the
+     same person always gets the same window. XH_SHARE is the share that gets
+     OURS: 50 is half, 100 is everyone, 0 is nobody. ?sched=xh or ?sched=st in
+     the address forces one (and is remembered too), for testing. Every page
+     view and every click says which one in the dataLayer, for the report. */
+  var XH_SHARE = 50;
+  var AB_KEY = 'xh_sched_ab';
+  function pickVariant(){
+    var forced = (location.search.match(/[?&]sched=(xh|st)(?:&|$)/) || [])[1];
+    var v = forced || null;
+    try {
+      if (!v) v = localStorage.getItem(AB_KEY);
+      if (v !== 'xh' && v !== 'st') v = (Math.random() * 100 < XH_SHARE) ? 'xh' : 'st';
+      localStorage.setItem(AB_KEY, v);
+    } catch (err) {
+      if (v !== 'xh' && v !== 'st') v = (Math.random() * 100 < XH_SHARE) ? 'xh' : 'st';
+    }
+    return v;
+  }
+  var variant = pickVariant();
+  var variantName = variant === 'st' ? 'servicetitan' : 'website_scheduler';
+  function track(ev, extra){
+    try {
+      var row = { event: ev, scheduler_variant: variantName };
+      for (var k in (extra || {})) row[k] = extra[k];
+      (window.dataLayer = window.dataLayer || []).push(row);
+    } catch (err) {}
+  }
+  track('scheduler_variant');
+
+  /* A click opens the window this visitor was dealt. In the ServiceTitan
+     half, a browser where their embed did not load falls through to ours
+     rather than to nothing, and the click event says which one really opened. */
   document.querySelectorAll('.js-schedule').forEach(function(el){
     el.addEventListener('click', function(e){
       e.preventDefault();
       closePanel();
+      if (variant === 'st' && openServiceTitan()) { track('scheduler_open', { scheduler_opened: 'servicetitan' }); return; }
+      track('scheduler_open', { scheduler_opened: 'website_scheduler', scheduler_fallback: variant === 'st' });
       window.dispatchEvent(new CustomEvent('open-contact-dialog'));
     });
   });
@@ -691,12 +725,16 @@ JS = """
   window.addEventListener('open-contact-dialog', function(){ if (!window.XHSchedule) loadWizard(true); });
   ['pointerover','touchstart','focusin'].forEach(function(evt){
     document.addEventListener(evt, function(e){
+      if (variant === 'st') return;
       if (e.target && e.target.closest && e.target.closest('.js-schedule')) loadWizard(false);
     }, {passive:true});
   });
-  /* and fetched once the page is idle, so the first tap opens at once */
-  var idle = window.requestIdleCallback || function(fn){ return setTimeout(fn, 2500); };
-  idle(function(){ loadWizard(false); });
+  /* and, for the visitors who get ours, fetched once the page is idle so the
+     first tap opens at once. The ServiceTitan half only loads ours if needed. */
+  if (variant !== 'st') {
+    var idle = window.requestIdleCallback || function(fn){ return setTimeout(fn, 2500); };
+    idle(function(){ loadWizard(false); });
+  }
 })();
 
 /* FAQ accordions: own IIFE so pages without the header still get them. */
