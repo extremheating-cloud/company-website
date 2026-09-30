@@ -58,7 +58,6 @@ type LookupLoc = {
     state: string
     zip: string
     hasHouseNumber: boolean
-    member: boolean
     inZip?: boolean
     serviced?: boolean // false = outside the service area; an older API leaves it out, which means served
     unit?: string // only sent when two rows would otherwise read the same (two apartments on one street)
@@ -66,7 +65,11 @@ type LookupLoc = {
 type Lookup =
     | { status: "idle" | "checking" | "new" | "unavailable" | "invalid" }
     | { status: "office"; phone: string }
-    | { status: "found"; token: string; locations: LookupLoc[]; member: boolean }
+    | { status: "found"; token: string; locations: LookupLoc[] }
+// The house number checked at the door (schedulerVerify): only then do the
+// member price and the first name show. Keyed on what was verified, so a
+// changed row or number has to be checked again.
+type Verified = { key: string; house: string; member: boolean; firstName: string }
 
 type FormState = {
     service?: ServiceKey
@@ -638,6 +641,8 @@ export default function ContactFlowDialog() {
     const [locKey, setLocKey] = React.useState<string>("")
     const [houseNumber, setHouseNumber] = React.useState("")
     const [asNew, setAsNew] = React.useState(false)
+    const [verified, setVerified] = React.useState<Verified | null>(null)
+    const [verifying, setVerifying] = React.useState(false)
     const lookupSeq = React.useRef(0)
     const lookupDebounce = React.useRef<number | null>(null)
 
@@ -756,7 +761,9 @@ export default function ContactFlowDialog() {
     const isCallback = CALLBACK_KEYS.has(serviceKey)
     const knownCustomer = lookup.status === "found" && !asNew
     const chosenLoc = lookup.status === "found" ? lookup.locations.find((l) => l.key === locKey) : undefined
-    const isMember = knownCustomer && !!chosenLoc && chosenLoc.member
+    const houseTyped = houseNumber.trim()
+    const isVerified = knownCustomer && !!verified && verified.key === locKey && verified.house === houseTyped
+    const isMember = isVerified && verified!.member
     const isCommercial = data.propertyType === "Commercial"
     // The ZIP of the address being booked: the street a customer picked, a new customer's address ZIP, else the one typed first.
     const serviceZip = knownCustomer ? chosenLoc?.zip || zip : addrParts.zip || zip
@@ -804,9 +811,12 @@ export default function ContactFlowDialog() {
     const identityOk = knownCustomer
         ? !!locKey && chosenLoc?.serviced !== false && (houseNumber.trim().length > 0 || !chosenLoc?.hasHouseNumber)
         : firstName.trim().length > 0 && lastName.trim().length > 0 && addrParts.street.trim().length >= 3 && addrParts.city.trim().length >= 2 && addrZipOk && !addrZipOut
+    // The lookup decides who they are: a number we know shows their streets,
+    // any other number opens the details form. Nobody is asked "are you a
+    // customer?" (Aaron, Sep 29 evening: one step fewer for everyone).
     const whoComplete = Boolean(
-        zipServed && data.propertyType && data.isCustomer && phoneOk && !blockedByOffice && lookup.status !== "checking" &&
-        (data.isCustomer === "no" || asNew || lookup.status === "found" || lookup.status === "new" || lookup.status === "unavailable") &&
+        zipServed && data.propertyType && phoneOk && !blockedByOffice && lookup.status !== "checking" && lookup.status !== "idle" && lookup.status !== "invalid" &&
+        (asNew || lookup.status === "found" || lookup.status === "new" || lookup.status === "unavailable") &&
         identityOk && emailOk
     )
 
@@ -828,10 +838,10 @@ export default function ContactFlowDialog() {
         !zipOk ? "Enter your ZIP code"
             : zipOut ? `We don't serve ${zip} yet`
             : !data.propertyType ? "Home or business?"
-            : !data.isCustomer ? "Been a customer before?"
             : blockedByOffice ? "Please call us to book this one"
-            : !phoneOk ? "Add your mobile number"
+            : !phoneOk ? "Add your phone number"
             : lookup.status === "checking" ? "Checking your number…"
+            : lookup.status === "invalid" ? "Check the phone number"
             : knownCustomer && !identityOk ? "Pick your address and confirm the house number"
             : !knownCustomer && addrZipOut ? `We don't serve ${addrParts.zip} yet`
             : !identityOk ? "Add your name and service address"
@@ -892,9 +902,12 @@ export default function ContactFlowDialog() {
             if (seq !== lookupSeq.current) return
             setLocKey("")
             setHouseNumber("")
+            setHouseError("")
             setAsNew(false)
+            setVerified(null)
+            patch({ isCustomer: r.status === "found" ? "yes" : "no" })
             if (r.status === "found" && Array.isArray(r.locations) && r.locations.length) {
-                setLookup({ status: "found", token: r.token, locations: r.locations, member: !!r.member })
+                setLookup({ status: "found", token: r.token, locations: r.locations })
                 if (r.locations.length === 1 && r.locations[0].serviced !== false) setLocKey(r.locations[0].key)
             } else if (r.status === "office") {
                 setLookup({ status: "office", phone: r.phone || EMERGENCY_PHONE_DISPLAY })
@@ -918,11 +931,12 @@ export default function ContactFlowDialog() {
             setLocKey("")
             setHouseNumber("")
             setAsNew(false)
+            setVerified(null)
             return
         }
-        // Only a returning customer is looked up while typing; a new customer's
-        // number is still checked for duplicates on the server when they book.
-        if (data.isCustomer === "yes") runLookup(digits)
+        // Every complete number is looked up: the answer is what decides
+        // whether they see their streets or the details form.
+        runLookup(digits)
     }
 
     function onAddressChange(v: string) {
@@ -964,7 +978,42 @@ export default function ContactFlowDialog() {
         }
     }
 
-    const goNext = () => setStep((s) => Math.min(s + 1, 3) as StepIdx)
+    const goNext = () => {
+        if (step === 0 && knownCustomer && lookup.status === "found" && !isVerified && !verifying) {
+            void verifyAtTheDoor()
+            return
+        }
+        setStep((s) => Math.min(s + 1, 3) as StepIdx)
+    }
+    /* The house number is checked as they leave the first step, with the same
+     * rule the booking uses, so a typo is caught here and not at Book. A pass
+     * is what unlocks the member price and the greeting. */
+    async function verifyAtTheDoor() {
+        if (lookup.status !== "found") return
+        setVerifying(true)
+        let r: any
+        try {
+            r = await apiPost("/schedulerVerify", { token: lookup.token, locationKey: locKey, houseNumber: houseTyped, phone: phoneDigits, zip })
+        } catch {
+            r = { status: "unavailable" }
+        }
+        setVerifying(false)
+        if (r?.status === "ok") {
+            setVerified({ key: locKey, house: houseTyped, member: r.member === true, firstName: String(r.firstName || "") })
+            if (!firstName.trim() && r.firstName) setFirstName(String(r.firstName))
+            setStep(1)
+        } else if (r?.status === "house_number_mismatch") {
+            setHouseError("That house number doesn't match the address on file. Check it, or book as a new address.")
+        } else if (r?.status === "lookup_expired") {
+            setSubmitError("Your lookup timed out — re-enter your phone number.")
+            setLookup({ status: "idle" })
+            setLocKey("")
+            setVerified(null)
+        } else {
+            // Could not be checked just now: carry on, the booking checks again.
+            setStep(1)
+        }
+    }
     const goBack = () => setStep((s) => Math.max(s - 1, 0) as StepIdx)
 
     const serviceRequired = data.service === "heatingCooling" ? data.hvacIssue || "" : data.detail || ""
@@ -1089,7 +1138,7 @@ export default function ContactFlowDialog() {
             requestIdRef.current = newId()
             setStep(0)
         } else if (r?.status === "lookup_expired") {
-            setSubmitError("Your lookup timed out — re-enter your mobile number.")
+            setSubmitError("Your lookup timed out — re-enter your phone number.")
             setLookup({ status: "idle" })
             setLocKey("")
             requestIdRef.current = newId()
@@ -1346,19 +1395,9 @@ export default function ContactFlowDialog() {
                                     </div>
 
                                     {zipServed && data.propertyType && (
-                                        <div className="xw-fade">
-                                            {groupLabel("Have we been out before?")}
-                                            <div className="xw-chips">
-                                                {chip(data.isCustomer === "yes", "Yes, I'm a customer", () => { patch({ isCustomer: "yes" }); setAsNew(false); if (phoneDigits.length === 10) runLookup(phoneDigits) })}
-                                                {chip(data.isCustomer === "no", "No, first time", () => { patch({ isCustomer: "no" }); setLookup({ status: "idle" }); setLocKey(""); setAsNew(false) })}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {zipServed && data.propertyType && data.isCustomer && (
                                         <div className="xw-fade" style={{ display: "grid", gap: 14 }}>
                                             <div>
-                                                {groupLabel("Mobile number")}
+                                                {groupLabel("Phone number")}
                                                 <div style={{ position: "relative" }}>
                                                     <input
                                                         className="xw-input"
@@ -1370,10 +1409,13 @@ export default function ContactFlowDialog() {
                                                     />
                                                     {lookup.status === "checking" && <span className="xw-inspin" aria-hidden="true" />}
                                                 </div>
-                                                {lookup.status === "checking" && <div className="xw-micro" style={{ marginTop: 6 }}>Looking you up…</div>}
-                                                {data.isCustomer === "yes" && (lookup.status === "new" || lookup.status === "unavailable") && (
+                                                {(lookup.status === "idle" || lookup.status === "checking") && (
+                                                    <div className="xw-micro" style={{ marginTop: 6 }}>{lookup.status === "checking" ? "Looking you up…" : "Been here before? The number on your account finds you fastest."}</div>
+                                                )}
+                                                {lookup.status === "invalid" && <div className="xw-micro warn" style={{ marginTop: 6 }}>That doesn't look like a phone number.</div>}
+                                                {(lookup.status === "new" || lookup.status === "unavailable") && (
                                                     <div className="xw-micro" style={{ marginTop: 6 }}>
-                                                        {lookup.status === "new" ? "We couldn't find that number — no problem." : "We couldn't check that number just now."} Add your address below and we'll match you up.
+                                                        {lookup.status === "new" ? "New to us, or a different number than we have? No problem." : "We couldn't check that number just now."} Add your details below.
                                                     </div>
                                                 )}
                                             </div>
@@ -1390,7 +1432,7 @@ export default function ContactFlowDialog() {
                                                 <div className="xw-lookup xw-fade">
                                                     <div className="xw-lkhead">
                                                         <span>Welcome back! Which address?</span>
-                                                        {lookup.member && <span className="xw-memberchip">X-Plan member</span>}
+                                                        {isMember && <span className="xw-memberchip">X-Plan member</span>}
                                                     </div>
                                                     <div style={{ display: "grid", gap: 8 }}>
                                                         {lookup.locations.map((l) => {
@@ -1446,7 +1488,7 @@ export default function ContactFlowDialog() {
                                                 </div>
                                             )}
 
-                                            {!knownCustomer && !blockedByOffice && lookup.status !== "checking" && (data.isCustomer === "no" || asNew || lookup.status === "new" || lookup.status === "unavailable") && (
+                                            {!knownCustomer && !blockedByOffice && lookup.status !== "checking" && lookup.status !== "idle" && lookup.status !== "invalid" && (asNew || lookup.status === "new" || lookup.status === "unavailable") && (
                                                 <div className="xw-fade" style={{ display: "grid", gap: 14 }}>
                                                     {asNew && lookup.status === "found" && (
                                                         <button type="button" className="xw-linkbtn" style={{ padding: 0 }} onClick={() => setAsNew(false)}>← Back to the addresses on file</button>
@@ -1851,7 +1893,7 @@ export default function ContactFlowDialog() {
                                     ) : isCallback ? "Request a call" : data.window?.requested ? "Request this time" : "Book my visit"}
                                 </button>
                             ) : (
-                                <button className="xw-cta" disabled={!canContinue} onClick={goNext} type="button">Continue</button>
+                                <button className="xw-cta" disabled={!canContinue || verifying} onClick={goNext} type="button">{verifying ? "One moment…" : "Continue"}</button>
                             )}
                         </div>
                     </div>
