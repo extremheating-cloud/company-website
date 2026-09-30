@@ -61,6 +61,7 @@ type LookupLoc = {
     member: boolean
     inZip?: boolean
     serviced?: boolean // false = outside the service area; an older API leaves it out, which means served
+    unit?: string // only sent when two rows would otherwise read the same (two apartments on one street)
 }
 type Lookup =
     | { status: "idle" | "checking" | "new" | "unavailable" | "invalid" }
@@ -1401,7 +1402,7 @@ export default function ContactFlowDialog() {
                                                                     <button type="button" className={"xw-loc" + (sel && !out ? " sel" : "") + (out ? " off" : "")} disabled={out} onClick={() => { if (out) return; setLocKey(l.key); setHouseError("") }}>
                                                                         <span className="radio" aria-hidden="true" />
                                                                         <span>
-                                                                            <span className="st">{l.hasHouseNumber ? "•••• " : ""}{l.street}</span>
+                                                                            <span className="st">{l.hasHouseNumber ? "•••• " : ""}{l.street}{l.unit ? `, ${l.unit}` : ""}</span>
                                                                             <span className="ct">{[l.city, [l.state, l.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ")}{l.inZip === false && zipOk ? " · different ZIP" : ""}</span>
                                                                         </span>
                                                                     </button>
