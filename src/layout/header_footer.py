@@ -440,8 +440,9 @@ def header(current=""):
     <button class="xt-x" type="button" id="xt-x" aria-label="Close">&times;</button>
     <h2 id="xt-h">Text us</h2>
     <p class="sub">We&rsquo;ll open your messaging app with our number ready to go. Whatever
-    you send reaches the office, and someone answers 24/7.</p>
-    <!-- A2P consent copy is quoted verbatim in the carrier filing; do not reword. -->
+    you send reaches the office.</p>
+    <!-- 2026-10-01: the Telnyx texting campaign is retired. Texts go to the main line and are
+         answered in ServiceTitan. The consent wording below is kept as it was. -->
     <label class="xt-check" for="xt-ok">
       <input type="checkbox" id="xt-ok" aria-describedby="xt-copy">
       <span class="xt-copy" id="xt-copy">Yes, {D.COMPANY} may text me about my service request

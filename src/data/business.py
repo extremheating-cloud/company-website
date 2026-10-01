@@ -28,9 +28,15 @@ PHONE_TEL = "tel:18445847399"
 PHONE_E164 = "+18445847399"
 EMAIL = "info@extremeheating.com"
 
-# must match the A2P registration exactly; printed as text only on /contact and /privacy
-SMS_DISPLAY = "(937) 977-1464"
-SMS_E164 = "+19379771464"
+# Texts to this number are answered by ServiceTitan Inbound SMS (the Telnyx texting
+# campaign is retired, 2026-10-01). It is the main office line. Printed as text only on
+# /contact, /terms and /privacy; every Text Us button links to it.
+SMS_DISPLAY = "(937) 431-7399"
+SMS_E164 = "+19374317399"
+
+# Product name for Extreme's own software. Mirrors functions/product.js in the
+# followup-pro repo; never write the name out in copy.
+PRODUCT = "FieldHouse"
 
 # no ?body=: some handsets drop the recipient when the separator is wrong
 SMS_HREF = f"sms:{SMS_E164}"

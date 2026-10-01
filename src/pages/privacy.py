@@ -225,20 +225,20 @@ SECTIONS = [
         "produced it. The call still reaches the same office. The local numbers listed for "
         "each office are not replaced.",
 
-        "<b>Booking and messaging widgets.</b> Two further providers load on every page: "
-        "FollowUp Pro, which powers the chat "
+        "<b>Booking and chat widgets.</b> Two further pieces of software load on every page: "
+        f"{D.PRODUCT}, Extreme's own software, which powers the chat "
         "window in the corner of the page, and the ServiceTitan online scheduler, which "
         "opens in a window on this site when you book. "
-        "Anything you type into one of those is received by that provider as well as by "
-        "Extreme. Their own privacy terms apply to what they hold.",
+        "Anything you type into the chat is received by Extreme. Anything you type into the "
+        "scheduler is received by ServiceTitan as well as by Extreme, and ServiceTitan's own "
+        "privacy terms apply to what it holds.",
 
-        # A2P opt-in disclosure, quoted verbatim in the carrier filing; do not reword.
-        "<b>The chat window.</b> Before you can send a chat message, FollowUp Pro asks for "
-        "your name and mobile number and shows you, above the send button, what you are "
-        "agreeing to. Sending the message is the agreement. FollowUp Pro stores your number, "
-        "the time you sent it, and the exact wording you were shown, which is the record "
-        "Extreme has to be able to produce if you ever ask whether you agreed to be texted. "
-        "Reply STOP to any text to end it.",
+        # 2026-10-01: the chat no longer collects texting consent; the Telnyx campaign is retired.
+        f"<b>The chat window.</b> The chat window asks for your name. Your mobile number is "
+        f"optional: {D.PRODUCT} uses it to find your account and so the office can call you "
+        "back. The chat does not send you text messages. Texts you send to "
+        f"{D.SMS_DISPLAY} are handled in ServiceTitan, our scheduling software; the Calls and "
+        "Text Messages section below says how to stop them.",
 
         "[NEEDS: whether Extreme sends customer names, phone numbers or email addresses to "
         "Birdeye — or any other review platform — to request a review after a job. The site "
@@ -298,7 +298,8 @@ SECTIONS = [
         "<b>Message rates.</b> Message and data rates may apply. Message frequency varies "
         "with your appointment.",
 
-        # A2P opt-out text, quoted verbatim in the carrier filing; it must name the texting number.
+        # 2026-10-01: texts go to the main line and are answered in ServiceTitan (the Telnyx
+        # campaign is retired). The sentence must still name the texting number.
         "<b>Stopping messages.</b> Reply STOP to any text message from "
         f"{D.SMS_DISPLAY} to opt out immediately, or call the office at "
         f"<a href=\"{T.PHONE_TEL}\">{T.PHONE_DISPLAY}</a> at any time and ask to be taken off "

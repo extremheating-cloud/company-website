@@ -12,7 +12,8 @@ T.PROMOS["contactXplan"] = dict(cls="mint", t="X-Plan members skip the line",
 
 def contact_card():
     # Birdeye aggregate across platforms, not a Google rating: never label it "on Google".
-    # .xco-sms is A2P opt-in path 1, quoted verbatim in the carrier filing: readable text, not a button.
+    # .xco-sms: the texting number as readable text, not a button. 2026-10-01: texts to it are
+    # answered in ServiceTitan (the Telnyx campaign is retired).
     return f'''<div class="xsp-book">
   <div class="eyebrow">CONTACT US</div>
   <div class="xco-phone"><a href="{T.PHONE_TEL}">{T.PHONE_DISPLAY}</a></div>

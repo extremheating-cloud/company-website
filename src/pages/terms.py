@@ -125,7 +125,8 @@ EXISTING_SECTIONS = [
     ("indemnification", "Indemnification", [
         "Customer agrees to indemnify Extreme from any claims, judgments, damages, fees, costs, expenses, losses, or liabilities arising from or directly related to Customer's violation of these Terms, including collection costs and reasonable attorney fees.",
     ]),
-    # A2P 10DLC: quoted verbatim in the carrier filing; do not reword or change the sender name
+    # 2026-10-01: the Telnyx texting campaign is retired; texts go to the main line and are
+    # answered in ServiceTitan. The wording is kept as it was; D.SMS_DISPLAY carries the number.
     ("text-message-program", "Text Message Program", [
         f"By providing your mobile number and opting in, you agree to receive text "
         f"messages from {D.COMPANY} about your service request, "
