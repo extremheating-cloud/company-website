@@ -1345,7 +1345,7 @@ justify-content:space-between;gap:24px;flex-wrap:wrap}
 """
 CSS = CSS + XPLAN_CSS
 
-# TODO: real join target (ScheduleEngine vs signup form); data-join-cta marks every use.
+# TODO: real join target (our scheduler or a signup form); data-join-cta marks every use.
 JOIN_HREF = "#xsp-pricing"
 
 def pricing_card(pc):
