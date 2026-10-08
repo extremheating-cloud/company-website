@@ -1,5 +1,7 @@
 import * as React from "react"
 import { servedCity } from "./serviceArea"
+import { STEP_LABELS, startSession, endSession, settleSession, sendEvent, currentSessionId } from "./session"
+import type { ClosedWith, LookupStatus, SessionData } from "./session"
 
 /* ══════════════════════════════════════════════════════════════════════════
  * The Schedule Service wizard — extremeheating.com's own scheduler.
@@ -123,7 +125,6 @@ const FONT = "Poppins, system-ui, sans-serif"
 const EMERGENCY_PHONE_DISPLAY = "(844) 584-7399"
 const EMERGENCY_PHONE_TEL = "+18445847399"
 
-const STEP_LABELS = ["YOU", "SERVICE", "TIME", "CONFIRM"]
 const STEP_TITLES = ["Let's find you", "What's going on?", "When works for you?", "Confirm & book"]
 
 const SERVICE_LABEL: Record<ServiceKey, string> = {
@@ -173,6 +174,17 @@ const DETAIL_KEY: Record<string, string> = {
     "Billing / Payment Question": "xplan:billing",
 }
 const CALLBACK_KEYS = new Set(["xplan:benefits", "xplan:billing"])
+
+// "Heating & Cooling · No Heat": what the confirm card shows and what the session report calls the service.
+function serviceSummaryOf(d: FormState): string {
+    if (!d.service) return ""
+    const required = d.service === "heatingCooling" ? d.hvacIssue || "" : d.detail || ""
+    return `${SERVICE_LABEL[d.service].replace(" Maintenance Plan", "")}${required ? " · " + required : ""}`
+}
+
+function propertyTypeOf(p?: FormState["propertyType"]): "home" | "business" | undefined {
+    return p === "Commercial" ? "business" : p === "Residential" ? "home" : undefined
+}
 
 function serviceKeyOf(d: FormState): string {
     if (!d.service) return ""
@@ -659,6 +671,26 @@ export default function ContactFlowDialog() {
     const photoInputRef = React.useRef<HTMLInputElement | null>(null)
     const requestIdRef = React.useRef<string>(newId())
 
+    /* Session reporting (session.ts). The window listeners outlive a render,
+     * so they read the open state and the step from refs. */
+    const openRef = React.useRef(false)
+    const stepRef = React.useRef<StepIdx>(0)
+    openRef.current = open
+    stepRef.current = step
+    const lastStepSent = React.useRef<number>(0)
+    const detailsSent = React.useRef({ firstName: "", lastName: "", email: "" })
+    const detailsPending = React.useRef<SessionData | null>(null)
+    const detailsTimer = React.useRef<number | null>(null)
+    // The first name schedulerVerify filled in: learned from the lookup, so it is never reported.
+    const learnedFirstName = React.useRef("")
+    function flushDetails() {
+        if (detailsTimer.current) window.clearTimeout(detailsTimer.current)
+        detailsTimer.current = null
+        const pending = detailsPending.current
+        detailsPending.current = null
+        if (pending) sendEvent("field", stepRef.current, pending)
+    }
+
     // The city the ZIP last put in the address form, so a corrected ZIP can replace it.
     const filledCity = React.useRef("")
 
@@ -705,6 +737,17 @@ export default function ContactFlowDialog() {
 
     React.useEffect(() => {
         const handler = () => {
+            // An open while one is still showing ends that session first, as a close by navigation inside the page.
+            if (openRef.current) {
+                flushDetails()
+                sendEvent("close", stepRef.current, { closedWith: "navigation" })
+            }
+            startSession(API_BASE)
+            sendEvent("open", 0)
+            lastStepSent.current = 0
+            detailsSent.current = { firstName: "", lastName: "", email: "" }
+            detailsPending.current = null
+            learnedFirstName.current = ""
             setOpen(true)
             setStep(0)
             setBooked(null)
@@ -753,6 +796,38 @@ export default function ContactFlowDialog() {
         }
     }, [open])
 
+    // Every step change is reported: Continue, Back, the progress bar, or a Change button on the confirm card.
+    React.useEffect(() => {
+        if (!open || step === lastStepSent.current) return
+        lastStepSent.current = step
+        flushDetails()
+        sendEvent("step", step)
+    }, [open, step]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    /* The page going away or out of sight with the dialog open. Once per time
+     * the page is hidden, by beacon only; session.ts drops it once a booking
+     * or a callback answer is in, so a finished visit never reads as left. */
+    React.useEffect(() => {
+        if (!open) return
+        let reported = false
+        const report = () => {
+            if (reported) return
+            reported = true
+            flushDetails()
+            sendEvent("unload", stepRef.current, { closedWith: "unload" })
+        }
+        const onVisibility = () => {
+            if (document.visibilityState === "hidden") report()
+            else reported = false
+        }
+        window.addEventListener("pagehide", report)
+        document.addEventListener("visibilitychange", onVisibility)
+        return () => {
+            window.removeEventListener("pagehide", report)
+            document.removeEventListener("visibilitychange", onVisibility)
+        }
+    }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
+
     /* ── The live schedule: asked as soon as a service is picked, so the time
      * step opens with the windows already there. The customer is known by
      * then, so the member and commercial rates are on the windows; the age
@@ -786,9 +861,38 @@ export default function ContactFlowDialog() {
         })
     }, [open, serviceKey, isCallback, isMember, isCommercial, data.systemAge, serviceZip]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    // The service is reported once it resolves to a menu key, whichever chip got it there.
+    React.useEffect(() => {
+        if (!open || !serviceKey) return
+        sendEvent("field", stepRef.current, { service: serviceKey, serviceLabel: serviceSummaryOf(data) })
+    }, [open, serviceKey]) // eslint-disable-line react-hooks/exhaustive-deps
+
     if (!open) return null
 
-    const close = () => setOpen(false)
+    /* How the visitor closed it is reported with the step they were on. The
+     * Done button after a booking passes nothing: that session is finished. */
+    const close = (how?: ClosedWith) => {
+        if (how) {
+            flushDetails()
+            sendEvent("close", step, { closedWith: how })
+        }
+        endSession()
+        setOpen(false)
+    }
+
+    /* Name and email are reported when the field loses focus, never per
+     * keystroke, and gathered for a moment so tabbing through the form makes
+     * one report. A first name the lookup supplied is never sent. */
+    function commitDetail(key: "firstName" | "lastName" | "email", value: string) {
+        const v = value.trim()
+        if (v === detailsSent.current[key]) return
+        detailsSent.current[key] = v
+        if (!v) return
+        if (key === "firstName" && learnedFirstName.current && v.toLowerCase() === learnedFirstName.current) return
+        detailsPending.current = { ...(detailsPending.current || {}), [key]: v }
+        if (detailsTimer.current) window.clearTimeout(detailsTimer.current)
+        detailsTimer.current = window.setTimeout(flushDetails, 400)
+    }
 
     const emailOk = email.trim() === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
     const phoneOk = phoneDigits.length === 10
@@ -893,13 +997,21 @@ export default function ContactFlowDialog() {
         if (lookupDebounce.current) window.clearTimeout(lookupDebounce.current)
         lookupDebounce.current = window.setTimeout(async () => {
             const seq = ++lookupSeq.current
+            sendEvent("field", stepRef.current, { phone: digits, zip, propertyType: propertyTypeOf(data.propertyType) })
             let r: any
             try {
-                r = await apiPost("/schedulerLookup", { phone: digits, zip })
+                r = await apiPost("/schedulerLookup", { phone: digits, zip, sessionId: currentSessionId() })
             } catch {
                 r = { status: "unavailable" }
             }
             if (seq !== lookupSeq.current) return
+            {
+                const found = r?.status === "found" && Array.isArray(r.locations) && r.locations.length > 0
+                // Anything the wizard cannot show as its own answer is reported the way the visitor sees it: unavailable.
+                const lookupStatus: LookupStatus = found ? "found" : ["new", "office", "invalid", "out_of_area"].includes(r?.status) ? r.status : "unavailable"
+                const only = found && r.locations.length === 1 && r.locations[0].serviced !== false ? String(r.locations[0].key) : undefined
+                sendEvent("field", stepRef.current, { lookupStatus, locationKey: only })
+            }
             setLocKey("")
             setHouseNumber("")
             setHouseError("")
@@ -993,7 +1105,7 @@ export default function ContactFlowDialog() {
         setVerifying(true)
         let r: any
         try {
-            r = await apiPost("/schedulerVerify", { token: lookup.token, locationKey: locKey, houseNumber: houseTyped, phone: phoneDigits, zip })
+            r = await apiPost("/schedulerVerify", { token: lookup.token, locationKey: locKey, houseNumber: houseTyped, phone: phoneDigits, zip, sessionId: currentSessionId() })
         } catch {
             r = { status: "unavailable" }
         }
@@ -1001,6 +1113,7 @@ export default function ContactFlowDialog() {
         if (r?.status === "ok") {
             setVerified({ key: locKey, house: houseTyped, member: r.member === true, firstName: String(r.firstName || "") })
             if (!firstName.trim() && r.firstName) setFirstName(String(r.firstName))
+            if (r.firstName) learnedFirstName.current = String(r.firstName).trim().toLowerCase()
             setStep(1)
         } else if (r?.status === "house_number_mismatch") {
             setHouseError("That house number doesn't match the address on file. Check it, or book as a new address.")
@@ -1017,9 +1130,7 @@ export default function ContactFlowDialog() {
     const goBack = () => setStep((s) => Math.max(s - 1, 0) as StepIdx)
 
     const serviceRequired = data.service === "heatingCooling" ? data.hvacIssue || "" : data.detail || ""
-    const svcSummary = data.service
-        ? `${SERVICE_LABEL[data.service].replace(" Maintenance Plan", "")}${serviceRequired ? " · " + serviceRequired : ""}`
-        : ""
+    const svcSummary = serviceSummaryOf(data)
     const whenSummary = isCallback
         ? data.callbackTime ? `We'll call · ${data.callbackTime}` : ""
         : data.window && data.apptDate ? `${relDay(data.apptDate)} · ${shortLabel(data.window.label)}` : ""
@@ -1053,6 +1164,7 @@ export default function ContactFlowDialog() {
 
         const body: any = {
             clientRequestId: requestIdRef.current,
+            sessionId: currentSessionId(),
             service: serviceKey,
             detail: serviceRequired,
             duration: data.service === "heatingCooling" ? data.hvacDuration || "" : "",
@@ -1094,6 +1206,9 @@ export default function ContactFlowDialog() {
         setSubmitting(false)
 
         if (r && (r.status === "booked" || r.status === "received")) {
+            // The server has the outcome now. A booking is reported; neither one is followed by a close or an unload.
+            if (r.status === "booked") sendEvent("booked", step, { jobNumber: r.jobNumber })
+            settleSession()
             try {
                 const addr: Record<string, string> = { first_name: firstName.trim(), last_name: lastName.trim(), country: "US", postal_code: zip }
                 if (!knownCustomer) {
@@ -1145,6 +1260,7 @@ export default function ContactFlowDialog() {
             setStep(0)
         } else if (r?.status === "out_of_area") {
             // The server's list decides. Say what it said, never the "received" screen.
+            settleSession()
             setSubmitError(r.error || outOfAreaLine(serviceZip))
             requestIdRef.current = newId()
         } else if (r?.status === "rate_limited") {
@@ -1195,7 +1311,10 @@ export default function ContactFlowDialog() {
     const openDays = days.filter((d) => d.windows.length)
     const quickPicks = openDays.flatMap((d) => d.windows.map((w) => ({ date: d.date, win: w }))).slice(0, 3)
     const selectedDay = days.find((d) => d.date === data.apptDate)
-    const pickWindow = (date: string, w: Win) => patch({ apptDate: date, window: w })
+    const pickWindow = (date: string, w: Win) => {
+        patch({ apptDate: date, window: w })
+        sendEvent("field", stepRef.current, { window: { date, label: w.label, start: w.start } })
+    }
     const winSel = (date: string, w: Win) => data.apptDate === date && data.window?.start === w.start
 
     const feeHeadline = (() => {
@@ -1219,7 +1338,7 @@ export default function ContactFlowDialog() {
             <style>{XW_CSS}</style>
 
             <div
-                onClick={close}
+                onClick={() => close("backdrop")}
                 style={{
                     position: "absolute",
                     inset: 0,
@@ -1244,7 +1363,7 @@ export default function ContactFlowDialog() {
                         <>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <div className="xw-eyebrow">Schedule Service</div>
-                                <button className="xw-close" onClick={close} aria-label="Close" type="button">✕</button>
+                                <button className="xw-close" onClick={() => close("x")} aria-label="Close" type="button">✕</button>
                             </div>
                             <div className="xw-title">{booked ? (booked.status === "booked" ? "You're booked!" : "Got it!") : STEP_TITLES[step]}</div>
                             <div className="xw-progress">
@@ -1275,7 +1394,7 @@ export default function ContactFlowDialog() {
                                             Emergency? {EMERGENCY_PHONE_DISPLAY}
                                         </a>
                                     )}
-                                    <button className="xw-close" onClick={close} aria-label="Close" type="button">✕</button>
+                                    <button className="xw-close" onClick={() => close("x")} aria-label="Close" type="button">✕</button>
                                 </div>
                             </div>
                             <div className="xw-progress">
@@ -1351,7 +1470,7 @@ export default function ContactFlowDialog() {
                                         Add to calendar
                                     </button>
                                 ) : null}
-                                <button className="xw-cta" onClick={close} type="button">Done</button>
+                                <button className="xw-cta" onClick={() => close()} type="button">Done</button>
                             </div>
                             <div className="xw-donefoot">
                                 Need to change it? Call or text{" "}
@@ -1441,7 +1560,7 @@ export default function ContactFlowDialog() {
                                                             const out = l.serviced === false
                                                             return (
                                                                 <div key={l.key}>
-                                                                    <button type="button" className={"xw-loc" + (sel && !out ? " sel" : "") + (out ? " off" : "")} disabled={out} onClick={() => { if (out) return; setLocKey(l.key); setHouseError("") }}>
+                                                                    <button type="button" className={"xw-loc" + (sel && !out ? " sel" : "") + (out ? " off" : "")} disabled={out} onClick={() => { if (out) return; if (l.key !== locKey) sendEvent("field", stepRef.current, { locationKey: l.key }); setLocKey(l.key); setHouseError("") }}>
                                                                         <span className="radio" aria-hidden="true" />
                                                                         <span>
                                                                             <span className="st">{l.hasHouseNumber ? "•••• " : ""}{l.street}{l.unit ? `, ${l.unit}` : ""}</span>
@@ -1479,7 +1598,7 @@ export default function ContactFlowDialog() {
                                                         </div>
                                                         <div>
                                                             {groupLabel("Email", true)}
-                                                            <input className={"xw-input" + (!emailOk ? " err" : "")} type="email" autoComplete="email" placeholder="For your confirmation" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                                            <input className={"xw-input" + (!emailOk ? " err" : "")} type="email" autoComplete="email" placeholder="For your confirmation" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={(e) => commitDetail("email", e.target.value)} />
                                                         </div>
                                                     </div>
                                                     <button type="button" className="xw-linkbtn" onClick={() => { setAsNew(true); setLocKey(""); setHouseNumber("") }}>
@@ -1496,11 +1615,11 @@ export default function ContactFlowDialog() {
                                                     <div className="xw-namerow">
                                                         <div>
                                                             {groupLabel("First name")}
-                                                            <input className="xw-input" autoComplete="given-name" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                                                            <input className="xw-input" autoComplete="given-name" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} onBlur={(e) => commitDetail("firstName", e.target.value)} />
                                                         </div>
                                                         <div>
                                                             {groupLabel("Last name")}
-                                                            <input className="xw-input" autoComplete="family-name" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                                                            <input className="xw-input" autoComplete="family-name" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} onBlur={(e) => commitDetail("lastName", e.target.value)} />
                                                         </div>
                                                     </div>
                                                     <div style={{ position: "relative" }}>
@@ -1544,7 +1663,7 @@ export default function ContactFlowDialog() {
                                                     </div>
                                                     <div>
                                                         {groupLabel("Email", true)}
-                                                        <input className={"xw-input" + (!emailOk ? " err" : "")} type="email" autoComplete="email" placeholder="For your confirmation" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                                        <input className={"xw-input" + (!emailOk ? " err" : "")} type="email" autoComplete="email" placeholder="For your confirmation" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={(e) => commitDetail("email", e.target.value)} />
                                                     </div>
                                                 </div>
                                             )}
@@ -1612,7 +1731,7 @@ export default function ContactFlowDialog() {
                                     {stepComplete[1] && ageQ.ask && (
                                         <div className="xw-fade">
                                             {groupLabel(ageQ.label, true)}
-                                            <div className="xw-chips">{AGE_OPTIONS.map((o) => chip(data.systemAge === o, o, () => toggle("systemAge", o)))}</div>
+                                            <div className="xw-chips">{AGE_OPTIONS.map((o) => chip(data.systemAge === o, o, () => { if (data.systemAge !== o) sendEvent("field", stepRef.current, { systemAge: o }); toggle("systemAge", o) }))}</div>
                                         </div>
                                     )}
                                     {stepComplete[1] && data.service === "heatingCooling" && data.hvacIssue !== "Tune-Up" && (
