@@ -31,7 +31,7 @@ const REVIEWS: { quote: string; name: string; city?: string }[] = [
         name: "Woodrow Gibson",
     },
     {
-        quote: "Called company who installed could not get here any sooner than 7days. Called Extreme they were here next day. Thanks Cody Evans job well done!",
+        quote: "Called company who installed could not get here any sooner than 7days. Called Extreme they were here next day. Thanks Cody E. job well done!",
         name: "Nick",
     },
     {
@@ -51,7 +51,7 @@ const REVIEWS: { quote: string; name: string; city?: string }[] = [
         name: "Gwendolyn Ralston",
     },
     {
-        quote: "Cody Evans showed up today for a chemical cleaning on the outside unit and some minor services inside. Professional, personable, and efficient with his work.",
+        quote: "Cody E. showed up today for a chemical cleaning on the outside unit and some minor services inside. Professional, personable, and efficient with his work.",
         name: "Kenneth Douglas",
     },
     {

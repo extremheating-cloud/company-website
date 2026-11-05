@@ -110,8 +110,8 @@
   "published": "2026-08-02"
  },
  "/locations/beavercreek": {
-  "hash": "84ef8f82b357b58c",
-  "modified": "2026-08-13",
+  "hash": "b8c2ebed28cf772d",
+  "modified": "2026-11-05",
   "published": "2026-08-02"
  },
  "/locations/beavercreek/cooling": {
@@ -250,8 +250,8 @@
   "published": "2026-08-02"
  },
  "/locations/centerville": {
-  "hash": "ff55bbc8e12a2bf4",
-  "modified": "2026-08-13",
+  "hash": "954a5ed8d5b6545a",
+  "modified": "2026-11-05",
   "published": "2026-08-02"
  },
  "/locations/centerville/cooling": {
@@ -670,8 +670,8 @@
   "published": "2026-08-02"
  },
  "/locations/kettering": {
-  "hash": "ac4a929edc5a815f",
-  "modified": "2026-08-13",
+  "hash": "7459832b624ff5f9",
+  "modified": "2026-11-05",
   "published": "2026-08-02"
  },
  "/locations/kettering/cooling": {
@@ -1230,8 +1230,8 @@
   "published": "2026-08-02"
  },
  "/locations/troy": {
-  "hash": "bc96bd211efc8999",
-  "modified": "2026-08-13",
+  "hash": "0035a4a2e703c610",
+  "modified": "2026-11-05",
   "published": "2026-08-02"
  },
  "/locations/troy/cooling": {
