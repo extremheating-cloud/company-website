@@ -53,6 +53,7 @@ ABOUT = {
             ("Aaron M.", "Marketing &amp; IT Manager", "aaron-m"),
             ("Samantha D.", "Office Coordinator", "samantha-d"),
             ("David E.", "Inventory Coordinator", "david-e"),
+            ("Lindsey D.", "Customer Service Rep", "lindsey-d"),
         ]),
         ("Comfort Advisors", [
             ("Joe R.", "Comfort Advisor", "joe-r"),
@@ -61,19 +62,22 @@ ABOUT = {
         ("HVAC Service", [
             ("Josh A.", "Field Supervisor", "josh-a"),
             ("Austin R.", "Field Supervisor", "austin-r"),
+            ("Justin A.", "HVAC Technician", "justin-a"),
+            ("Robbie C.", "HVAC Technician", "robbie-c"),
             ("Cody E.", "HVAC Technician", "cody-e"),
+            ("Wyatt J.", "HVAC Technician", "wyatt-j"),
             ("Garry K.", "HVAC Technician", "garry-k"),
             ("Tristan R.", "HVAC Technician", "tristan-r"),
             ("Lee S.", "HVAC Technician", "lee-s"),
             ("Emmanuel T.", "HVAC Technician", "emmanuel-t"),
+            ("Jy W.", "HVAC Technician", "jy-w"),
         ]),
         # Titles must fit a 135px tile on a 320px phone, hence "Install" not "Installation".
         ("HVAC Installation", [
             ("Anthony G.", "HVAC Install Lead", "anthony-g"),
             ("Tyler H.", "HVAC Install Lead", "tyler-h"),
             ("Brandon O.", "HVAC Install Lead", "brandon-o"),
-            ("Robbie C.", "HVAC Install Helper", "robbie-c"),
-            ("Chase C.", "HVAC Install Helper", "chase-c"),
+            ("Jeremy C.", "HVAC Install Helper", "jeremy-c"),
             ("Jayvon K.", "HVAC Install Helper", "jayvon-k"),
             ("Logan W.", "HVAC Install Helper", "logan-w"),
         ]),
@@ -84,7 +88,6 @@ ABOUT = {
             ("Jim N.", "Plumbing Dispatcher", "jim-n"),
         ]),
         ("Duct Cleaning", [
-            ("Matt C.", "Duct Cleaning Lead", "matt-c"),
             ("Jason S.", "Duct Cleaning Helper", "jason-s"),
         ]),
     ],
@@ -205,9 +208,15 @@ def about_page(d, root_class):
   <img class="mark" src="{T.X_MARK}" alt=""{T.dim_attrs(T.X_MARK)} loading="lazy" decoding="async" style="position:absolute;right:-70px;bottom:-60px;width:300px;opacity:.06;transform:rotate(-8deg);filter:brightness(0) invert(1)">
   <div class="grid">{stats}</div>
 </div>'''
+    def card_img(name, role, slug):
+        src = PHOTOS["team"].get(slug)
+        alt = f"{name}, {role.replace('&amp;', 'and')} at {D.COMPANY}" if src else ""
+        src = src or PHOTOS["teamSilhouette"]
+        return f'<img src="{src}" alt="{alt}"{T.dim_attrs(src)} loading="lazy" decoding="async">'
+
     def crew(title, members, lead=False):
         cards = "".join(
-            f'''<figure class="xco-mem"><img src="{PHOTOS["team"][slug]}" alt="{name}, {role.replace("&amp;", "and")} at {D.COMPANY}"{T.dim_attrs(PHOTOS["team"][slug])} loading="lazy" decoding="async">
+            f'''<figure class="xco-mem">{card_img(name, role, slug)}
     <figcaption><span class="nm">{name}</span><span class="rl">{role}</span></figcaption></figure>'''
             for name, role, slug in members)
         return f'''<div class="xco-crew">
