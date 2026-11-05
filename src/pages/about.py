@@ -50,7 +50,7 @@ ABOUT = {
             ("Ryan B.", "Owner", "ryan-b"),
         ]),
         ("In the office", [
-            ("Aaron M.", "Operations Coordinator", "aaron-m"),
+            ("Aaron M.", "Marketing &amp; IT Manager", "aaron-m"),
             ("Samantha D.", "Office Coordinator", "samantha-d"),
             ("David E.", "Inventory Coordinator", "david-e"),
         ]),
