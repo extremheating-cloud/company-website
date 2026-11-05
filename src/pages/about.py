@@ -69,7 +69,6 @@ ABOUT = {
             ("Garry K.", "HVAC Technician", "garry-k"),
             ("Tristan R.", "HVAC Technician", "tristan-r"),
             ("Lee S.", "HVAC Technician", "lee-s"),
-            ("Emmanuel T.", "HVAC Technician", "emmanuel-t"),
             ("Jy W.", "HVAC Technician", "jy-w"),
         ]),
         # Titles must fit a 135px tile on a 320px phone, hence "Install" not "Installation".
