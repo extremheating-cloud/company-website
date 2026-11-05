@@ -84,6 +84,8 @@ ABOUT = {
             ("Andre R.", "Master Plumber", "andre-r"),
             ("Jason R.", "Plumber", "jason-r"),
             ("Chris W.", "Plumber", "chris-w"),
+            ("Devon D.", "Plumbing Helper", "devon-d"),
+            ("Coen G.", "Plumbing Helper", "coen-g"),
             ("Jim N.", "Plumbing Dispatcher", "jim-n"),
         ]),
         ("Duct Cleaning", [
